@@ -16,3 +16,13 @@ test_that("ta_normalize works", {
   rownames(expected) <- paste0("V", 1:3)
   expect_equal(exp$expr_mat, expected)
 })
+
+
+test_that("quantile_normalize works", {
+  exp <- simple_exp(3, 3)
+  exp <- quantile_normalize(exp)
+  expected <- matrix(c(4, 5, 6, 4, 5, 6, 4, 5, 6), nrow = 3)
+  colnames(expected) <- paste0("S", 1:3)
+  rownames(expected) <- paste0("V", 1:3)
+  expect_equal(exp$expr_mat, expected)
+})

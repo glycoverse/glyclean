@@ -41,6 +41,23 @@ ta_normalize <- function(exp) {
 }
 
 
+#' Quantile Normalization
+#'
+#' Normalize the expression matrix by quantile normalization.
+#' This method is used to remove technical variation between samples.
+#' Proteomics data rarely uses this method, but it is common in microarray data.
+#' See [wikipedia](https://en.wikipedia.org/wiki/Quantile_normalization)
+#' for more information.
+#'
+#' @param exp An experiment object.
+#'
+#' @return An experiment object with the expression matrix normalized.
+#' @export
+quantile_normalize <- function(exp) {
+  .normalize(exp, .quantile_normalize)
+}
+
+
 .normalize <- function(exp, f) {
   new_expr_mat <- f(exp$expr_mat)
   exp$expr_mat <- new_expr_mat
@@ -57,4 +74,16 @@ ta_normalize <- function(exp) {
 .ta_normalize <- function(mat) {
   col_sums <- colSums(mat, na.rm = TRUE)
   sweep(mat, 2, col_sums, "/")
+}
+
+
+.quantile_normalize <- function(mat) {
+  mat_sort <- apply(mat, 2, sort)
+  row_means <- rowMeans(mat_sort)
+  mat_sort <- matrix(row_means, nrow = nrow(mat), ncol = ncol(mat))
+  index_rank <- apply(mat, 2, order)
+  normed_mat <- apply(index_rank, 2, function(idx) mat_sort[idx, 1])
+  colnames(normed_mat) <- colnames(mat)
+  rownames(normed_mat) <- rownames(mat)
+  normed_mat
 }
