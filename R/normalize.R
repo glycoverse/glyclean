@@ -5,6 +5,7 @@
 # and returning a normalized matrix. The public functions accept an experiment
 # and return a new experiment.
 
+# ---------- Interface ----------
 
 #' Median Normalization
 #'
@@ -77,6 +78,26 @@ loessf_normalize <- function(exp, ...) {
 }
 
 
+#' LoessCyc Normalization
+#'
+#' This function is a wrapper around [limma::normalizeCyclicLoess()] with
+#' `method = "pairs"`.
+#' Each pair of columns is normalized mutually to each other.
+#' See [this paper](https://doi.org/10.1093/bib/bbw095) for more information.
+#' Also see [limma::normalizeCyclicLoess()].
+#'
+#' @param exp An experiment object.
+#' @param ... Additional arguments to pass to [limma::normalizeCyclicLoess()].
+#'
+#' @return An experiment object with the expression matrix normalized.
+#' @export
+loesscyc_normalize <- function(exp, ...) {
+  .normalize(exp, .loesscyc_normalize)
+}
+
+
+# ---------- Implementation ----------
+
 .normalize <- function(exp, f, ...) {
   new_expr_mat <- f(exp$expr_mat, ...)
   exp$expr_mat <- new_expr_mat
@@ -111,6 +132,15 @@ loessf_normalize <- function(exp, ...) {
 .loessf_normalize <- function(mat, ...) {
   log_mat <- log2(mat)
   normed <- limma::normalizeCyclicLoess(log_mat, method = "fast", ...)
+  colnames(normed) <- colnames(mat)
+  rownames(normed) <- rownames(mat)
+  2 ^ normed
+}
+
+
+.loesscyc_normalize <- function(mat, ...) {
+  log_mat <- log2(mat)
+  normed <- limma::normalizeCyclicLoess(log_mat, method = "pairs", ...)
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
   2 ^ normed

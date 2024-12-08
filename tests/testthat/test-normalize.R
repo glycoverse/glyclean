@@ -33,3 +33,10 @@ test_that("loessf_normalize works", {
   exp <- loessf_normalize(exp)
   expect_snapshot(exp$expr_mat)
 })
+
+
+test_that("loesscyc_normalize works", {
+  exp <- simple_exp(3, 3)
+  exp <- loesscyc_normalize(exp)
+  expect_snapshot(exp$expr_mat)
+})
