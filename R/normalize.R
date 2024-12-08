@@ -96,6 +96,31 @@ loesscyc_normalize <- function(exp, ...) {
 }
 
 
+#' Variance Stabilizing Normalization
+#'
+#' This function is a wrapper around [limma::normalizeVSN()].
+#' Evidence proved that this method performs well in reducing noise and
+#' boosting differential expression detection.
+#' Log-transformation is not needed for downstream statistical analysis,
+#' for this normalization method performs a log-like transformation internally.
+#' Due to the same reason, fold change estimates will be severely distorted.
+#' Please use this method with caution.
+#' See [this paper](https://doi.org/10.1093/bib/bbw095) for more information.
+#'
+#' @details
+#' At least 42 variables should be provided for this method.
+#' This follows the convention of the `vsn` package.
+#'
+#' @param exp An experiment object.
+#' @param ... Additional arguments to pass to [limma::normalizeVSN()].
+#'
+#' @return An experiment object with the expression matrix normalized.
+#' @export
+vsn_normalize <- function(exp, ...) {
+  .normalize(exp, .vsn_normalize)
+}
+
+
 # ---------- Implementation ----------
 
 .normalize <- function(exp, f, ...) {
@@ -144,4 +169,16 @@ loesscyc_normalize <- function(exp, ...) {
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
   2 ^ normed
+}
+
+
+.vsn_normalize <- function(mat, ...) {
+  rlang::check_installed("vsn", reason = "to use `vsn_normalize()`")
+  if (nrow(mat) < 42) {
+    rlang::abort("The number of variables should be at least 42 for `vsn_normalize()`")
+  }
+  suppressMessages(normed <- limma::normalizeVSN(mat, ...))
+  colnames(normed) <- colnames(mat)
+  rownames(normed) <- rownames(mat)
+  normed
 }

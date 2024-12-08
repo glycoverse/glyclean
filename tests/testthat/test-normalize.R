@@ -40,3 +40,10 @@ test_that("loesscyc_normalize works", {
   exp <- loesscyc_normalize(exp)
   expect_snapshot(exp$expr_mat)
 })
+
+
+test_that("vsn_normalize works", {
+  exp <- simple_exp(42, 3)
+  exp <- vsn_normalize(exp)
+  expect_snapshot(exp$expr_mat)
+})
