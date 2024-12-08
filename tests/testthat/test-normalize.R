@@ -26,3 +26,10 @@ test_that("quantile_normalize works", {
   rownames(expected) <- paste0("V", 1:3)
   expect_equal(exp$expr_mat, expected)
 })
+
+
+test_that("loessf_normalize works", {
+  exp <- simple_exp(3, 3)
+  exp <- loessf_normalize(exp)
+  expect_snapshot(exp$expr_mat)
+})

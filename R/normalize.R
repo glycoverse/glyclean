@@ -58,8 +58,27 @@ quantile_normalize <- function(exp) {
 }
 
 
-.normalize <- function(exp, f) {
-  new_expr_mat <- f(exp$expr_mat)
+#' LoessF Normalization
+#'
+#' This function is a wrapper around [limma::normalizeCyclicLoess()] with
+#' `method = "fast"`.
+#' Each column is simply normalized to a reference array,
+#' the reference array being the average of all the arrays.
+#' See [this paper](https://doi.org/10.1093/bib/bbw095) for more information.
+#' Also see [limma::normalizeCyclicLoess()].
+#'
+#' @param exp An experiment object.
+#' @param ... Additional arguments to pass to [limma::normalizeCyclicLoess()].
+#'
+#' @return An experiment object with the expression matrix normalized.
+#' @export
+loessf_normalize <- function(exp, ...) {
+  .normalize(exp, .loessf_normalize)
+}
+
+
+.normalize <- function(exp, f, ...) {
+  new_expr_mat <- f(exp$expr_mat, ...)
   exp$expr_mat <- new_expr_mat
   exp
 }
@@ -86,4 +105,13 @@ quantile_normalize <- function(exp) {
   colnames(normed_mat) <- colnames(mat)
   rownames(normed_mat) <- rownames(mat)
   normed_mat
+}
+
+
+.loessf_normalize <- function(mat, ...) {
+  log_mat <- log2(mat)
+  normed <- limma::normalizeCyclicLoess(log_mat, method = "fast", ...)
+  colnames(normed) <- colnames(mat)
+  rownames(normed) <- rownames(mat)
+  2 ^ normed
 }
