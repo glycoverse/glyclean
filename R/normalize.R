@@ -23,6 +23,24 @@ median_normalize <- function(exp) {
 }
 
 
+#' Total Abundance Normalization
+#'
+#' Normalize the expression matrix by dividing each column (sample) by the sum of
+#' that column, so that the sum of each column is 1.
+#' This is the most common normalization method for glycomics data.
+#' It removes the bias introduced by total glycan abundance.
+#' However, it results in compositional data, which may result in unrealistic
+#' downstream analysis results.
+#'
+#' @param exp An experiment object.
+#'
+#' @return An experiment object with the expression matrix normalized.
+#' @export
+ta_normalize <- function(exp) {
+  .normalize(exp, .ta_normalize)
+}
+
+
 .normalize <- function(exp, f) {
   new_expr_mat <- f(exp$expr_mat)
   exp$expr_mat <- new_expr_mat
@@ -33,4 +51,10 @@ median_normalize <- function(exp) {
 .median_normalize <- function(mat) {
   col_medians <- apply(mat, 2, stats::median, na.rm = TRUE)
   sweep(mat, 2, col_medians, "/")
+}
+
+
+.ta_normalize <- function(mat) {
+  col_sums <- colSums(mat, na.rm = TRUE)
+  sweep(mat, 2, col_sums, "/")
 }
