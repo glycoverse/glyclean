@@ -48,3 +48,13 @@ test_that("vsn_normalize works", {
   exp <- vsn_normalize(exp)
   expect_snapshot(exp$expr_mat)
 })
+
+
+test_that("median_quotient_normalize works", {
+  exp <- simple_exp(3, 3)
+  exp <- median_quotient_normalize(exp)
+  expected <- matrix(c(1*2.5, 2*2.5, 3*2.5, 4, 5, 6, 7*5/8, 8*5/8, 9*5/8), nrow = 3)
+  colnames(expected) <- paste0("S", 1:3)
+  rownames(expected) <- paste0("V", 1:3)
+  expect_equal(exp$expr_mat, expected)
+})

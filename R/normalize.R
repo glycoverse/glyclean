@@ -136,6 +136,29 @@ vsn_normalize <- function(exp, ...) {
 }
 
 
+#' Median Quotient Normalization
+#'
+#' This approach is based on the calculation of the dilution factor of each
+#' sample with respect to a reference sample. Here, the reference sample
+#' was calculated as the median value of each glycan’s abundance across all
+#' measured samples. For each sample, a vector of quotients was then obtained
+#' by dividing each glycan measure by the corresponding value in the reference
+#' sample. The median of these quotients was then used as the sample’s dilution
+#' factor, and the original sample values were subsequently divided by that value.
+#' The underlying assumption is that the diﬀerent intensities observed across
+#' individuals are imputable to diﬀerent amounts of the biological material
+#' in the collected samples.
+#' See [this paper](https://dx.doi.org/10.1021/ac051632c) for more information.
+#'
+#' @param exp An experiment object.
+#'
+#' @return An experiment object with the expression matrix normalized.
+#' @export
+median_quotient_normalize <- function(exp) {
+  .normalize(exp, .median_quotient_normalize)
+}
+
+
 # ---------- Implementation ----------
 
 .normalize <- function(exp, f, ...) {
@@ -204,4 +227,19 @@ vsn_normalize <- function(exp, ...) {
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
   normed
+}
+
+
+.median_quotient_normalize <- function(mat) {
+  # The reference sample was calculated as the median value of
+  # each glycan’s abundance across all measured samples.
+  ref_sample <- apply(mat, 1, median, na.rm = TRUE)
+
+  # For each sample, a vector of quotients was then obtained by
+  # dividing each glycan measure by the corresponding value in the reference sample.
+  # The median of these quotients was then used as the sample’s dilution factor.
+  dilution_factor <- apply(mat / ref_sample, 2, median, na.rm = TRUE)
+
+  # The original sample values were subsequently divided by that value.
+  t(t(mat) / dilution_factor)
 }
