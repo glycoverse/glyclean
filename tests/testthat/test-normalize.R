@@ -12,9 +12,9 @@ test_that("median_abs_normalize works", {
 })
 
 
-test_that("ta_normalize works", {
+test_that("total_area_normalize works", {
   exp <- simple_exp(3, 3)
-  exp <- ta_normalize(exp)
+  exp <- total_area_normalize(exp)
   expected <- matrix(c(1/6, 2/6, 3/6, 4/15, 5/15, 6/15, 7/24, 8/24, 9/24), nrow = 3)
   colnames(expected) <- paste0("S", 1:3)
   rownames(expected) <- paste0("V", 1:3)

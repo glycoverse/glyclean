@@ -38,7 +38,7 @@ median_abs_normalize <- function(exp) {
 }
 
 
-#' Total Abundance Normalization
+#' Total Area Normalization
 #'
 #' Normalize the expression matrix by dividing each column (sample) by the sum of
 #' that column, so that the sum of each column is 1.
@@ -51,8 +51,8 @@ median_abs_normalize <- function(exp) {
 #'
 #' @return An experiment object with the expression matrix normalized.
 #' @export
-ta_normalize <- function(exp) {
-  .normalize(exp, .ta_normalize)
+total_area_normalize <- function(exp) {
+  .normalize(exp, .total_area_normalize)
 }
 
 
@@ -186,7 +186,7 @@ median_quotient_normalize <- function(exp) {
 }
 
 
-.ta_normalize <- function(mat) {
+.total_area_normalize <- function(mat) {
   col_sums <- colSums(mat, na.rm = TRUE)
   sweep(mat, 2, col_sums, "/")
 }
@@ -233,12 +233,12 @@ median_quotient_normalize <- function(exp) {
 .median_quotient_normalize <- function(mat) {
   # The reference sample was calculated as the median value of
   # each glycan’s abundance across all measured samples.
-  ref_sample <- apply(mat, 1, median, na.rm = TRUE)
+  ref_sample <- apply(mat, 1, stats::median, na.rm = TRUE)
 
   # For each sample, a vector of quotients was then obtained by
   # dividing each glycan measure by the corresponding value in the reference sample.
   # The median of these quotients was then used as the sample’s dilution factor.
-  dilution_factor <- apply(mat / ref_sample, 2, median, na.rm = TRUE)
+  dilution_factor <- apply(mat / ref_sample, 2, stats::median, na.rm = TRUE)
 
   # The original sample values were subsequently divided by that value.
   t(t(mat) / dilution_factor)
