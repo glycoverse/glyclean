@@ -2,6 +2,7 @@
 
 export(loesscyc_normalize)
 export(loessf_normalize)
+export(median_abs_normalize)
 export(median_normalize)
 export(quantile_normalize)
 export(ta_normalize)

@@ -24,6 +24,20 @@ median_normalize <- function(exp) {
 }
 
 
+#' Absolute Median Normalization
+#'
+#' Normalize the expression matrix by dividing each column (sample) by the absolute
+#' median of that column (NA ignored), so that the absolute median of each column is 1.
+#'
+#' @param exp An experiment object.
+#'
+#' @return An experiment object with the expression matrix normalized.
+#' @export
+median_abs_normalize <- function(exp) {
+  .normalize(exp, .median_abs_normalize)
+}
+
+
 #' Total Abundance Normalization
 #'
 #' Normalize the expression matrix by dividing each column (sample) by the sum of
@@ -132,8 +146,20 @@ vsn_normalize <- function(exp, ...) {
 
 
 .median_normalize <- function(mat) {
-  col_medians <- apply(mat, 2, stats::median, na.rm = TRUE)
-  sweep(mat, 2, col_medians, "/")
+  log_mat <- log2(mat)
+  normed <- limma::normalizeMedianValues(log_mat)
+  colnames(normed) <- colnames(mat)
+  rownames(normed) <- rownames(mat)
+  2 ^ normed
+}
+
+
+.median_abs_normalize <- function(mat) {
+  log_mat <- log2(mat)
+  normed <- limma::normalizeMedianAbsValues(log_mat)
+  colnames(normed) <- colnames(mat)
+  rownames(normed) <- rownames(mat)
+  2 ^ normed
 }
 
 

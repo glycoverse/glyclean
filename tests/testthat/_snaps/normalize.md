@@ -1,3 +1,23 @@
+# median_normalize works
+
+    Code
+      exp$expr_mat
+    Output
+               S1       S2       S3
+      V1 1.000000 3.127522 3.451374
+      V2 3.757594 3.757594 3.757594
+      V3 8.150995 4.365533 4.050175
+
+# median_abs_normalize works
+
+    Code
+      exp$expr_mat
+    Output
+               S1       S2       S3
+      V1 1.000000 3.127522 3.451374
+      V2 3.757594 3.757594 3.757594
+      V3 8.150995 4.365533 4.050175
+
 # quantile_normalize works
 
     Code
