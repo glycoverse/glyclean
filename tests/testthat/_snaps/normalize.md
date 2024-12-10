@@ -1,3 +1,13 @@
+# quantile_normalize works
+
+    Code
+      exp$expr_mat
+    Output
+         S1 S2 S3
+      V1  4  4  4
+      V2  5  5  5
+      V3  6  6  6
+
 # loessf_normalize works
 
     Code

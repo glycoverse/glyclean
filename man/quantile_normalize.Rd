@@ -13,7 +13,8 @@ quantile_normalize(exp)
 An experiment object with the expression matrix normalized.
 }
 \description{
-Normalize the expression matrix by quantile normalization.
+This function is a wrapper around \code{\link[limma:normalizequantiles]{limma::normalizeQuantiles()}}.
+It normalizes the expression matrix by quantile normalization.
 This method is used to remove technical variation between samples.
 Proteomics data rarely uses this method, but it is common in microarray data.
 See \href{https://en.wikipedia.org/wiki/Quantile_normalization}{wikipedia}

@@ -44,7 +44,8 @@ ta_normalize <- function(exp) {
 
 #' Quantile Normalization
 #'
-#' Normalize the expression matrix by quantile normalization.
+#' This function is a wrapper around [limma::normalizeQuantiles()].
+#' It normalizes the expression matrix by quantile normalization.
 #' This method is used to remove technical variation between samples.
 #' Proteomics data rarely uses this method, but it is common in microarray data.
 #' See [wikipedia](https://en.wikipedia.org/wiki/Quantile_normalization)
@@ -143,14 +144,10 @@ vsn_normalize <- function(exp, ...) {
 
 
 .quantile_normalize <- function(mat) {
-  mat_sort <- apply(mat, 2, sort)
-  row_means <- rowMeans(mat_sort)
-  mat_sort <- matrix(row_means, nrow = nrow(mat), ncol = ncol(mat))
-  index_rank <- apply(mat, 2, order)
-  normed_mat <- apply(index_rank, 2, function(idx) mat_sort[idx, 1])
-  colnames(normed_mat) <- colnames(mat)
-  rownames(normed_mat) <- rownames(mat)
-  normed_mat
+  normed <- limma::normalizeQuantiles(mat)
+  colnames(normed) <- colnames(mat)
+  rownames(normed) <- rownames(mat)
+  normed
 }
 
 
