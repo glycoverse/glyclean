@@ -170,6 +170,28 @@ median_quotient_normalize <- function(exp, by = NULL) {
 }
 
 
+#' Robust Linear Regression Normalization
+#'
+#' This method is based on robust linear regression. The reference sample is
+#' calculated as the median value of each variable's abundance across all
+#' measured samples. For each sample, a robust linear regression model is
+#' fitted to the sample's abundance values against the reference sample's
+#' abundance values. The fitted model is then used to normalize the sample's
+#' abundance values. The underlying assumption is that the diﬀerent intensities
+#' observed across individuals are imputable to diﬀerent amounts of the biological
+#' material in the collected samples.
+#'
+#' @param exp An experiment object.
+#' @param by A column name in `sample_info` to stratify by. Optional.
+#' If provided, the normalization will be performed within each group.
+#'
+#' @return An experiment object with the expression matrix normalized.
+#' @export
+rlr_normalize <- function(exp, by = NULL) {
+  .normalize(exp, .rlr_normalize, by = by)
+}
+
+
 # ---------- Implementation ----------
 
 .normalize <- function(exp, f, by, ...) {
@@ -265,7 +287,7 @@ median_quotient_normalize <- function(exp, by = NULL) {
 .median_quotient_normalize <- function(mat) {
   # The reference sample was calculated as the median value of
   # each glycan’s abundance across all measured samples.
-  ref_sample <- apply(mat, 1, stats::median, na.rm = TRUE)
+  ref_sample <- matrixStats::rowMedians(mat, na.rm = TRUE, useNames = TRUE)
 
   # For each sample, a vector of quotients was then obtained by
   # dividing each glycan measure by the corresponding value in the reference sample.
@@ -274,4 +296,24 @@ median_quotient_normalize <- function(exp, by = NULL) {
 
   # The original sample values were subsequently divided by that value.
   t(t(mat) / dilution_factor)
+}
+
+
+.rlr_normalize <- function(mat) {
+  normed <- log2(mat)
+  ref_sample <- matrixStats::rowMedians(normed, na.rm = TRUE, useNames = TRUE)
+  for (i in seq_len(ncol(normed))) {
+    sample <- normed[, i]
+    lr_fit <- MASS::rlm(
+      as.matrix(sample) ~ ref_sample,
+      na.action = stats::na.exclude
+    )
+    intercept <- lr_fit$coefficients[1]
+    slope <- lr_fit$coefficients[2]
+    new_sample <- (sample - intercept) / slope
+    normed[, i] <- new_sample
+  }
+  colnames(normed) <- colnames(mat)
+  rownames(normed) <- rownames(mat)
+  2 ^ normed
 }

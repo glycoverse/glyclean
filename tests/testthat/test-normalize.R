@@ -91,3 +91,10 @@ test_that("median_quotient_normalize with `by` specified works", {
   normed_exp <- median_quotient_normalize(exp, by = "group")
   expect_equal(normed_exp$expr_mat, expr_mat)
 })
+
+
+test_that("rlr_normalize works", {
+  exp <- simple_exp(3, 3)
+  exp <- rlr_normalize(exp)
+  expect_snapshot(exp$expr_mat)
+})
