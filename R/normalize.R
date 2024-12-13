@@ -20,7 +20,7 @@
 #' @return An experiment object with the expression matrix normalized.
 #' @export
 median_normalize <- function(exp) {
-  .normalize(exp, .median_normalize, by = NULL)
+  .update_expr_mat(exp, .median_normalize, by = NULL)
 }
 
 
@@ -34,7 +34,7 @@ median_normalize <- function(exp) {
 #' @return An experiment object with the expression matrix normalized.
 #' @export
 median_abs_normalize <- function(exp) {
-  .normalize(exp, .median_abs_normalize, by = NULL)
+  .update_expr_mat(exp, .median_abs_normalize, by = NULL)
 }
 
 
@@ -52,7 +52,7 @@ median_abs_normalize <- function(exp) {
 #' @return An experiment object with the expression matrix normalized.
 #' @export
 total_area_normalize <- function(exp) {
-  .normalize(exp, .total_area_normalize, by = NULL)
+  .update_expr_mat(exp, .total_area_normalize, by = NULL)
 }
 
 
@@ -73,7 +73,7 @@ total_area_normalize <- function(exp) {
 #' @return An experiment object with the expression matrix normalized.
 #' @export
 quantile_normalize <- function(exp, by = NULL, ...) {
-  .normalize(exp, .quantile_normalize, by = by, ...)
+  .update_expr_mat(exp, .quantile_normalize, by = by, ...)
 }
 
 
@@ -94,7 +94,7 @@ quantile_normalize <- function(exp, by = NULL, ...) {
 #' @return An experiment object with the expression matrix normalized.
 #' @export
 loessf_normalize <- function(exp, by = NULL, ...) {
-  .normalize(exp, .loessf_normalize, by = by, ...)
+  .update_expr_mat(exp, .loessf_normalize, by = by, ...)
 }
 
 
@@ -114,7 +114,7 @@ loessf_normalize <- function(exp, by = NULL, ...) {
 #' @return An experiment object with the expression matrix normalized.
 #' @export
 loesscyc_normalize <- function(exp, by = NULL, ...) {
-  .normalize(exp, .loesscyc_normalize, by = by, ...)
+  .update_expr_mat(exp, .loesscyc_normalize, by = by, ...)
 }
 
 
@@ -141,7 +141,7 @@ loesscyc_normalize <- function(exp, by = NULL, ...) {
 #' @return An experiment object with the expression matrix normalized.
 #' @export
 vsn_normalize <- function(exp, by = NULL, ...) {
-  .normalize(exp, .vsn_normalize, by = by, ...)
+  .update_expr_mat(exp, .vsn_normalize, by = by, ...)
 }
 
 
@@ -166,7 +166,7 @@ vsn_normalize <- function(exp, by = NULL, ...) {
 #' @return An experiment object with the expression matrix normalized.
 #' @export
 median_quotient_normalize <- function(exp, by = NULL) {
-  .normalize(exp, .median_quotient_normalize, by = by)
+  .update_expr_mat(exp, .median_quotient_normalize, by = by)
 }
 
 
@@ -188,7 +188,7 @@ median_quotient_normalize <- function(exp, by = NULL) {
 #' @return An experiment object with the expression matrix normalized.
 #' @export
 rlr_normalize <- function(exp, by = NULL) {
-  .normalize(exp, .rlr_normalize, by = by)
+  .update_expr_mat(exp, .rlr_normalize, by = by)
 }
 
 
@@ -206,7 +206,7 @@ rlr_normalize <- function(exp, by = NULL) {
 #' @return An experiment object with the expression matrix normalized.
 #' @export
 rlrma_normalize <- function(exp, by = NULL) {
-  .normalize(exp, .rlrma_normalize, by = by)
+  .update_expr_mat(exp, .rlrma_normalize, by = by)
 }
 
 
@@ -228,40 +228,11 @@ rlrma_normalize <- function(exp, by = NULL) {
 #' @return An experiment object with the expression matrix normalized.
 #' @export
 rlrmacyc_normalize <- function(exp, n_iter = 3, by = NULL) {
-  .normalize(exp, .rlrmacyc_normalize, by = by, n_iter = n_iter)
+  .update_expr_mat(exp, .rlrmacyc_normalize, by = by, n_iter = n_iter)
 }
 
 
 # ---------- Implementation ----------
-
-.normalize <- function(exp, f, by, ...) {
-  # Validate `by` argument
-  if (!is.null(by)) {
-    checkmate::check_string(by)
-    if (by == "sample") {
-      cli::cli_abort("Can't stratify by {.val {by}}.")
-    }
-    if (!by %in% colnames(exp$sample_info)) {
-      cli::cli_abort("The column {.val {by}} does not exist in {.var sample_info}.")
-    }
-  }
-
-  # Perform normalization
-  if (is.null(by)) {
-    new_expr_mat <- f(exp$expr_mat, ...)
-  } else {
-    samples <- colnames(exp$expr_mat)
-    samples_grouped <- split(samples, exp$sample_info[[by]])
-    mats_grouped <- purrr::map(samples_grouped, ~ exp$expr_mat[, .x])
-    new_mats_grouped <- purrr::map(mats_grouped, f, ...)
-    new_expr_mat <- do.call(cbind, new_mats_grouped)[, samples]
-  }
-
-  exp$expr_mat <- new_expr_mat
-  exp
-}
-
-
 .median_normalize <- function(mat) {
   log_mat <- log2(mat)
   normed <- limma::normalizeMedianValues(log_mat)
