@@ -192,6 +192,46 @@ rlr_normalize <- function(exp, by = NULL) {
 }
 
 
+#' Robust Linear Regression with Median Adjustment Normalization
+#'
+#' This method is based on robust linear regression with median adjustment.
+#' First, the median of each variable's abundance across all measured samples
+#' is subtracted from the sample's abundance values. Then, it's like the
+#' [rlr_normalize()] method.
+#'
+#' @param exp An experiment object.
+#' @param by A column name in `sample_info` to stratify by. Optional.
+#' If provided, the normalization will be performed within each group.
+#'
+#' @return An experiment object with the expression matrix normalized.
+#' @export
+rlrma_normalize <- function(exp, by = NULL) {
+  .normalize(exp, .rlrma_normalize, by = by)
+}
+
+
+#' Robust Linear Regression with Median Adjustment and Cyclic Normalization
+#'
+#' This method is based on robust linear regression with median adjustment
+#' and cyclic normalization. The method is applied iteratively to each pair
+#' of samples. For each pair of samples, the median of the differences between
+#' the two samples is calculated. A robust linear regression model is fitted
+#' to the differences against the averages of the two samples. The fitted model
+#' is then used to normalize the two samples. The process is repeated for a
+#' number of iterations.
+#'
+#' @param exp An experiment object.
+#' @param n_iter The number of iterations to perform. Default is 3.
+#' @param by A column name in `sample_info` to stratify by. Optional.
+#' If provided, the normalization will be performed within each group.
+#'
+#' @return An experiment object with the expression matrix normalized.
+#' @export
+rlrmacyc_normalize <- function(exp, n_iter = 3, by = NULL) {
+  .normalize(exp, .rlrmacyc_normalize, by = by, n_iter = n_iter)
+}
+
+
 # ---------- Implementation ----------
 
 .normalize <- function(exp, f, by, ...) {
@@ -310,8 +350,48 @@ rlr_normalize <- function(exp, by = NULL) {
     )
     intercept <- lr_fit$coefficients[1]
     slope <- lr_fit$coefficients[2]
-    new_sample <- (sample - intercept) / slope
-    normed[, i] <- new_sample
+    normed[, i] <- (sample - intercept) / slope
+  }
+  colnames(normed) <- colnames(mat)
+  rownames(normed) <- rownames(mat)
+  2 ^ normed
+}
+
+
+.rlrma_normalize <- function(mat) {
+  normed <- log2(mat)
+  ref_sample <- matrixStats::rowMedians(normed, na.rm = TRUE, useNames = TRUE)
+  for (i in seq_len(ncol(normed))) {
+    sample <- normed[, i]
+    m <- sample - ref_sample  # MA transformation
+    lr_fit <- MASS::rlm(m ~ ref_sample, na.action = stats::na.exclude)
+    fit_values <- stats::predict(lr_fit)
+    normed[, i] <- m - fit_values
+  }
+  colnames(normed) <- colnames(mat)
+  rownames(normed) <- rownames(mat)
+  2 ^ normed
+}
+
+
+.rlrmacyc_normalize <- function(mat, n_iter = 3) {
+  normed <- log2(mat)
+  for (k in seq_len(n_iter)) {
+    for (j in seq_len(ncol(normed))) {
+      if (j == ncol(normed)) {
+        break
+      }
+      for (i in seq(j + 1, ncol(normed))) {
+        sample1 <- normed[, i]
+        sample2 <- normed[, j]
+        m <- sample1 - sample2
+        a <- (sample1 + sample2) / 2
+        fit <- MASS::rlm(m ~ a, na.action = stats::na.exclude)
+        fit_values <- stats::predict(fit)
+        normed[, i] <- sample1 - fit_values / 2
+        normed[, j] <- sample2 + fit_values / 2
+      }
+    }
   }
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)

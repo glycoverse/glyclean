@@ -98,3 +98,17 @@ test_that("rlr_normalize works", {
   exp <- rlr_normalize(exp)
   expect_snapshot(exp$expr_mat)
 })
+
+
+test_that("rlrma_normalize works", {
+  exp <- simple_exp(3, 3)
+  exp <- rlrma_normalize(exp)
+  expect_snapshot(exp$expr_mat)
+})
+
+
+test_that("rlrmacyc_normalize works", {
+  exp <- simple_exp(3, 3)
+  exp <- rlrmacyc_normalize(exp)
+  expect_snapshot(exp$expr_mat)
+})
