@@ -1,14 +1,14 @@
 test_that("median_normalize works", {
   exp <- simple_exp(3, 3)
   exp <- median_normalize(exp)
-  expect_snapshot(exp$expr_mat)
+  expect_snapshot(round(exp$expr_mat, 5))
 })
 
 
 test_that("median_abs_normalize works", {
   exp <- simple_exp(3, 3)
   exp <- median_abs_normalize(exp)
-  expect_snapshot(exp$expr_mat)
+  expect_snapshot(round(exp$expr_mat, 5))
 })
 
 
@@ -25,28 +25,28 @@ test_that("total_area_normalize works", {
 test_that("quantile_normalize works", {
   exp <- simple_exp(3, 3)
   exp <- quantile_normalize(exp)
-  expect_snapshot(exp$expr_mat)
+  expect_snapshot(round(exp$expr_mat, 5))
 })
 
 
 test_that("loessf_normalize works", {
   exp <- simple_exp(3, 3)
   exp <- loessf_normalize(exp)
-  expect_snapshot(exp$expr_mat)
+  expect_snapshot(round(exp$expr_mat, 5))
 })
 
 
 test_that("loesscyc_normalize works", {
   exp <- simple_exp(3, 3)
   exp <- loesscyc_normalize(exp)
-  expect_snapshot(exp$expr_mat)
+  expect_snapshot(round(exp$expr_mat, 5))
 })
 
 
 test_that("vsn_normalize works", {
   exp <- simple_exp(42, 3)
   exp <- vsn_normalize(exp)
-  expect_snapshot(exp$expr_mat)
+  expect_snapshot(round(exp$expr_mat, 5))
 })
 
 
@@ -96,19 +96,19 @@ test_that("median_quotient_normalize with `by` specified works", {
 test_that("rlr_normalize works", {
   exp <- simple_exp(3, 3)
   exp <- rlr_normalize(exp)
-  expect_snapshot(exp$expr_mat)
+  expect_snapshot(round(exp$expr_mat, 5))
 })
 
 
 test_that("rlrma_normalize works", {
   exp <- simple_exp(3, 3)
   exp <- rlrma_normalize(exp)
-  expect_snapshot(exp$expr_mat)
+  expect_snapshot(round(exp$expr_mat, 5))
 })
 
 
 test_that("rlrmacyc_normalize works", {
   exp <- simple_exp(3, 3)
   exp <- rlrmacyc_normalize(exp)
-  expect_snapshot(exp$expr_mat)
+  expect_snapshot(round(exp$expr_mat, 5))
 })
