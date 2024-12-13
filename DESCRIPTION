@@ -10,9 +10,22 @@ Description:
     and manual data preprocessing are supported.
 License: MIT + file LICENSE
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    glyexp (>= 0.1.4),
+    tibble,
+    vsn
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 URL: https://glycoverse.github.io/glyclean/
+Imports: 
+    checkmate,
+    cli,
+    limma,
+    MASS,
+    matrixStats,
+    purrr,
+    rlang
+Remotes: 
+    glycoverse/glyexp
