@@ -4,10 +4,13 @@
 \alias{loesscyc_normalize}
 \title{LoessCyc Normalization}
 \usage{
-loesscyc_normalize(exp, ...)
+loesscyc_normalize(exp, by = NULL, ...)
 }
 \arguments{
 \item{exp}{An experiment object.}
+
+\item{by}{A column name in \code{sample_info} to stratify by. Optional.
+If provided, the normalization will be performed within each group.}
 
 \item{...}{Additional arguments to pass to \code{\link[limma:normalizeCyclicLoess]{limma::normalizeCyclicLoess()}}.}
 }

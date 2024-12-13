@@ -20,7 +20,10 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 URL: https://glycoverse.github.io/glyclean/
 Imports: 
+    checkmate,
+    cli,
     limma,
+    purrr,
     rlang
 Remotes: 
     glycoverse/glyexp

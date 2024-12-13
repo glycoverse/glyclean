@@ -4,10 +4,15 @@
 \alias{quantile_normalize}
 \title{Quantile Normalization}
 \usage{
-quantile_normalize(exp)
+quantile_normalize(exp, by = NULL, ...)
 }
 \arguments{
 \item{exp}{An experiment object.}
+
+\item{by}{A column name in \code{sample_info} to stratify by. Optional.
+If provided, the normalization will be performed within each group.}
+
+\item{...}{Additional arguments to pass to \code{\link[limma:normalizequantiles]{limma::normalizeQuantiles()}}.}
 }
 \value{
 An experiment object with the expression matrix normalized.

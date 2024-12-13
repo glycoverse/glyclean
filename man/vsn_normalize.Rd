@@ -4,10 +4,13 @@
 \alias{vsn_normalize}
 \title{Variance Stabilizing Normalization}
 \usage{
-vsn_normalize(exp, ...)
+vsn_normalize(exp, by = NULL, ...)
 }
 \arguments{
 \item{exp}{An experiment object.}
+
+\item{by}{A column name in \code{sample_info} to stratify by. Optional.
+If provided, the normalization will be performed within each group.}
 
 \item{...}{Additional arguments to pass to \code{\link[limma:normalizeVSN]{limma::normalizeVSN()}}.}
 }
