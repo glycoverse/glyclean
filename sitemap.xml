@@ -7,17 +7,27 @@
 <url><loc>https://glycoverse.github.io/glyclean/SUPPORT.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/authors.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/index.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/bpca_impute.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/fw_knn_impute.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/half_sample_min_impute.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/index.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/loesscyc_normalize.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/loessf_normalize.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/median_abs_normalize.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/median_normalize.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/median_quotient_normalize.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/min_prob_impute.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/miss_forest_impute.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/ppca_impute.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/quantile_normalize.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/rlr_normalize.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/rlrma_normalize.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/rlrmacyc_normalize.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/sample_min_impute.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/svd_impute.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/sw_knn_impute.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/total_area_normalize.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/vsn_normalize.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/zero_impute.html</loc></url>
 </urlset>
 
