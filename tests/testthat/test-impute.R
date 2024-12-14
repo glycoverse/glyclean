@@ -105,3 +105,11 @@ test_that("min_prob_impute works", {
 
   expect_snapshot(round(exp$expr_mat, 4))
 })
+
+
+test_that("miss_forest_impute works", {
+  exp <- missing_exp_10_10()
+  exp <- miss_forest_impute(exp)
+
+  expect_snapshot(round(exp$expr_mat, 4))
+})

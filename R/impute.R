@@ -161,6 +161,24 @@ min_prob_impute <- function(exp, by = NULL, ...) {
 }
 
 
+#' MissForest Imputation
+#'
+#' A wrapper around the [missForest::missForest()].
+#' Impute missing values using recursive running of random forests until convergence.
+#' This is a non-parametric method and works for both MAR and MNAR missing data.
+#'
+#' @param exp An expression matrix.
+#' @param by A grouping variable to consider when imputing missing values.
+#' This variable should be a column in the sample information table.
+#' @param ... Additional arguments to pass to `missForest::missForest()`.
+#'
+#' @return An expression matrix with missing values imputed.
+#' @export
+miss_forest_impute <- function(exp, by = NULL, ...) {
+  .update_expr_mat(exp, .miss_forest_impute, by = by, ...)
+}
+
+
 .zero_impute <- function(mat) {
   mat[is.na(mat)] <- 0
   mat
@@ -230,4 +248,10 @@ min_prob_impute <- function(exp, by = NULL, ...) {
   normed <- log2(mat)
   normed <- imputeLCMD::impute.MinProb(normed, ...)
   2 ^ normed
+}
+
+
+.miss_forest_impute <- function(mat, ...) {
+  rlang::check_installed("missForest", reason = "to use `miss_forest_impute()`")
+  missForest::missForest(mat, ...)$ximp
 }
