@@ -2,7 +2,7 @@
 % Please edit documentation in R/impute.R
 \name{zero_impute}
 \alias{zero_impute}
-\title{Zero imputation}
+\title{Zero Imputation}
 \usage{
 zero_impute(exp)
 }

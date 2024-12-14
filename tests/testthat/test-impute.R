@@ -58,3 +58,41 @@ test_that("half_sample_min_impute works", {
   rownames(expected) <- rownames(old_expr_mat)
   expect_equal(exp$expr_mat, expected)
 })
+
+
+test_that("sw_knn_impute works", {
+  exp <- simple_exp(3, 3)
+  old_expr_mat <- exp$expr_mat
+  new_expr_mat <- matrix(
+    c(1, 1, NA,
+      NA, 2, 4,
+      1, 3, 6),
+    nrow = 3, byrow = TRUE
+  )
+  colnames(new_expr_mat) <- colnames(old_expr_mat)
+  rownames(new_expr_mat) <- rownames(old_expr_mat)
+  exp$expr_mat <- new_expr_mat
+
+  exp <- sw_knn_impute(exp, k = 1)
+
+  expect_snapshot(exp$expr_mat)
+})
+
+
+test_that("fw_knn_impute works", {
+  exp <- simple_exp(3, 3)
+  old_expr_mat <- exp$expr_mat
+  new_expr_mat <- matrix(
+    c(1, 1, NA,
+      NA, 2, 4,
+      1, 3, 6),
+    nrow = 3, byrow = TRUE
+  )
+  colnames(new_expr_mat) <- colnames(old_expr_mat)
+  rownames(new_expr_mat) <- rownames(old_expr_mat)
+  exp$expr_mat <- new_expr_mat
+
+  exp <- fw_knn_impute(exp, k = 1)
+
+  expect_snapshot(exp$expr_mat)
+})

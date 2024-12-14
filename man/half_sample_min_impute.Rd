@@ -2,7 +2,7 @@
 % Please edit documentation in R/impute.R
 \name{half_sample_min_impute}
 \alias{half_sample_min_impute}
-\title{Half sample minimum imputation}
+\title{Half Sample Minimum Imputation}
 \usage{
 half_sample_min_impute(exp)
 }

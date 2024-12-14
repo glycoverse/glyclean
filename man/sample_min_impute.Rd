@@ -2,7 +2,7 @@
 % Please edit documentation in R/impute.R
 \name{sample_min_impute}
 \alias{sample_min_impute}
-\title{Sample minimum imputation}
+\title{Sample Minimum Imputation}
 \usage{
 sample_min_impute(exp)
 }
