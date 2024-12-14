@@ -20,6 +20,7 @@ This variable should be a column in the variable information table.}
 An expression matrix with missing values imputed.
 }
 \description{
+A wrapper around the \code{\link[impute:impute.knn]{impute::impute.knn()}}.
 Impute missing values with values from the k-nearest neighbors of the
 corresponding feature.
 }
