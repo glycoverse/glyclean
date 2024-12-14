@@ -182,6 +182,7 @@ min_prob_impute <- function(exp, by = NULL, ...) {
 
 
 .sw_knn_impute <- function(mat, k = 5, ...) {
+  rlang::check_installed("impute", reason = "to use `sw_knn_impute()`")
   normed <- log2(mat)
   normed <- impute::impute.knn(normed, k = k, ...)$data
   2 ^ normed
@@ -189,6 +190,7 @@ min_prob_impute <- function(exp, by = NULL, ...) {
 
 
 .fw_knn_impute <- function(mat, k = 5, ...) {
+  rlang::check_installed("impute", reason = "to use `fw_knn_impute()`")
   normed <- log2(mat)
   normed <- t(impute::impute.knn(t(normed), k = k, ...)$data)
   2 ^ normed
@@ -196,16 +198,19 @@ min_prob_impute <- function(exp, by = NULL, ...) {
 
 
 .bpca_impute <- function(mat, ...) {
+  rlang::check_installed("pcaMethods", reason = "to use `bpca_impute()`")
   .pca_methods_wrapper(mat, "bpca", ...)
 }
 
 
 .ppca_impute <- function(mat, ...) {
+  rlang::check_installed("pcaMethods", reason = "to use `ppca_impute()`")
   .pca_methods_wrapper(mat, "ppca", ...)
 }
 
 
 .svd_impute <- function(mat, ...) {
+  rlang::check_installed("pcaMethods", reason = "to use `svd_impute()`")
   .pca_methods_wrapper(mat, "svdImpute", ...)
 }
 
@@ -221,6 +226,7 @@ min_prob_impute <- function(exp, by = NULL, ...) {
 
 
 .min_prob_impute <- function(mat, ...) {
+  rlang::check_installed("imputeLCMD", reason = "to use `min_prob_impute()`")
   normed <- log2(mat)
   normed <- imputeLCMD::impute.MinProb(normed, ...)
   2 ^ normed

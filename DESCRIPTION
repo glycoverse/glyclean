@@ -13,7 +13,11 @@ Suggests:
     testthat (>= 3.0.0),
     glyexp (>= 0.1.4),
     tibble,
-    vsn
+    vsn,
+    impute,
+    imputeLCMD,
+    pcaMethods,
+    MASS,
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -22,12 +26,8 @@ URL: https://glycoverse.github.io/glyclean/
 Imports: 
     checkmate,
     cli,
-    impute,
-    imputeLCMD,
     limma,
-    MASS,
     matrixStats,
-    pcaMethods,
     purrr,
     rlang,
     tidyr,
