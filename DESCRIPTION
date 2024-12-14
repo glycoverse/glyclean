@@ -23,6 +23,7 @@ Imports:
     checkmate,
     cli,
     impute,
+    imputeLCMD,
     limma,
     MASS,
     matrixStats,

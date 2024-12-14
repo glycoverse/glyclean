@@ -143,6 +143,24 @@ svd_impute <- function(exp, by = NULL, ...) {
 }
 
 
+#' Minimum Probability Imputation
+#'
+#' A wrapper around the [imputeLCMD::impute.MinProb()].
+#' Impute missing values using random draws from the left-censored
+#' gaussian distribution.
+#'
+#' @param exp An expression matrix.
+#' @param by A grouping variable to consider when imputing missing values.
+#' This variable should be a column in the sample information table.
+#' @param ... Additional arguments to pass to `imputeLCMD::impute.MinProb()`.
+#'
+#' @return An expression matrix with missing values imputed.
+#' @export
+min_prob_impute <- function(exp, by = NULL, ...) {
+  .update_expr_mat(exp, .min_prob_impute, by = by, ...)
+}
+
+
 .zero_impute <- function(mat) {
   mat[is.na(mat)] <- 0
   mat
@@ -198,5 +216,12 @@ svd_impute <- function(exp, by = NULL, ...) {
     tempfile(),
     pcaMethods::pca(normed, nPcs = 5, method = method, ...)@completeObs
   )
+  2 ^ normed
+}
+
+
+.min_prob_impute <- function(mat, ...) {
+  normed <- log2(mat)
+  normed <- imputeLCMD::impute.MinProb(normed, ...)
   2 ^ normed
 }
