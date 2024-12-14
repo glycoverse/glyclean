@@ -311,6 +311,7 @@ rlrmacyc_normalize <- function(exp, n_iter = 3, by = NULL) {
 
 
 .rlr_normalize <- function(mat) {
+  rlang::check_installed("MASS", reason = "to use `rlr_normalize()`")
   normed <- log2(mat)
   ref_sample <- matrixStats::rowMedians(normed, na.rm = TRUE, useNames = TRUE)
   for (i in seq_len(ncol(normed))) {
@@ -330,6 +331,7 @@ rlrmacyc_normalize <- function(exp, n_iter = 3, by = NULL) {
 
 
 .rlrma_normalize <- function(mat) {
+  rlang::check_installed("MASS", reason = "to use `rlrma_normalize()`")
   normed <- log2(mat)
   ref_sample <- matrixStats::rowMedians(normed, na.rm = TRUE, useNames = TRUE)
   for (i in seq_len(ncol(normed))) {
@@ -346,6 +348,7 @@ rlrmacyc_normalize <- function(exp, n_iter = 3, by = NULL) {
 
 
 .rlrmacyc_normalize <- function(mat, n_iter = 3) {
+  rlang::check_installed("MASS", reason = "to use `rlrmacyc_normalize()`")
   normed <- log2(mat)
   for (k in seq_len(n_iter)) {
     for (j in seq_len(ncol(normed))) {

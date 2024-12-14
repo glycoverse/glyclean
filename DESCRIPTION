@@ -13,7 +13,12 @@ Suggests:
     testthat (>= 3.0.0),
     glyexp (>= 0.1.4),
     tibble,
-    vsn
+    vsn,
+    impute,
+    imputeLCMD,
+    pcaMethods,
+    MASS,
+    missForest
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -23,9 +28,10 @@ Imports:
     checkmate,
     cli,
     limma,
-    MASS,
     matrixStats,
     purrr,
-    rlang
+    rlang,
+    tidyr,
+    withr
 Remotes: 
     glycoverse/glyexp
