@@ -26,6 +26,7 @@ Imports:
     MASS,
     matrixStats,
     purrr,
-    rlang
+    rlang,
+    tidyr
 Remotes: 
     glycoverse/glyexp
