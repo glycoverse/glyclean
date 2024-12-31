@@ -234,20 +234,18 @@ rlrmacyc_normalize <- function(exp, n_iter = 3, by = NULL) {
 
 # ---------- Implementation ----------
 .median_normalize <- function(mat) {
-  log_mat <- log2(mat)
-  normed <- limma::normalizeMedianValues(log_mat)
+  normed <- limma::normalizeMedianValues(mat)
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
-  2 ^ normed
+  normed
 }
 
 
 .median_abs_normalize <- function(mat) {
-  log_mat <- log2(mat)
-  normed <- limma::normalizeMedianAbsValues(log_mat)
+  normed <- limma::normalizeMedianAbsValues(mat)
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
-  2 ^ normed
+  normed
 }
 
 
