@@ -20,6 +20,7 @@
 <url><loc>https://glycoverse.github.io/glyclean/reference/miss_forest_impute.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/ppca_impute.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/quantile_normalize.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/remove_missing_variables.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/rlr_normalize.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/rlrma_normalize.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/rlrmacyc_normalize.html</loc></url>
