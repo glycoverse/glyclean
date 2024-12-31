@@ -27,7 +27,9 @@ URL: https://glycoverse.github.io/glyclean/
 Imports: 
     checkmate,
     cli,
+    dplyr,
     limma,
+    magrittr,
     matrixStats,
     purrr,
     rlang,
