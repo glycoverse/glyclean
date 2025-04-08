@@ -29,6 +29,7 @@
 #' @return A modified `glyexp_experiment` object
 #'   with aggregated expression matrix and
 #'   updated variable information.
+#' @export
 aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
   checkmate::assert_class(exp, "glyexp_experiment")
   to_level <- rlang::arg_match(to_level)
