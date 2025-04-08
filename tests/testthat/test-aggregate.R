@@ -43,3 +43,33 @@ test_that("aggregating to glycoforms (with structures) works", {
       "protein_sites")
   )
 })
+
+
+test_that("aggregating from glycopeptides to glycoforms works", {
+  exp <- complex_exp()
+  exp <- aggregate(exp, to_level = "gp")
+  res <- aggregate(exp, to_level = "gf")
+  expect_identical(nrow(res), 2L)
+})
+
+
+test_that("aggregating from glycoforms to glycopeptides fails", {
+  exp <- complex_exp()
+  exp <- aggregate(exp, to_level = "gf")
+  expect_snapshot(aggregate(exp, to_level = "gp"), error = TRUE)
+})
+
+
+test_that("aggregating from glycoforms with structure to glycoforms without structures works", {
+  exp <- complex_exp()
+  exp <- aggregate(exp, to_level = "gfs")
+  res <- aggregate(exp, to_level = "gf")
+  expect_identical(nrow(res), 2L)
+})
+
+
+test_that("aggregating from glycoforms without structures to glycoforms with structures fails", {
+  exp <- complex_exp()
+  exp <- aggregate(exp, to_level = "gf")
+  expect_snapshot(aggregate(exp, to_level = "gfs"), error = TRUE)
+})

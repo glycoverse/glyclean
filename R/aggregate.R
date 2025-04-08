@@ -4,6 +4,7 @@
 #' (glycoforms, glycopeptides, etc.).
 #' This function sums up quantitative values for each
 #' unique combination of specified variables.
+#' It is recommended to call this function after missing value imputation.
 #'
 #' @param exp A `glyexp_experiment` object containing glycoproteomics data.
 #' @param to_level The aggregation level,
@@ -24,15 +25,44 @@
 #' - "gfs": Like "gf", but differentiates structures with the same composition.
 #' - "gps": Like "gp", but differentiates structures with the same composition.
 #'
-#' It is recommended to call this function after missing value imputation.
+#' If `aggregate` has never been called on an experiment,
+#' it has a "psm" (peptide-spectrum match) level by default.
+#' You can aggregate an experiment from "psm" to all other levels.
+#' You can also call `aggregate` on an experiment that has already been aggregated.
+#' However, you cannot aggregate from "gf" to "gp",
+#' as the peptide information is lost during "gf" aggregation.
+#' Similarly, you cannot aggregate from "gf" to "gfs", or "gp" to "gps".
 #'
 #' @return A modified `glyexp_experiment` object
 #'   with aggregated expression matrix and
 #'   updated variable information.
 #' @export
 aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
+  # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")
   to_level <- rlang::arg_match(to_level)
+
+  # Check if the conversion is valid
+  current_level <- ifelse(
+    is.null(exp$meta_data$aggr_level),
+    "psm",
+    exp$meta_data$aggr_level
+  )
+  invalid_conversions <- list(
+    c("gf", "gp"),
+    c("gf", "gfs"),
+    c("gp", "gps"),
+    c("gfs", "gps"),
+    c("gfs", "gp")
+  )
+  if (purrr::some(invalid_conversions, ~ all(.x == c(current_level, to_level)))) {
+    cli::cli_abort(c(
+      "Cannot aggregate from {.val {current_level}} to {.val {to_level}}.",
+      i = "See {.run ?aggregate} for more details."
+    ))
+  }
+
+  # Perform aggregation
   var_info_cols <- switch(
     to_level,
     gf = c("proteins", "genes", "glycan_composition", "protein_sites"),
@@ -67,5 +97,6 @@ aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
   new_exp <- exp
   new_exp$expr_mat <- expr_mat
   new_exp$var_info <- var_info_df
+  new_exp$meta_data$aggr_level <- to_level
   new_exp
 }
