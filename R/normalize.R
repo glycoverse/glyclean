@@ -1,6 +1,6 @@
 # Normalization functions
 
-# Naming convention: <method>_normalize
+# Naming convention: normalize_<method>
 # Functions starting with a dot are implementation details, accepting a matrix
 # and returning a normalized matrix. The public functions accept an experiment
 # and return a new experiment.
@@ -19,8 +19,8 @@
 #'
 #' @return An experiment object with the expression matrix normalized.
 #' @export
-median_normalize <- function(exp) {
-  .update_expr_mat(exp, .median_normalize, by = NULL)
+normalize_median <- function(exp) {
+  .update_expr_mat(exp, .normalize_median, by = NULL)
 }
 
 
@@ -33,8 +33,8 @@ median_normalize <- function(exp) {
 #'
 #' @return An experiment object with the expression matrix normalized.
 #' @export
-median_abs_normalize <- function(exp) {
-  .update_expr_mat(exp, .median_abs_normalize, by = NULL)
+normalize_median_abs <- function(exp) {
+  .update_expr_mat(exp, .normalize_median_abs, by = NULL)
 }
 
 
@@ -51,8 +51,8 @@ median_abs_normalize <- function(exp) {
 #'
 #' @return An experiment object with the expression matrix normalized.
 #' @export
-total_area_normalize <- function(exp) {
-  .update_expr_mat(exp, .total_area_normalize, by = NULL)
+normalize_total_area <- function(exp) {
+  .update_expr_mat(exp, .normalize_total_area, by = NULL)
 }
 
 
@@ -72,8 +72,8 @@ total_area_normalize <- function(exp) {
 #'
 #' @return An experiment object with the expression matrix normalized.
 #' @export
-quantile_normalize <- function(exp, by = NULL, ...) {
-  .update_expr_mat(exp, .quantile_normalize, by = by, ...)
+normalize_quantile <- function(exp, by = NULL, ...) {
+  .update_expr_mat(exp, .normalize_quantile, by = by, ...)
 }
 
 
@@ -93,8 +93,8 @@ quantile_normalize <- function(exp, by = NULL, ...) {
 #'
 #' @return An experiment object with the expression matrix normalized.
 #' @export
-loessf_normalize <- function(exp, by = NULL, ...) {
-  .update_expr_mat(exp, .loessf_normalize, by = by, ...)
+normalize_loessf <- function(exp, by = NULL, ...) {
+  .update_expr_mat(exp, .normalize_loessf, by = by, ...)
 }
 
 
@@ -113,8 +113,8 @@ loessf_normalize <- function(exp, by = NULL, ...) {
 #'
 #' @return An experiment object with the expression matrix normalized.
 #' @export
-loesscyc_normalize <- function(exp, by = NULL, ...) {
-  .update_expr_mat(exp, .loesscyc_normalize, by = by, ...)
+normalize_loesscyc <- function(exp, by = NULL, ...) {
+  .update_expr_mat(exp, .normalize_loesscyc, by = by, ...)
 }
 
 
@@ -140,8 +140,8 @@ loesscyc_normalize <- function(exp, by = NULL, ...) {
 #'
 #' @return An experiment object with the expression matrix normalized.
 #' @export
-vsn_normalize <- function(exp, by = NULL, ...) {
-  .update_expr_mat(exp, .vsn_normalize, by = by, ...)
+normalize_vsn <- function(exp, by = NULL, ...) {
+  .update_expr_mat(exp, .normalize_vsn, by = by, ...)
 }
 
 
@@ -149,10 +149,10 @@ vsn_normalize <- function(exp, by = NULL, ...) {
 #'
 #' This approach is based on the calculation of the dilution factor of each
 #' sample with respect to a reference sample. Here, the reference sample
-#' was calculated as the median value of each glycan’s abundance across all
+#' was calculated as the median value of each glycan's abundance across all
 #' measured samples. For each sample, a vector of quotients was then obtained
 #' by dividing each glycan measure by the corresponding value in the reference
-#' sample. The median of these quotients was then used as the sample’s dilution
+#' sample. The median of these quotients was then used as the sample's dilution
 #' factor, and the original sample values were subsequently divided by that value.
 #' The underlying assumption is that the diﬀerent intensities observed across
 #' individuals are imputable to diﬀerent amounts of the biological material
@@ -165,8 +165,8 @@ vsn_normalize <- function(exp, by = NULL, ...) {
 #'
 #' @return An experiment object with the expression matrix normalized.
 #' @export
-median_quotient_normalize <- function(exp, by = NULL) {
-  .update_expr_mat(exp, .median_quotient_normalize, by = by)
+normalize_median_quotient <- function(exp, by = NULL) {
+  .update_expr_mat(exp, .normalize_median_quotient, by = by)
 }
 
 
@@ -187,8 +187,8 @@ median_quotient_normalize <- function(exp, by = NULL) {
 #'
 #' @return An experiment object with the expression matrix normalized.
 #' @export
-rlr_normalize <- function(exp, by = NULL) {
-  .update_expr_mat(exp, .rlr_normalize, by = by)
+normalize_rlr <- function(exp, by = NULL) {
+  .update_expr_mat(exp, .normalize_rlr, by = by)
 }
 
 
@@ -197,7 +197,7 @@ rlr_normalize <- function(exp, by = NULL) {
 #' This method is based on robust linear regression with median adjustment.
 #' First, the median of each variable's abundance across all measured samples
 #' is subtracted from the sample's abundance values. Then, it's like the
-#' [rlr_normalize()] method.
+#' [normalize_rlr()] method.
 #'
 #' @param exp An experiment object.
 #' @param by A column name in `sample_info` to stratify by. Optional.
@@ -205,8 +205,8 @@ rlr_normalize <- function(exp, by = NULL) {
 #'
 #' @return An experiment object with the expression matrix normalized.
 #' @export
-rlrma_normalize <- function(exp, by = NULL) {
-  .update_expr_mat(exp, .rlrma_normalize, by = by)
+normalize_rlrma <- function(exp, by = NULL) {
+  .update_expr_mat(exp, .normalize_rlrma, by = by)
 }
 
 
@@ -227,13 +227,13 @@ rlrma_normalize <- function(exp, by = NULL) {
 #'
 #' @return An experiment object with the expression matrix normalized.
 #' @export
-rlrmacyc_normalize <- function(exp, n_iter = 3, by = NULL) {
-  .update_expr_mat(exp, .rlrmacyc_normalize, by = by, n_iter = n_iter)
+normalize_rlrmacyc <- function(exp, n_iter = 3, by = NULL) {
+  .update_expr_mat(exp, .normalize_rlrmacyc, by = by, n_iter = n_iter)
 }
 
 
 # ---------- Implementation ----------
-.median_normalize <- function(mat) {
+.normalize_median <- function(mat) {
   normed <- limma::normalizeMedianValues(mat)
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
@@ -241,7 +241,7 @@ rlrmacyc_normalize <- function(exp, n_iter = 3, by = NULL) {
 }
 
 
-.median_abs_normalize <- function(mat) {
+.normalize_median_abs <- function(mat) {
   normed <- limma::normalizeMedianAbsValues(mat)
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
@@ -249,13 +249,13 @@ rlrmacyc_normalize <- function(exp, n_iter = 3, by = NULL) {
 }
 
 
-.total_area_normalize <- function(mat) {
+.normalize_total_area <- function(mat) {
   col_sums <- colSums(mat, na.rm = TRUE)
   sweep(mat, 2, col_sums, "/")
 }
 
 
-.quantile_normalize <- function(mat, ...) {
+.normalize_quantile <- function(mat, ...) {
   normed <- limma::normalizeQuantiles(mat, ...)
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
@@ -263,7 +263,7 @@ rlrmacyc_normalize <- function(exp, n_iter = 3, by = NULL) {
 }
 
 
-.loessf_normalize <- function(mat, ...) {
+.normalize_loessf <- function(mat, ...) {
   log_mat <- log2(mat)
   normed <- limma::normalizeCyclicLoess(log_mat, method = "fast", ...)
   colnames(normed) <- colnames(mat)
@@ -272,7 +272,7 @@ rlrmacyc_normalize <- function(exp, n_iter = 3, by = NULL) {
 }
 
 
-.loesscyc_normalize <- function(mat, ...) {
+.normalize_loesscyc <- function(mat, ...) {
   log_mat <- log2(mat)
   normed <- limma::normalizeCyclicLoess(log_mat, method = "pairs", ...)
   colnames(normed) <- colnames(mat)
@@ -281,10 +281,10 @@ rlrmacyc_normalize <- function(exp, n_iter = 3, by = NULL) {
 }
 
 
-.vsn_normalize <- function(mat, ...) {
-  rlang::check_installed("vsn", reason = "to use `vsn_normalize()`")
+.normalize_vsn <- function(mat, ...) {
+  rlang::check_installed("vsn", reason = "to use `normalize_vsn()`")
   if (nrow(mat) < 42) {
-    rlang::abort("The number of variables should be at least 42 for `vsn_normalize()`")
+    rlang::abort("The number of variables should be at least 42 for `normalize_vsn()`")
   }
   suppressMessages(normed <- limma::normalizeVSN(mat, ...))
   colnames(normed) <- colnames(mat)
@@ -293,14 +293,14 @@ rlrmacyc_normalize <- function(exp, n_iter = 3, by = NULL) {
 }
 
 
-.median_quotient_normalize <- function(mat) {
+.normalize_median_quotient <- function(mat) {
   # The reference sample was calculated as the median value of
-  # each glycan’s abundance across all measured samples.
+  # each glycan's abundance across all measured samples.
   ref_sample <- matrixStats::rowMedians(mat, na.rm = TRUE, useNames = TRUE)
 
   # For each sample, a vector of quotients was then obtained by
   # dividing each glycan measure by the corresponding value in the reference sample.
-  # The median of these quotients was then used as the sample’s dilution factor.
+  # The median of these quotients was then used as the sample's dilution factor.
   dilution_factor <- apply(mat / ref_sample, 2, stats::median, na.rm = TRUE)
 
   # The original sample values were subsequently divided by that value.
@@ -308,16 +308,17 @@ rlrmacyc_normalize <- function(exp, n_iter = 3, by = NULL) {
 }
 
 
-.rlr_normalize <- function(mat) {
-  rlang::check_installed("MASS", reason = "to use `rlr_normalize()`")
+.normalize_rlr <- function(mat) {
+  rlang::check_installed("MASS", reason = "to use `normalize_rlr()`")
   normed <- log2(mat)
   ref_sample <- matrixStats::rowMedians(normed, na.rm = TRUE, useNames = TRUE)
   for (i in seq_len(ncol(normed))) {
     sample <- normed[, i]
-    lr_fit <- MASS::rlm(
+    lr_fit <- suppressWarnings(MASS::rlm(
       as.matrix(sample) ~ ref_sample,
-      na.action = stats::na.exclude
-    )
+      na.action = stats::na.exclude,
+      maxit = 50
+    ))
     intercept <- lr_fit$coefficients[1]
     slope <- lr_fit$coefficients[2]
     normed[, i] <- (sample - intercept) / slope
@@ -328,14 +329,14 @@ rlrmacyc_normalize <- function(exp, n_iter = 3, by = NULL) {
 }
 
 
-.rlrma_normalize <- function(mat) {
-  rlang::check_installed("MASS", reason = "to use `rlrma_normalize()`")
+.normalize_rlrma <- function(mat) {
+  rlang::check_installed("MASS", reason = "to use `normalize_rlrma()`")
   normed <- log2(mat)
   ref_sample <- matrixStats::rowMedians(normed, na.rm = TRUE, useNames = TRUE)
   for (i in seq_len(ncol(normed))) {
     sample <- normed[, i]
     m <- sample - ref_sample  # MA transformation
-    lr_fit <- MASS::rlm(m ~ ref_sample, na.action = stats::na.exclude)
+    lr_fit <- suppressWarnings(MASS::rlm(m ~ ref_sample, na.action = stats::na.exclude, maxit = 50))
     fit_values <- stats::predict(lr_fit)
     normed[, i] <- m - fit_values
   }
@@ -345,8 +346,8 @@ rlrmacyc_normalize <- function(exp, n_iter = 3, by = NULL) {
 }
 
 
-.rlrmacyc_normalize <- function(mat, n_iter = 3) {
-  rlang::check_installed("MASS", reason = "to use `rlrmacyc_normalize()`")
+.normalize_rlrmacyc <- function(mat, n_iter = 3) {
+  rlang::check_installed("MASS", reason = "to use `normalize_rlrmacyc()`")
   normed <- log2(mat)
   for (k in seq_len(n_iter)) {
     for (j in seq_len(ncol(normed))) {
@@ -358,7 +359,7 @@ rlrmacyc_normalize <- function(exp, n_iter = 3, by = NULL) {
         sample2 <- normed[, j]
         m <- sample1 - sample2
         a <- (sample1 + sample2) / 2
-        fit <- MASS::rlm(m ~ a, na.action = stats::na.exclude)
+        fit <- suppressWarnings(MASS::rlm(m ~ a, na.action = stats::na.exclude, maxit = 50))
         fit_values <- stats::predict(fit)
         normed[, i] <- sample1 - fit_values / 2
         normed[, j] <- sample2 + fit_values / 2

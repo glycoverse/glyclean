@@ -6,8 +6,8 @@
 #' ```r
 #' exp |>
 #'   remove_missing_variables(prop = 0.5) |>
-#'   median_normalize() |>
-#'   zero_impute() |>
+#'   normalize_median() |>
+#'   impute_zero() |>
 #'   aggregate(to_level = "gf")
 #' ```
 #'
@@ -23,7 +23,7 @@ auto_clean <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
   checkmate::assert_class(exp, "glyexp_experiment")
   to_level <- rlang::arg_match(to_level)
   remove_missing_variables(exp, prop = 0.5) %>%
-    median_normalize() %>%
-    zero_impute() %>%
+    normalize_median() %>%
+    impute_zero() %>%
     aggregate(to_level = to_level)
 }

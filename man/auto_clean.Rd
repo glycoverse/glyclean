@@ -22,8 +22,8 @@ Calling r\code{auto_clean(exp)} equals to:
 \details{
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{exp |>
   remove_missing_variables(prop = 0.5) |>
-  median_normalize() |>
-  zero_impute() |>
+  normalize_median() |>
+  impute_zero() |>
   aggregate(to_level = "gf")
 }\if{html}{\out{</div>}}
 }

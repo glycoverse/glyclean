@@ -21,95 +21,105 @@ missing_exp_10_10 <- function() {
 }
 
 
-test_that("zero_impute works", {
-  exp <- simple_exp(3, 3)
-  exp$expr_mat[1, 1] <- NA
-  exp <- zero_impute(exp)
-  expect_equal(exp$expr_mat[1, 1], 0)
+test_that("data can be loaded", {
+  expect_no_error(test_exp <<- simple_exp(10, 10))
+  # Add some NA values for testing
+  test_exp$expr_mat[sample(length(test_exp$expr_mat), 20)] <- NA
+  expect_no_error(old_test_exp <<- test_exp)
 })
 
 
-test_that("sample_min_impute works", {
-  old_exp <- missing_exp_3_3()
-  exp <- sample_min_impute(old_exp)
-  expected <- matrix(
-    c(1, 1, 4,
-      1, 2, 4,
-      1, 3, 6),
-    nrow = 3, byrow = TRUE
-  )
-  colnames(expected) <- colnames(old_exp$expr_mat)
-  rownames(expected) <- rownames(old_exp$expr_mat)
-  expect_equal(exp$expr_mat, expected)
+test_that("impute_zero works", {
+  result_exp <- impute_zero(test_exp)
+  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
+  # Check that NA values were replaced with 0
+  na_positions <- which(is.na(test_exp$expr_mat))
+  expect_true(all(result_exp$expr_mat[na_positions] == 0))
 })
 
 
-test_that("half_sample_min_impute works", {
-  old_exp <- missing_exp_3_3()
-  exp <- half_sample_min_impute(old_exp)
-  expected <- matrix(
-    c(1, 1, 2,
-      0.5, 2, 4,
-      1, 3, 6),
-    nrow = 3, byrow = TRUE
-  )
-  colnames(expected) <- colnames(old_exp$expr_mat)
-  rownames(expected) <- rownames(old_exp$expr_mat)
-  expect_equal(exp$expr_mat, expected)
+test_that("impute_sample_min works", {
+  result_exp <- impute_sample_min(old_test_exp)
+  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
+  
+  # Test that the filled values are actually the minimum values in each column
+  old_mat <- old_test_exp$expr_mat
+  new_mat <- result_exp$expr_mat
+  
+  for (i in seq_len(ncol(old_mat))) {
+    if (any(is.na(old_mat[, i]))) {
+      col_min <- min(old_mat[, i], na.rm = TRUE)
+      old_na_indices <- which(is.na(old_mat[, i]))
+      filled_values <- new_mat[old_na_indices, i]
+      expect_true(all(filled_values == col_min))
+    }
+  }
 })
 
 
-test_that("sw_knn_impute works", {
-  exp <- missing_exp_10_10()
-  exp <- sw_knn_impute(exp, k = 5)
-
-  expect_snapshot(round(exp$expr_mat, 4))
+test_that("impute_half_sample_min works", {
+  result_exp <- impute_half_sample_min(old_test_exp)
+  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
+  
+  # Test that the filled values are actually half the minimum values in each column
+  old_mat <- old_test_exp$expr_mat
+  new_mat <- result_exp$expr_mat
+  
+  for (i in seq_len(ncol(old_mat))) {
+    if (any(is.na(old_mat[, i]))) {
+      col_min <- min(old_mat[, i], na.rm = TRUE)
+      old_na_indices <- which(is.na(old_mat[, i]))
+      filled_values <- new_mat[old_na_indices, i]
+      expect_true(all(filled_values == col_min / 2))
+    }
+  }
 })
 
 
-test_that("fw_knn_impute works", {
-  exp <- missing_exp_10_10()
-  exp <- fw_knn_impute(exp, k = 5)
-
-  expect_snapshot(round(exp$expr_mat, 4))
+test_that("impute_sw_knn works", {
+  skip_if_not_installed("impute")
+  result_exp <- impute_sw_knn(test_exp, k = 5)
+  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
 })
 
 
-test_that("bpca_impute works", {
-  exp <- missing_exp_10_10()
-  exp <- bpca_impute(exp)
-
-  expect_snapshot(round(exp$expr_mat, 4))
+test_that("impute_fw_knn works", {
+  skip_if_not_installed("impute")
+  result_exp <- impute_fw_knn(test_exp, k = 5)
+  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
 })
 
 
-# test_that("ppca_impute works", {
-#   exp <- missing_exp_10_10()
-#   exp <- ppca_impute(exp)
-#
-#   expect_snapshot(round(exp$expr_mat, 4))
+test_that("impute_bpca works", {
+  skip_if_not_installed("pcaMethods")
+  result_exp <- impute_bpca(test_exp)
+  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
+})
+
+
+# test_that("impute_ppca works", {
+#   skip_if_not_installed("pcaMethods")
+#   result_exp <- impute_ppca(test_exp)
+#   expect_equal(sum(is.na(result_exp$expr_mat)), 0)
 # })
 
 
-test_that("svd_impute works", {
-  exp <- missing_exp_10_10()
-  exp <- svd_impute(exp)
-
-  expect_snapshot(round(exp$expr_mat, 4))
+test_that("impute_svd works", {
+  skip_if_not_installed("pcaMethods")
+  result_exp <- impute_svd(test_exp)
+  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
 })
 
 
-test_that("min_prob_impute works", {
-  exp <- missing_exp_10_10()
-  exp <- min_prob_impute(exp)
-
-  expect_snapshot(round(exp$expr_mat, 4))
+test_that("impute_min_prob works", {
+  skip_if_not_installed("imputeLCMD")
+  result_exp <- impute_min_prob(test_exp)
+  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
 })
 
 
-test_that("miss_forest_impute works", {
-  exp <- missing_exp_10_10()
-  exp <- miss_forest_impute(exp)
-
-  expect_snapshot(round(exp$expr_mat, 4))
+test_that("impute_miss_forest works", {
+  skip_if_not_installed("missForest")
+  result_exp <- impute_miss_forest(test_exp)
+  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
 })

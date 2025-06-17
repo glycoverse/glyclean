@@ -6,8 +6,8 @@
 #'
 #' @return An expression matrix with missing values imputed.
 #' @export
-zero_impute <- function(exp) {
-  .update_expr_mat(exp, .zero_impute, by = NULL)
+impute_zero <- function(exp) {
+  .update_expr_mat(exp, .impute_zero, by = NULL)
 }
 
 
@@ -16,14 +16,14 @@ zero_impute <- function(exp) {
 #' Impute missing values with the minimum value of the corresponding sample.
 #' This method assumes that missing values are MCAR,
 #' i.e. missing values are induced by an ion below the detection limit.
-#' See also [half_sample_min_impute()].
+#' See also [impute_half_sample_min()].
 #'
 #' @param exp An expression matrix.
 #'
 #' @return An expression matrix with missing values imputed.
 #' @export
-sample_min_impute <- function(exp) {
-  .update_expr_mat(exp, .sample_min_impute, by = NULL)
+impute_sample_min <- function(exp) {
+  .update_expr_mat(exp, .impute_sample_min, by = NULL)
 }
 
 
@@ -32,14 +32,14 @@ sample_min_impute <- function(exp) {
 #' Impute missing values with half of the minimum value of the corresponding sample.
 #' This method assumes that missing values are MCAR,
 #' i.e. missing values are induced by an ion below the detection limit.
-#' Compared to [sample_min_impute()], this method is more conservative.
+#' Compared to [impute_sample_min()], this method is more conservative.
 #'
 #' @param exp An expression matrix.
 #'
 #' @return An expression matrix with missing values imputed.
 #' @export
-half_sample_min_impute <- function(exp) {
-  .update_expr_mat(exp, .half_sample_min_impute, by = NULL)
+impute_half_sample_min <- function(exp) {
+  .update_expr_mat(exp, .impute_half_sample_min, by = NULL)
 }
 
 
@@ -60,8 +60,8 @@ half_sample_min_impute <- function(exp) {
 #'
 #' @return An expression matrix with missing values imputed.
 #' @export
-sw_knn_impute <- function(exp, k = 5, by = NULL, ...) {
-  .update_expr_mat(exp, .sw_knn_impute, k = k, by = by, ...)
+impute_sw_knn <- function(exp, k = 5, by = NULL, ...) {
+  .update_expr_mat(exp, .impute_sw_knn, k = k, by = by, ...)
 }
 
 
@@ -79,8 +79,8 @@ sw_knn_impute <- function(exp, k = 5, by = NULL, ...) {
 #'
 #' @return An expression matrix with missing values imputed.
 #' @export
-fw_knn_impute <- function(exp, k = 5, by = NULL, ...) {
-  .update_expr_mat(exp, .fw_knn_impute, k = k, by = by, ...)
+impute_fw_knn <- function(exp, k = 5, by = NULL, ...) {
+  .update_expr_mat(exp, .impute_fw_knn, k = k, by = by, ...)
 }
 
 
@@ -101,8 +101,8 @@ fw_knn_impute <- function(exp, k = 5, by = NULL, ...) {
 #'
 #' @return An expression matrix with missing values imputed.
 #' @export
-bpca_impute <- function(exp, by = NULL, ...) {
-  .update_expr_mat(exp, .bpca_impute, by = by, ...)
+impute_bpca <- function(exp, by = NULL, ...) {
+  .update_expr_mat(exp, .impute_bpca, by = by, ...)
 }
 
 
@@ -119,8 +119,8 @@ bpca_impute <- function(exp, by = NULL, ...) {
 #'
 #' @return An expression matrix with missing values imputed.
 #' @export
-ppca_impute <- function(exp, by = NULL, ...) {
-  .update_expr_mat(exp, .ppca_impute, by = by, ...)
+impute_ppca <- function(exp, by = NULL, ...) {
+  .update_expr_mat(exp, .impute_ppca, by = by, ...)
 }
 
 
@@ -138,8 +138,8 @@ ppca_impute <- function(exp, by = NULL, ...) {
 #'
 #' @return An expression matrix with missing values imputed.
 #' @export
-svd_impute <- function(exp, by = NULL, ...) {
-  .update_expr_mat(exp, .svd_impute, by = by, ...)
+impute_svd <- function(exp, by = NULL, ...) {
+  .update_expr_mat(exp, .impute_svd, by = by, ...)
 }
 
 
@@ -156,8 +156,8 @@ svd_impute <- function(exp, by = NULL, ...) {
 #'
 #' @return An expression matrix with missing values imputed.
 #' @export
-min_prob_impute <- function(exp, by = NULL, ...) {
-  .update_expr_mat(exp, .min_prob_impute, by = by, ...)
+impute_min_prob <- function(exp, by = NULL, ...) {
+  .update_expr_mat(exp, .impute_min_prob, by = by, ...)
 }
 
 
@@ -174,61 +174,63 @@ min_prob_impute <- function(exp, by = NULL, ...) {
 #'
 #' @return An expression matrix with missing values imputed.
 #' @export
-miss_forest_impute <- function(exp, by = NULL, ...) {
-  .update_expr_mat(exp, .miss_forest_impute, by = by, ...)
+impute_miss_forest <- function(exp, by = NULL, ...) {
+  .update_expr_mat(exp, .impute_miss_forest, by = by, ...)
 }
 
 
-.zero_impute <- function(mat) {
+.impute_zero <- function(mat) {
   mat[is.na(mat)] <- 0
   mat
 }
 
 
-.sample_min_impute <- function(mat) {
+.impute_sample_min <- function(mat) {
   apply(mat, 2, function(col) {
-    tidyr::replace_na(col, min(col, na.rm = TRUE))
+    col[is.na(col)] <- min(col, na.rm = TRUE)
+    col
   })
 }
 
 
-.half_sample_min_impute <- function(mat) {
+.impute_half_sample_min <- function(mat) {
   apply(mat, 2, function(col) {
-    tidyr::replace_na(col, min(col, na.rm = TRUE) / 2)
+    col[is.na(col)] <- min(col, na.rm = TRUE) / 2
+    col
   })
 }
 
 
-.sw_knn_impute <- function(mat, k = 5, ...) {
-  rlang::check_installed("impute", reason = "to use `sw_knn_impute()`")
+.impute_sw_knn <- function(mat, k = 5, ...) {
+  rlang::check_installed("impute", reason = "to use `impute_sw_knn()`")
   normed <- log2(mat)
   normed <- impute::impute.knn(normed, k = k, ...)$data
   2 ^ normed
 }
 
 
-.fw_knn_impute <- function(mat, k = 5, ...) {
-  rlang::check_installed("impute", reason = "to use `fw_knn_impute()`")
+.impute_fw_knn <- function(mat, k = 5, ...) {
+  rlang::check_installed("impute", reason = "to use `impute_fw_knn()`")
   normed <- log2(mat)
   normed <- t(impute::impute.knn(t(normed), k = k, ...)$data)
   2 ^ normed
 }
 
 
-.bpca_impute <- function(mat, ...) {
-  rlang::check_installed("pcaMethods", reason = "to use `bpca_impute()`")
+.impute_bpca <- function(mat, ...) {
+  rlang::check_installed("pcaMethods", reason = "to use `impute_bpca()`")
   .pca_methods_wrapper(mat, "bpca", ...)
 }
 
 
-.ppca_impute <- function(mat, ...) {
-  rlang::check_installed("pcaMethods", reason = "to use `ppca_impute()`")
+.impute_ppca <- function(mat, ...) {
+  rlang::check_installed("pcaMethods", reason = "to use `impute_ppca()`")
   .pca_methods_wrapper(mat, "ppca", ...)
 }
 
 
-.svd_impute <- function(mat, ...) {
-  rlang::check_installed("pcaMethods", reason = "to use `svd_impute()`")
+.impute_svd <- function(mat, ...) {
+  rlang::check_installed("pcaMethods", reason = "to use `impute_svd()`")
   .pca_methods_wrapper(mat, "svdImpute", ...)
 }
 
@@ -243,15 +245,15 @@ miss_forest_impute <- function(exp, by = NULL, ...) {
 }
 
 
-.min_prob_impute <- function(mat, ...) {
-  rlang::check_installed("imputeLCMD", reason = "to use `min_prob_impute()`")
+.impute_min_prob <- function(mat, ...) {
+  rlang::check_installed("imputeLCMD", reason = "to use `impute_min_prob()`")
   normed <- log2(mat)
   normed <- imputeLCMD::impute.MinProb(normed, ...)
   2 ^ normed
 }
 
 
-.miss_forest_impute <- function(mat, ...) {
-  rlang::check_installed("missForest", reason = "to use `miss_forest_impute()`")
+.impute_miss_forest <- function(mat, ...) {
+  rlang::check_installed("missForest", reason = "to use `impute_miss_forest()`")
   missForest::missForest(mat, ...)$ximp
 }
