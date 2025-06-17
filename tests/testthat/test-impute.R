@@ -23,6 +23,8 @@ missing_exp_10_10 <- function() {
 
 test_that("data can be loaded", {
   expect_no_error(test_exp <<- simple_exp(10, 10))
+  # Set seed for reproducible random sampling
+  set.seed(999)
   # Add some NA values for testing
   test_exp$expr_mat[sample(length(test_exp$expr_mat), 20)] <- NA
   expect_no_error(old_test_exp <<- test_exp)

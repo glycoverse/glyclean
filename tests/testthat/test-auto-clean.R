@@ -54,6 +54,9 @@ test_that("auto_clean validates parameters", {
 
 # Test auto_clean with batch effect correction
 test_that("auto_clean applies batch effect correction when batch column exists", {
+  # Set seed for reproducible random data
+  set.seed(654)
+  
   # Create experiment with batch information for glycoproteomics
   sample_info <- tibble::tibble(
     sample = paste0("S", 1:12),

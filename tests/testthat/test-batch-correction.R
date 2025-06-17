@@ -1,4 +1,7 @@
 test_that("correct_batch_effect works with valid batch and group information", {
+  # Set seed for reproducible random data
+  set.seed(123)
+  
   # Create a larger experiment with proper batch and group info
   sample_info <- tibble::tibble(
     sample = paste0("S", 1:12),
@@ -48,6 +51,9 @@ test_that("correct_batch_effect warns and returns original when batch and group 
 })
 
 test_that("correct_batch_effect works with batch info but no group info", {
+  # Set seed for reproducible random data
+  set.seed(456)
+  
   # Create a larger experiment with only batch info
   sample_info <- tibble::tibble(
     sample = paste0("S", 1:12),
@@ -78,6 +84,9 @@ test_that("correct_batch_effect validates input", {
 })
 
 test_that("correct_batch_effect handles insufficient samples per batch", {
+  # Set seed for reproducible random data
+  set.seed(789)
+  
   # Create experiment with insufficient samples per batch
   sample_info <- tibble::tibble(
     sample = paste0("S", 1:6),
@@ -101,6 +110,9 @@ test_that("correct_batch_effect handles insufficient samples per batch", {
 })
 
 test_that("correct_batch_effect preserves experiment structure", {
+  # Set seed for reproducible random data
+  set.seed(321)
+  
   # Create a larger experiment with batch and group info
   sample_info <- tibble::tibble(
     sample = paste0("S", 1:12),
