@@ -2,8 +2,8 @@
 #'
 #' Perform automatic data preprocessing on glycoproteomics or glycomics data.
 #' This function applies a standardized preprocessing pipeline that includes
-#' normalization, missing value handling, imputation, and aggregation (for
-#' glycoproteomics data).
+#' normalization, missing value handling, imputation, aggregation (for
+#' glycoproteomics data), and batch effect correction.
 #'
 #' @param exp A `glyexp::experiment()` containing glycoproteomics or
 #'   glycomics data.
@@ -27,6 +27,7 @@
 #' 3. Automatic imputation (method depends on sample size)
 #' 4. Aggregation to specified level
 #' 5. Final median normalization
+#' 6. Batch effect correction
 #' 
 #' For Glycomics Data:
 #' 
@@ -34,12 +35,16 @@
 #' 2. Remove variables with \\>50% missing values  
 #' 3. Automatic imputation (method depends on sample size)
 #' 4. Total area normalization
+#' 5. Batch effect correction
 #' 
 #' Automatic Imputation Strategy:
 #' 
 #' - ≤30 samples: Sample minimum imputation
 #' - 31-100 samples: Minimum probability imputation
 #' - \\>100 samples: MissForest imputation
+#' 
+#' In batch effect correction,
+#' the batches are defined by the `batch` column in the sample information tibble.
 #'
 #' @importFrom magrittr %>%
 #'
@@ -58,7 +63,8 @@
 #' }
 #' 
 #' @seealso [aggregate()], [normalize_median()], [remove_missing_variables()],
-#'   [impute_sample_min()], [impute_min_prob()], [impute_miss_forest()]
+#'   [impute_sample_min()], [impute_min_prob()], [impute_miss_forest()],
+#'   [correct_batch_effect()]
 #' @export
 auto_clean <- function(exp, to_level = NULL) {
   checkmate::assert_class(exp, "glyexp_experiment")
@@ -67,11 +73,17 @@ auto_clean <- function(exp, to_level = NULL) {
     to_level <- "gfs"
   }
 
-  switch(
+  exp <- switch(
     glyexp::get_exp_type(exp),
     glycoproteomics = .auto_clean_glycoproteomics(exp, to_level),
     glycomics = .auto_clean_glycomics(exp)
   )
+
+  if ("batch" %in% colnames(exp$sample_info)) {
+    exp <- correct_batch_effect(exp)
+  }
+
+  exp
 }
 
 .auto_impute <- function(exp) {

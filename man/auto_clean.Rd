@@ -28,8 +28,8 @@ A modified \code{glyexp::experiment()} object.
 \description{
 Perform automatic data preprocessing on glycoproteomics or glycomics data.
 This function applies a standardized preprocessing pipeline that includes
-normalization, missing value handling, imputation, and aggregation (for
-glycoproteomics data).
+normalization, missing value handling, imputation, aggregation (for
+glycoproteomics data), and batch effect correction.
 }
 \details{
 The preprocessing pipeline differs based on the experiment type:
@@ -41,6 +41,7 @@ For Glycoproteomics Data:
 \item Automatic imputation (method depends on sample size)
 \item Aggregation to specified level
 \item Final median normalization
+\item Batch effect correction
 }
 
 For Glycomics Data:
@@ -49,6 +50,7 @@ For Glycomics Data:
 \item Remove variables with \\>50\% missing values
 \item Automatic imputation (method depends on sample size)
 \item Total area normalization
+\item Batch effect correction
 }
 
 Automatic Imputation Strategy:
@@ -57,6 +59,9 @@ Automatic Imputation Strategy:
 \item 31-100 samples: Minimum probability imputation
 \item \\>100 samples: MissForest imputation
 }
+
+In batch effect correction,
+the batches are defined by the \code{batch} column in the sample information tibble.
 }
 \examples{
 \dontrun{
@@ -73,5 +78,6 @@ cleaned_exp <- auto_clean(glycomics_exp)
 }
 \seealso{
 \code{\link[=aggregate]{aggregate()}}, \code{\link[=normalize_median]{normalize_median()}}, \code{\link[=remove_missing_variables]{remove_missing_variables()}},
-\code{\link[=impute_sample_min]{impute_sample_min()}}, \code{\link[=impute_min_prob]{impute_min_prob()}}, \code{\link[=impute_miss_forest]{impute_miss_forest()}}
+\code{\link[=impute_sample_min]{impute_sample_min()}}, \code{\link[=impute_min_prob]{impute_min_prob()}}, \code{\link[=impute_miss_forest]{impute_miss_forest()}},
+\code{\link[=correct_batch_effect]{correct_batch_effect()}}
 }
