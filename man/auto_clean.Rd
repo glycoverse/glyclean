@@ -4,26 +4,74 @@
 \alias{auto_clean}
 \title{Automatic Data Preprocessing}
 \usage{
-auto_clean(exp, to_level = c("gf", "gp", "gfs", "gps"))
+auto_clean(exp, to_level = NULL)
 }
 \arguments{
-\item{exp}{A \code{glyexp_experiment} object containing glycoproteomics data.}
+\item{exp}{A \code{glyexp::experiment()} containing glycoproteomics or
+glycomics data.}
 
-\item{to_level}{The aggregation level. Default is "gf" (glycoform).
-See \code{\link[=aggregate]{aggregate()}} for details.}
+\item{to_level}{The aggregation level for glycoproteomics data. Default is
+\code{NULL}, which will automatically set to "gfs" (glycoforms with structures) for
+glycoproteomics data. Options include:
+\itemize{
+\item "gf": Glycoform level
+\item "gp": Glycopeptide level
+\item "gfs": Glycan site specific level
+\item "gps": Glycopeptide site specific level
+}
+
+See \code{\link[=aggregate]{aggregate()}} for more details.}
 }
 \value{
-A modified \code{glyexp_experiment} object
+A modified \code{glyexp::experiment()} object.
 }
 \description{
-Perform automatic data preprocessing on glycoproteomics data.
-Calling r\code{auto_clean(exp)} equals to:
+Perform automatic data preprocessing on glycoproteomics or glycomics data.
+This function applies a standardized preprocessing pipeline that includes
+normalization, missing value handling, imputation, and aggregation (for
+glycoproteomics data).
 }
 \details{
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{exp |>
-  remove_missing_variables(prop = 0.5) |>
-  normalize_median() |>
-  impute_zero() |>
-  aggregate(to_level = "gf")
-}\if{html}{\out{</div>}}
+The preprocessing pipeline differs based on the experiment type:
+
+For Glycoproteomics Data:
+\enumerate{
+\item Median normalization
+\item Remove variables with \\>50\% missing values
+\item Automatic imputation (method depends on sample size)
+\item Aggregation to specified level
+\item Final median normalization
+}
+
+For Glycomics Data:
+\enumerate{
+\item Median quotient normalization
+\item Remove variables with \\>50\% missing values
+\item Automatic imputation (method depends on sample size)
+\item Total area normalization
+}
+
+Automatic Imputation Strategy:
+\itemize{
+\item ≤30 samples: Sample minimum imputation
+\item 31-100 samples: Minimum probability imputation
+\item \\>100 samples: MissForest imputation
+}
+}
+\examples{
+\dontrun{
+# For glycoproteomics data with default aggregation
+cleaned_exp <- auto_clean(glycoprot_exp)
+
+# For glycoproteomics data with specific aggregation level
+cleaned_exp <- auto_clean(glycoprot_exp, to_level = "gp")
+
+# For glycomics data
+cleaned_exp <- auto_clean(glycomics_exp)
+}
+
+}
+\seealso{
+\code{\link[=aggregate]{aggregate()}}, \code{\link[=normalize_median]{normalize_median()}}, \code{\link[=remove_missing_variables]{remove_missing_variables()}},
+\code{\link[=impute_sample_min]{impute_sample_min()}}, \code{\link[=impute_min_prob]{impute_min_prob()}}, \code{\link[=impute_miss_forest]{impute_miss_forest()}}
 }

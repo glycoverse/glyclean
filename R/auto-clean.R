@@ -1,29 +1,102 @@
 #' Automatic Data Preprocessing
 #'
-#' Perform automatic data preprocessing on glycoproteomics data.
-#' Calling r`auto_clean(exp)` equals to:
+#' Perform automatic data preprocessing on glycoproteomics or glycomics data.
+#' This function applies a standardized preprocessing pipeline that includes
+#' normalization, missing value handling, imputation, and aggregation (for
+#' glycoproteomics data).
 #'
-#' ```r
-#' exp |>
-#'   remove_missing_variables(prop = 0.5) |>
-#'   normalize_median() |>
-#'   impute_zero() |>
-#'   aggregate(to_level = "gf")
-#' ```
+#' @param exp A `glyexp::experiment()` containing glycoproteomics or
+#'   glycomics data.
+#' @param to_level The aggregation level for glycoproteomics data. Default is
+#'   `NULL`, which will automatically set to "gfs" (glycoforms with structures) for
+#'   glycoproteomics data. Options include:
+#'   - "gf": Glycoform level
+#'   - "gp": Glycopeptide level  
+#'   - "gfs": Glycan site specific level
+#'   - "gps": Glycopeptide site specific level
+#'   
+#'   See [aggregate()] for more details.
 #'
-#' @param exp A `glyexp_experiment` object containing glycoproteomics data.
-#' @param to_level The aggregation level. Default is "gf" (glycoform).
-#'   See [aggregate()] for details.
+#' @details
+#' The preprocessing pipeline differs based on the experiment type:
+#' 
+#' For Glycoproteomics Data:
+#' 
+#' 1. Median normalization
+#' 2. Remove variables with \\>50% missing values
+#' 3. Automatic imputation (method depends on sample size)
+#' 4. Aggregation to specified level
+#' 5. Final median normalization
+#' 
+#' For Glycomics Data:
+#' 
+#' 1. Median quotient normalization
+#' 2. Remove variables with \\>50% missing values  
+#' 3. Automatic imputation (method depends on sample size)
+#' 4. Total area normalization
+#' 
+#' Automatic Imputation Strategy:
+#' 
+#' - ≤30 samples: Sample minimum imputation
+#' - 31-100 samples: Minimum probability imputation
+#' - \\>100 samples: MissForest imputation
 #'
 #' @importFrom magrittr %>%
 #'
-#' @return A modified `glyexp_experiment` object
+#' @return A modified `glyexp::experiment()` object.
+#' 
+#' @examples
+#' \dontrun{
+#' # For glycoproteomics data with default aggregation
+#' cleaned_exp <- auto_clean(glycoprot_exp)
+#' 
+#' # For glycoproteomics data with specific aggregation level
+#' cleaned_exp <- auto_clean(glycoprot_exp, to_level = "gp")
+#' 
+#' # For glycomics data
+#' cleaned_exp <- auto_clean(glycomics_exp)
+#' }
+#' 
+#' @seealso [aggregate()], [normalize_median()], [remove_missing_variables()],
+#'   [impute_sample_min()], [impute_min_prob()], [impute_miss_forest()]
 #' @export
-auto_clean <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
+auto_clean <- function(exp, to_level = NULL) {
   checkmate::assert_class(exp, "glyexp_experiment")
-  to_level <- rlang::arg_match(to_level)
-  remove_missing_variables(exp, prop = 0.5) %>%
+  checkmate::assert_choice(to_level, c("gf", "gp", "gfs", "gps"), null.ok = TRUE)
+  if (is.null(to_level) && glyexp::get_exp_type(exp) == "glycoproteomics") {
+    to_level <- "gfs"
+  }
+
+  switch(
+    glyexp::get_exp_type(exp),
+    glycoproteomics = .auto_clean_glycoproteomics(exp, to_level),
+    glycomics = .auto_clean_glycomics(exp)
+  )
+}
+
+.auto_impute <- function(exp) {
+  if (ncol(exp) <= 30) {
+    impute_sample_min(exp)
+  } else if (ncol(exp) <= 100) {
+    impute_min_prob(exp)
+  } else {
+    impute_miss_forest(exp)
+  }
+}
+
+.auto_clean_glycoproteomics <- function(exp, to_level) {
+  exp %>%
     normalize_median() %>%
-    impute_zero() %>%
-    aggregate(to_level = to_level)
+    remove_missing_variables(prop = 0.5) %>%
+    .auto_impute() %>%
+    aggregate(to_level = to_level) %>%
+    normalize_median()
+}
+
+.auto_clean_glycomics <- function(exp) {
+  exp %>%
+    normalize_median_quotient() %>%
+    remove_missing_variables(prop = 0.5) %>%
+    .auto_impute() %>%
+    normalize_total_area()
 }
