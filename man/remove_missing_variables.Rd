@@ -4,7 +4,14 @@
 \alias{remove_missing_variables}
 \title{Remove Variables with Missing Values}
 \usage{
-remove_missing_variables(exp, prop = NULL, n = NULL, by = NULL, strict = FALSE)
+remove_missing_variables(
+  exp,
+  prop = NULL,
+  n = NULL,
+  by = NULL,
+  strict = FALSE,
+  min_n = NULL
+)
 }
 \arguments{
 \item{exp}{An experiment object.}
@@ -23,6 +30,14 @@ Missing value counts or proportions will be calculated within each group.}
 it passes the missing threshold in all groups.
 If \code{TRUE}, remove a variable if it passes the missing threshold in any group.
 See examples for more details.}
+
+\item{min_n}{The minimum number of non-missing values required for a variable
+to be kept. If \code{NULL} (default), it is calculated dynamically:
+\itemize{
+\item For datasets with 1, 2, or 3 samples: min_n equals the sample count
+\item For datasets with >3 samples: min_n = 3
+\item When using \code{by}, the rule is applied within each group
+}}
 }
 \value{
 An experiment object with the variables removed.
@@ -51,5 +66,8 @@ remove_missing_variables(exp, by = "group", strict = FALSE)$expr_mat
 
 # Keep only variables with no missing values.
 remove_missing_variables(exp, prop = 0)$expr_mat
+
+# Use custom min_n to require at least 4 non-missing values
+remove_missing_variables(exp, min_n = 4)$expr_mat
 
 }
