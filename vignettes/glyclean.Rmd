@@ -1,0 +1,286 @@
+---
+title: "Get Started with glyclean"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Get Started with glyclean}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Welcome to the Wild World of Data Preprocessing! 🧬
+
+Every omics data analysis journey begins with the same challenge: 
+taming your raw data.
+Think of it like preparing ingredients before cooking a gourmet meal – 
+you need to wash,
+chop,
+and season everything just right.
+In the glycomics and glycoproteomics world,
+this means normalization,
+missing value handling,
+and batch effect correction.
+
+Meet `glyclean` – your Swiss Army knife for glycoproteomics and glycomics data preprocessing! 
+This package provides a comprehensive toolkit that takes the guesswork out of data cleaning,
+with specialized methods designed specifically for the unique challenges of glycan analysis.
+
+**Important Note:** This package works with `glyexp::experiment()` objects.
+If you're new to this data structure,
+we highly recommend checking out [its introduction](https://glycoverse.github.io/glyexp/articles/glyexp.html) first.
+We'll also be using the [glyread](https://github.com/glycoverse/glyread) package to load our data – 
+it's the go-to tool in the `glycoverse` ecosystem.
+
+```{r setup}
+library(glyclean)
+library(glyread)
+library(glyexp)
+```
+
+## Meet Our Star Player: Real Glycoproteomics Data 🌟
+
+Let's dive in with a real-world dataset that will showcase what `glyclean` can do.
+We'll use `glyread::read_pglyco3_pglycoquant()` to load our data into a proper `glyexp::experiment()` object.
+
+```{r}
+exp <- read_pglyco3_pglycoquant(
+  here::here("vignettes", "glycopeptides.list"),
+  sample_info = here::here("vignettes", "sample_info.csv"),
+  glycan_type = "N"
+)
+exp
+```
+
+Let's peek under the hood and see what we're working with:
+
+```{r}
+get_var_info(exp)
+```
+
+```{r}
+get_sample_info(exp)
+```
+
+What we have here is a beautiful N-glycoproteomics dataset featuring 500 PSMs (Peptide Spectrum Matches) across 12 samples.
+These samples come from 3 different batches and represent 4 distinct biological groups – 
+a perfect playground for demonstrating preprocessing techniques!
+
+## The Magic Wand: One Function to Rule Them All ✨
+
+### Meet `auto_clean()` – Your Preprocessing Superhero
+
+Ready for some magic? 
+Watch this:
+
+```{r}
+clean_exp <- auto_clean(exp)
+```
+
+**That's it!** 
+Your data is now preprocessed and ready for analysis! 
+🎉
+
+### But Wait, What Just Happened? The Science Behind the Magic
+
+`auto_clean()` isn't actually magic (sorry to disappoint) – 
+it's a carefully designed intelligent pipeline that:
+
+- **Analyzes your data**: Checks experiment type, sample size, and metadata
+- **Selects optimal methods**: Chooses the best preprocessing strategy for your specific dataset
+- **Executes the pipeline**: Runs everything in the optimal order
+
+Here's the complete workflow (and yes,
+it's impressively comprehensive):
+
+```{r out.width = "40%", fig.align = "center", echo = FALSE}
+knitr::include_graphics("workflow.png")
+```
+
+## Taking the Scenic Route: Step-by-Step Preprocessing 🚶‍♀️
+
+While `auto_clean()` is fantastic for getting started,
+you'll eventually want more control over your preprocessing pipeline.
+Let's explore each step individually – 
+think of it as learning to cook rather than just ordering takeout!
+
+### Step 1: Normalization – Getting Everyone on the Same Page 📏
+
+Imagine you're comparing heights of people measured in different units – 
+some in feet,
+some in meters,
+some in furlongs (okay,
+maybe not furlongs).
+Normalization does the same thing for your glycomics data,
+bringing all intensities to a comparable scale.
+
+**What `auto_clean()` does:**
+
+- **Glycoproteomics data**: Median normalization
+- **Glycomics data**: Median quotient normalization followed by total area normalization
+
+**Available normalization methods in `glyclean`:**
+
+| Function | Description | Best For |
+|----------|-------------|----------|
+| `normalize_median()` | Median-based normalization | General use, robust to outliers |
+| `normalize_median_abs()` | Median absolute deviation | When you need extra robustness |
+| `normalize_median_quotient()` | Median quotient method | Compositional data |
+| `normalize_quantile()` | Quantile normalization | When you want identical distributions |
+| `normalize_total_area()` | Total area normalization | Relative abundance data |
+| `normalize_rlr()` | Robust linear regression | Complex batch designs |
+| `normalize_loessf()` | LOESS with feature smoothing | Non-linear trends |
+| `normalize_vsn()` | Variance stabilizing normalization | Heteroscedastic data |
+
+**Pro Tip:** Notice the `by` parameter in many functions? 
+This allows stratified normalization within groups – 
+super useful when you have distinct experimental conditions!
+
+Here we do the median normalization manually:
+
+```{r}
+normed_exp <- normalize_median(exp)
+```
+
+### Step 2: Variable Filtering – Saying Goodbye to the Unreliable 🧹
+
+Some variables are like that friend who never shows up to plans – 
+they're missing most of the time and aren't very helpful.
+In glycomics,
+variables with too many missing values are often more noise than signal.
+
+**What `auto_clean()` does:**
+Removes variables with >50% missing values
+
+**Manual approach (do it differently):**
+
+```{r}
+filtered_exp <- remove_missing_variables(normed_exp, n = 0, by = "group", strict = FALSE)
+```
+
+This code translates to: 
+"Keep any variable that has complete data in at least one biological group."
+Perfect for maximizing the number of glycopeptides retained!
+
+### Step 3: Imputation – Filling in the Blanks Intelligently 🔮
+
+Here's where things get scientifically interesting! 
+Missing values in mass spectrometry aren't randomly distributed – 
+they follow patterns based on the physics and chemistry of the measurement process.
+
+**The Science:** Missing values are typically "Missing At Random" (MAR),
+meaning they're related to the intensity of the signal.
+Low-abundance ions are more likely to be missed,
+either due to poor ionization efficiency or because they fall below the detection threshold.
+
+**What `auto_clean()` does (intelligently based on sample size):**
+
+- **Small studies (≤30 samples)**: Sample minimum imputation (ultra-robust)
+- **Medium studies (30-100 samples)**: Minimum probability imputation (statistically principled)
+- **Large studies (>100 samples)**: MissForest imputation (machine learning power)
+
+**Your imputation toolkit:**
+
+| Function | Method | Best For |
+|----------|--------|----------|
+| `impute_zero()` | Replace with zeros | Quick and simple |
+| `impute_sample_min()` | Sample minimum values | Small datasets |
+| `impute_half_sample_min()` | Half of sample minimum | Conservative approach |
+| `impute_min_prob()` | Probabilistic minimum | Medium datasets |
+| `impute_miss_forest()` | Random Forest ML | Large datasets |
+| `impute_bpca()` | Bayesian PCA | High correlation structure |
+| `impute_ppca()` | Probabilistic PCA | Linear relationships |
+| `impute_knn()` | K-nearest neighbors | Local similarity patterns |
+
+For demonstration,
+let's use the simple zero imputation:
+
+```{r}
+imputed_exp <- impute_zero(filtered_exp)
+```
+
+### Step 4: Aggregation – From Peptides to Glycoforms 🔄
+
+Here's where glycoproteomics gets uniquely challenging! 
+Search engines typically report results at the PSM or peptide level,
+but what we really care about are **glycoforms** – 
+the specific glycan structures attached to specific protein sites.
+
+**The Problem:** One glycoform can appear multiple times in your data due to:
+
+- Different charge states
+- Post-translational modifications
+- Missed protease cleavages
+- Different peptide sequences covering the same site
+
+**The Solution:** Intelligent aggregation!
+
+**Aggregation levels available:**
+
+- **"gps"**: Glycopeptides with structures (most detailed)
+- **"gp"**: Glycopeptides with compositions
+- **"gfs"**: Glycoforms with structures (recommended default)
+- **"gf"**: Glycoforms with compositions (most condensed)
+
+```{r}
+aggregated_exp <- aggregate(imputed_exp, to_level = "gf")
+```
+
+**Pro move:** Re-normalize after aggregation to account for the new intensity distributions:
+
+```{r}
+aggregated_exp2 <- normalize_median(aggregated_exp)
+```
+
+### Step 5: Batch Effect Correction – Harmonizing Your Orchestra 🎼
+
+Batch effects are the "different violinists playing the same piece" problem of omics data.
+Even when following identical protocols,
+subtle differences in instruments,
+reagents,
+or environmental conditions can introduce systematic bias.
+
+**The Good News:** If your experimental design is well-controlled (conditions distributed across batches),
+batch effect correction can work wonders!
+
+**What `auto_clean()` does:**
+Automatically detects and corrects batch effects when it finds a "batch" column in your sample metadata.
+
+```{r}
+corrected_exp <- correct_batch_effect(aggregated_exp2)
+```
+
+### 🎉 Mission Accomplished!
+
+Congratulations! 
+You now have beautifully preprocessed,
+analysis-ready glycomics data.
+Your data has been normalized,
+filtered,
+imputed,
+aggregated,
+and batch-corrected – 
+it's ready to reveal its biological secrets!
+
+## What's Next?
+
+With your clean data in hand,
+you're ready to dive into the exciting world of glycomics analysis:
+
+- **Differential analysis**: Find glycans that change between conditions
+- **Pathway analysis**: Understand biological processes
+- **Machine learning**: Build predictive models
+- **Visualization**: Create stunning plots that tell your data's story
+
+The `glycoverse` ecosystem has tools for all of these and more!
+
+## Session Info
+
+```{r}
+sessionInfo()
+```

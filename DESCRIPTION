@@ -19,7 +19,9 @@ Suggests:
     pcaMethods,
     MASS,
     missForest,
-    sva
+    sva,
+    knitr,
+    rmarkdown
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -39,3 +41,4 @@ Imports:
     withr
 Remotes: 
     glycoverse/glyexp
+VignetteBuilder: knitr
