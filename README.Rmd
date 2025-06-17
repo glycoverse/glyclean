@@ -25,9 +25,6 @@ knitr::opts_chunk$set(
 Omics data cleaning and preprocessing is a critical yet cumbersome step.
 **glyclean** helps you perform these tasks with ease,
 so you can focus on the fun part: downstream analysis!
-Inspired by `mlr3pipelines`, **glyclean** uses a pipeline-based approach
-to arrange data cleaning and preprocessing steps in a modular and flexible way,
-so that different steps can be easily combined and customized, in any order.
 
 ## Installation
 
@@ -40,4 +37,22 @@ pak::pak("glycoverse/glyclean")
 
 ## Example
 
-Coming soon!
+```{r}
+library(glyexp)
+library(glyclean)
+
+exp <- toy_experiment()
+exp <- set_exp_type(exp, "glycomics")
+clean_exp <- auto_clean(exp)
+```
+
+Yes, that's it!
+Calling the magical `auto_clean()` function will automatically perform the following steps,
+in the most suitable way for your data:
+
+- Normalization
+- Missing value filtering
+- Imputation
+- Batch effect correction
+
+and other steps that are necessary for downstream analysis.
