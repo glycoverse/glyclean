@@ -50,8 +50,8 @@ We'll use `glyread::read_pglyco3_pglycoquant()` to load our data into a proper `
 
 ```{r}
 exp <- read_pglyco3_pglycoquant(
-  here::here("vignettes", "glycopeptides.list"),
-  sample_info = here::here("vignettes", "sample_info.csv"),
+  "glycopeptides.list",
+  sample_info = "sample_info.csv",
   glycan_type = "N"
 )
 exp
