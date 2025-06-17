@@ -1,7 +1,7 @@
 # Test main logic path for glycoproteomics data
 test_that("auto_clean works for glycoproteomics data", {
   test_exp <- complex_exp()
-  result_exp <- auto_clean(test_exp)
+  result_exp <- suppressMessages(auto_clean(test_exp))
   
   expect_s3_class(result_exp, "glyexp_experiment")
   expect_equal(glyexp::get_exp_type(result_exp), "glycoproteomics")
@@ -23,7 +23,7 @@ test_that("auto_clean works for glycomics data", {
     glycan_type = "N"
   )
   
-  result_exp <- auto_clean(test_exp)
+  result_exp <- suppressMessages(auto_clean(test_exp))
   
   expect_s3_class(result_exp, "glyexp_experiment")
   expect_equal(glyexp::get_exp_type(result_exp), "glycomics")
@@ -36,7 +36,7 @@ test_that("auto_clean handles different sample sizes", {
   small_exp <- complex_exp()
   # Add some missing values
   small_exp$expr_mat[1:2, 1:2] <- NA
-  result_small <- auto_clean(small_exp)
+  result_small <- suppressMessages(auto_clean(small_exp))
   expect_false(any(is.na(result_small$expr_mat)))
   
   # Just test that the function works with the complex experiment
@@ -105,7 +105,7 @@ test_that("auto_clean applies batch effect correction when batch column exists",
   )
   
   # Run auto_clean
-  result_exp <- auto_clean(test_exp, to_level = "gf")
+  result_exp <- suppressMessages(auto_clean(test_exp, to_level = "gf"))
   
   # Test that function completes successfully
   expect_s3_class(result_exp, "glyexp_experiment")

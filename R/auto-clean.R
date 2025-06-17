@@ -73,42 +73,56 @@ auto_clean <- function(exp, to_level = NULL) {
     to_level <- "gfs"
   }
 
-  exp <- switch(
+  switch(
     glyexp::get_exp_type(exp),
     glycoproteomics = .auto_clean_glycoproteomics(exp, to_level),
     glycomics = .auto_clean_glycomics(exp)
   )
-
-  if ("batch" %in% colnames(exp$sample_info)) {
-    exp <- correct_batch_effect(exp)
-  }
-
-  exp
 }
 
 .auto_impute <- function(exp) {
   if (ncol(exp) <= 30) {
+    cli::cli_alert_info("Sample size <= 30, using sample minimum imputation")
     impute_sample_min(exp)
   } else if (ncol(exp) <= 100) {
+    cli::cli_alert_info("Sample size <= 100, using minimum probability imputation")
     impute_min_prob(exp)
   } else {
+    cli::cli_alert_info("Sample size > 100, using MissForest imputation")
     impute_miss_forest(exp)
   }
 }
 
 .auto_clean_glycoproteomics <- function(exp, to_level) {
-  exp %>%
-    normalize_median() %>%
-    remove_missing_variables(prop = 0.5) %>%
-    .auto_impute() %>%
-    aggregate(to_level = to_level) %>%
-    normalize_median()
+  cli::cli_progress_step("Normalizing data (Median)")
+  exp <- normalize_median(exp)
+  cli::cli_progress_step("Removing variables with >50% missing values")
+  exp <- remove_missing_variables(exp, prop = 0.5)
+  cli::cli_progress_step("Imputing missing values")
+  exp <- .auto_impute(exp)
+  cli::cli_progress_step("Aggregating data")
+  exp <- aggregate(exp, to_level = to_level)
+  cli::cli_progress_step("Normalizing data again")
+  exp <- normalize_median(exp)
+  if ("batch" %in% colnames(exp$sample_info)) {
+    cli::cli_progress_step("Correcting batch effect")
+    exp <- correct_batch_effect(exp)
+  }
+  exp
 }
 
 .auto_clean_glycomics <- function(exp) {
-  exp %>%
-    normalize_median_quotient() %>%
-    remove_missing_variables(prop = 0.5) %>%
-    .auto_impute() %>%
-    normalize_total_area()
+  cli::cli_progress_step("Normalizing data (Median Quotient)")
+  exp <- normalize_median_quotient(exp)
+  cli::cli_progress_step("Removing variables with >50% missing values")
+  exp <- remove_missing_variables(exp, prop = 0.5)
+  cli::cli_progress_step("Imputing missing values")
+  exp <- .auto_impute(exp)
+  cli::cli_progress_step("Normalizing data (Total Area)")
+  exp <- normalize_total_area(exp)
+  if ("batch" %in% colnames(exp$sample_info)) {
+    cli::cli_progress_step("Correcting batch effect")
+    exp <- correct_batch_effect(exp)
+  }
+  exp
 }
