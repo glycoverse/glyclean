@@ -248,7 +248,11 @@ impute_miss_forest <- function(exp, by = NULL, ...) {
 .impute_min_prob <- function(mat, ...) {
   rlang::check_installed("imputeLCMD", reason = "to use `impute_min_prob()`")
   normed <- log2(mat)
-  normed <- imputeLCMD::impute.MinProb(normed, ...)
+  # Use withr::with_output_sink to silence the output from imputeLCMD::impute.MinProb
+  normed <- withr::with_output_sink(
+    tempfile(),
+    imputeLCMD::impute.MinProb(normed, ...)
+  )
   2 ^ normed
 }
 
