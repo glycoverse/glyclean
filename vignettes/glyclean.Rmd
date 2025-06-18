@@ -116,7 +116,7 @@ some in feet,
 some in meters,
 some in furlongs (okay,
 maybe not furlongs).
-Normalization does the same thing for your glycomics data,
+Normalization does the same thing for your omics data,
 bringing all intensities to a comparable scale.
 
 **What `auto_clean()` does:**
@@ -134,7 +134,10 @@ bringing all intensities to a comparable scale.
 | `normalize_quantile()` | Quantile normalization | When you want identical distributions |
 | `normalize_total_area()` | Total area normalization | Relative abundance data |
 | `normalize_rlr()` | Robust linear regression | Complex batch designs |
+| `normalize_rlrma()` | Robust linear regression with median adjustment | Complex batch designs |
+| `normalize_rlrmacyc()` | Robust linear regression with median adjustment and cyclic smoothing | Complex batch designs |
 | `normalize_loessf()` | LOESS with feature smoothing | Non-linear trends |
+| `normalize_loesscyc()` | LOESS with cyclic smoothing | Cyclic data |
 | `normalize_vsn()` | Variance stabilizing normalization | Heteroscedastic data |
 
 **Pro Tip:** Notice the `by` parameter in many functions? 
@@ -151,7 +154,7 @@ normed_exp <- normalize_median(exp)
 
 Some variables are like that friend who never shows up to plans – 
 they're missing most of the time and aren't very helpful.
-In glycomics,
+In omics data,
 variables with too many missing values are often more noise than signal.
 
 **What `auto_clean()` does:**
@@ -195,7 +198,9 @@ either due to poor ionization efficiency or because they fall below the detectio
 | `impute_miss_forest()` | Random Forest ML | Large datasets |
 | `impute_bpca()` | Bayesian PCA | High correlation structure |
 | `impute_ppca()` | Probabilistic PCA | Linear relationships |
-| `impute_knn()` | K-nearest neighbors | Local similarity patterns |
+| `impute_sw_knn()` | K-nearest neighbors (Sample-wise) | Local similarity patterns |
+| `impute_fw_knn()` | K-nearest neighbors (Feature-wise) | Local similarity patterns |
+| `impute_svd()` | Singular value decomposition | High correlation structure |
 
 For demonstration,
 let's use the simple zero imputation:
@@ -259,7 +264,7 @@ corrected_exp <- correct_batch_effect(aggregated_exp2)
 
 Congratulations! 
 You now have beautifully preprocessed,
-analysis-ready glycomics data.
+analysis-ready glycoproteomics data.
 Your data has been normalized,
 filtered,
 imputed,
@@ -270,7 +275,7 @@ it's ready to reveal its biological secrets!
 ## What's Next?
 
 With your clean data in hand,
-you're ready to dive into the exciting world of glycomics analysis:
+you're ready to dive into the exciting world of glyco-omics analysis:
 
 - **Differential analysis**: Find glycans that change between conditions
 - **Pathway analysis**: Understand biological processes
