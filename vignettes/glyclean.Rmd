@@ -102,6 +102,43 @@ it's impressively comprehensive):
 knitr::include_graphics("workflow.png")
 ```
 
+## The Pipeline Approach: Chaining Operations Like a Pro 🔗
+
+Before we dive into individual steps,
+let's talk about a powerful R technique: **piping**! 
+You can use either the native pipe operator `|>` (R ≥ 4.1.0) 
+or the magrittr pipe `%>%` to chain preprocessing operations together.
+This makes your code more readable and your workflow more elegant.
+
+Here's how `auto_clean()` works under the hood for our glycoproteomics data,
+written as a manual pipeline:
+
+```{r eval=FALSE}
+# The complete glycoproteomics preprocessing pipeline
+# This is essentially what auto_clean() does automatically!
+cleaned_exp <- exp |>
+  normalize_median() |>                       # Step 1: Initial normalization
+  remove_missing_variables(prop = 0.5) |>     # Step 2: Remove variables with >50% missing
+  impute_sample_min() |>                      # Step 3: Impute missing values (for small datasets)
+  aggregate(to_level = "gfs") |>              # Step 4: Aggregate to glycoform level
+  normalize_median() |>                       # Step 5: Re-normalize after aggregation
+  correct_batch_effect()                      # Step 6: Correct batch effects (if batch column exists)
+```
+
+**Why use pipes?**
+
+- **Cleaner code**: No need for intermediate variables
+- **Logical flow**: Operations read left-to-right, top-to-bottom
+- **Fewer errors**: Less chance of mixing up variable names
+- **Easy experimentation**: Simply comment out or modify steps
+
+**Pro Tips for Pipeline Usage:**
+
+- Use `|>` for new R versions (≥ 4.1.0) or `%>%` for older versions
+- Break long pipelines across multiple lines for readability
+- Comment each step to document your reasoning
+- Save intermediate results when debugging: `intermediate_result <- exp |> step1() |> step2()`
+
 ## Taking the Scenic Route: Step-by-Step Preprocessing 🚶‍♀️
 
 While `auto_clean()` is fantastic for getting started,
