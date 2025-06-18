@@ -100,16 +100,16 @@ proper <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.h
 <span>  glycan_type <span class="op">=</span> <span class="st">"N"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reading data</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Reading data <span style="color: #B2B2B2;">[349ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Reading data <span style="color: #B2B2B2;">[415ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Parsing glycan compositions</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Parsing glycan compositions <span style="color: #B2B2B2;">[218ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Parsing glycan compositions <span style="color: #B2B2B2;">[220ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Parsing glycan structures</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Parsing glycan structures <span style="color: #B2B2B2;">[3s]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Parsing glycan structures <span style="color: #B2B2B2;">[3.1s]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Packing experiment</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Packing experiment <span style="color: #B2B2B2;">[19ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Packing experiment <span style="color: #B2B2B2;">[20ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="va">exp</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -168,23 +168,23 @@ come from 3 different batches and represent 4 distinct biological groups
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clean_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_clean.html">auto_clean</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data (Median)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalizing data (Median) <span style="color: #B2B2B2;">[214ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalizing data (Median) <span style="color: #B2B2B2;">[224ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Removing variables with &gt;50% missing values</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Removing variables with &gt;50% missing values <span style="color: #B2B2B2;">[20ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Imputing missing values</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Sample size &lt;= 30, using sample minimum imputation</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Imputing missing values<span style="color: #00BB00;">✔</span> Imputing missing values <span style="color: #B2B2B2;">[18ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Imputing missing values<span style="color: #00BB00;">✔</span> Imputing missing values <span style="color: #B2B2B2;">[19ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Aggregating data</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Aggregating data <span style="color: #B2B2B2;">[122ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Aggregating data <span style="color: #B2B2B2;">[132ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalizing data again <span style="color: #B2B2B2;">[14ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Correcting batch effect</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Correcting batch effect <span style="color: #B2B2B2;">[5s]</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Correcting batch effect <span style="color: #B2B2B2;">[5.2s]</span></span></span></code></pre></div>
 <p><strong>That’s it!</strong> Your data is now preprocessed and ready
 for analysis! 🎉</p>
 </div>
@@ -221,7 +221,7 @@ rather than just ordering takeout!</p>
 </h3>
 <p>Imagine you’re comparing heights of people measured in different
 units – some in feet, some in meters, some in furlongs (okay, maybe not
-furlongs). Normalization does the same thing for your glycomics data,
+furlongs). Normalization does the same thing for your omics data,
 bringing all intensities to a comparable scale.</p>
 <p><strong>What <code><a href="../reference/auto_clean.html">auto_clean()</a></code> does:</strong></p>
 <ul>
@@ -276,11 +276,27 @@ followed by total area normalization</li>
 <td>Complex batch designs</td>
 </tr>
 <tr class="odd">
+<td><code><a href="../reference/normalize_rlrma.html">normalize_rlrma()</a></code></td>
+<td>Robust linear regression with median adjustment</td>
+<td>Complex batch designs</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/normalize_rlrmacyc.html">normalize_rlrmacyc()</a></code></td>
+<td>Robust linear regression with median adjustment and cyclic
+smoothing</td>
+<td>Complex batch designs</td>
+</tr>
+<tr class="odd">
 <td><code><a href="../reference/normalize_loessf.html">normalize_loessf()</a></code></td>
 <td>LOESS with feature smoothing</td>
 <td>Non-linear trends</td>
 </tr>
 <tr class="even">
+<td><code><a href="../reference/normalize_loesscyc.html">normalize_loesscyc()</a></code></td>
+<td>LOESS with cyclic smoothing</td>
+<td>Cyclic data</td>
+</tr>
+<tr class="odd">
 <td><code><a href="../reference/normalize_vsn.html">normalize_vsn()</a></code></td>
 <td>Variance stabilizing normalization</td>
 <td>Heteroscedastic data</td>
@@ -299,7 +315,7 @@ super useful when you have distinct experimental conditions!</p>
 🧹<a class="anchor" aria-label="anchor" href="#step-2-variable-filtering-saying-goodbye-to-the-unreliable"></a>
 </h3>
 <p>Some variables are like that friend who never shows up to plans –
-they’re missing most of the time and aren’t very helpful. In glycomics,
+they’re missing most of the time and aren’t very helpful. In omics data,
 variables with too many missing values are often more noise than
 signal.</p>
 <p><strong>What <code><a href="../reference/auto_clean.html">auto_clean()</a></code> does:</strong> Removes
@@ -384,9 +400,19 @@ imputation (machine learning power)</li>
 <td>Linear relationships</td>
 </tr>
 <tr class="even">
-<td><code>impute_knn()</code></td>
-<td>K-nearest neighbors</td>
+<td><code><a href="../reference/impute_sw_knn.html">impute_sw_knn()</a></code></td>
+<td>K-nearest neighbors (Sample-wise)</td>
 <td>Local similarity patterns</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/impute_fw_knn.html">impute_fw_knn()</a></code></td>
+<td>K-nearest neighbors (Feature-wise)</td>
+<td>Local similarity patterns</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/impute_svd.html">impute_svd()</a></code></td>
+<td>Singular value decomposition</td>
+<td>High correlation structure</td>
 </tr>
 </tbody>
 </table>
@@ -451,16 +477,16 @@ your sample metadata.</p>
 <h3 id="mission-accomplished">🎉 Mission Accomplished!<a class="anchor" aria-label="anchor" href="#mission-accomplished"></a>
 </h3>
 <p>Congratulations! You now have beautifully preprocessed,
-analysis-ready glycomics data. Your data has been normalized, filtered,
-imputed, aggregated, and batch-corrected – it’s ready to reveal its
-biological secrets!</p>
+analysis-ready glycoproteomics data. Your data has been normalized,
+filtered, imputed, aggregated, and batch-corrected – it’s ready to
+reveal its biological secrets!</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="whats-next">What’s Next?<a class="anchor" aria-label="anchor" href="#whats-next"></a>
 </h2>
 <p>With your clean data in hand, you’re ready to dive into the exciting
-world of glycomics analysis:</p>
+world of glyco-omics analysis:</p>
 <ul>
 <li>
 <strong>Differential analysis</strong>: Find glycans that change
