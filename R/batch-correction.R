@@ -75,6 +75,7 @@ correct_batch_effect <- function(exp) {
   
   # Perform batch correction using ComBat
   expr_mat <- exp$expr_mat
+  log_expr_mat <- log2(expr_mat + 1)
   
   # Check if there are enough samples per batch for ComBat
   batch_counts <- table(batch)
@@ -98,12 +99,12 @@ correct_batch_effect <- function(exp) {
   }
   
   # Apply ComBat correction with error handling and suppressed output
-  corrected_expr_mat <- tryCatch({
+  corrected_log_expr_mat <- tryCatch({
     # Suppress ComBat's verbose output completely
     suppressMessages({
       capture.output(
         sva::ComBat(
-          dat = expr_mat,
+          dat = log_expr_mat,
           batch = batch,
           mod = mod,
           par.prior = TRUE,
@@ -122,13 +123,13 @@ correct_batch_effect <- function(exp) {
   })
   
   # Check if ComBat succeeded
-  if (is.null(corrected_expr_mat)) {
+  if (is.null(corrected_log_expr_mat)) {
     return(exp)
   }
   
   # Update experiment with corrected expression matrix
   new_exp <- exp
-  new_exp$expr_mat <- corrected_expr_mat
+  new_exp$expr_mat <- 2^corrected_log_expr_mat - 1
   
   cli::cli_alert_success("Batch effect correction completed using ComBat algorithm.")
   
