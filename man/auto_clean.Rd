@@ -41,7 +41,7 @@ For Glycoproteomics Data:
 \item Automatic imputation (method depends on sample size)
 \item Aggregation to specified level
 \item Final median normalization
-\item Batch effect correction
+\item Intelligent batch effect correction
 }
 
 For Glycomics Data:
@@ -50,7 +50,7 @@ For Glycomics Data:
 \item Remove variables with \\>50\% missing values
 \item Automatic imputation (method depends on sample size)
 \item Total area normalization
-\item Batch effect correction
+\item Intelligent batch effect correction
 }
 
 Automatic Imputation Strategy:
@@ -60,8 +60,15 @@ Automatic Imputation Strategy:
 \item \\>100 samples: MissForest imputation
 }
 
-In batch effect correction,
-the batches are defined by the \code{batch} column in the sample information tibble.
+Intelligent Batch Effect Correction:
+
+The function first detects batch effects using ANOVA.
+Batch correction is only performed if more than 10\% of variables
+show significant batch effects (p < 0.05).
+If a \code{group} column exists in the sample information,
+it will be used as a covariate in both detection and correction
+to preserve biological variation.
+The batches are defined by the \code{batch} column in the sample information tibble.
 }
 \examples{
 \dontrun{

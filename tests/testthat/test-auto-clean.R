@@ -119,3 +119,67 @@ test_that("auto_clean applies batch effect correction when batch column exists",
   # Test that the preprocessing pipeline was completed (aggregation reduces variables)
   expect_lt(nrow(result_exp$expr_mat), nrow(test_exp$expr_mat))
 })
+
+# Test .auto_batch_correct function core scenarios
+test_that(".auto_batch_correct handles different batch effect scenarios", {
+  # Test 1: No batch column - should return unchanged
+  test_exp_no_batch <- complex_exp()
+  result_no_batch <- glyclean:::.auto_batch_correct(test_exp_no_batch)
+  expect_identical(result_no_batch, test_exp_no_batch)
+  
+  # Test 2: Minimal batch effects - should skip correction
+  set.seed(123)
+  sample_info_minimal <- tibble::tibble(
+    sample = paste0("S", 1:8),
+    batch = rep(c("A", "B"), each = 4),
+    group = rep(c("Ctrl", "Treat"), 4)
+  )
+  
+  expr_mat_minimal <- matrix(rnorm(20 * 8, mean = 10, sd = 1), nrow = 20, ncol = 8)
+  colnames(expr_mat_minimal) <- sample_info_minimal$sample
+  rownames(expr_mat_minimal) <- paste0("V", 1:20)
+  
+  var_info_minimal <- tibble::tibble(variable = rownames(expr_mat_minimal))
+  
+  test_exp_minimal <- glyexp::experiment(
+    expr_mat_minimal, sample_info_minimal, var_info_minimal, 
+    exp_type = "glycoproteomics", glycan_type = "N"
+  )
+  
+  result_minimal <- suppressMessages(glyclean:::.auto_batch_correct(test_exp_minimal))
+  expect_equal(result_minimal$expr_mat, test_exp_minimal$expr_mat)
+  
+  # Test 3: Strong batch effects - should apply correction
+  set.seed(456)
+  sample_info_strong <- tibble::tibble(
+    sample = paste0("S", 1:12),
+    batch = rep(c("A", "B", "C"), each = 4)
+  )
+  
+  expr_mat_strong <- matrix(rnorm(30 * 12, mean = 10, sd = 1), nrow = 30, ncol = 12)
+  
+  # Add strong batch effects to most variables
+  batch_a_samples <- which(sample_info_strong$batch == "A")
+  batch_b_samples <- which(sample_info_strong$batch == "B")
+  batch_c_samples <- which(sample_info_strong$batch == "C")
+  
+  for (i in 1:20) {  # 67% of variables get batch effects
+    expr_mat_strong[i, batch_a_samples] <- expr_mat_strong[i, batch_a_samples] + 3
+    expr_mat_strong[i, batch_b_samples] <- expr_mat_strong[i, batch_b_samples] - 2
+    expr_mat_strong[i, batch_c_samples] <- expr_mat_strong[i, batch_c_samples] + 1
+  }
+  
+  colnames(expr_mat_strong) <- sample_info_strong$sample
+  rownames(expr_mat_strong) <- paste0("V", 1:30)
+  
+  var_info_strong <- tibble::tibble(variable = rownames(expr_mat_strong))
+  
+  test_exp_strong <- glyexp::experiment(
+    expr_mat_strong, sample_info_strong, var_info_strong, 
+    exp_type = "glycoproteomics", glycan_type = "N"
+  )
+  
+  result_strong <- suppressMessages(glyclean:::.auto_batch_correct(test_exp_strong))
+  expect_false(identical(result_strong$expr_mat, test_exp_strong$expr_mat))
+  expect_equal(result_strong$sample_info$batch, sample_info_strong$batch)
+})
