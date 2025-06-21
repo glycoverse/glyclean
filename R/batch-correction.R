@@ -102,16 +102,16 @@ correct_batch_effect <- function(exp) {
   corrected_log_expr_mat <- tryCatch({
     # Suppress ComBat's verbose output completely
     suppressMessages({
-      capture.output(
-        sva::ComBat(
+      capture.output({
+        combat_result <- sva::ComBat(
           dat = log_expr_mat,
           batch = batch,
           mod = mod,
           par.prior = TRUE,
           prior.plots = FALSE
-        ),
-        file = nullfile()
-      )
+        )
+      }, file = nullfile())
+      combat_result
     })
   }, error = function(e) {
     cli::cli_warn(c(
