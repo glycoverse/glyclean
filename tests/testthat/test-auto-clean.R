@@ -49,7 +49,6 @@ test_that("auto_clean validates parameters", {
   test_exp <- complex_exp()
   
   expect_error(auto_clean("not_an_experiment"))
-  expect_error(auto_clean(test_exp, to_level = "invalid"))
 })
 
 # Test auto_clean with batch effect correction
@@ -105,7 +104,7 @@ test_that("auto_clean applies batch effect correction when batch column exists",
   )
   
   # Run auto_clean
-  result_exp <- suppressMessages(auto_clean(test_exp, to_level = "gf"))
+  result_exp <- suppressMessages(auto_clean(test_exp))
   
   # Test that function completes successfully
   expect_s3_class(result_exp, "glyexp_experiment")
@@ -182,4 +181,52 @@ test_that(".auto_batch_correct handles different batch effect scenarios", {
   result_strong <- suppressMessages(glyclean:::.auto_batch_correct(test_exp_strong))
   expect_false(identical(result_strong$expr_mat, test_exp_strong$expr_mat))
   expect_equal(result_strong$sample_info$batch, sample_info_strong$batch)
+})
+
+# Test .auto_aggregate function
+test_that(".auto_aggregate chooses correct aggregation level", {
+  # Test 1: With glycan_structure column - should use "gfs"
+  test_exp_with_structure <- complex_exp()  # complex_exp() includes glycan_structure
+  
+  # Mock the aggregate function to capture the to_level parameter
+  original_aggregate <- glyclean:::aggregate
+  captured_to_level <- NULL
+  
+  with_mocked_bindings(
+    aggregate = function(exp, to_level, ...) {
+      captured_to_level <<- to_level
+      return(exp)  # Return unchanged for testing
+    },
+    {
+      glyclean:::.auto_aggregate(test_exp_with_structure)
+    }
+  )
+  
+  expect_equal(captured_to_level, "gfs")
+  
+  # Test 2: Without glycan_structure column - should use "gf"
+  var_info_no_structure <- test_exp_with_structure$var_info
+  var_info_no_structure$glycan_structure <- NULL
+  
+  test_exp_no_structure <- glyexp::experiment(
+    test_exp_with_structure$expr_mat,
+    test_exp_with_structure$sample_info,
+    var_info_no_structure,
+    exp_type = "glycoproteomics",
+    glycan_type = "N"
+  )
+  
+  captured_to_level <- NULL
+  
+  with_mocked_bindings(
+    aggregate = function(exp, to_level, ...) {
+      captured_to_level <<- to_level
+      return(exp)  # Return unchanged for testing
+    },
+    {
+      glyclean:::.auto_aggregate(test_exp_no_structure)
+    }
+  )
+  
+  expect_equal(captured_to_level, "gf")
 })

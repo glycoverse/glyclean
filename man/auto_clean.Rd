@@ -4,23 +4,11 @@
 \alias{auto_clean}
 \title{Automatic Data Preprocessing}
 \usage{
-auto_clean(exp, to_level = NULL)
+auto_clean(exp)
 }
 \arguments{
 \item{exp}{A \code{glyexp::experiment()} containing glycoproteomics or
 glycomics data.}
-
-\item{to_level}{The aggregation level for glycoproteomics data. Default is
-\code{NULL}, which will automatically set to "gfs" (glycoforms with structures) for
-glycoproteomics data. Options include:
-\itemize{
-\item "gf": Glycoform level
-\item "gp": Glycopeptide level
-\item "gfs": Glycan site specific level
-\item "gps": Glycopeptide site specific level
-}
-
-See \code{\link[=aggregate]{aggregate()}} for more details.}
 }
 \value{
 A modified \code{glyexp::experiment()} object.
@@ -39,7 +27,7 @@ For Glycoproteomics Data:
 \item Median normalization
 \item Remove variables with \\>50\% missing values
 \item Automatic imputation (method depends on sample size)
-\item Aggregation to specified level
+\item Automatic aggregation (gfs level if structure available, otherwise gf level)
 \item Final median normalization
 \item Intelligent batch effect correction
 }
@@ -55,9 +43,15 @@ For Glycomics Data:
 
 Automatic Imputation Strategy:
 \itemize{
-\item ≤30 samples: Sample minimum imputation
+\item <=30 samples: Sample minimum imputation
 \item 31-100 samples: Minimum probability imputation
 \item \\>100 samples: MissForest imputation
+}
+
+Automatic Aggregation Strategy (Glycoproteomics Only):
+\itemize{
+\item If \code{glycan_structure} column exists: Aggregate to "gfs" level
+\item If no \code{glycan_structure} column: Aggregate to "gf" level
 }
 
 Intelligent Batch Effect Correction:
@@ -72,11 +66,8 @@ The batches are defined by the \code{batch} column in the sample information tib
 }
 \examples{
 \dontrun{
-# For glycoproteomics data with default aggregation
+# For glycoproteomics data
 cleaned_exp <- auto_clean(glycoprot_exp)
-
-# For glycoproteomics data with specific aggregation level
-cleaned_exp <- auto_clean(glycoprot_exp, to_level = "gp")
 
 # For glycomics data
 cleaned_exp <- auto_clean(glycomics_exp)
