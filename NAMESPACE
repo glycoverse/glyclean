@@ -3,6 +3,7 @@
 export(aggregate)
 export(auto_clean)
 export(correct_batch_effect)
+export(detect_batch_effect)
 export(impute_bpca)
 export(impute_fw_knn)
 export(impute_half_sample_min)

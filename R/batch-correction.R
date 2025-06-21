@@ -135,3 +135,106 @@ correct_batch_effect <- function(exp) {
   
   return(new_exp)
 }
+
+
+#' Detect batch effect
+#'
+#' Use ANOVA to detect if batch effect is present in the data.
+#' If `group_col` is provided,
+#' it will be used as a covariate in the ANOVA model.
+#'
+#' @param exp A `glyexp::experiment()`.
+#' @param batch_col The column name of the batch variable in the sample information.
+#'  Default to "batch".
+#' @param group_col The column name of the group variable in the sample information.
+#'  If provided, it will be used as a covariate in the ANOVA model.
+#'  This is useful when you have an unbalanced design,
+#'  i.e., the proportion of groups in each batch is not the same.
+#'
+#' @returns A double vector of p-values for each variable,
+#'  i.e., the same length as `nrow(get_expr_mat(exp))`
+#'
+#' @export
+detect_batch_effect <- function(exp, batch_col = "batch", group_col = NULL) {
+  # Validate input
+  checkmate::assert_class(exp, "glyexp_experiment")
+  checkmate::assert_string(batch_col)
+  checkmate::assert_string(group_col, null.ok = TRUE)
+  
+  # Get sample information and expression matrix
+  sample_info <- exp$sample_info
+  expr_mat <- exp$expr_mat
+  
+  # Check if batch column exists
+  if (!batch_col %in% colnames(sample_info)) {
+    cli::cli_abort("Batch column '{batch_col}' not found in sample_info.")
+  }
+  
+  # Check if group column exists (if provided)
+  if (!is.null(group_col) && !group_col %in% colnames(sample_info)) {
+    cli::cli_abort("Group column '{group_col}' not found in sample_info.")
+  }
+  
+  # Get batch information
+  batch <- sample_info[[batch_col]]
+  
+  # Check if there are at least 2 batches
+  if (length(unique(batch)) < 2) {
+    cli::cli_warn("Less than 2 batches found. Cannot perform batch effect detection.")
+    return(rep(1, nrow(expr_mat)))
+  }
+  
+  # Prepare data for ANOVA
+  # Each row of expr_mat is a variable, each column is a sample
+  n_variables <- nrow(expr_mat)
+  n_samples <- ncol(expr_mat)
+  
+  # Function to perform ANOVA for a single variable
+  perform_anova <- function(variable_values) {
+    # Create data frame for ANOVA
+    df <- data.frame(
+      value = as.numeric(variable_values),
+      batch = factor(batch)
+    )
+    
+    # Add group column if provided
+    if (!is.null(group_col)) {
+      df$group <- factor(sample_info[[group_col]])
+    }
+    
+    # Build formula
+    if (!is.null(group_col)) {
+      formula <- stats::as.formula("value ~ batch + group")
+    } else {
+      formula <- stats::as.formula("value ~ batch")
+    }
+    
+    # Perform ANOVA with error handling
+    tryCatch({
+      fit <- stats::aov(formula, data = df)
+      anova_result <- stats::anova(fit)
+      # Extract p-value for batch effect (first row)
+      p_value <- anova_result$`Pr(>F)`[1]
+      return(p_value)
+    }, error = function(e) {
+      # Return NA_real_ if ANOVA fails
+      return(NA_real_)
+    })
+  }
+  
+  # Apply ANOVA to each variable using purrr
+  cli::cli_alert_info("Detecting batch effects using ANOVA for {n_variables} variables...")
+  
+  p_values <- purrr::map_dbl(1:n_variables, ~ perform_anova(expr_mat[.x, ]))
+  
+  # Set names for the p-values vector
+  names(p_values) <- rownames(expr_mat)
+  
+  # Report results
+  significant_vars <- sum(p_values < 0.05, na.rm = TRUE)
+  cli::cli_alert_success(
+    "Batch effect detection completed. {significant_vars} out of {n_variables} variables show significant batch effects (p < 0.05)."
+  )
+  
+  return(p_values)
+}
