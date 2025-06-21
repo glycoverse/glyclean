@@ -44,10 +44,25 @@ test_that("correct_batch_effect warns and returns original when batch and group 
   exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
   exp$sample_info$group <- c("Ctrl", "Ctrl", "Ctrl", "Treat", "Treat", "Treat")
   
-  # Should warn and return original experiment
-  expect_snapshot(result <- correct_batch_effect(exp))
+  # Should warn and return original experiment when group_col is specified
+  expect_snapshot(result <- correct_batch_effect(exp, group_col = "group"))
   
   expect_identical(result, exp)
+})
+
+test_that("correct_batch_effect works when group column exists but group_col not specified", {
+  # Create experiment with batch and group columns
+  exp <- complex_exp()
+  exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
+  exp$sample_info$group <- c("Ctrl", "Ctrl", "Ctrl", "Treat", "Treat", "Treat")
+  
+  # Should work when group_col is not specified (ignores group column)
+  suppressMessages(result <- correct_batch_effect(exp))
+  
+  expect_s3_class(result, "glyexp_experiment")
+  expect_equal(dim(result$expr_mat), dim(exp$expr_mat))
+  # Result should be different from original since batch correction was applied
+  expect_false(identical(result$expr_mat, exp$expr_mat))
 })
 
 test_that("correct_batch_effect works with batch info but no group info", {
@@ -130,7 +145,8 @@ test_that("correct_batch_effect preserves experiment structure", {
     glycan_type = "N"
   )
   
-  suppressMessages(result <- correct_batch_effect(exp))
+  # Test with group_col specified to use both batch and group information
+  suppressMessages(result <- correct_batch_effect(exp, group_col = "group"))
   
   # Check that sample_info and var_info are preserved
   expect_identical(result$sample_info, exp$sample_info)

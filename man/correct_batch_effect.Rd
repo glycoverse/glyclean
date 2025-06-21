@@ -4,10 +4,19 @@
 \alias{correct_batch_effect}
 \title{Correct Batch Effect}
 \usage{
-correct_batch_effect(exp)
+correct_batch_effect(exp, batch_col = "batch", group_col = NULL)
 }
 \arguments{
 \item{exp}{A \code{glyexp_experiment} object containing glycoproteomics/glycomics data.}
+
+\item{batch_col}{The column name of the batch variable in the sample information.
+Default to "batch".}
+
+\item{group_col}{The column name of the group variable in the sample information.
+If provided, it will be used as a covariate in the ComBat model.
+This is useful when you have an unbalanced design,
+i.e., the proportion of groups in each batch is not the same.
+Default to NULL.}
 }
 \value{
 A \code{glyexp_experiment} object with batch-corrected expression matrix.
@@ -18,10 +27,10 @@ from the sva package. This function requires batch information in the sample_inf
 }
 \details{
 This function performs batch effect correction using the ComBat algorithm.
-It requires a "batch" column in the sample information.
+It requires batch information in the sample information (specified by \code{batch_col}).
 If no batch information is available, the function will return the original experiment unchanged.
 
-If a "group" column exists in the sample information,
+If group information is provided via \code{group_col},
 the function will check for confounding between batch and group variables.
 If batch and group are highly confounded (complete overlap),
 the function will issue a warning and return the original experiment unchanged
@@ -37,7 +46,10 @@ exp <- glyexp::toy_experiment()
 exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
 exp$sample_info$group <- c("Ctrl", "Ctrl", "Treat", "Ctrl", "Treat", "Treat")
 
-# Correct batch effects
+# Correct batch effects using default column names
 corrected_exp <- correct_batch_effect(exp)
+
+# Correct batch effects with custom column names
+corrected_exp <- correct_batch_effect(exp, batch_col = "batch", group_col = "group")
 
 }

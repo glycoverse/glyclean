@@ -5,14 +5,12 @@
 #' Correct batch effects in glycoproteomics/glycomics data using ComBat algorithm
 #' from the sva package. This function requires batch information in the sample_info.
 #'
-#' @param exp A `glyexp_experiment` object containing glycoproteomics/glycomics data.
-#'
 #' @details
 #' This function performs batch effect correction using the ComBat algorithm.
-#' It requires a "batch" column in the sample information.
+#' It requires batch information in the sample information (specified by `batch_col`).
 #' If no batch information is available, the function will return the original experiment unchanged.
 #' 
-#' If a "group" column exists in the sample information,
+#' If group information is provided via `group_col`,
 #' the function will check for confounding between batch and group variables.
 #' If batch and group are highly confounded (complete overlap),
 #' the function will issue a warning and return the original experiment unchanged
@@ -21,6 +19,15 @@
 #' When both batch and group information are available and not highly confounded,
 #' the group information will be included in the model to preserve biological variation
 #' while correcting for batch effects.
+#' 
+#' @param exp A `glyexp_experiment` object containing glycoproteomics/glycomics data.
+#' @param batch_col The column name of the batch variable in the sample information.
+#'  Default to "batch".
+#' @param group_col The column name of the group variable in the sample information.
+#'  If provided, it will be used as a covariate in the ComBat model.
+#'  This is useful when you have an unbalanced design,
+#'  i.e., the proportion of groups in each batch is not the same.
+#'  Default to NULL.
 #'
 #' @return A `glyexp_experiment` object with batch-corrected expression matrix.
 #' 
@@ -30,31 +37,36 @@
 #' exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
 #' exp$sample_info$group <- c("Ctrl", "Ctrl", "Treat", "Ctrl", "Treat", "Treat")
 #' 
-#' # Correct batch effects
+#' # Correct batch effects using default column names
 #' corrected_exp <- correct_batch_effect(exp)
+#' 
+#' # Correct batch effects with custom column names
+#' corrected_exp <- correct_batch_effect(exp, batch_col = "batch", group_col = "group")
 #' 
 #' @importFrom utils capture.output
 #' @export
-correct_batch_effect <- function(exp) {
+correct_batch_effect <- function(exp, batch_col = "batch", group_col = NULL) {
   # Validate input
   checkmate::assert_class(exp, "glyexp_experiment")
+  checkmate::assert_string(batch_col)
+  checkmate::assert_string(group_col, null.ok = TRUE)
   
   # Get sample information
   sample_info <- exp$sample_info
   
   # Check if batch column exists
-  if (!"batch" %in% colnames(sample_info)) {
-    cli::cli_alert_info("No batch information found in sample_info. Returning original experiment unchanged.")
+  if (!batch_col %in% colnames(sample_info)) {
+    cli::cli_alert_info("No batch information found in column '{batch_col}' of sample_info. Returning original experiment unchanged.")
     return(exp)
   }
   
   # Get batch and group information
-  batch <- sample_info$batch
-  has_group <- "group" %in% colnames(sample_info)
+  batch <- sample_info[[batch_col]]
+  has_group <- !is.null(group_col) && group_col %in% colnames(sample_info)
   
   # Check for confounding between batch and group if both exist
   if (has_group) {
-    group <- sample_info$group
+    group <- sample_info[[group_col]]
     
     # Create a contingency table to check for confounding
     confusion_table <- table(batch, group)
@@ -91,7 +103,7 @@ correct_batch_effect <- function(exp) {
   # Create model matrix
   if (has_group) {
     # Include group in the model to preserve biological variation
-    group <- sample_info$group
+    group <- sample_info[[group_col]]
     mod <- stats::model.matrix(~ group)
   } else {
     # No covariates to preserve
