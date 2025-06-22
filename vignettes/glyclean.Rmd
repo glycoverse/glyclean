@@ -269,6 +269,11 @@ the specific glycan structures attached to specific protein sites.
 - **"gfs"**: Glycoforms with structures (recommended default)
 - **"gf"**: Glycoforms with compositions (most condensed)
 
+**What `auto_clean()` does:**
+If `glycan_structure` column exists,
+aggregate to "gfs" level.
+Otherwise, aggregate to "gf" level.
+
 ```{r}
 aggregated_exp <- aggregate(imputed_exp, to_level = "gf")
 ```
@@ -291,9 +296,20 @@ or environmental conditions can introduce systematic bias.
 batch effect correction can work wonders!
 
 **What `auto_clean()` does:**
-Automatically detects and corrects batch effects when it finds a "batch" column in your sample metadata.
+Automatically detects and corrects batch effects when it finds a "batch" column in your sample metadata,
+and batch effects are detected for more than 10% variables.
 
 ```{r}
+# To detect batch effects:
+p_values <- detect_batch_effect(aggregated_exp2)
+p_values[1:5]
+```
+
+Here we do not have batch effects,
+but we will correct it anyway for demonstration.
+
+```{r}
+# To correct batch effects:
 corrected_exp <- correct_batch_effect(aggregated_exp2)
 ```
 
@@ -320,9 +336,3 @@ you're ready to dive into the exciting world of glyco-omics analysis:
 - **Visualization**: Create stunning plots that tell your data's story
 
 The `glycoverse` ecosystem has tools for all of these and more!
-
-## Session Info
-
-```{r}
-sessionInfo()
-```
