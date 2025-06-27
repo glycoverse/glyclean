@@ -679,4 +679,49 @@ test_that("detect_batch_effect works with matrix input", {
   expect_true(all(p_values >= 0 & p_values <= 1))
 })
 
+test_that("batch correction functions reject column names for matrix input", {
+  # Set seed for reproducible results
+  set.seed(789)
+  
+  # Create test matrix with larger, more stable values
+  test_mat <- matrix(rnorm(60, mean = 100, sd = 10), nrow = 6, ncol = 10)
+  rownames(test_mat) <- paste0("V", 1:6)
+  colnames(test_mat) <- paste0("S", 1:10)
+  
+  # Create valid factor vectors
+  batch_factor <- factor(rep(c("A", "B"), each = 5))
+  group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
+  
+  # Test that column names are rejected for batch parameter
+  expect_error(
+    correct_batch_effect(test_mat, batch = "batch"),
+    "Column name 'batch' provided for.*batch.*but no sample_info available.*Please provide a factor or vector instead"
+  )
+  
+  expect_error(
+    detect_batch_effect(test_mat, batch = "batch"),
+    "Column name 'batch' provided for.*batch.*but no sample_info available.*Please provide a factor or vector instead"
+  )
+  
+  # Test that column names are rejected for group parameter
+  expect_error(
+    correct_batch_effect(test_mat, batch = batch_factor, group = "group"),
+    "Column name 'group' provided for.*group.*but no sample_info available.*Please provide a factor or vector instead"
+  )
+  
+  expect_error(
+    detect_batch_effect(test_mat, batch = batch_factor, group = "group"),
+    "Column name 'group' provided for.*group.*but no sample_info available.*Please provide a factor or vector instead"
+  )
+  
+  # Test that factor vectors work correctly (use expect_warning to capture NaN warnings if they occur)
+  expect_warning(
+    {
+      result1 <- suppressMessages(correct_batch_effect(test_mat, batch = batch_factor, group = group_factor))
+      result2 <- suppressMessages(detect_batch_effect(test_mat, batch = batch_factor, group = group_factor))
+    },
+    NA  # Expect no warnings, but if NaN warnings occur they will be captured
+  )
+})
+
  

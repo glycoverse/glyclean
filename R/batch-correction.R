@@ -240,6 +240,15 @@ detect_batch_effect <- function(x, batch = "batch", group = NULL) {
 .validate_and_prepare_batch_group <- function(x, batch, group = NULL, require_batch = FALSE) {
   # Validate matrix input
   checkmate::assert_matrix(x)
+  
+  # Check for invalid string inputs for matrix
+  if (is.character(batch) && length(batch) == 1) {
+    cli::cli_abort("Column name '{batch}' provided for {.arg batch}, but no sample_info available for matrix input. Please provide a factor or vector instead.")
+  }
+  if (is.character(group) && length(group) == 1) {
+    cli::cli_abort("Column name '{group}' provided for {.arg group}, but no sample_info available for matrix input. Please provide a factor or vector instead.")
+  }
+  
   checkmate::assert_vector(batch, len = ncol(x))
   if (!is.null(group)) {
     checkmate::assert_vector(group, len = ncol(x))
