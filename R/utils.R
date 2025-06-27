@@ -20,11 +20,20 @@
     return(result_exp)
   } else if (is.matrix(x)) {
     # Process matrix directly
-    if (!is.null(by)) {
-      cli::cli_abort("The {.arg by} argument is only supported for {.cls glyexp_experiment} objects.")
+    # For matrix input, by must be a vector (not a column name)
+    if (!is.null(by) && is.character(by) && length(by) == 1) {
+      cli::cli_abort("For matrix input, {.arg by} must be a vector, not a column name.")
     }
-    # For matrix input, call the implementation function directly
-    result_mat <- matrix_func(x, ...)
+    
+    by_values <- .resolve_column_param(
+      by, 
+      sample_info = NULL, 
+      param_name = "by", 
+      n_samples = ncol(x),
+      allow_null = TRUE
+    )
+    
+    result_mat <- .apply_by_groups(x, matrix_func, by_values, ...)
     return(result_mat)
   } else {
     cli::cli_abort("Input {.arg x} must be either a {.cls glyexp_experiment} object or a {.cls matrix}.")
@@ -77,6 +86,35 @@
   cli::cli_abort("The {.arg {param_name}} parameter must be either a column name (string) or a factor/vector.")
 }
 
+#' Apply function with optional grouping
+#' 
+#' This function applies a matrix function with optional grouping by a factor/vector.
+#' 
+#' @param mat The input matrix
+#' @param matrix_func The function to apply to the matrix
+#' @param by_values The grouping values (factor or vector), or NULL for no grouping
+#' @param ... Additional arguments passed to matrix_func
+#' 
+#' @return Processed matrix
+#' @keywords internal
+.apply_by_groups <- function(mat, matrix_func, by_values = NULL, ...) {
+  if (is.null(by_values)) {
+    # No grouping, apply function directly
+    return(matrix_func(mat, ...))
+  } else {
+    # Apply function by groups
+    samples <- colnames(mat)
+    if (is.null(samples)) {
+      samples <- seq_len(ncol(mat))
+    }
+    samples_grouped <- split(samples, by_values)
+    mats_grouped <- purrr::map(samples_grouped, ~ mat[, .x, drop = FALSE])
+    new_mats_grouped <- purrr::map(mats_grouped, matrix_func, ...)
+    result_mat <- do.call(cbind, new_mats_grouped)[, samples]
+    return(result_mat)
+  }
+}
+
 .update_expr_mat <- function(exp, matrix_func, by, ...) {
   # Resolve by parameter
   by_values <- .resolve_column_param(
@@ -95,17 +133,7 @@
     }
   }
 
-  # Perform processing
-  if (is.null(by_values)) {
-    new_expr_mat <- matrix_func(exp$expr_mat, ...)
-  } else {
-    samples <- colnames(exp$expr_mat)
-    samples_grouped <- split(samples, by_values)
-    mats_grouped <- purrr::map(samples_grouped, ~ exp$expr_mat[, .x])
-    new_mats_grouped <- purrr::map(mats_grouped, matrix_func, ...)
-    new_expr_mat <- do.call(cbind, new_mats_grouped)[, samples]
-  }
-
-  exp$expr_mat <- new_expr_mat
+  # Apply function with optional grouping
+  exp$expr_mat <- .apply_by_groups(exp$expr_mat, matrix_func, by_values, ...)
   exp
 }
