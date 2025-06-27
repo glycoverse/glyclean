@@ -24,9 +24,9 @@ Defaults to 0.5.}
 \item{n}{The number of missing values to use as a threshold.
 An alternative to \code{prop}.}
 
-\item{by}{A string specifying a sample information column to stratify by.
-Missing value counts or proportions will be calculated within each group.
-Only available for \code{glyexp_experiment} objects.}
+\item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
+specifying group assignments for each sample.
+Missing value counts or proportions will be calculated within each group.}
 
 \item{strict}{Works with \code{by}. If \code{FALSE}, remove a variable only if
 it passes the missing threshold in all groups.

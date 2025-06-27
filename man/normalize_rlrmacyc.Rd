@@ -12,9 +12,9 @@ If a matrix, rows should be variables and columns should be samples.}
 
 \item{n_iter}{The number of iterations to perform. Default is 3.}
 
-\item{by}{A column name in \code{sample_info} to stratify by. Optional.
-If provided, the normalization will be performed within each group.
-Only available for \code{glyexp_experiment} objects.}
+\item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
+specifying group assignments for each sample. Optional.
+If provided, the normalization will be performed within each group.}
 }
 \value{
 Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},

@@ -160,3 +160,73 @@ test_that("min_n overrides prop filtering", {
   res <- remove_missing_variables(exp, prop = 0.5, min_n = 4)
   expect_equal(res$var_info$variable, "V3")
 })
+
+test_that("remove_missing_variables works with factor by parameter", {
+  # Create test experiment
+  test_exp <- complex_exp()
+  
+  # Introduce some missing values
+  test_exp$expr_mat[1, 1] <- NA
+  test_exp$expr_mat[2, 2] <- NA
+  test_exp$expr_mat[3, 5] <- NA
+  
+  # Create a factor for grouping (matching the complex_exp structure)
+  group_factor <- factor(test_exp$sample_info$group)
+  
+  # Apply filtering with factor by parameter
+  result_exp <- remove_missing_variables(test_exp, by = group_factor, prop = 0.5, strict = FALSE)
+  
+  expect_s3_class(result_exp, "glyexp_experiment")
+  expect_true(nrow(result_exp$expr_mat) <= nrow(test_exp$expr_mat))
+})
+
+test_that("remove_missing_variables works with character vector by parameter", {
+  # Create test experiment
+  test_exp <- complex_exp()
+  
+  # Introduce some missing values
+  test_exp$expr_mat[1, 1:3] <- NA  # More missing values in one group
+  
+  # Create a character vector for grouping
+  group_vector <- rep(c("GroupA", "GroupB"), length.out = ncol(test_exp$expr_mat))
+  
+  # Apply filtering with vector by parameter
+  result_exp <- remove_missing_variables(test_exp, by = group_vector, prop = 0.5, strict = FALSE)
+  
+  expect_s3_class(result_exp, "glyexp_experiment")
+  expect_true(nrow(result_exp$expr_mat) <= nrow(test_exp$expr_mat))
+})
+
+test_that("remove_missing_variables by parameter validation works", {
+  test_exp <- complex_exp()
+  
+  # Test with wrong length vector
+  wrong_length_vector <- c("A", "B")  # Should match number of samples
+  expect_error(
+    remove_missing_variables(test_exp, by = wrong_length_vector, prop = 0.5),
+    "vector must have length"
+  )
+  
+  # Test with correct length numeric vector
+  numeric_vector <- rep(c(1, 2), length.out = ncol(test_exp$expr_mat))
+  result_exp <- remove_missing_variables(test_exp, by = numeric_vector, prop = 0.5)
+  expect_s3_class(result_exp, "glyexp_experiment")
+})
+
+test_that("remove_missing_variables: column name vs factor comparison", {
+  # Create experiment with group column and missing values
+  test_exp <- complex_exp()
+  test_exp$expr_mat[1, 1:2] <- NA
+  test_exp$expr_mat[2, 4:6] <- NA
+  
+  # Filter using column name
+  result_by_name <- remove_missing_variables(test_exp, by = "group", prop = 0.5, strict = FALSE)
+  
+  # Filter using factor directly
+  group_factor <- factor(test_exp$sample_info$group)
+  result_by_factor <- remove_missing_variables(test_exp, by = group_factor, prop = 0.5, strict = FALSE)
+  
+  # Results should be identical
+  expect_equal(result_by_name$expr_mat, result_by_factor$expr_mat)
+  expect_equal(result_by_name$var_info, result_by_factor$var_info)
+})

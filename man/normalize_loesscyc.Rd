@@ -10,9 +10,9 @@ normalize_loesscyc(x, by = NULL, ...)
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.
 If a matrix, rows should be variables and columns should be samples.}
 
-\item{by}{A column name in \code{sample_info} to stratify by. Optional.
-If provided, the normalization will be performed within each group.
-Only available for \code{glyexp_experiment} objects.}
+\item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
+specifying group assignments for each sample. Optional.
+If provided, the normalization will be performed within each group.}
 
 \item{...}{Additional arguments to pass to \code{\link[limma:normalizeCyclicLoess]{limma::normalizeCyclicLoess()}}.}
 }

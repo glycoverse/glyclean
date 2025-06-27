@@ -76,9 +76,9 @@ normalize_total_area <- function(x) {
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
-#' @param by A column name in `sample_info` to stratify by. Optional.
+#' @param by Either a column name in `sample_info` (string) or a factor/vector
+#'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
-#'   Only available for `glyexp_experiment` objects.
 #' @param ... Additional arguments to pass to [limma::normalizeQuantiles()].
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
@@ -101,9 +101,9 @@ normalize_quantile <- function(x, by = NULL, ...) {
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
-#' @param by A column name in `sample_info` to stratify by. Optional.
+#' @param by Either a column name in `sample_info` (string) or a factor/vector
+#'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
-#'   Only available for `glyexp_experiment` objects.
 #' @param ... Additional arguments to pass to [limma::normalizeCyclicLoess()].
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
@@ -125,9 +125,9 @@ normalize_loessf <- function(x, by = NULL, ...) {
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
-#' @param by A column name in `sample_info` to stratify by. Optional.
+#' @param by Either a column name in `sample_info` (string) or a factor/vector
+#'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
-#'   Only available for `glyexp_experiment` objects.
 #' @param ... Additional arguments to pass to [limma::normalizeCyclicLoess()].
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
@@ -156,9 +156,9 @@ normalize_loesscyc <- function(x, by = NULL, ...) {
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
-#' @param by A column name in `sample_info` to stratify by. Optional.
+#' @param by Either a column name in `sample_info` (string) or a factor/vector
+#'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
-#'   Only available for `glyexp_experiment` objects.
 #' @param ... Additional arguments to pass to [limma::normalizeVSN()].
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
@@ -186,9 +186,9 @@ normalize_vsn <- function(x, by = NULL, ...) {
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
-#' @param by A column name in `sample_info` to stratify by. Optional.
+#' @param by Either a column name in `sample_info` (string) or a factor/vector
+#'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
-#'   Only available for `glyexp_experiment` objects.
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
 #'   returns a `glyexp_experiment` with normalized expression matrix.
@@ -212,9 +212,9 @@ normalize_median_quotient <- function(x, by = NULL) {
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
-#' @param by A column name in `sample_info` to stratify by. Optional.
+#' @param by Either a column name in `sample_info` (string) or a factor/vector
+#'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
-#'   Only available for `glyexp_experiment` objects.
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
 #'   returns a `glyexp_experiment` with normalized expression matrix.
@@ -234,9 +234,9 @@ normalize_rlr <- function(x, by = NULL) {
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
-#' @param by A column name in `sample_info` to stratify by. Optional.
+#' @param by Either a column name in `sample_info` (string) or a factor/vector
+#'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
-#'   Only available for `glyexp_experiment` objects.
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
 #'   returns a `glyexp_experiment` with normalized expression matrix.
@@ -260,9 +260,9 @@ normalize_rlrma <- function(x, by = NULL) {
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
 #' @param n_iter The number of iterations to perform. Default is 3.
-#' @param by A column name in `sample_info` to stratify by. Optional.
+#' @param by Either a column name in `sample_info` (string) or a factor/vector
+#'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
-#'   Only available for `glyexp_experiment` objects.
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
 #'   returns a `glyexp_experiment` with normalized expression matrix.

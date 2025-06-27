@@ -64,9 +64,8 @@ impute_half_sample_min <- function(x) {
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
 #' @param k The number of nearest neighbors to consider.
-#' @param by A grouping variable to consider when imputing missing values.
-#'   This variable should be a column in the sample information table.
-#'   Only available for `glyexp_experiment` objects.
+#' @param by Either a column name in `sample_info` (string) or a factor/vector
+#'   specifying group assignments for each sample. Used for grouping when imputing missing values.
 #' @param ... Additional arguments to pass to `impute::impute.knn()`.
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
@@ -87,9 +86,8 @@ impute_sw_knn <- function(x, k = 5, by = NULL, ...) {
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
 #' @param k The number of nearest neighbors to consider.
-#' @param by A grouping variable to consider when imputing missing values.
-#'   This variable should be a column in the variable information table.
-#'   Only available for `glyexp_experiment` objects.
+#' @param by Either a column name in `sample_info` (string) or a factor/vector
+#'   specifying group assignments for each sample. Used for grouping when imputing missing values.
 #' @param ... Additional arguments to pass to `impute::impute.knn()`.
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
@@ -113,9 +111,8 @@ impute_fw_knn <- function(x, k = 5, by = NULL, ...) {
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
-#' @param by A grouping variable to consider when imputing missing values.
-#'   This variable should be a column in the sample information table.
-#'   Only available for `glyexp_experiment` objects.
+#' @param by Either a column name in `sample_info` (string) or a factor/vector
+#'   specifying group assignments for each sample. Used for grouping when imputing missing values.
 #' @param ... Additional arguments to pass to `pcaMethods::pca()`.
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
@@ -135,9 +132,8 @@ impute_bpca <- function(x, by = NULL, ...) {
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
-#' @param by A grouping variable to consider when imputing missing values.
-#'   This variable should be a column in the sample information table.
-#'   Only available for `glyexp_experiment` objects.
+#' @param by Either a column name in `sample_info` (string) or a factor/vector
+#'   specifying group assignments for each sample. Used for grouping when imputing missing values.
 #' @param ... Additional arguments to pass to `pcaMethods::pca()`.
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
@@ -158,9 +154,8 @@ impute_ppca <- function(x, by = NULL, ...) {
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
-#' @param by A grouping variable to consider when imputing missing values.
-#'   This variable should be a column in the sample information table.
-#'   Only available for `glyexp_experiment` objects.
+#' @param by Either a column name in `sample_info` (string) or a factor/vector
+#'   specifying group assignments for each sample. Used for grouping when imputing missing values.
 #' @param ... Additional arguments to pass to `pcaMethods::pca()`.
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
@@ -180,9 +175,8 @@ impute_svd <- function(x, by = NULL, ...) {
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
-#' @param by A grouping variable to consider when imputing missing values.
-#'   This variable should be a column in the sample information table.
-#'   Only available for `glyexp_experiment` objects.
+#' @param by Either a column name in `sample_info` (string) or a factor/vector
+#'   specifying group assignments for each sample. Used for grouping when imputing missing values.
 #' @param ... Additional arguments to pass to `imputeLCMD::impute.MinProb()`.
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
@@ -202,9 +196,8 @@ impute_min_prob <- function(x, by = NULL, ...) {
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
-#' @param by A grouping variable to consider when imputing missing values.
-#'   This variable should be a column in the sample information table.
-#'   Only available for `glyexp_experiment` objects.
+#' @param by Either a column name in `sample_info` (string) or a factor/vector
+#'   specifying group assignments for each sample. Used for grouping when imputing missing values.
 #' @param ... Additional arguments to pass to `missForest::missForest()`.
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,

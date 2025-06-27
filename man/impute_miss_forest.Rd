@@ -10,9 +10,8 @@ impute_miss_forest(x, by = NULL, ...)
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.
 If a matrix, rows should be variables and columns should be samples.}
 
-\item{by}{A grouping variable to consider when imputing missing values.
-This variable should be a column in the sample information table.
-Only available for \code{glyexp_experiment} objects.}
+\item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
+specifying group assignments for each sample. Used for grouping when imputing missing values.}
 
 \item{...}{Additional arguments to pass to \code{missForest::missForest()}.}
 }

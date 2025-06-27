@@ -175,27 +175,64 @@ detect_batch_effect <- function(x, batch = "batch", group = NULL) {
 .extract_batch_group_from_experiment <- function(x, batch, group, require_batch = FALSE) {
   # Validate experiment input
   checkmate::assert_class(x, "glyexp_experiment")
-  checkmate::assert_string(batch)
-  checkmate::assert_string(group, null.ok = TRUE)
   
-  sample_info <- x$sample_info
-  
-  # Check if batch column exists
-  if (!batch %in% colnames(sample_info)) {
-    if (require_batch) {
-      cli::cli_abort("Batch column '{batch}' not found in sample_info.")
+  # Handle batch parameter with special logic for non-required cases
+  batch_values <- NULL
+  if (is.character(batch) && length(batch) == 1) {
+    # For string input, check if column exists first when not required
+    if (batch %in% colnames(x$sample_info)) {
+      batch_values <- .resolve_column_param(
+        batch, 
+        sample_info = x$sample_info, 
+        param_name = "batch", 
+        n_samples = ncol(x$expr_mat),
+        allow_null = FALSE
+      )
+    } else if (require_batch) {
+      # If batch is required but column doesn't exist, let resolve_column_param handle the error
+      batch_values <- .resolve_column_param(
+        batch, 
+        sample_info = x$sample_info, 
+        param_name = "batch", 
+        n_samples = ncol(x$expr_mat),
+        allow_null = FALSE
+      )
+    } else {
+      # Batch column doesn't exist and is not required
+      return(NULL)
     }
+  } else if (!is.null(batch)) {
+    # Direct factor/vector input
+    batch_values <- .resolve_column_param(
+      batch, 
+      sample_info = x$sample_info, 
+      param_name = "batch", 
+      n_samples = ncol(x$expr_mat),
+      allow_null = FALSE
+    )
+  } else if (require_batch) {
+    cli::cli_abort("Batch information is required but not provided.")
+  } else {
     return(NULL)
   }
   
-  # Check if group column exists (if provided)
-  if (!is.null(group) && !group %in% colnames(sample_info)) {
-    cli::cli_abort("Group column '{group}' not found in sample_info.")
+  # Resolve group parameter
+  group_values <- .resolve_column_param(
+    group, 
+    sample_info = x$sample_info, 
+    param_name = "group", 
+    n_samples = ncol(x$expr_mat),
+    allow_null = TRUE
+  )
+  
+  # Check if batch was found
+  if (is.null(batch_values) && require_batch) {
+    cli::cli_abort("Batch information is required but not provided.")
   }
   
-  # Extract batch and group values
-  batch_values <- sample_info[[batch]]
-  group_values <- if (!is.null(group)) sample_info[[group]] else NULL
+  if (is.null(batch_values)) {
+    return(NULL)
+  }
   
   return(list(batch = batch_values, group = group_values))
 }

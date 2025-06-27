@@ -12,9 +12,8 @@ If a matrix, rows should be variables and columns should be samples.}
 
 \item{k}{The number of nearest neighbors to consider.}
 
-\item{by}{A grouping variable to consider when imputing missing values.
-This variable should be a column in the sample information table.
-Only available for \code{glyexp_experiment} objects.}
+\item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
+specifying group assignments for each sample. Used for grouping when imputing missing values.}
 
 \item{...}{Additional arguments to pass to \code{impute::impute.knn()}.}
 }

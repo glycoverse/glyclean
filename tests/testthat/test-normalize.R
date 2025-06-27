@@ -198,3 +198,94 @@ test_that("normalize_rlrmacyc works", {
   # Check that all values are finite after normalization
   expect_true(all(is.finite(result_exp$expr_mat)))
 })
+
+# Test new API functionality: factor/vector parameters
+
+test_that("normalize_quantile works with factor by parameter", {
+  test_exp <- simple_exp(10, 10)
+  
+  # Create a factor for grouping
+  group_factor <- factor(rep(c("A", "B"), each = 5))
+  
+  # Apply normalization with factor by parameter
+  result_exp <- normalize_quantile(test_exp, by = group_factor)
+  
+  # Check that the function returns the correct structure
+  expect_s3_class(result_exp, "glyexp_experiment")
+  expect_equal(dim(result_exp$expr_mat), dim(test_exp$expr_mat))
+  expect_equal(rownames(result_exp$expr_mat), rownames(test_exp$expr_mat))
+  expect_equal(colnames(result_exp$expr_mat), colnames(test_exp$expr_mat))
+  
+  # Check that all values are finite after normalization
+  expect_true(all(is.finite(result_exp$expr_mat)))
+})
+
+test_that("normalize_quantile works with character vector by parameter", {
+  test_exp <- simple_exp(10, 10)
+  
+  # Create a character vector for grouping
+  group_vector <- rep(c("Group1", "Group2"), each = 5)
+  
+  # Apply normalization with vector by parameter
+  result_exp <- normalize_quantile(test_exp, by = group_vector)
+  
+  # Check that the function returns the correct structure
+  expect_s3_class(result_exp, "glyexp_experiment")
+  expect_equal(dim(result_exp$expr_mat), dim(test_exp$expr_mat))
+  expect_equal(rownames(result_exp$expr_mat), rownames(test_exp$expr_mat))
+  expect_equal(colnames(result_exp$expr_mat), colnames(test_exp$expr_mat))
+  
+  # Check that all values are finite after normalization
+  expect_true(all(is.finite(result_exp$expr_mat)))
+})
+
+test_that("normalize_median_quotient works with factor by parameter", {
+  test_exp <- simple_exp(6, 6)
+  
+  # Create a factor for grouping
+  group_factor <- factor(rep(c("Control", "Treatment"), each = 3))
+  
+  # Apply normalization with factor by parameter
+  result_exp <- normalize_median_quotient(test_exp, by = group_factor)
+  
+  # Check that the function returns the correct structure
+  expect_s3_class(result_exp, "glyexp_experiment")
+  expect_equal(dim(result_exp$expr_mat), dim(test_exp$expr_mat))
+  expect_equal(rownames(result_exp$expr_mat), rownames(test_exp$expr_mat))
+  expect_equal(colnames(result_exp$expr_mat), colnames(test_exp$expr_mat))
+  
+  # Check that all values are finite after normalization
+  expect_true(all(is.finite(result_exp$expr_mat)))
+})
+
+test_that("by parameter validation works correctly", {
+  test_exp <- simple_exp(6, 6)
+  
+  # Test with wrong length vector
+  wrong_length_vector <- c("A", "B", "A")  # Should be length 6
+  expect_error(
+    normalize_quantile(test_exp, by = wrong_length_vector),
+    "vector must have length 6"
+  )
+  
+  # Test with numeric vector (should work)
+  numeric_vector <- rep(c(1, 2), each = 3)
+  result_exp <- normalize_quantile(test_exp, by = numeric_vector)
+  expect_s3_class(result_exp, "glyexp_experiment")
+})
+
+test_that("by parameter comparison: column name vs factor", {
+  # Create experiment with group column
+  test_exp <- simple_exp(6, 6)
+  test_exp$sample_info$group <- rep(c("A", "B"), each = 3)
+  
+  # Normalize using column name
+  result_by_name <- normalize_quantile(test_exp, by = "group")
+  
+  # Normalize using factor directly
+  group_factor <- factor(rep(c("A", "B"), each = 3))
+  result_by_factor <- normalize_quantile(test_exp, by = group_factor)
+  
+  # Results should be identical (within numerical tolerance)
+  expect_equal(result_by_name$expr_mat, result_by_factor$expr_mat, tolerance = 1e-10)
+})
