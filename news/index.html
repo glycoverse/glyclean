@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,13 +32,34 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.0" id="glyclean-040">glyclean 0.4.0<a class="anchor" aria-label="anchor" href="#glyclean-040"></a></h2>
+<div class="section level3">
+<h3 id="major-changes-0-4-0">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-0-4-0"></a></h3>
+<ul><li>All data processing functions now accept matrices as input in addition to <code>glyexp_experiment</code> objects.</li>
+<li>The <code>by</code> parameter in data processing functions now accepts factors in addition to column names, enabling direct use with matrix inputs.</li>
+<li>API updated to support custom grouping factors for batch operations when working with matrices.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-0-4-0">Minor improvements<a class="anchor" aria-label="anchor" href="#minor-improvements-0-4-0"></a></h3>
+<ul><li>Improved error messages for <code><a href="../reference/correct_batch_effect.html">correct_batch_effect()</a></code> and <code><a href="../reference/detect_batch_effect.html">detect_batch_effect()</a></code> when column names are not found in sample information.</li>
+<li>More meaningful error messages when providing column names as <code>batch</code> or <code>group</code> arguments with matrix inputs.</li>
+<li>Enhanced parameter validation and error handling across all modules.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-4-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-4-0"></a></h3>
+<ul><li>Fixed incorrect behavior of <code>by</code> argument in <code>filter_missing_variable()</code>.</li>
+<li>Resolved issues with parameter processing when using different input types.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.0" id="glyclean-030">glyclean 0.3.0<a class="anchor" aria-label="anchor" href="#glyclean-030"></a></h2>
 <ul><li>
 <code><a href="../reference/auto_clean.html">auto_clean()</a></code> now detects batch effects before batch correction.</li>
 <li>
 <code>to_level</code> argument is removed from <code><a href="../reference/auto_clean.html">auto_clean()</a></code>.</li>
 </ul></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

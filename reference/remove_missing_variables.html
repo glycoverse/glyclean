@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,7 +39,7 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">remove_missing_variables</span><span class="op">(</span></span>
-<span>  <span class="va">exp</span>,</span>
+<span>  <span class="va">x</span>,</span>
 <span>  prop <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  by <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -52,8 +52,9 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-exp">exp<a class="anchor" aria-label="anchor" href="#arg-exp"></a></dt>
-<dd><p>An experiment object.</p></dd>
+<dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
+<dd><p>Either a <code>glyexp_experiment</code> object or a matrix.
+If a matrix, rows should be variables and columns should be samples.</p></dd>
 
 
 <dt id="arg-prop">prop<a class="anchor" aria-label="anchor" href="#arg-prop"></a></dt>
@@ -68,7 +69,8 @@ An alternative to <code>prop</code>.</p></dd>
 
 
 <dt id="arg-by">by<a class="anchor" aria-label="anchor" href="#arg-by"></a></dt>
-<dd><p>A string specifying a sample information column to stratify by.
+<dd><p>Either a column name in <code>sample_info</code> (string) or a factor/vector
+specifying group assignments for each sample.
 Missing value counts or proportions will be calculated within each group.</p></dd>
 
 
@@ -89,12 +91,14 @@ to be kept. If <code>NULL</code> (default), it is calculated dynamically:</p><ul
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An experiment object with the variables removed.</p>
+    <p>For <code>glyexp_experiment</code> input, returns a modified <code>glyexp_experiment</code> object.
+For matrix input, returns a filtered matrix.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu">glyexp</span><span class="fu">::</span><span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/toy_experiment.html" class="external-link">toy_experiment</a></span><span class="op">(</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># With glyexp_experiment</span></span></span>
+<span class="r-in"><span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu">glyexp</span><span class="fu">::</span><span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/toy_experiment.html" class="external-link">toy_experiment</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">exp</span><span class="op">$</span><span class="va">expr_mat</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span>    <span class="co"># V1: 1/6 missing</span></span></span>
 <span class="r-in"><span><span class="va">exp</span><span class="op">$</span><span class="va">expr_mat</span><span class="op">[</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span>  <span class="co"># V2: 3/6 missing</span></span></span>
 <span class="r-in"><span><span class="va">exp</span><span class="op">$</span><span class="va">expr_mat</span><span class="op">[</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span>  <span class="co"># V3: 5/6 missing</span></span></span>
@@ -133,6 +137,10 @@ to be kept. If <code>NULL</code> (default), it is calculated dynamically:</p><ul
 <span class="r-in"><span><span class="fu">remove_missing_variables</span><span class="op">(</span><span class="va">exp</span>, min_n <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">$</span><span class="va">expr_mat</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    S1 S2 S3 S4 S5 S6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> V1 NA  5  9 13 17 21</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># With matrix</span></span></span>
+<span class="r-in"><span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="cn">NA</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="cn">NA</span>, <span class="fl">7</span>, <span class="fl">8</span>, <span class="fl">9</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mat_filtered</span> <span class="op">&lt;-</span> <span class="fu">remove_missing_variables</span><span class="op">(</span><span class="va">mat</span>, prop <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

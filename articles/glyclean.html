@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,9 +71,9 @@ glycoproteomics and glycomics data preprocessing! This package provides
 a comprehensive toolkit that takes the guesswork out of data cleaning,
 with specialized methods designed specifically for the unique challenges
 of glycan analysis.</p>
-<p><strong>Important Note:</strong> This package works with
-<code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> objects. If you’re new to this data
-structure, we highly recommend checking out <a href="https://glycoverse.github.io/glyexp/articles/glyexp.html" class="external-link">its
+<p><strong>Important Note:</strong> This package is primarily designed
+for <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> objects. If you’re new to this
+data structure, we highly recommend checking out <a href="https://glycoverse.github.io/glyexp/articles/glyexp.html" class="external-link">its
 introduction</a> first. We’ll also be using the <a href="https://github.com/glycoverse/glyread" class="external-link">glyread</a> package to load
 our data – it’s the go-to tool in the <code>glycoverse</code>
 ecosystem.</p>
@@ -101,16 +101,16 @@ proper <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.h
 <span>  glycan_type <span class="op">=</span> <span class="st">"N"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reading data</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Reading data <span style="color: #B2B2B2;">[327ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Reading data <span style="color: #B2B2B2;">[334ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Parsing glycan compositions</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Parsing glycan compositions <span style="color: #B2B2B2;">[218ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Parsing glycan compositions <span style="color: #B2B2B2;">[228ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Parsing glycan structures</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Parsing glycan structures <span style="color: #B2B2B2;">[3s]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Parsing glycan structures <span style="color: #B2B2B2;">[3.2s]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Packing experiment</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Packing experiment <span style="color: #B2B2B2;">[25ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Packing experiment <span style="color: #B2B2B2;">[22ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="va">exp</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -169,14 +169,14 @@ come from 3 different batches and represent 4 distinct biological groups
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clean_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_clean.html">auto_clean</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data (Median)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalizing data (Median) <span style="color: #B2B2B2;">[216ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalizing data (Median) <span style="color: #B2B2B2;">[231ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Removing variables with &gt;50% missing values</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Removing variables with &gt;50% missing values <span style="color: #B2B2B2;">[20ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Removing variables with &gt;50% missing values <span style="color: #B2B2B2;">[16ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Imputing missing values</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Sample size &lt;= 30, using sample minimum imputation</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Imputing missing values<span style="color: #00BB00;">✔</span> Imputing missing values <span style="color: #B2B2B2;">[19ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Imputing missing values<span style="color: #00BB00;">✔</span> Imputing missing values <span style="color: #B2B2B2;">[16ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Aggregating data</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Aggregating data <span style="color: #B2B2B2;">[123ms]</span></span></span>
@@ -185,7 +185,7 @@ come from 3 different batches and represent 4 distinct biological groups
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Detecting batch effects using ANOVA for 263 variables...</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BB00;">✔</span> Batch effect detection completed. 1 out of 263 variables show significant batch effects (p &lt; 0.05).</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BBBB;">ℹ</span> Batch effects detected in 0.4% of variables (&lt;=10%). Skipping batch correction.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BB00;">✔</span> Normalizing data again <span style="color: #B2B2B2;">[652ms]</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BB00;">✔</span> Normalizing data again <span style="color: #B2B2B2;">[646ms]</span></span></span></code></pre></div>
 <p><strong>That’s it!</strong> Your data is now preprocessed and ready
 for analysis! 🎉</p>
 </div>
@@ -350,11 +350,20 @@ smoothing</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Pro Tip:</strong> Notice the <code>by</code> parameter in
+<p><strong>Pro Tips:</strong> - Notice the <code>by</code> parameter in
 many functions? This allows stratified normalization within groups –
-super useful when you have distinct experimental conditions!</p>
-<p>Here we do the median normalization manually:</p>
+super useful when you have distinct experimental conditions! -
+<strong>Maximum flexibility</strong>: The <code>by</code> parameter
+accepts both column names from your sample metadata and direct vectors!
+This gives you complete control over grouping, even for custom groupings
+that aren’t stored in your experiment object.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Example: Using by parameter with a custom vector</span></span>
+<span><span class="co"># Normalize within custom groups (e.g., based on some external criteria)</span></span>
+<span><span class="va">custom_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"C"</span>, <span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"C"</span><span class="op">)</span></span>
+<span><span class="va">normalized_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">exp</span>, by <span class="op">=</span> <span class="va">custom_groups</span><span class="op">)</span></span></code></pre></div>
+<p>Here we do the median normalization manually:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">normed_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -368,7 +377,7 @@ signal.</p>
 <p><strong>What <code><a href="../reference/auto_clean.html">auto_clean()</a></code> does:</strong> Removes
 variables with &gt;50% missing values</p>
 <p><strong>Manual approach (do it differently):</strong></p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">filtered_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_missing_variables.html">remove_missing_variables</a></span><span class="op">(</span><span class="va">normed_exp</span>, n <span class="op">=</span> <span class="fl">0</span>, by <span class="op">=</span> <span class="st">"group"</span>, strict <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>This code translates to: “Keep any variable that has complete data in
 at least one biological group.” Perfect for maximizing the number of
@@ -464,7 +473,7 @@ imputation (machine learning power)</li>
 </tbody>
 </table>
 <p>For demonstration, let’s use the simple zero imputation:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">imputed_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/impute_zero.html">impute_zero</a></span><span class="op">(</span><span class="va">filtered_exp</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -500,11 +509,11 @@ condensed)</li>
 <p><strong>What <code><a href="../reference/auto_clean.html">auto_clean()</a></code> does:</strong> If
 <code>glycan_structure</code> column exists, aggregate to “gfs” level.
 Otherwise, aggregate to “gf” level.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">aggregated_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">imputed_exp</span>, to_level <span class="op">=</span> <span class="st">"gf"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Pro move:</strong> Re-normalize after aggregation to account
 for the new intensity distributions:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">aggregated_exp2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">aggregated_exp</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -521,7 +530,7 @@ correction can work wonders!</p>
 detects and corrects batch effects when it finds a “batch” column in
 your sample metadata, and batch effects are detected for more than 10%
 variables.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># To detect batch effects:</span></span>
 <span><span class="va">p_values</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detect_batch_effect.html">detect_batch_effect</a></span><span class="op">(</span><span class="va">aggregated_exp2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Detecting batch effects using ANOVA for 223 variables...</span></span>
@@ -531,7 +540,7 @@ variables.</p>
 <span><span class="co">#&gt; 0.5949390 0.9970692 0.7404105 0.4850942 0.9593795</span></span></code></pre></div>
 <p>Here we do not have batch effects, but we will correct it anyway for
 demonstration.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># To correct batch effects:</span></span>
 <span><span class="va">corrected_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_batch_effect.html">correct_batch_effect</a></span><span class="op">(</span><span class="va">aggregated_exp2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Batch effect correction completed using ComBat algorithm.</span></span></code></pre></div>
@@ -543,6 +552,49 @@ demonstration.</p>
 analysis-ready glycoproteomics data. Your data has been normalized,
 filtered, imputed, aggregated, and batch-corrected – it’s ready to
 reveal its biological secrets!</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="advanced-usage-beyond-glyexpexperiment-objects">Advanced Usage: Beyond <code>glyexp::experiment()</code> Objects
+🔧<a class="anchor" aria-label="anchor" href="#advanced-usage-beyond-glyexpexperiment-objects"></a>
+</h2>
+<p>While this vignette focuses on <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code>
+objects, <code>glyclean</code> is designed to be flexible and
+accommodating to different workflows and data formats.</p>
+<div class="section level3">
+<h3 id="working-with-plain-matrices">Working with Plain Matrices<a class="anchor" aria-label="anchor" href="#working-with-plain-matrices"></a>
+</h3>
+<p>Most <code>glyclean</code> functions also support plain matrices as
+input! This means you can use the package’s powerful preprocessing
+capabilities even if you’re working with traditional data formats. The
+functions intelligently detect your input type and handle it
+appropriately.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Example: Using glyclean with a plain matrix</span></span>
+<span><span class="va">my_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">normalized_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">my_matrix</span><span class="op">)</span></span>
+<span><span class="va">imputed_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/impute_sample_min.html">impute_sample_min</a></span><span class="op">(</span><span class="va">normalized_matrix</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="flexible-grouping-with-custom-vectors">Flexible Grouping with Custom Vectors<a class="anchor" aria-label="anchor" href="#flexible-grouping-with-custom-vectors"></a>
+</h3>
+<p>Many functions in <code>glyclean</code> accept a <code>by</code>
+parameter for stratified processing. This parameter offers maximum
+flexibility – it accepts both column names from your sample metadata and
+direct vectors!</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Using column names (standard approach)</span></span>
+<span><span class="va">normalized_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">exp</span>, by <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Using custom vectors (advanced approach)</span></span>
+<span><span class="va">custom_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"C"</span>, <span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"C"</span><span class="op">)</span></span>
+<span><span class="va">normalized_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">exp</span>, by <span class="op">=</span> <span class="va">custom_groups</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># This also works with matrices</span></span>
+<span><span class="va">normalized_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">my_matrix</span>, by <span class="op">=</span> <span class="va">custom_groups</span><span class="op">)</span></span></code></pre></div>
+<p>This gives you complete control over grouping, even for custom
+groupings that aren’t stored in your experiment object. Perfect for
+complex experimental designs or external grouping criteria!</p>
 </div>
 </div>
 <div class="section level2">
