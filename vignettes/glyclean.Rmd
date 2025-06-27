@@ -31,11 +31,13 @@ Meet `glyclean` – your Swiss Army knife for glycoproteomics and glycomics data
 This package provides a comprehensive toolkit that takes the guesswork out of data cleaning,
 with specialized methods designed specifically for the unique challenges of glycan analysis.
 
-**Important Note:** This package works with `glyexp::experiment()` objects.
+**Important Note:** This package is primarily designed for `glyexp::experiment()` objects.
 If you're new to this data structure,
 we highly recommend checking out [its introduction](https://glycoverse.github.io/glyexp/articles/glyexp.html) first.
 We'll also be using the [glyread](https://github.com/glycoverse/glyread) package to load our data – 
 it's the go-to tool in the `glycoverse` ecosystem.
+
+
 
 ```{r setup}
 library(glyclean)
@@ -177,9 +179,16 @@ bringing all intensities to a comparable scale.
 | `normalize_loesscyc()` | LOESS with cyclic smoothing | Cyclic data |
 | `normalize_vsn()` | Variance stabilizing normalization | Heteroscedastic data |
 
-**Pro Tip:** Notice the `by` parameter in many functions? 
-This allows stratified normalization within groups – 
-super useful when you have distinct experimental conditions!
+**Pro Tips:** 
+- Notice the `by` parameter in many functions? This allows stratified normalization within groups – super useful when you have distinct experimental conditions!
+- **Maximum flexibility**: The `by` parameter accepts both column names from your sample metadata and direct vectors! This gives you complete control over grouping, even for custom groupings that aren't stored in your experiment object.
+
+```{r eval=FALSE}
+# Example: Using by parameter with a custom vector
+# Normalize within custom groups (e.g., based on some external criteria)
+custom_groups <- c("A", "A", "B", "B", "C", "C", "A", "A", "B", "B", "C", "C")
+normalized_exp <- normalize_median(exp, by = custom_groups)
+```
 
 Here we do the median normalization manually:
 
@@ -324,6 +333,46 @@ imputed,
 aggregated,
 and batch-corrected – 
 it's ready to reveal its biological secrets!
+
+## Advanced Usage: Beyond `glyexp::experiment()` Objects 🔧
+
+While this vignette focuses on `glyexp::experiment()` objects,
+`glyclean` is designed to be flexible and accommodating to different workflows and data formats.
+
+### Working with Plain Matrices
+
+Most `glyclean` functions also support plain matrices as input! 
+This means you can use the package's powerful preprocessing capabilities even if you're working with traditional data formats.
+The functions intelligently detect your input type and handle it appropriately.
+
+```{r eval=FALSE}
+# Example: Using glyclean with a plain matrix
+my_matrix <- matrix(rnorm(100), nrow = 10)
+normalized_matrix <- normalize_median(my_matrix)
+imputed_matrix <- impute_sample_min(normalized_matrix)
+```
+
+### Flexible Grouping with Custom Vectors
+
+Many functions in `glyclean` accept a `by` parameter for stratified processing.
+This parameter offers maximum flexibility – 
+it accepts both column names from your sample metadata and direct vectors!
+
+```{r eval=FALSE}
+# Using column names (standard approach)
+normalized_exp <- normalize_median(exp, by = "group")
+
+# Using custom vectors (advanced approach)
+custom_groups <- c("A", "A", "B", "B", "C", "C", "A", "A", "B", "B", "C", "C")
+normalized_exp <- normalize_median(exp, by = custom_groups)
+
+# This also works with matrices
+normalized_matrix <- normalize_median(my_matrix, by = custom_groups)
+```
+
+This gives you complete control over grouping,
+even for custom groupings that aren't stored in your experiment object.
+Perfect for complex experimental designs or external grouping criteria!
 
 ## What's Next?
 
