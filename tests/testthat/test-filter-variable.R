@@ -253,13 +253,46 @@ test_that("remove_missing_variables works with matrix input", {
   expect_equal(colnames(result_mat), colnames(test_mat))
 })
 
-test_that("remove_missing_variables rejects 'by' parameter for matrix input", {
+test_that("remove_missing_variables works with matrix input and by parameter", {
+  # Create test matrix with missing values
+  test_mat <- matrix(c(
+    1, NA, 3, 4, 5,      # V1: 1 missing in group A, 0 missing in group B
+    NA, NA, 8, 9, 10,    # V2: 2 missing in group A, 0 missing in group B
+    11, 12, NA, NA, 15   # V3: 0 missing in group A, 2 missing in group B
+  ), nrow = 3, ncol = 5, byrow = TRUE)
+  rownames(test_mat) <- paste0("V", 1:3)
+  colnames(test_mat) <- paste0("S", 1:5)
+  
+  # Create grouping vector
+  by_vector <- c("A", "A", "B", "B", "B")
+  
+  # Apply filtering with by parameter
+  result_mat <- remove_missing_variables(test_mat, by = by_vector, prop = 0.5, strict = FALSE)
+  
+  # Check that the function returns a matrix
+  expect_true(is.matrix(result_mat))
+  expect_equal(ncol(result_mat), ncol(test_mat))
+  expect_equal(colnames(result_mat), colnames(test_mat))
+})
+
+test_that("matrix input with by parameter: column name should error", {
   # Create test matrix
   test_mat <- matrix(c(1, 2, 3, 4, 5, 6), nrow = 2, ncol = 3)
   
-  # Should error when 'by' parameter is provided with matrix input
+  # Should error when column name is provided for matrix input
   expect_error(
-    remove_missing_variables(test_mat, by = c("A", "A", "B"), prop = 0.5),
-    "The.*by.*parameter is not supported for matrix input"
+    remove_missing_variables(test_mat, by = "group", prop = 0.5),
+    "For matrix input.*must be a vector, not a column name"
+  )
+})
+
+test_that("matrix input with by parameter: wrong length vector should error", {
+  # Create test matrix
+  test_mat <- matrix(c(1, 2, 3, 4, 5, 6), nrow = 2, ncol = 3)
+  
+  # Should error when vector length doesn't match sample count
+  expect_error(
+    remove_missing_variables(test_mat, by = c("A", "B"), prop = 0.5),
+    "vector must have length 3"
   )
 })
