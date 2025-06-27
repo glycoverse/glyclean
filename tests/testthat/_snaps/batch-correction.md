@@ -1,10 +1,3 @@
-# correct_batch_effect returns original experiment when no batch info
-
-    Code
-      result <- correct_batch_effect(exp)
-    Message
-      i No batch information found in column 'batch' of sample_info. Returning original experiment unchanged.
-
 # correct_batch_effect warns and returns original when batch and group are confounded
 
     Code

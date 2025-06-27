@@ -28,14 +28,15 @@ test_that("correct_batch_effect works with valid batch and group information", {
   expect_equal(rownames(result$expr_mat), rownames(exp$expr_mat))
 })
 
-test_that("correct_batch_effect returns original experiment when no batch info", {
+test_that("correct_batch_effect errors when no batch column exists", {
   # Create experiment without batch info
   exp <- complex_exp()
   
-  # Should return original experiment with info message
-  expect_snapshot(result <- correct_batch_effect(exp))
-  
-  expect_identical(result, exp)
+  # Should error when batch column doesn't exist
+  expect_error(
+    correct_batch_effect(exp),
+    "The column \"batch\" does not exist in `sample_info`"
+  )
 })
 
 test_that("correct_batch_effect warns and returns original when batch and group are confounded", {

@@ -57,7 +57,7 @@ correct_batch_effect <- function(x, batch = "batch", group = NULL) {
   }
   
   # For experiment input, extract batch and group from sample_info
-  batch_group_info <- .extract_batch_group_from_experiment(x, batch, group)
+  batch_group_info <- .extract_batch_group_from_experiment(x, batch, group, require_batch = TRUE)
   if (is.null(batch_group_info)) {
     cli::cli_alert_info("No batch information found in column '{batch}' of sample_info. Returning original experiment unchanged.")
     return(x)
