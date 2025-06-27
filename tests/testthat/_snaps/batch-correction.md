@@ -8,7 +8,7 @@
 # correct_batch_effect warns and returns original when batch and group are confounded
 
     Code
-      result <- correct_batch_effect(exp, group_col = "group")
+      result <- correct_batch_effect(exp, group = "group")
     Condition
       Warning:
       Batch and group variables are highly confounded.

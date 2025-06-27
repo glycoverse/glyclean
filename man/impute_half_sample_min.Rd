@@ -4,13 +4,16 @@
 \alias{impute_half_sample_min}
 \title{Half Sample Minimum Imputation}
 \usage{
-impute_half_sample_min(exp)
+impute_half_sample_min(x)
 }
 \arguments{
-\item{exp}{An expression matrix.}
+\item{x}{Either a \code{glyexp_experiment} object or a matrix.
+If a matrix, rows should be variables and columns should be samples.}
 }
 \value{
-An expression matrix with missing values imputed.
+Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
+returns a \code{glyexp_experiment} with missing values imputed.
+If \code{x} is a matrix, returns a matrix with missing values imputed.
 }
 \description{
 Impute missing values with half of the minimum value of the corresponding sample.

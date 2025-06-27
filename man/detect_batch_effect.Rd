@@ -4,25 +4,41 @@
 \alias{detect_batch_effect}
 \title{Detect batch effect}
 \usage{
-detect_batch_effect(exp, batch_col = "batch", group_col = NULL)
+detect_batch_effect(x, batch = "batch", group = NULL)
 }
 \arguments{
-\item{exp}{A \code{glyexp::experiment()}.}
+\item{x}{Either a \code{glyexp_experiment} object or a matrix.
+If a matrix, rows should be variables and columns should be samples.}
 
-\item{batch_col}{The column name of the batch variable in the sample information.
-Default to "batch".}
+\item{batch}{Either a factor/character vector specifying batch assignments for each sample,
+or a string specifying the column name in sample_info (for experiment input only).
+Default to "batch" for experiment input.}
 
-\item{group_col}{The column name of the group variable in the sample information.
+\item{group}{Either a factor/character vector specifying group assignments for each sample,
+or a string specifying the column name in sample_info (for experiment input only).
 If provided, it will be used as a covariate in the ANOVA model.
-This is useful when you have an unbalanced design,
-i.e., the proportion of groups in each batch is not the same.}
+This is useful when you have an unbalanced design.
+Default to NULL.}
 }
 \value{
 A double vector of p-values for each variable,
-i.e., the same length as \code{nrow(get_expr_mat(exp))}
+i.e., the same length as \code{nrow(x)} (for matrix) or \code{nrow(get_expr_mat(x))} (for experiment)
 }
 \description{
 Use ANOVA to detect if batch effect is present in the data.
-If \code{group_col} is provided,
-it will be used as a covariate in the ANOVA model.
+If \code{group} is provided, it will be used as a covariate in the ANOVA model.
+}
+\examples{
+# With glyexp_experiment and column names
+exp <- glyexp::toy_experiment()
+exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
+exp$sample_info$group <- c("Ctrl", "Ctrl", "Treat", "Ctrl", "Treat", "Treat")
+p_values <- detect_batch_effect(exp, batch = "batch", group = "group")
+
+# With matrix and factor vectors
+mat <- matrix(rnorm(200), nrow = 20, ncol = 10)
+batch_factor <- factor(rep(c("A", "B"), each = 5))
+group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
+p_values <- detect_batch_effect(mat, batch = batch_factor, group = group_factor)
+
 }

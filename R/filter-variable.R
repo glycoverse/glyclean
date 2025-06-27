@@ -1,6 +1,7 @@
 #' Remove Variables with Missing Values
 #'
-#' @param exp An experiment object.
+#' @param x Either a `glyexp_experiment` object or a matrix.
+#'   If a matrix, rows should be variables and columns should be samples.
 #' @param prop The proportion of missing values to use as a threshold.
 #' Variables with missing values above this threshold will be removed.
 #' Defaults to 0.5.
@@ -8,6 +9,7 @@
 #' An alternative to `prop`.
 #' @param by A string specifying a sample information column to stratify by.
 #' Missing value counts or proportions will be calculated within each group.
+#' Only available for `glyexp_experiment` objects.
 #' @param strict Works with `by`. If `FALSE`, remove a variable only if
 #' it passes the missing threshold in all groups.
 #' If `TRUE`, remove a variable if it passes the missing threshold in any group.
@@ -19,6 +21,7 @@
 #' - When using `by`, the rule is applied within each group
 #'
 #' @examples
+#' # With glyexp_experiment
 #' exp <- glyexp::toy_experiment()
 #' exp$expr_mat[1, 1] <- NA    # V1: 1/6 missing
 #' exp$expr_mat[2, 1:3] <- NA  # V2: 3/6 missing
@@ -43,35 +46,75 @@
 #' # Use custom min_n to require at least 4 non-missing values
 #' remove_missing_variables(exp, min_n = 4)$expr_mat
 #'
+#' # With matrix
+#' mat <- matrix(c(1, 2, NA, 4, 5, NA, 7, 8, 9), nrow = 3)
+#' mat_filtered <- remove_missing_variables(mat, prop = 0.5)
+#'
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
-#' @return An experiment object with the variables removed.
+#' @return For `glyexp_experiment` input, returns a modified `glyexp_experiment` object.
+#'   For matrix input, returns a filtered matrix.
 #' @export
-remove_missing_variables <- function(exp, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
+remove_missing_variables <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
+  
+  # Handle different input types
+  if (is.matrix(x)) {
+    # For matrix input, by parameter is not supported
+    if (!is.null(by)) {
+      cli::cli_abort("The {.arg by} parameter is not supported for matrix input. Please provide a {.cls glyexp_experiment} object to use stratified filtering.")
+    }
+    return(.filter_matrix_missing_variables(x, prop = prop, n = n, min_n = min_n))
+  }
+  
+  checkmate::assert_class(x, "glyexp_experiment")
+  
   # Validate and standardize parameters
   params <- validate_filter_params(prop, n, min_n)
   
   # Calculate min_n if not provided
-  min_n_values <- calculate_min_n(exp, by, params$min_n)
+  min_n_values <- calculate_min_n(x, by, params$min_n)
   
   # Validate min_n against sample sizes
-  validate_min_n(exp, by, min_n_values)
+  validate_min_n(x, by, min_n_values)
   
   # Filter variables based on missing values
   if (is.null(by)) {
-    vars_to_remove <- filter_missing_global(exp$expr_mat, params$prop, params$n, min_n_values$global)
+    vars_to_remove <- filter_missing_global(x$expr_mat, params$prop, params$n, min_n_values$global)
   } else {
-    vars_to_remove <- filter_missing_by_group(exp, by, params$prop, params$n, min_n_values, strict)
+    vars_to_remove <- filter_missing_by_group(x, by, params$prop, params$n, min_n_values, strict)
   }
   
   # Apply filtering
-  exp$expr_mat <- exp$expr_mat[!vars_to_remove, , drop = FALSE]
-  exp$var_info <- exp$var_info %>%
-    dplyr::filter(.data$variable %in% rownames(exp$expr_mat))
-  exp
+  x$expr_mat <- x$expr_mat[!vars_to_remove, , drop = FALSE]
+  x$var_info <- x$var_info %>%
+    dplyr::filter(.data$variable %in% rownames(x$expr_mat))
+  x
 }
 
+.filter_matrix_missing_variables <- function(x, prop = NULL, n = NULL, min_n = NULL) {
+  # Validate and standardize parameters
+  params <- validate_filter_params(prop, n, min_n)
+  
+  # Calculate min_n if not provided (for matrix)
+  if (is.null(params$min_n)) {
+    n_samples <- ncol(x)
+    min_n_value <- ifelse(n_samples <= 3, n_samples, 3)
+  } else {
+    min_n_value <- params$min_n
+  }
+  
+  # Validate min_n against sample size
+  if (min_n_value > ncol(x)) {
+    rlang::abort(paste0("min_n (", min_n_value, ") cannot be greater than the number of samples (", ncol(x), ")."))
+  }
+  
+  # Filter variables based on missing values
+  vars_to_remove <- filter_missing_global(x, params$prop, params$n, min_n_value)
+  
+  # Apply filtering
+  x[!vars_to_remove, , drop = FALSE]
+}
 
 validate_filter_params <- function(prop, n, min_n) {
   # Set default prop if both prop and n are NULL
@@ -103,7 +146,7 @@ validate_filter_params <- function(prop, n, min_n) {
 }
 
 
-calculate_min_n <- function(exp, by, min_n) {
+calculate_min_n <- function(x, by, min_n) {
   if (!is.null(min_n)) {
     # User provided min_n, use it for all
     return(list(global = min_n, by_group = NULL))
@@ -111,12 +154,12 @@ calculate_min_n <- function(exp, by, min_n) {
   
   if (is.null(by)) {
     # Global min_n calculation
-    n_samples <- ncol(exp$expr_mat)
+    n_samples <- ncol(x$expr_mat)
     global_min_n <- ifelse(n_samples <= 3, n_samples, 3)
     return(list(global = global_min_n, by_group = NULL))
   } else {
     # Group-wise min_n calculation
-    groups <- split(seq_len(ncol(exp$expr_mat)), exp$sample_info[[by]])
+    groups <- split(seq_len(ncol(x$expr_mat)), x$sample_info[[by]])
     group_sizes <- sapply(groups, length)
     group_min_n <- ifelse(group_sizes <= 3, group_sizes, 3)
     return(list(global = NULL, by_group = group_min_n))
@@ -124,15 +167,15 @@ calculate_min_n <- function(exp, by, min_n) {
 }
 
 
-validate_min_n <- function(exp, by, min_n_values) {
+validate_min_n <- function(x, by, min_n_values) {
   if (is.null(by)) {
     # Global validation
-    if (min_n_values$global > ncol(exp$expr_mat)) {
-      rlang::abort(paste0("min_n (", min_n_values$global, ") cannot be greater than the number of samples (", ncol(exp$expr_mat), ")."))
+    if (min_n_values$global > ncol(x$expr_mat)) {
+      rlang::abort(paste0("min_n (", min_n_values$global, ") cannot be greater than the number of samples (", ncol(x$expr_mat), ")."))
     }
   } else {
     # Group-wise validation
-    groups <- split(seq_len(ncol(exp$expr_mat)), exp$sample_info[[by]])
+    groups <- split(seq_len(ncol(x$expr_mat)), x$sample_info[[by]])
     group_sizes <- sapply(groups, length)
     
     if (is.null(min_n_values$global)) {
@@ -169,12 +212,12 @@ filter_missing_global <- function(expr_mat, prop, n, min_n) {
 }
 
 
-filter_missing_by_group <- function(exp, by, prop, n, min_n_values, strict) {
-  groups <- split(seq_len(ncol(exp$expr_mat)), exp$sample_info[[by]])
+filter_missing_by_group <- function(x, by, prop, n, min_n_values, strict) {
+  groups <- split(seq_len(ncol(x$expr_mat)), x$sample_info[[by]])
   
   group_results <- lapply(names(groups), function(group_name) {
     idx <- groups[[group_name]]
-    group_mat <- exp$expr_mat[, idx, drop = FALSE]
+    group_mat <- x$expr_mat[, idx, drop = FALSE]
     
     # Calculate missing threshold result
     if (is.null(n)) {

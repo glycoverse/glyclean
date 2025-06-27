@@ -6,7 +6,9 @@
 #' unique combination of specified variables.
 #' It is recommended to call this function after missing value imputation.
 #'
-#' @param exp A `glyexp_experiment` object containing glycoproteomics data.
+#' @param x A `glyexp_experiment` object containing glycoproteomics data.
+#'   This function only works with `glyexp_experiment` objects as it requires
+#'   variable information for aggregation.
 #' @param to_level The aggregation level,
 #'   one of: "gf" (glycoforms), "gp" (glycopeptides),
 #'   "gfs" (glycoforms with structures),
@@ -37,16 +39,16 @@
 #'   with aggregated expression matrix and
 #'   updated variable information.
 #' @export
-aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
+aggregate <- function(x, to_level = c("gf", "gp", "gfs", "gps")) {
   # Check arguments
-  checkmate::assert_class(exp, "glyexp_experiment")
+  checkmate::assert_class(x, "glyexp_experiment")
   to_level <- rlang::arg_match(to_level)
 
   # Check if the conversion is valid
   current_level <- ifelse(
-    is.null(exp$meta_data$aggr_level),
+    is.null(x$meta_data$aggr_level),
     "psm",
-    exp$meta_data$aggr_level
+    x$meta_data$aggr_level
   )
   invalid_conversions <- list(
     c("gf", "gp"),
@@ -73,8 +75,8 @@ aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
     gps = c("peptide", "proteins", "genes", "glycan_composition",
             "glycan_structure", "peptide_site", "protein_sites")
   )
-  sample_info_df <- exp$sample_info
-  tb <- tibble::as_tibble(exp, sample_cols = NULL)
+  sample_info_df <- x$sample_info
+  tb <- tibble::as_tibble(x, sample_cols = NULL)
   new_tb <- dplyr::summarise(
     tb,
     value = sum(.data$value, na.rm = TRUE),
@@ -94,7 +96,7 @@ aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
     sample_info_df$sample,
     drop = FALSE
   ]
-  new_exp <- exp
+  new_exp <- x
   new_exp$expr_mat <- expr_mat
   new_exp$var_info <- var_info_df
   new_exp$meta_data$aggr_level <- to_level

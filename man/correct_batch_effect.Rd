@@ -4,36 +4,39 @@
 \alias{correct_batch_effect}
 \title{Correct Batch Effect}
 \usage{
-correct_batch_effect(exp, batch_col = "batch", group_col = NULL)
+correct_batch_effect(x, batch = "batch", group = NULL)
 }
 \arguments{
-\item{exp}{A \code{glyexp_experiment} object containing glycoproteomics/glycomics data.}
+\item{x}{Either a \code{glyexp_experiment} object or a matrix.
+If a matrix, rows should be variables and columns should be samples.}
 
-\item{batch_col}{The column name of the batch variable in the sample information.
-Default to "batch".}
+\item{batch}{Either a factor/character vector specifying batch assignments for each sample,
+or a string specifying the column name in sample_info (for experiment input only).
+Default to "batch" for experiment input.}
 
-\item{group_col}{The column name of the group variable in the sample information.
+\item{group}{Either a factor/character vector specifying group assignments for each sample,
+or a string specifying the column name in sample_info (for experiment input only).
 If provided, it will be used as a covariate in the ComBat model.
-This is useful when you have an unbalanced design,
-i.e., the proportion of groups in each batch is not the same.
+This is useful when you have an unbalanced design.
 Default to NULL.}
 }
 \value{
-A \code{glyexp_experiment} object with batch-corrected expression matrix.
+For \code{glyexp_experiment} input, returns a modified \code{glyexp_experiment} object.
+For matrix input, returns a batch-corrected matrix.
 }
 \description{
 Correct batch effects in glycoproteomics/glycomics data using ComBat algorithm
-from the sva package. This function requires batch information in the sample_info.
+from the sva package.
 }
 \details{
 This function performs batch effect correction using the ComBat algorithm.
-It requires batch information in the sample information (specified by \code{batch_col}).
-If no batch information is available, the function will return the original experiment unchanged.
+It requires batch information provided via the \code{batch} parameter.
+If no batch information is available, the function will return the original data unchanged.
 
-If group information is provided via \code{group_col},
+If group information is provided via \code{group},
 the function will check for confounding between batch and group variables.
 If batch and group are highly confounded (complete overlap),
-the function will issue a warning and return the original experiment unchanged
+the function will issue a warning and return the original data unchanged
 to avoid over-correction.
 
 When both batch and group information are available and not highly confounded,
@@ -41,15 +44,16 @@ the group information will be included in the model to preserve biological varia
 while correcting for batch effects.
 }
 \examples{
-# Create an experiment with batch information
+# With glyexp_experiment and column names
 exp <- glyexp::toy_experiment()
 exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
 exp$sample_info$group <- c("Ctrl", "Ctrl", "Treat", "Ctrl", "Treat", "Treat")
+corrected_exp <- correct_batch_effect(exp, batch = "batch", group = "group")
 
-# Correct batch effects using default column names
-corrected_exp <- correct_batch_effect(exp)
-
-# Correct batch effects with custom column names
-corrected_exp <- correct_batch_effect(exp, batch_col = "batch", group_col = "group")
+# With matrix and factor vectors
+mat <- matrix(rnorm(200), nrow = 20, ncol = 10)
+batch_factor <- factor(rep(c("A", "B"), each = 5))
+group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
+corrected_mat <- correct_batch_effect(mat, batch = batch_factor, group = group_factor)
 
 }

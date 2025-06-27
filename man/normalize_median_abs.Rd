@@ -4,13 +4,16 @@
 \alias{normalize_median_abs}
 \title{Absolute Median Normalization}
 \usage{
-normalize_median_abs(exp)
+normalize_median_abs(x)
 }
 \arguments{
-\item{exp}{An experiment object.}
+\item{x}{Either a \code{glyexp_experiment} object or a matrix.
+If a matrix, rows should be variables and columns should be samples.}
 }
 \value{
-An experiment object with the expression matrix normalized.
+Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
+returns a \code{glyexp_experiment} with normalized expression matrix.
+If \code{x} is a matrix, returns a normalized matrix.
 }
 \description{
 Normalize the expression matrix by dividing each column (sample) by the absolute

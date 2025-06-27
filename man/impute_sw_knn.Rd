@@ -4,20 +4,24 @@
 \alias{impute_sw_knn}
 \title{Sample-wise KNN Imputation}
 \usage{
-impute_sw_knn(exp, k = 5, by = NULL, ...)
+impute_sw_knn(x, k = 5, by = NULL, ...)
 }
 \arguments{
-\item{exp}{An expression matrix.}
+\item{x}{Either a \code{glyexp_experiment} object or a matrix.
+If a matrix, rows should be variables and columns should be samples.}
 
 \item{k}{The number of nearest neighbors to consider.}
 
 \item{by}{A grouping variable to consider when imputing missing values.
-This variable should be a column in the sample information table.}
+This variable should be a column in the sample information table.
+Only available for \code{glyexp_experiment} objects.}
 
 \item{...}{Additional arguments to pass to \code{impute::impute.knn()}.}
 }
 \value{
-An expression matrix with missing values imputed.
+Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
+returns a \code{glyexp_experiment} with missing values imputed.
+If \code{x} is a matrix, returns a matrix with missing values imputed.
 }
 \description{
 A wrapper around the \code{\link[impute:impute.knn]{impute::impute.knn()}}.

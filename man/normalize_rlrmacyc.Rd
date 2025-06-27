@@ -4,18 +4,22 @@
 \alias{normalize_rlrmacyc}
 \title{Robust Linear Regression with Median Adjustment and Cyclic Normalization}
 \usage{
-normalize_rlrmacyc(exp, n_iter = 3, by = NULL)
+normalize_rlrmacyc(x, n_iter = 3, by = NULL)
 }
 \arguments{
-\item{exp}{An experiment object.}
+\item{x}{Either a \code{glyexp_experiment} object or a matrix.
+If a matrix, rows should be variables and columns should be samples.}
 
 \item{n_iter}{The number of iterations to perform. Default is 3.}
 
 \item{by}{A column name in \code{sample_info} to stratify by. Optional.
-If provided, the normalization will be performed within each group.}
+If provided, the normalization will be performed within each group.
+Only available for \code{glyexp_experiment} objects.}
 }
 \value{
-An experiment object with the expression matrix normalized.
+Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
+returns a \code{glyexp_experiment} with normalized expression matrix.
+If \code{x} is a matrix, returns a normalized matrix.
 }
 \description{
 This method is based on robust linear regression with median adjustment

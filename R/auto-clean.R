@@ -138,7 +138,7 @@ auto_clean <- function(exp) {
   group_col <- if ("group" %in% colnames(exp$sample_info)) "group" else NULL
   
   # Detect batch effects
-  p_values <- detect_batch_effect(exp, batch_col = "batch", group_col = group_col)
+  p_values <- detect_batch_effect(exp, batch = "batch", group = group_col)
   
   # Calculate proportion of significant variables (p < 0.05)
   significant_vars <- sum(p_values < 0.05, na.rm = TRUE)
@@ -148,7 +148,7 @@ auto_clean <- function(exp) {
   # Only correct batch effects if >10% of variables are significant
   if (prop_significant > 0.1) {
     cli::cli_progress_step("Correcting batch effects ({scales::percent(prop_significant, accuracy = 0.1)} of variables affected)")
-    exp <- correct_batch_effect(exp, batch_col = "batch", group_col = group_col)
+    exp <- correct_batch_effect(exp, batch = "batch", group = group_col)
   } else {
     cli::cli_alert_info("Batch effects detected in {scales::percent(prop_significant, accuracy = 0.1)} of variables (<=10%). Skipping batch correction.")
   }

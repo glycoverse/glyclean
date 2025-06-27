@@ -2,12 +2,15 @@
 #'
 #' Impute missing values in an expression matrix by replacing them with zeros.
 #'
-#' @param exp An expression matrix.
+#' @param x Either a `glyexp_experiment` object or a matrix.
+#'   If a matrix, rows should be variables and columns should be samples.
 #'
-#' @return An expression matrix with missing values imputed.
+#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
+#'   returns a `glyexp_experiment` with missing values imputed.
+#'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
-impute_zero <- function(exp) {
-  .update_expr_mat(exp, .impute_zero, by = NULL)
+impute_zero <- function(x) {
+  .process_input(x, .impute_zero, by = NULL)
 }
 
 
@@ -18,12 +21,15 @@ impute_zero <- function(exp) {
 #' i.e. missing values are induced by an ion below the detection limit.
 #' See also [impute_half_sample_min()].
 #'
-#' @param exp An expression matrix.
+#' @param x Either a `glyexp_experiment` object or a matrix.
+#'   If a matrix, rows should be variables and columns should be samples.
 #'
-#' @return An expression matrix with missing values imputed.
+#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
+#'   returns a `glyexp_experiment` with missing values imputed.
+#'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
-impute_sample_min <- function(exp) {
-  .update_expr_mat(exp, .impute_sample_min, by = NULL)
+impute_sample_min <- function(x) {
+  .process_input(x, .impute_sample_min, by = NULL)
 }
 
 
@@ -34,12 +40,15 @@ impute_sample_min <- function(exp) {
 #' i.e. missing values are induced by an ion below the detection limit.
 #' Compared to [impute_sample_min()], this method is more conservative.
 #'
-#' @param exp An expression matrix.
+#' @param x Either a `glyexp_experiment` object or a matrix.
+#'   If a matrix, rows should be variables and columns should be samples.
 #'
-#' @return An expression matrix with missing values imputed.
+#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
+#'   returns a `glyexp_experiment` with missing values imputed.
+#'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
-impute_half_sample_min <- function(exp) {
-  .update_expr_mat(exp, .impute_half_sample_min, by = NULL)
+impute_half_sample_min <- function(x) {
+  .process_input(x, .impute_half_sample_min, by = NULL)
 }
 
 
@@ -52,16 +61,20 @@ impute_half_sample_min <- function(exp) {
 #' relationships or experimental conditions), this method can better utilize
 #' the overall relationships among samples.
 #'
-#' @param exp An expression matrix.
+#' @param x Either a `glyexp_experiment` object or a matrix.
+#'   If a matrix, rows should be variables and columns should be samples.
 #' @param k The number of nearest neighbors to consider.
 #' @param by A grouping variable to consider when imputing missing values.
-#' This variable should be a column in the sample information table.
+#'   This variable should be a column in the sample information table.
+#'   Only available for `glyexp_experiment` objects.
 #' @param ... Additional arguments to pass to `impute::impute.knn()`.
 #'
-#' @return An expression matrix with missing values imputed.
+#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
+#'   returns a `glyexp_experiment` with missing values imputed.
+#'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
-impute_sw_knn <- function(exp, k = 5, by = NULL, ...) {
-  .update_expr_mat(exp, .impute_sw_knn, k = k, by = by, ...)
+impute_sw_knn <- function(x, k = 5, by = NULL, ...) {
+  .process_input(x, .impute_sw_knn, k = k, by = by, ...)
 }
 
 
@@ -71,16 +84,20 @@ impute_sw_knn <- function(exp, k = 5, by = NULL, ...) {
 #' Impute missing values with values from the k-nearest neighbors of the
 #' corresponding feature.
 #'
-#' @param exp An expression matrix.
+#' @param x Either a `glyexp_experiment` object or a matrix.
+#'   If a matrix, rows should be variables and columns should be samples.
 #' @param k The number of nearest neighbors to consider.
 #' @param by A grouping variable to consider when imputing missing values.
-#' This variable should be a column in the variable information table.
+#'   This variable should be a column in the variable information table.
+#'   Only available for `glyexp_experiment` objects.
 #' @param ... Additional arguments to pass to `impute::impute.knn()`.
 #'
-#' @return An expression matrix with missing values imputed.
+#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
+#'   returns a `glyexp_experiment` with missing values imputed.
+#'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
-impute_fw_knn <- function(exp, k = 5, by = NULL, ...) {
-  .update_expr_mat(exp, .impute_fw_knn, k = k, by = by, ...)
+impute_fw_knn <- function(x, k = 5, by = NULL, ...) {
+  .process_input(x, .impute_fw_knn, k = k, by = by, ...)
 }
 
 
@@ -94,15 +111,19 @@ impute_fw_knn <- function(exp, k = 5, by = NULL, ...) {
 #' BPCA defines a likelihood function such that the likelihood for data far from
 #' the training set is much lower, even if they are close to the principal subspace.
 #'
-#' @param exp An expression matrix.
+#' @param x Either a `glyexp_experiment` object or a matrix.
+#'   If a matrix, rows should be variables and columns should be samples.
 #' @param by A grouping variable to consider when imputing missing values.
-#' This variable should be a column in the sample information table.
+#'   This variable should be a column in the sample information table.
+#'   Only available for `glyexp_experiment` objects.
 #' @param ... Additional arguments to pass to `pcaMethods::pca()`.
 #'
-#' @return An expression matrix with missing values imputed.
+#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
+#'   returns a `glyexp_experiment` with missing values imputed.
+#'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
-impute_bpca <- function(exp, by = NULL, ...) {
-  .update_expr_mat(exp, .impute_bpca, by = by, ...)
+impute_bpca <- function(x, by = NULL, ...) {
+  .process_input(x, .impute_bpca, by = by, ...)
 }
 
 
@@ -112,15 +133,19 @@ impute_bpca <- function(exp, by = NULL, ...) {
 #' Impute missing values using probabilistic principal component analysis (PPCA).
 #' PPCA allows to perform PCA on incomplete data and may be used for missing value estimation.
 #'
-#' @param exp An expression matrix.
+#' @param x Either a `glyexp_experiment` object or a matrix.
+#'   If a matrix, rows should be variables and columns should be samples.
 #' @param by A grouping variable to consider when imputing missing values.
-#' This variable should be a column in the sample information table.
+#'   This variable should be a column in the sample information table.
+#'   Only available for `glyexp_experiment` objects.
 #' @param ... Additional arguments to pass to `pcaMethods::pca()`.
 #'
-#' @return An expression matrix with missing values imputed.
+#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
+#'   returns a `glyexp_experiment` with missing values imputed.
+#'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
-impute_ppca <- function(exp, by = NULL, ...) {
-  .update_expr_mat(exp, .impute_ppca, by = by, ...)
+impute_ppca <- function(x, by = NULL, ...) {
+  .process_input(x, .impute_ppca, by = by, ...)
 }
 
 
@@ -131,15 +156,19 @@ impute_ppca <- function(exp, by = NULL, ...) {
 #' SVD is a matrix factorization technique that factors a matrix into three matrices:
 #' U, Σ, and V. SVD is used to find the best lower rank approximation of the original matrix.
 #'
-#' @param exp An expression matrix.
+#' @param x Either a `glyexp_experiment` object or a matrix.
+#'   If a matrix, rows should be variables and columns should be samples.
 #' @param by A grouping variable to consider when imputing missing values.
-#' This variable should be a column in the sample information table.
+#'   This variable should be a column in the sample information table.
+#'   Only available for `glyexp_experiment` objects.
 #' @param ... Additional arguments to pass to `pcaMethods::pca()`.
 #'
-#' @return An expression matrix with missing values imputed.
+#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
+#'   returns a `glyexp_experiment` with missing values imputed.
+#'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
-impute_svd <- function(exp, by = NULL, ...) {
-  .update_expr_mat(exp, .impute_svd, by = by, ...)
+impute_svd <- function(x, by = NULL, ...) {
+  .process_input(x, .impute_svd, by = by, ...)
 }
 
 
@@ -149,15 +178,19 @@ impute_svd <- function(exp, by = NULL, ...) {
 #' Impute missing values using random draws from the left-censored
 #' gaussian distribution.
 #'
-#' @param exp An expression matrix.
+#' @param x Either a `glyexp_experiment` object or a matrix.
+#'   If a matrix, rows should be variables and columns should be samples.
 #' @param by A grouping variable to consider when imputing missing values.
-#' This variable should be a column in the sample information table.
+#'   This variable should be a column in the sample information table.
+#'   Only available for `glyexp_experiment` objects.
 #' @param ... Additional arguments to pass to `imputeLCMD::impute.MinProb()`.
 #'
-#' @return An expression matrix with missing values imputed.
+#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
+#'   returns a `glyexp_experiment` with missing values imputed.
+#'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
-impute_min_prob <- function(exp, by = NULL, ...) {
-  .update_expr_mat(exp, .impute_min_prob, by = by, ...)
+impute_min_prob <- function(x, by = NULL, ...) {
+  .process_input(x, .impute_min_prob, by = by, ...)
 }
 
 
@@ -167,15 +200,19 @@ impute_min_prob <- function(exp, by = NULL, ...) {
 #' Impute missing values using recursive running of random forests until convergence.
 #' This is a non-parametric method and works for both MAR and MNAR missing data.
 #'
-#' @param exp An expression matrix.
+#' @param x Either a `glyexp_experiment` object or a matrix.
+#'   If a matrix, rows should be variables and columns should be samples.
 #' @param by A grouping variable to consider when imputing missing values.
-#' This variable should be a column in the sample information table.
+#'   This variable should be a column in the sample information table.
+#'   Only available for `glyexp_experiment` objects.
 #' @param ... Additional arguments to pass to `missForest::missForest()`.
 #'
-#' @return An expression matrix with missing values imputed.
+#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
+#'   returns a `glyexp_experiment` with missing values imputed.
+#'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
-impute_miss_forest <- function(exp, by = NULL, ...) {
-  .update_expr_mat(exp, .impute_miss_forest, by = by, ...)
+impute_miss_forest <- function(x, by = NULL, ...) {
+  .process_input(x, .impute_miss_forest, by = by, ...)
 }
 
 

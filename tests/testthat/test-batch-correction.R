@@ -45,7 +45,7 @@ test_that("correct_batch_effect warns and returns original when batch and group 
   exp$sample_info$group <- c("Ctrl", "Ctrl", "Ctrl", "Treat", "Treat", "Treat")
   
   # Should warn and return original experiment when group_col is specified
-  expect_snapshot(result <- correct_batch_effect(exp, group_col = "group"))
+  expect_snapshot(result <- correct_batch_effect(exp, group = "group"))
   
   expect_identical(result, exp)
 })
@@ -146,7 +146,7 @@ test_that("correct_batch_effect preserves experiment structure", {
   )
   
   # Test with group_col specified to use both batch and group information
-  suppressMessages(result <- correct_batch_effect(exp, group_col = "group"))
+  suppressMessages(result <- correct_batch_effect(exp, group = "group"))
   
   # Check that sample_info and var_info are preserved
   expect_identical(result$sample_info, exp$sample_info)
@@ -219,7 +219,7 @@ test_that("detect_batch_effect works with batch and group information", {
   )
   
   # Test detection with group information
-  suppressMessages(p_values <- detect_batch_effect(exp, group_col = "group"))
+  suppressMessages(p_values <- detect_batch_effect(exp, group = "group"))
   
   expect_type(p_values, "double")
   expect_length(p_values, nrow(exp$expr_mat))
@@ -238,7 +238,7 @@ test_that("detect_batch_effect validates input", {
   
   # Should error with non-existent group column
   exp$sample_info$batch <- c("A", "A", "B", "B", "C", "C")
-  expect_error(detect_batch_effect(exp, group_col = "nonexistent"))
+  expect_error(detect_batch_effect(exp, group = "nonexistent"))
 })
 
 test_that("detect_batch_effect handles insufficient batches", {
@@ -306,7 +306,7 @@ test_that("detect_batch_effect uses custom column names", {
   )
   
   # Test with custom column names
-  suppressMessages(p_values <- detect_batch_effect(exp, batch_col = "my_batch", group_col = "my_group"))
+  suppressMessages(p_values <- detect_batch_effect(exp, batch = "my_batch", group = "my_group"))
   
   expect_type(p_values, "double")
   expect_length(p_values, nrow(exp$expr_mat))
@@ -413,7 +413,7 @@ test_that("detect_batch_effect with group covariate - mathematical validation", 
   suppressMessages(p_values_no_group <- detect_batch_effect(exp))
   
   # Test with group covariate (should detect only batch effects)
-  suppressMessages(p_values_with_group <- detect_batch_effect(exp, group_col = "group"))
+  suppressMessages(p_values_with_group <- detect_batch_effect(exp, group = "group"))
   
   # Both methods should detect some significant effects, but we're more flexible
   significant_no_group <- sum(p_values_no_group < 0.05, na.rm = TRUE)
@@ -466,13 +466,13 @@ test_that("correct_batch_effect effectively removes batch effects - mathematical
   )
   
   # Detect batch effects before correction
-  suppressMessages(p_values_before <- detect_batch_effect(exp, group_col = "group"))
+  suppressMessages(p_values_before <- detect_batch_effect(exp, group = "group"))
   
   # Apply batch correction
   suppressMessages(corrected_exp <- correct_batch_effect(exp))
   
   # Detect batch effects after correction
-  suppressMessages(p_values_after <- detect_batch_effect(corrected_exp, group_col = "group"))
+  suppressMessages(p_values_after <- detect_batch_effect(corrected_exp, group = "group"))
   
   # Before correction: should detect significant batch effects
   significant_before <- sum(p_values_before < 0.05, na.rm = TRUE)

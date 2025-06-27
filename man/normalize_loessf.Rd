@@ -4,18 +4,22 @@
 \alias{normalize_loessf}
 \title{LoessF Normalization}
 \usage{
-normalize_loessf(exp, by = NULL, ...)
+normalize_loessf(x, by = NULL, ...)
 }
 \arguments{
-\item{exp}{An experiment object.}
+\item{x}{Either a \code{glyexp_experiment} object or a matrix.
+If a matrix, rows should be variables and columns should be samples.}
 
 \item{by}{A column name in \code{sample_info} to stratify by. Optional.
-If provided, the normalization will be performed within each group.}
+If provided, the normalization will be performed within each group.
+Only available for \code{glyexp_experiment} objects.}
 
 \item{...}{Additional arguments to pass to \code{\link[limma:normalizeCyclicLoess]{limma::normalizeCyclicLoess()}}.}
 }
 \value{
-An experiment object with the expression matrix normalized.
+Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
+returns a \code{glyexp_experiment} with normalized expression matrix.
+If \code{x} is a matrix, returns a normalized matrix.
 }
 \description{
 This function is a wrapper around \code{\link[limma:normalizeCyclicLoess]{limma::normalizeCyclicLoess()}} with

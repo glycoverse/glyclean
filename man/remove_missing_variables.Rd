@@ -5,7 +5,7 @@
 \title{Remove Variables with Missing Values}
 \usage{
 remove_missing_variables(
-  exp,
+  x,
   prop = NULL,
   n = NULL,
   by = NULL,
@@ -14,7 +14,8 @@ remove_missing_variables(
 )
 }
 \arguments{
-\item{exp}{An experiment object.}
+\item{x}{Either a \code{glyexp_experiment} object or a matrix.
+If a matrix, rows should be variables and columns should be samples.}
 
 \item{prop}{The proportion of missing values to use as a threshold.
 Variables with missing values above this threshold will be removed.
@@ -24,7 +25,8 @@ Defaults to 0.5.}
 An alternative to \code{prop}.}
 
 \item{by}{A string specifying a sample information column to stratify by.
-Missing value counts or proportions will be calculated within each group.}
+Missing value counts or proportions will be calculated within each group.
+Only available for \code{glyexp_experiment} objects.}
 
 \item{strict}{Works with \code{by}. If \code{FALSE}, remove a variable only if
 it passes the missing threshold in all groups.
@@ -40,12 +42,14 @@ to be kept. If \code{NULL} (default), it is calculated dynamically:
 }}
 }
 \value{
-An experiment object with the variables removed.
+For \code{glyexp_experiment} input, returns a modified \code{glyexp_experiment} object.
+For matrix input, returns a filtered matrix.
 }
 \description{
 Remove Variables with Missing Values
 }
 \examples{
+# With glyexp_experiment
 exp <- glyexp::toy_experiment()
 exp$expr_mat[1, 1] <- NA    # V1: 1/6 missing
 exp$expr_mat[2, 1:3] <- NA  # V2: 3/6 missing
@@ -69,5 +73,9 @@ remove_missing_variables(exp, prop = 0)$expr_mat
 
 # Use custom min_n to require at least 4 non-missing values
 remove_missing_variables(exp, min_n = 4)$expr_mat
+
+# With matrix
+mat <- matrix(c(1, 2, NA, 4, 5, NA, 7, 8, 9), nrow = 3)
+mat_filtered <- remove_missing_variables(mat, prop = 0.5)
 
 }
