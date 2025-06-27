@@ -230,3 +230,14 @@ test_that(".auto_aggregate chooses correct aggregation level", {
   
   expect_equal(captured_to_level, "gf")
 })
+
+test_that("auto_clean rejects matrix input", {
+  # Create test matrix
+  test_mat <- matrix(runif(20), nrow = 4, ncol = 5)
+  
+  # auto_clean should reject matrix input since it requires experiment metadata
+  expect_error(
+    auto_clean(test_mat),
+    "Must inherit from class.*glyexp_experiment"
+  )
+})

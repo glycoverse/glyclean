@@ -625,4 +625,58 @@ test_that("batch correction reduces batch-related variance", {
               info = "Most variables should show substantial reduction in batch variance")
 })
 
+test_that("correct_batch_effect works with matrix input", {
+  # Set seed for reproducible results
+  set.seed(123)
+  
+  # Create test matrix
+  test_mat <- matrix(rnorm(60, mean = 10, sd = 2), nrow = 6, ncol = 10)
+  rownames(test_mat) <- paste0("V", 1:6)
+  colnames(test_mat) <- paste0("S", 1:10)
+  
+  # Create batch and group factors
+  batch_factor <- factor(rep(c("A", "B"), each = 5))
+  group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
+  
+  # Apply batch correction
+  suppressMessages(result_mat <- correct_batch_effect(test_mat, batch = batch_factor, group = group_factor))
+  
+  # Check that the function returns a matrix
+  expect_true(is.matrix(result_mat))
+  expect_equal(dim(result_mat), dim(test_mat))
+  expect_equal(rownames(result_mat), rownames(test_mat))
+  expect_equal(colnames(result_mat), colnames(test_mat))
+  
+  # Check that all values are finite
+  expect_true(all(is.finite(result_mat)))
+})
+
+test_that("detect_batch_effect works with matrix input", {
+  # Set seed for reproducible results
+  set.seed(456)
+  
+  # Create test matrix with batch effects
+  test_mat <- matrix(nrow = 5, ncol = 8)
+  batch_factor <- factor(rep(c("A", "B"), each = 4))
+  
+  # Add artificial batch effects to some variables
+  for (i in 1:5) {
+    batch_a_vals <- rnorm(4, mean = 10, sd = 1)
+    batch_b_vals <- rnorm(4, mean = 12, sd = 1)  # Different mean for batch B
+    test_mat[i, ] <- c(batch_a_vals, batch_b_vals)
+  }
+  
+  rownames(test_mat) <- paste0("V", 1:5)
+  colnames(test_mat) <- paste0("S", 1:8)
+  
+  # Detect batch effects
+  suppressMessages(p_values <- detect_batch_effect(test_mat, batch = batch_factor))
+  
+  # Check that the function returns appropriate results
+  expect_type(p_values, "double")
+  expect_length(p_values, nrow(test_mat))
+  expect_named(p_values, rownames(test_mat))
+  expect_true(all(p_values >= 0 & p_values <= 1))
+})
+
  

@@ -230,3 +230,36 @@ test_that("remove_missing_variables: column name vs factor comparison", {
   expect_equal(result_by_name$expr_mat, result_by_factor$expr_mat)
   expect_equal(result_by_name$var_info, result_by_factor$var_info)
 })
+
+test_that("remove_missing_variables works with matrix input", {
+  # Create test matrix with missing values (5 samples to avoid min_n constraint)
+  test_mat <- matrix(c(
+    1, 2, 3, 4, 5,      # V1: 0 missing
+    6, NA, 8, 9, 10,    # V2: 1 missing (20%)
+    11, NA, NA, NA, 15, # V3: 3 missing (60%) - should be removed with prop = 0.5
+    16, 17, 18, 19, 20  # V4: 0 missing
+  ), nrow = 4, ncol = 5, byrow = TRUE)
+  rownames(test_mat) <- paste0("V", 1:4)
+  colnames(test_mat) <- paste0("S", 1:5)
+  
+  # Apply filtering
+  result_mat <- remove_missing_variables(test_mat, prop = 0.5)
+  
+  # Check that the function returns a matrix
+  expect_true(is.matrix(result_mat))
+  expect_equal(nrow(result_mat), 3)  # V3 should be removed
+  expect_equal(ncol(result_mat), ncol(test_mat))
+  expect_equal(rownames(result_mat), c("V1", "V2", "V4"))
+  expect_equal(colnames(result_mat), colnames(test_mat))
+})
+
+test_that("remove_missing_variables rejects 'by' parameter for matrix input", {
+  # Create test matrix
+  test_mat <- matrix(c(1, 2, 3, 4, 5, 6), nrow = 2, ncol = 3)
+  
+  # Should error when 'by' parameter is provided with matrix input
+  expect_error(
+    remove_missing_variables(test_mat, by = c("A", "A", "B"), prop = 0.5),
+    "The.*by.*parameter is not supported for matrix input"
+  )
+})

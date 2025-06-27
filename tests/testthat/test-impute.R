@@ -125,3 +125,25 @@ test_that("impute_miss_forest works", {
   result_exp <- impute_miss_forest(test_exp)
   expect_equal(sum(is.na(result_exp$expr_mat)), 0)
 })
+
+
+test_that("impute_zero works with matrix input", {
+  # Create test matrix with missing values
+  test_mat <- matrix(c(1, 2, NA, 4, 5, NA, 7, 8, 9), nrow = 3, ncol = 3)
+  rownames(test_mat) <- paste0("V", 1:3)
+  colnames(test_mat) <- paste0("S", 1:3)
+  
+  # Apply imputation
+  result_mat <- impute_zero(test_mat)
+  
+  # Check that the function returns a matrix
+  expect_true(is.matrix(result_mat))
+  expect_equal(dim(result_mat), dim(test_mat))
+  expect_equal(rownames(result_mat), rownames(test_mat))
+  expect_equal(colnames(result_mat), colnames(test_mat))
+  
+  # Check that NA values were replaced with 0
+  expect_equal(sum(is.na(result_mat)), 0)
+  na_positions <- which(is.na(test_mat))
+  expect_true(all(result_mat[na_positions] == 0))
+})

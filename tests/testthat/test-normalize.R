@@ -289,3 +289,24 @@ test_that("by parameter comparison: column name vs factor", {
   # Results should be identical (within numerical tolerance)
   expect_equal(result_by_name$expr_mat, result_by_factor$expr_mat, tolerance = 1e-10)
 })
+
+test_that("normalize_median works with matrix input", {
+  # Create test matrix
+  test_mat <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9), nrow = 3, ncol = 3)
+  rownames(test_mat) <- paste0("V", 1:3)
+  colnames(test_mat) <- paste0("S", 1:3)
+  
+  # Apply normalization
+  result_mat <- normalize_median(test_mat)
+  
+  # Check that the function returns a matrix
+  expect_true(is.matrix(result_mat))
+  expect_equal(dim(result_mat), dim(test_mat))
+  expect_equal(rownames(result_mat), rownames(test_mat))
+  expect_equal(colnames(result_mat), colnames(test_mat))
+  
+  # Check that median normalization has been applied correctly
+  # After median normalization, each column should have the same median
+  col_medians <- apply(result_mat, 2, median)
+  expect_true(all(abs(diff(col_medians)) < 1e-10))
+})
