@@ -35,6 +35,18 @@ You can install the development version of glyclean from [GitHub](https://github
 pak::pak("glycoverse/glyclean")
 ```
 
+## Documentation
+
+- 🚀 Get started: [Here](https://glycoverse.github.io/glyclean/articles/glyclean.html)
+- 📚 Reference: [Here](https://glycoverse.github.io/glyclean/reference/index.html)
+
+## Role in `glycoverse`
+
+As data preprocessing is an essential step in omics data analysis,
+`glyclean` plays a central role in the `glycoverse` ecosystem.
+It serves as the bridge between raw experimental data (imported via `glyread`) and downstream analysis,
+enabling other packages like `glystats` to work with clean, analysis-ready data.
+
 ## Example
 
 ```{r}

@@ -28,6 +28,21 @@ You can install the development version of glyclean from
 pak::pak("glycoverse/glyclean")
 ```
 
+## Documentation
+
+-   🚀 Get started:
+    [Here](https://glycoverse.github.io/glyclean/articles/glyclean.html)
+-   📚 Reference:
+    [Here](https://glycoverse.github.io/glyclean/reference/index.html)
+
+## Role in `glycoverse`
+
+As data preprocessing is an essential step in omics data analysis,
+`glyclean` plays a central role in the `glycoverse` ecosystem. It serves
+as the bridge between raw experimental data (imported via `glyread`) and
+downstream analysis, enabling other packages like `glystats` to work
+with clean, analysis-ready data.
+
 ## Example
 
 ``` r
@@ -42,6 +57,21 @@ library(glyclean)
 exp <- toy_experiment()
 exp <- set_exp_type(exp, "glycomics")
 clean_exp <- auto_clean(exp)
+#> ℹ Normalizing data (Median Quotient)
+#> ✔ Normalizing data (Median Quotient) [32ms]
+#> 
+#> ℹ Removing variables with >50% missing values
+#> ✔ Removing variables with >50% missing values [47ms]
+#> 
+#> ℹ Imputing missing values
+#> ℹ Sample size <= 30, using sample minimum imputation
+#> ℹ Imputing missing values✔ Imputing missing values [9ms]
+#> 
+#> ℹ Normalizing data (Total Area)
+#> ℹ Detecting batch effects using ANOVA for 4 variables...
+#> ℹ Normalizing data (Total Area)✔ Batch effect detection completed. 0 out of 4 variables show significant batch effects (p < 0.05).
+#> ℹ Normalizing data (Total Area)ℹ Batch effects detected in 0.0% of variables (<=10%). Skipping batch correction.
+#> ℹ Normalizing data (Total Area)✔ Normalizing data (Total Area) [52ms]
 ```
 
 Yes, that’s it! Calling the magical `auto_clean()` function will
