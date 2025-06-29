@@ -11,7 +11,7 @@ Description:
 License: MIT + file LICENSE
 Suggests: 
     testthat (>= 3.0.0),
-    glyexp (>= 0.5.0),
+    glyexp (>= 0.5.1),
     glyread (>= 0.2.1),
     tibble,
     vsn,
