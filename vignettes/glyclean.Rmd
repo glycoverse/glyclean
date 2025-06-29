@@ -322,6 +322,89 @@ but we will correct it anyway for demonstration.
 corrected_exp <- correct_batch_effect(aggregated_exp2)
 ```
 
+### Step 6: Protein Inference – Solving the Identity Crisis 🔍
+
+Imagine you're at a costume party where everyone's wearing masks,
+and some people look so similar that you can't tell who's who.
+That's exactly what happens with protein assignments in mass spectrometry!
+
+**The Problem:** pGlyco3 often reports multiple potential protein assignments for a single glycopeptide sequence.
+Why? 
+Because many proteins share identical peptide sequences – 
+they're like molecular twins wearing the same outfit.
+This creates a headache when you want to perform protein-level analysis.
+
+**The Detective Work:** Let's see how many glycopeptides are suffering from this identity crisis:
+
+```{r}
+# Check how many glycopeptides have multiple protein assignments
+sum(stringr::str_detect(get_var_info(aggregated_exp2)$proteins, ";"))
+```
+
+**The Solution:** Enter `infer_protein()` – your molecular detective! 
+By default,
+it uses the "parsimony" method,
+which is like solving a puzzle by finding the minimum number of proteins needed to explain all your observed glycopeptides.
+Think of it as Occam's razor for proteomics!
+
+```{r}
+inferred_exp <- infer_protein(corrected_exp)
+
+# Now there are no multiple protein assignments,
+# and the column name changed from "proteins" to "protein".
+sum(stringr::str_detect(get_var_info(inferred_exp)$protein, ";"))
+```
+
+**Mystery solved!** 
+Each glycopeptide now has a single,
+confident protein assignment.
+
+**What `auto_clean()` does:** 
+Nothing! 
+This step requires your judgment about whether protein-level analysis is needed,
+so `auto_clean()` leaves this decision in your capable hands.
+
+### Step 7: Protein Expression Adjustment – Separating Signal from Noise 🎯
+
+Here's a fascinating biological puzzle: 
+when you measure a glycopeptide's intensity,
+you're actually seeing two stories at once!
+
+**The Dual Nature Problem:** Every glycopeptide intensity is a tale of two factors:
+
+- **The protein story**: How much of the substrate protein is present
+- **The glycosylation story**: How actively that protein is being glycosylated
+
+It's like trying to understand applause volume – 
+is the audience bigger,
+or are they just more enthusiastic?
+
+**The Solution:** If you're specifically interested in glycosylation changes (not protein abundance changes),
+you need to mathematically "subtract out" the protein expression component.
+Think of it as noise cancellation for biology!
+
+```R
+# We don't run the code here because we don't have the protein expression matrix.
+adjusted_exp <- adjust_protein(inferred_exp, pro_expr_mat)
+```
+
+**Important Prerequisites:**
+
+- Your protein expression matrix must have the same samples as your glycopeptide data
+- The protein expression matrix should be properly preprocessed (good news: you can use `glyclean` functions for this too!)
+- Sample matching needs to be perfect – no mixing apples with oranges!
+
+**Pro Tip:** 
+Most `glyclean` functions happily accept plain matrices as input,
+so you can preprocess your protein expression data using the same toolkit.
+Consistency is key!
+
+**What `auto_clean()` does:** 
+Nothing again! 
+This step requires external protein expression data,
+which `auto_clean()` can't magically conjure up.
+You're the chef here – `auto_clean()` just provides the ingredients!
+
 ### 🎉 Mission Accomplished!
 
 Congratulations! 
