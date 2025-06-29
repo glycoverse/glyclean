@@ -39,16 +39,16 @@
 #'   with aggregated expression matrix and
 #'   updated variable information.
 #' @export
-aggregate <- function(x, to_level = c("gf", "gp", "gfs", "gps")) {
+aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
   # Check arguments
-  checkmate::assert_class(x, "glyexp_experiment")
+  checkmate::assert_class(exp, "glyexp_experiment")
   to_level <- rlang::arg_match(to_level)
 
   # Check if the conversion is valid
   current_level <- ifelse(
-    is.null(x$meta_data$aggr_level),
+    is.null(exp$meta_data$aggr_level),
     "psm",
-    x$meta_data$aggr_level
+    exp$meta_data$aggr_level
   )
   invalid_conversions <- list(
     c("gf", "gp"),
@@ -75,8 +75,8 @@ aggregate <- function(x, to_level = c("gf", "gp", "gfs", "gps")) {
     gps = c("peptide", "proteins", "genes", "glycan_composition",
             "glycan_structure", "peptide_site", "protein_sites")
   )
-  sample_info_df <- x$sample_info
-  tb <- tibble::as_tibble(x, sample_cols = NULL)
+  sample_info_df <- exp$sample_info
+  tb <- tibble::as_tibble(exp, sample_cols = NULL)
   new_tb <- dplyr::summarise(
     tb,
     value = sum(.data$value, na.rm = TRUE),
@@ -96,7 +96,7 @@ aggregate <- function(x, to_level = c("gf", "gp", "gfs", "gps")) {
     sample_info_df$sample,
     drop = FALSE
   ]
-  new_exp <- x
+  new_exp <- exp
   new_exp$expr_mat <- expr_mat
   new_exp$var_info <- var_info_df
   new_exp$meta_data$aggr_level <- to_level

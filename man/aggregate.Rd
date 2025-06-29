@@ -4,10 +4,10 @@
 \alias{aggregate}
 \title{Aggregate Data}
 \usage{
-aggregate(x, to_level = c("gf", "gp", "gfs", "gps"))
+aggregate(exp, to_level = c("gf", "gp", "gfs", "gps"))
 }
 \arguments{
-\item{x}{A \code{glyexp_experiment} object containing glycoproteomics data.
+\item{exp}{A \code{glyexp_experiment} object containing glycoproteomics data.
 This function only works with \code{glyexp_experiment} objects as it requires
 variable information for aggregation.}
 
