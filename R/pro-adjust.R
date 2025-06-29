@@ -37,6 +37,16 @@
 #' 
 #' @importFrom rlang .data
 adjust_protein <- function(exp, pro_expr_mat, method = c("ratio", "reg")) {
+  .dispatch_on_input(
+    exp,
+    fun_exp = .adjust_protein_experiment,
+    fun_mat = .adjust_protein_matrix,
+    pro_expr_mat = pro_expr_mat,
+    method = method
+  )
+}
+
+.adjust_protein_experiment <- function(exp, pro_expr_mat, method = c("ratio", "reg")) {
   # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")
   method <- rlang::arg_match(method)
@@ -79,6 +89,10 @@ adjust_protein <- function(exp, pro_expr_mat, method = c("ratio", "reg")) {
   }
 
   new_exp
+}
+
+.adjust_protein_matrix <- function(exp, pro_expr_mat, method = c("ratio", "reg")) {
+  cli::cli_abort("The {.fn adjust_protein} function does not support matrix input.")
 }
 
 .adjust_protein_ratio <- function(exp, pro_expr_mat) {

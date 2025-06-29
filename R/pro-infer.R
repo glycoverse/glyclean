@@ -88,6 +88,15 @@
 #' @importFrom rlang .data
 #' @importFrom tidyselect all_of
 infer_protein <- function(exp, method = c("parsimony", "share", "unique")) {
+  .dispatch_on_input(
+    exp,
+    fun_exp = .infer_protein_experiment,
+    fun_mat = .infer_protein_matrix,
+    method = method
+  )
+}
+
+.infer_protein_experiment <- function(exp, method = c("parsimony", "share", "unique")) {
   checkmate::assert_class(exp, "glyexp_experiment")
   method <- rlang::arg_match(method)
 
@@ -109,6 +118,10 @@ infer_protein <- function(exp, method = c("parsimony", "share", "unique")) {
     parsimony = .infer_pro_parsimony(exp),
     share = .infer_pro_share(exp)
   )
+}
+
+.infer_protein_matrix <- function(exp, method = c("parsimony", "share", "unique")) {
+  cli::cli_abort("The {.fn infer_protein} function does not support matrix input.")
 }
 
 .infer_pro_unique <- function(exp) {
