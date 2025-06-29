@@ -23,7 +23,7 @@
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_median <- function(x) {
-  .process_input(x, .normalize_median, by = NULL)
+  .dispatch_and_apply_by_group(x, .normalize_median, by = NULL)
 }
 
 
@@ -40,7 +40,7 @@ normalize_median <- function(x) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_median_abs <- function(x) {
-  .process_input(x, .normalize_median_abs, by = NULL)
+  .dispatch_and_apply_by_group(x, .normalize_median_abs, by = NULL)
 }
 
 
@@ -61,7 +61,7 @@ normalize_median_abs <- function(x) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_total_area <- function(x) {
-  .process_input(x, .normalize_total_area, by = NULL)
+  .dispatch_and_apply_by_group(x, .normalize_total_area, by = NULL)
 }
 
 
@@ -86,7 +86,7 @@ normalize_total_area <- function(x) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_quantile <- function(x, by = NULL, ...) {
-  .process_input(x, .normalize_quantile, by = by, ...)
+  .dispatch_and_apply_by_group(x, .normalize_quantile, by = by, ...)
 }
 
 
@@ -111,7 +111,7 @@ normalize_quantile <- function(x, by = NULL, ...) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_loessf <- function(x, by = NULL, ...) {
-  .process_input(x, .normalize_loessf, by = by, ...)
+  .dispatch_and_apply_by_group(x, .normalize_loessf, by = by, ...)
 }
 
 
@@ -135,7 +135,7 @@ normalize_loessf <- function(x, by = NULL, ...) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_loesscyc <- function(x, by = NULL, ...) {
-  .process_input(x, .normalize_loesscyc, by = by, ...)
+  .dispatch_and_apply_by_group(x, .normalize_loesscyc, by = by, ...)
 }
 
 
@@ -166,7 +166,7 @@ normalize_loesscyc <- function(x, by = NULL, ...) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_vsn <- function(x, by = NULL, ...) {
-  .process_input(x, .normalize_vsn, by = by, ...)
+  .dispatch_and_apply_by_group(x, .normalize_vsn, by = by, ...)
 }
 
 
@@ -195,7 +195,7 @@ normalize_vsn <- function(x, by = NULL, ...) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_median_quotient <- function(x, by = NULL) {
-  .process_input(x, .normalize_median_quotient, by = by)
+  .dispatch_and_apply_by_group(x, .normalize_median_quotient, by = by)
 }
 
 
@@ -221,7 +221,7 @@ normalize_median_quotient <- function(x, by = NULL) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_rlr <- function(x, by = NULL) {
-  .process_input(x, .normalize_rlr, by = by)
+  .dispatch_and_apply_by_group(x, .normalize_rlr, by = by)
 }
 
 
@@ -243,7 +243,7 @@ normalize_rlr <- function(x, by = NULL) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_rlrma <- function(x, by = NULL) {
-  .process_input(x, .normalize_rlrma, by = by)
+  .dispatch_and_apply_by_group(x, .normalize_rlrma, by = by)
 }
 
 
@@ -269,7 +269,7 @@ normalize_rlrma <- function(x, by = NULL) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_rlrmacyc <- function(x, n_iter = 3, by = NULL) {
-  .process_input(x, .normalize_rlrmacyc, by = by, n_iter = n_iter)
+  .dispatch_and_apply_by_group(x, .normalize_rlrmacyc, by = by, n_iter = n_iter)
 }
 
 

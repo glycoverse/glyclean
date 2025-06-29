@@ -1,18 +1,44 @@
 # Input processing utilities
 
-#' Process input for glyclean functions
-#' 
-#' This function handles both glyexp_experiment objects and matrices.
-#' It validates input and returns appropriate output format.
-#' 
+#' Dispatch on input type
+#'
+#' This function provides a basic dispatch mechanism to handle both
+#' glyexp_experiment objects and matrices. It's a simpler alternative to
+#' [.dispatch_and_apply_by_group()] for functions that do not need automatic
+#' group-wise application.
+#'
+#' @param x Input data, either a glyexp_experiment object or a matrix.
+#' @param fun_exp Function to execute for glyexp_experiment input.
+#' @param fun_mat Function to execute for matrix input.
+#' @param ... Additional arguments passed to `fun_exp` and `fun_mat`.
+#'
+#' @return The result of either `fun_exp` or `fun_mat`.
+#' @keywords internal
+.dispatch_on_input <- function(x, fun_exp, fun_mat, ...) {
+  if (inherits(x, "glyexp_experiment")) {
+    fun_exp(x, ...)
+  } else if (is.matrix(x)) {
+    fun_mat(x, ...)
+  } else {
+    cli::cli_abort("Input {.arg x} must be either a {.cls glyexp_experiment} object or a {.cls matrix}.")
+  }
+}
+
+
+#' Dispatch and apply a function by group
+#'
+#' This function handles both glyexp_experiment objects and matrices,
+#' It validates input, optionally applies a function to groups of samples,
+#' and returns an object of the same type as the input.
+#'
 #' @param x Input data, either a glyexp_experiment object or a matrix
 #' @param matrix_func Function to apply to the matrix (implementation function)
 #' @param by Grouping variable for stratified processing
 #' @param ... Additional arguments passed to matrix_func
-#' 
+#'
 #' @return Same type as input (experiment or matrix)
 #' @keywords internal
-.process_input <- function(x, matrix_func, by = NULL, ...) {
+.dispatch_and_apply_by_group <- function(x, matrix_func, by = NULL, ...) {
   # Validate input type
   if (inherits(x, "glyexp_experiment")) {
     # Process experiment object
@@ -24,15 +50,15 @@
     if (!is.null(by) && is.character(by) && length(by) == 1) {
       cli::cli_abort("For matrix input, {.arg by} must be a vector, not a column name.")
     }
-    
+
     by_values <- .resolve_column_param(
-      by, 
-      sample_info = NULL, 
-      param_name = "by", 
+      by,
+      sample_info = NULL,
+      param_name = "by",
       n_samples = ncol(x),
       allow_null = TRUE
     )
-    
+
     result_mat <- .apply_by_groups(x, matrix_func, by_values, ...)
     return(result_mat)
   } else {

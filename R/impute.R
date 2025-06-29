@@ -10,7 +10,7 @@
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_zero <- function(x) {
-  .process_input(x, .impute_zero, by = NULL)
+  .dispatch_and_apply_by_group(x, .impute_zero, by = NULL)
 }
 
 
@@ -29,7 +29,7 @@ impute_zero <- function(x) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_sample_min <- function(x) {
-  .process_input(x, .impute_sample_min, by = NULL)
+  .dispatch_and_apply_by_group(x, .impute_sample_min, by = NULL)
 }
 
 
@@ -48,7 +48,7 @@ impute_sample_min <- function(x) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_half_sample_min <- function(x) {
-  .process_input(x, .impute_half_sample_min, by = NULL)
+  .dispatch_and_apply_by_group(x, .impute_half_sample_min, by = NULL)
 }
 
 
@@ -73,7 +73,7 @@ impute_half_sample_min <- function(x) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_sw_knn <- function(x, k = 5, by = NULL, ...) {
-  .process_input(x, .impute_sw_knn, k = k, by = by, ...)
+  .dispatch_and_apply_by_group(x, .impute_sw_knn, k = k, by = by, ...)
 }
 
 
@@ -95,7 +95,7 @@ impute_sw_knn <- function(x, k = 5, by = NULL, ...) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_fw_knn <- function(x, k = 5, by = NULL, ...) {
-  .process_input(x, .impute_fw_knn, k = k, by = by, ...)
+  .dispatch_and_apply_by_group(x, .impute_fw_knn, k = k, by = by, ...)
 }
 
 
@@ -120,7 +120,7 @@ impute_fw_knn <- function(x, k = 5, by = NULL, ...) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_bpca <- function(x, by = NULL, ...) {
-  .process_input(x, .impute_bpca, by = by, ...)
+  .dispatch_and_apply_by_group(x, .impute_bpca, by = by, ...)
 }
 
 
@@ -141,7 +141,7 @@ impute_bpca <- function(x, by = NULL, ...) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_ppca <- function(x, by = NULL, ...) {
-  .process_input(x, .impute_ppca, by = by, ...)
+  .dispatch_and_apply_by_group(x, .impute_ppca, by = by, ...)
 }
 
 
@@ -163,7 +163,7 @@ impute_ppca <- function(x, by = NULL, ...) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_svd <- function(x, by = NULL, ...) {
-  .process_input(x, .impute_svd, by = by, ...)
+  .dispatch_and_apply_by_group(x, .impute_svd, by = by, ...)
 }
 
 
@@ -184,7 +184,7 @@ impute_svd <- function(x, by = NULL, ...) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_min_prob <- function(x, by = NULL, ...) {
-  .process_input(x, .impute_min_prob, by = by, ...)
+  .dispatch_and_apply_by_group(x, .impute_min_prob, by = by, ...)
 }
 
 
@@ -205,7 +205,7 @@ impute_min_prob <- function(x, by = NULL, ...) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_miss_forest <- function(x, by = NULL, ...) {
-  .process_input(x, .impute_miss_forest, by = by, ...)
+  .dispatch_and_apply_by_group(x, .impute_miss_forest, by = by, ...)
 }
 
 
