@@ -131,7 +131,7 @@ infer_protein <- function(exp, method = c("parsimony", "share", "unique")) {
     dplyr::bind_rows() %>%
     dplyr::group_by(.data$protein) %>%
     dplyr::summarise(gp_indices = list(.data$gp_idx), .groups = "drop") %>%
-    {stats::setNames(.$gp_indices, .$protein)}
+    (function(x) stats::setNames(x$gp_indices, x$protein))
   
   # Greedy set cover algorithm
   uncovered_gps <- seq_len(nrow(var_info))
