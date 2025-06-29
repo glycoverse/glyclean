@@ -1,3 +1,14 @@
+# glyclean 0.5.0
+
+## Major changes
+
+- Add `infer_protein()` function to resolve multiple protein assignments for glycopeptides.
+- Add `adjust_protein()` function to remove protein expression from glycopeptide expression.
+
+## Minor improvements
+
+- Rename the first argument of `aggregate()` from `x` to `exp` to be consistent with other functions.
+
 # glyclean 0.4.0
 
 ## Major changes
