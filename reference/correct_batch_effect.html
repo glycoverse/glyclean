@@ -9,7 +9,7 @@ from the sva package."><meta property="og:image" content="https://glycoverse.git
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,6 +94,12 @@ while correcting for batch effects.</p>
 <span class="r-in"><span><span class="va">exp</span><span class="op">$</span><span class="va">sample_info</span><span class="op">$</span><span class="va">batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"B"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">exp</span><span class="op">$</span><span class="va">sample_info</span><span class="op">$</span><span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ctrl"</span>, <span class="st">"Ctrl"</span>, <span class="st">"Treat"</span>, <span class="st">"Ctrl"</span>, <span class="st">"Treat"</span>, <span class="st">"Treat"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">corrected_exp</span> <span class="op">&lt;-</span> <span class="fu">correct_batch_effect</span><span class="op">(</span><span class="va">exp</span>, batch <span class="op">=</span> <span class="st">"batch"</span>, group <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Found2batches</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adjusting for1covariate(s) or covariate level(s)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Standardizing Data across genes</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Fitting L/S model and finding priors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Finding parametric adjustments</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adjusting the Data</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Batch effect correction completed using ComBat algorithm.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># With matrix and factor vectors</span></span></span>
@@ -102,6 +108,13 @@ while correcting for batch effects.</p>
 <span class="r-in"><span><span class="va">group_factor</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ctrl"</span>, <span class="st">"Treat"</span><span class="op">)</span>, times <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">corrected_mat</span> <span class="op">&lt;-</span> <span class="fu">correct_batch_effect</span><span class="op">(</span><span class="va">mat</span>, batch <span class="op">=</span> <span class="va">batch_factor</span>, group <span class="op">=</span> <span class="va">group_factor</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>NaNs produced</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Found2batches</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adjusting for1covariate(s) or covariate level(s)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Found29Missing Data Values </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Standardizing Data across genes</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Fitting L/S model and finding priors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Finding parametric adjustments</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adjusting the Data</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Batch effect correction completed using ComBat algorithm.</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

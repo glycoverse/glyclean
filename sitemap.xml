@@ -10,12 +10,14 @@
 <url><loc>https://glycoverse.github.io/glyclean/authors.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/index.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/news/index.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/adjust_protein.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/aggregate.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/auto_clean.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/correct_batch_effect.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/detect_batch_effect.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/dot-apply_by_groups.html</loc></url>
-<url><loc>https://glycoverse.github.io/glyclean/reference/dot-process_input.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/dot-dispatch_and_apply_by_group.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/dot-dispatch_on_input.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/dot-resolve_column_param.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/impute_bpca.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/impute_fw_knn.html</loc></url>
@@ -28,6 +30,7 @@
 <url><loc>https://glycoverse.github.io/glyclean/reference/impute_sw_knn.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/impute_zero.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/index.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/infer_protein.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/normalize_loesscyc.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/normalize_loessf.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/normalize_median.html</loc></url>
