@@ -6,7 +6,7 @@
 #' unique combination of specified variables.
 #' It is recommended to call this function after missing value imputation.
 #'
-#' @param x A `glyexp_experiment` object containing glycoproteomics data.
+#' @param exp A `glyexp_experiment` object containing glycoproteomics data.
 #'   This function only works with `glyexp_experiment` objects as it requires
 #'   variable information for aggregation.
 #' @param to_level The aggregation level,
