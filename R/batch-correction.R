@@ -135,22 +135,26 @@ correct_batch_effect <- function(x, batch = "batch", group = NULL) {
 #'
 #' @export
 detect_batch_effect <- function(x, batch = "batch", group = NULL) {
-  
-  # Handle different input types
-  if (is.matrix(x)) {
-    return(.detect_batch_effect_matrix(x, batch = batch, group = group))
-  }
-  
+  .dispatch_on_input(
+    x,
+    fun_exp = .detect_batch_effect_experiment,
+    fun_mat = .detect_batch_effect_matrix,
+    batch = batch,
+    group = group
+  )
+}
+
+.detect_batch_effect_experiment <- function(x, batch = "batch", group = NULL) {
   # For experiment input, extract batch and group from sample_info
   batch_group_info <- .extract_batch_group_from_experiment(x, batch, group, require_batch = TRUE)
   if (is.null(batch_group_info)) {
     return(rep(1, nrow(x$expr_mat)))
   }
-  
+
   # Perform batch effect detection
   return(.perform_batch_effect_detection(
-    x$expr_mat, 
-    batch_group_info$batch, 
+    x$expr_mat,
+    batch_group_info$batch,
     batch_group_info$group
   ))
 }
@@ -161,11 +165,11 @@ detect_batch_effect <- function(x, batch = "batch", group = NULL) {
   if (is.null(batch_group_info)) {
     return(rep(1, nrow(x)))
   }
-  
+
   # Perform batch effect detection
   return(.perform_batch_effect_detection(
-    x, 
-    batch_group_info$batch, 
+    x,
+    batch_group_info$batch,
     batch_group_info$group
   ))
 }
@@ -332,18 +336,16 @@ detect_batch_effect <- function(x, batch = "batch", group = NULL) {
   # Apply ComBat correction with error handling and suppressed output
   corrected_log_expr_mat <- tryCatch({
     # Suppress ComBat's verbose output completely
-    suppressMessages({
-      capture.output({
-        combat_result <- sva::ComBat(
-          dat = log_expr_mat,
-          batch = batch,
-          mod = mod,
-          par.prior = TRUE,
-          prior.plots = FALSE
-        )
-      }, file = nullfile())
-      combat_result
-    })
+    withr::with_output_sink(
+      nullfile(),
+      sva::ComBat(
+        dat = log_expr_mat,
+        batch = batch,
+        mod = mod,
+        par.prior = TRUE,
+        prior.plots = FALSE
+      )
+    )
   }, error = function(e) {
     cli::cli_warn(c(
       "ComBat failed to correct batch effects.",
