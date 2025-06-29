@@ -725,4 +725,209 @@ test_that("batch correction functions reject column names for matrix input", {
   )
 })
 
+test_that("correct_batch_effect handles missing batch column gracefully", {
+  # Create experiment without batch column
+  exp <- complex_exp()
+  
+  # Test with non-existent batch column - should throw error as expected
+  expect_error(
+    correct_batch_effect(exp, batch = "non_existent_batch"),
+    "The column \"non_existent_batch\" does not exist in `sample_info`"
+  )
+})
+
+test_that("correct_batch_effect handles single batch scenario", {
+  # Create experiment with only one batch
+  exp <- complex_exp()
+  exp$sample_info$batch <- rep("A", nrow(exp$sample_info))
+  
+  # Should handle single batch gracefully with warning
+  expect_warning(
+    result <- correct_batch_effect(exp, batch = "batch"),
+    "ComBat failed to correct batch effects"
+  )
+  expect_s3_class(result, "glyexp_experiment")
+  expect_identical(result, exp)  # Should return original when correction fails
+})
+
+test_that("correct_batch_effect handles matrix with single batch", {
+  # Create test matrix
+  test_mat <- matrix(rnorm(30, mean = 10, sd = 2), nrow = 5, ncol = 6)
+  rownames(test_mat) <- paste0("V", 1:5)
+  colnames(test_mat) <- paste0("S", 1:6)
+  
+  # Create single batch vector
+  single_batch <- factor(rep("A", 6))
+  
+  # Should return original matrix for single batch
+  result <- suppressMessages(correct_batch_effect(test_mat, batch = single_batch))
+  expect_equal(result, test_mat)
+})
+
+test_that("detect_batch_effect handles missing batch column gracefully", {
+  # Create experiment without batch column  
+  exp <- complex_exp()
+  
+  # Should throw error when batch column doesn't exist
+  expect_error(
+    detect_batch_effect(exp, batch = "non_existent_batch"),
+    "The column \"non_existent_batch\" does not exist in `sample_info`"
+  )
+})
+
+test_that("batch functions handle default batch column missing", {
+  # Create experiment without default 'batch' column
+  exp <- complex_exp()
+  
+  # Test with default batch parameter when column doesn't exist
+  expect_error(
+    correct_batch_effect(exp),  # Uses default batch = "batch"
+    "The column \"batch\" does not exist in `sample_info`"
+  )
+  
+  expect_error(
+    detect_batch_effect(exp),  # Uses default batch = "batch"
+    "The column \"batch\" does not exist in `sample_info`"
+  )
+})
+
+test_that("detect_batch_effect handles single batch scenario", {
+  # Create experiment with only one batch
+  exp <- complex_exp()
+  exp$sample_info$batch <- rep("A", nrow(exp$sample_info))
+  
+  # Should handle single batch with warning and return vector of 1s
+  expect_warning(
+    result <- detect_batch_effect(exp, batch = "batch"),
+    "Less than 2 batches found"
+  )
+  expect_type(result, "double")
+  expect_length(result, nrow(exp$expr_mat))
+  expect_true(all(result == 1))
+})
+
+test_that("detect_batch_effect handles matrix with single batch", {
+  # Create test matrix
+  test_mat <- matrix(rnorm(30, mean = 10, sd = 2), nrow = 5, ncol = 6)
+  rownames(test_mat) <- paste0("V", 1:5)
+  colnames(test_mat) <- paste0("S", 1:6)
+  
+  # Create single batch vector
+  single_batch <- factor(rep("A", 6))
+  
+  # Should return vector of 1s for single batch with warning
+  expect_warning(
+    result <- detect_batch_effect(test_mat, batch = single_batch),
+    "Less than 2 batches found"
+  )
+  expect_type(result, "double")
+  expect_length(result, nrow(test_mat))
+  expect_true(all(result == 1))
+})
+
+test_that("batch correction handles direct vector inputs for experiments", {
+  # Create experiment with batch column
+  exp <- complex_exp()
+  exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
+  
+  # Test with direct factor vector instead of column name
+  batch_vector <- factor(exp$sample_info$batch)
+  group_vector <- factor(exp$sample_info$group)
+  
+  suppressMessages(result1 <- correct_batch_effect(exp, batch = batch_vector))
+  
+  # This combination may be confounded, so expect warning
+  expect_warning(
+    result2 <- correct_batch_effect(exp, batch = batch_vector, group = group_vector),
+    "Batch and group variables are highly confounded"
+  )
+  
+  expect_s3_class(result1, "glyexp_experiment")
+  expect_s3_class(result2, "glyexp_experiment")
+  
+  # Detect batch effect with direct vectors
+  p_values1 <- suppressMessages(detect_batch_effect(exp, batch = batch_vector))
+  p_values2 <- suppressMessages(detect_batch_effect(exp, batch = batch_vector, group = group_vector))
+  
+  expect_type(p_values1, "double")
+  expect_type(p_values2, "double")
+  expect_length(p_values1, nrow(exp$expr_mat))
+  expect_length(p_values2, nrow(exp$expr_mat))
+})
+
+test_that("batch correction handles NULL batch parameter", {
+  # Create experiment
+  exp <- complex_exp()
+  
+  # Test with NULL batch - should trigger error for detect_batch_effect
+  expect_error(detect_batch_effect(exp, batch = NULL), "Batch information is required")
+  expect_error(correct_batch_effect(exp, batch = NULL), "Batch information is required")
+})
+
+test_that("batch correction handles vector length mismatch", {
+  # Create experiment
+  exp <- complex_exp()
+  
+  # Create vectors with wrong length
+  wrong_batch <- factor(c("A", "B"))  # Too short
+  wrong_group <- factor(c("Ctrl", "Treat"))  # Too short
+  
+  expect_error(
+    correct_batch_effect(exp, batch = wrong_batch),
+    "vector must have length"
+  )
+  
+  expect_error(
+    detect_batch_effect(exp, batch = wrong_batch),
+    "vector must have length"
+  )
+  
+  # Test with correct batch but wrong group length
+  correct_batch <- factor(rep(c("A", "B"), length.out = ncol(exp$expr_mat)))
+  expect_error(
+    correct_batch_effect(exp, batch = correct_batch, group = wrong_group),
+    "vector must have length"
+  )
+})
+
+test_that("batch correction with extreme data values", {
+  # Test with data that might cause ComBat to fail
+  set.seed(42)
+  
+  # Create experiment with very small variance (might cause ComBat issues)
+  sample_info <- tibble::tibble(
+    sample = paste0("S", 1:8),
+    batch = rep(c("A", "B"), each = 4)
+  )
+  var_info <- tibble::tibble(variable = paste0("V", 1:5))
+  
+  # Create expression matrix with very small variance
+  expr_mat <- matrix(10 + rnorm(40, mean = 0, sd = 0.001), nrow = 5, ncol = 8)
+  colnames(expr_mat) <- sample_info$sample
+  rownames(expr_mat) <- var_info$variable
+  
+  exp <- glyexp::experiment(
+    expr_mat, sample_info, var_info, 
+    exp_type = "glycoproteomics",
+    glycan_type = "N"
+  )
+  
+  # Should handle extreme cases gracefully (may return original or corrected)
+  result <- suppressMessages(correct_batch_effect(exp))
+  expect_s3_class(result, "glyexp_experiment")
+  expect_equal(dim(result$expr_mat), dim(exp$expr_mat))
+})
+
+test_that("batch correction error handling for invalid inputs", {
+  # Test with non-matrix, non-experiment input
+  expect_error(correct_batch_effect("invalid_input"))
+  expect_error(detect_batch_effect("invalid_input"))
+  expect_error(correct_batch_effect(123))
+  expect_error(detect_batch_effect(123))
+  
+  # Test with list input
+  expect_error(correct_batch_effect(list(a = 1, b = 2)))
+  expect_error(detect_batch_effect(list(a = 1, b = 2)))
+})
+
  
