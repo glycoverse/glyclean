@@ -154,7 +154,7 @@ test_that("impute_sw_knn works with matrix input and by parameter", {
   skip_if_not_installed("impute")
   
   # Create test matrix with missing values (larger to reduce warnings)
-  test_mat <- matrix(rnorm(40), nrow = 8, ncol = 5)
+  test_mat <- matrix(runif(40, 1, 100), nrow = 8, ncol = 5)
   test_mat[c(1, 9, 17)] <- NA  # Add fewer missing values
   rownames(test_mat) <- paste0("V", 1:8)
   colnames(test_mat) <- paste0("S", 1:5)
