@@ -48,6 +48,14 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
+      - name: Install GitHub dependencies on Windows
+        if: runner.os == 'Windows'
+        run: |
+          options(repos = c(CRAN = "https://cloud.r-project.org/"))
+          install.packages("remotes")
+          remotes::install_github(c("glycoverse/glyread", "glycoverse/glyparse"))
+        shell: Rscript {0}
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
