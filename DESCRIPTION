@@ -37,6 +37,7 @@ Imports:
     matrixStats,
     purrr,
     rlang,
+    stringr,
     tidyr,
     tidyselect,
     withr
