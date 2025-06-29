@@ -296,3 +296,128 @@ test_that("matrix input with by parameter: wrong length vector should error", {
     "vector must have length 3"
   )
 })
+
+# Additional tests to improve coverage
+
+test_that("remove_missing_variables with matrix input and small sample sizes", {
+  # Test with 1 sample (min_n should be 1)
+  mat1 <- matrix(c(1, NA, 3), nrow = 3, ncol = 1)
+  rownames(mat1) <- paste0("V", 1:3)
+  colnames(mat1) <- "S1"
+  
+  result <- remove_missing_variables(mat1, prop = 1)  # No prop filtering
+  expect_equal(nrow(result), 2)  # V2 should be removed due to min_n
+  
+  # Test with 2 samples (min_n should be 2)
+  mat2 <- matrix(c(1, NA, 3, 4, NA, 6), nrow = 3, ncol = 2)
+  rownames(mat2) <- paste0("V", 1:3)
+  colnames(mat2) <- paste0("S", 1:2)
+  
+  result <- remove_missing_variables(mat2, prop = 1)
+  expect_equal(nrow(result), 2)  # V2 should be removed due to min_n
+  
+  # Test with 3 samples (min_n should be 3)
+  mat3 <- matrix(c(1, NA, 3, 4, NA, 6, 7, NA, 9), nrow = 3, ncol = 3)
+  rownames(mat3) <- paste0("V", 1:3)
+  colnames(mat3) <- paste0("S", 1:3)
+  
+  result <- remove_missing_variables(mat3, prop = 1)
+  expect_equal(nrow(result), 2)  # V2 should be removed due to min_n
+})
+
+test_that("remove_missing_variables with matrix input and grouping small sample sizes", {
+  # Test with small groups
+  mat <- matrix(c(1, NA, 3, 4, NA, 6), nrow = 2, ncol = 3) 
+  rownames(mat) <- paste0("V", 1:2)
+  colnames(mat) <- paste0("S", 1:3)
+  
+  # Group A: 1 sample, Group B: 2 samples
+  by_vector <- c("A", "B", "B")
+  
+  # Test with default min_n calculation
+  result <- remove_missing_variables(mat, by = by_vector, prop = 1, strict = FALSE)
+  expect_true(is.matrix(result))
+  
+  # Test with strict = TRUE
+  result <- remove_missing_variables(mat, by = by_vector, prop = 1, strict = TRUE)
+  expect_true(is.matrix(result))
+})
+
+test_that("remove_missing_variables handles edge cases with all missing or no missing", {
+  # Test matrix with variable that has high missing rate (use 5 samples to avoid min_n constraint)
+  mat <- matrix(c(
+    1, 2, 3, 4, 5,     # V1: 0 missing
+    NA, NA, NA, 4, 5   # V2: 3 missing (60% > 50%)
+  ), nrow = 2, ncol = 5, byrow = TRUE)
+  rownames(mat) <- paste0("V", 1:2)
+  colnames(mat) <- paste0("S", 1:5)
+  
+  result <- remove_missing_variables(mat, prop = 0.5)
+  expect_equal(nrow(result), 1)  # V2 should be removed
+  expect_equal(rownames(result), "V1")
+  
+  # Test with no missing values
+  mat_no_na <- matrix(1:10, nrow = 2, ncol = 5)
+  rownames(mat_no_na) <- paste0("V", 1:2)
+  colnames(mat_no_na) <- paste0("S", 1:5)
+  
+  result <- remove_missing_variables(mat_no_na, prop = 0.5)
+  expect_equal(dim(result), dim(mat_no_na))
+})
+
+test_that("remove_missing_variables parameter validation edge cases", {
+  exp <- simple_exp(3, 4)
+  
+  # Test prop = 0 (no missing values allowed)
+  result <- remove_missing_variables(exp, prop = 0)
+  expect_s3_class(result, "glyexp_experiment")
+  
+  # Test prop = 1 (all missing values allowed)
+  result <- remove_missing_variables(exp, prop = 1)
+  expect_s3_class(result, "glyexp_experiment")
+  
+  # Test n = 0 (no missing values allowed)
+  result <- remove_missing_variables(exp, n = 0)
+  expect_s3_class(result, "glyexp_experiment")
+  
+  # Test with min_n = 1
+  result <- remove_missing_variables(exp, min_n = 1)
+  expect_s3_class(result, "glyexp_experiment")
+})
+
+test_that("remove_missing_variables with complex grouping scenarios", {
+  # Create experiment with unbalanced groups
+  exp <- simple_exp(5, 8)
+  exp$sample_info$group <- c("A", "A", "B", "B", "B", "C", "C", "C")
+  
+  # Create specific missing patterns
+  exp$expr_mat[1, c(1, 3, 6)] <- NA  # Missing in different groups
+  exp$expr_mat[2, c(1, 2)] <- NA     # Missing only in group A
+  exp$expr_mat[3, c(3, 4, 5)] <- NA  # Missing only in group B
+  exp$expr_mat[4, c(6, 7, 8)] <- NA  # Missing only in group C
+  
+  # Test with various combinations
+  result1 <- remove_missing_variables(exp, by = "group", prop = 0.4, strict = FALSE)
+  expect_s3_class(result1, "glyexp_experiment")
+  
+  result2 <- remove_missing_variables(exp, by = "group", prop = 0.4, strict = TRUE)
+  expect_s3_class(result2, "glyexp_experiment")
+  
+  result3 <- remove_missing_variables(exp, by = "group", n = 1, strict = FALSE)
+  expect_s3_class(result3, "glyexp_experiment")
+})
+
+test_that("remove_missing_variables with matrix and various invalid inputs", {
+  mat <- matrix(1:6, nrow = 2, ncol = 3)
+  
+  # Test with invalid prop values
+  expect_error(remove_missing_variables(mat, prop = -0.1))
+  expect_error(remove_missing_variables(mat, prop = 1.1))
+  
+  # Test with invalid n values
+  expect_error(remove_missing_variables(mat, n = -1))
+  
+  # Test with invalid min_n values  
+  expect_error(remove_missing_variables(mat, min_n = 0))
+  expect_error(remove_missing_variables(mat, min_n = -1))
+})
