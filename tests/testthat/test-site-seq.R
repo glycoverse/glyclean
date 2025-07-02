@@ -80,10 +80,10 @@ test_that("add_site_seq handles missing proteins gracefully", {
     writeLines(fasta_content, temp_fasta)
     
     # Test with missing protein (should use X without warning)
-    result <- add_site_seq(exp, temp_fasta, n_aa = 3)
+    suppressMessages(result <- add_site_seq(exp, temp_fasta, n_aa = 3))
     
-    # Should return all X's
-    expect_equal(result$var_info$site_sequence[1], "XXXXXXX")
+    # Should return NA
+    expect_true(is.na(result$var_info$site_sequence[1]))
   })
 })
 
@@ -120,10 +120,10 @@ test_that("add_site_seq handles out-of-range sites gracefully", {
     writeLines(fasta_content, temp_fasta)
     
     # Test with out-of-range site (should use X without warning)
-    result <- add_site_seq(exp, temp_fasta, n_aa = 3)
+    suppressMessages(result <- add_site_seq(exp, temp_fasta, n_aa = 3))
     
     # Should return all X's
-    expect_equal(result$var_info$site_sequence[1], "XXXXXXX")
+    expect_true(is.na(result$var_info$site_sequence[1]))
   })
 })
 

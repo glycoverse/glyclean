@@ -64,6 +64,47 @@ add_site_seq <- function(exp, fasta, n_aa = 7) {
   # Read FASTA file
   protein_seqs <- .read_fasta_file(fasta)
   
+  # Check protein matching and provide diagnostic information using purrr
+  unique_proteins <- exp$var_info$protein %>%
+    unique() %>%
+    purrr::discard(is.na)
+  
+  # Split proteins into found and missing using purrr
+  protein_status <- unique_proteins %>%
+    purrr::set_names() %>%
+    purrr::map_lgl(~ .x %in% names(protein_seqs))
+  
+  found_proteins <- protein_status %>%
+    purrr::keep(identity) %>%
+    names()
+  
+  missing_proteins <- protein_status %>%
+    purrr::discard(identity) %>%
+    names()
+  
+  cli::cli_inform(c(
+    "i" = "FASTA file contains {length(protein_seqs)} protein sequences",
+    "i" = "Found {length(found_proteins)} / {length(unique_proteins)} proteins from experiment in FASTA file"
+  ))
+  
+  if (length(missing_proteins) > 0) {
+    # Format missing proteins display
+    missing_display <- if (length(missing_proteins) <= 5) {
+      stringr::str_c(missing_proteins, collapse = ", ")
+    } else {
+      stringr::str_c(c(missing_proteins[1:5], "..."), collapse = ", ")
+    }
+    
+    # Format message based on number of missing proteins
+    message_text <- if (length(missing_proteins) <= 5) {
+      "Missing proteins: {missing_display}"
+    } else {
+      "Missing {length(missing_proteins)} proteins (showing first 5): {missing_display}"
+    }
+    
+    cli::cli_inform(c("!" = message_text))
+  }
+  
   # Extract site sequences
   var_info <- exp$var_info %>%
     dplyr::mutate(
@@ -92,23 +133,28 @@ add_site_seq <- function(exp, fasta, n_aa = 7) {
     cli::cli_abort("No FASTA sequences found in file {.file {fasta_path}}")
   }
   
-  # Extract sequences and convert to character strings
-  protein_seqs <- purrr::map_chr(fasta_seqs, function(seq) {
+  # Extract sequences and convert to character strings using purrr
+  protein_seqs <- purrr::map_chr(fasta_seqs, ~ {
     # seqinr::read.fasta with as.string = TRUE returns character vectors
-    # Convert to uppercase and remove any spaces
-    toupper(stringr::str_remove_all(seq, "\\s"))
+    # Convert to uppercase and remove any spaces using stringr
+    .x %>%
+      stringr::str_to_upper() %>%
+      stringr::str_remove_all("\\s")
   })
   
-  # Extract protein IDs from names
+  # Extract protein IDs from names using stringr
   fasta_names <- names(fasta_seqs)
   
-  # Try to extract UniProt accession from header
+  # Try to extract UniProt accession from header using stringr
   # Handle different formats: >P12345, >sp|P12345|NAME, etc.
-  protein_ids <- stringr::str_extract(fasta_names, "[A-Z0-9]{6,10}")
+  extracted_ids <- fasta_names %>%
+    stringr::str_extract("[A-Z0-9]{6,10}")
   
-  # If no UniProt-style IDs found, use the full name
-  if (all(is.na(protein_ids))) {
-    protein_ids <- fasta_names
+  # If no UniProt-style IDs found, use full name; otherwise use extracted IDs
+  protein_ids <- if (all(is.na(extracted_ids))) {
+    fasta_names
+  } else {
+    extracted_ids
   }
   
   # Create named vector
@@ -128,12 +174,12 @@ add_site_seq <- function(exp, fasta, n_aa = 7) {
 .extract_site_sequence <- function(protein_id, site, protein_seqs, n_aa) {
   # Handle missing values
   if (is.na(protein_id) || is.na(site)) {
-    return(paste0(rep("X", 2 * n_aa + 1), collapse = ""))
+    return(NA_character_)
   }
   
   # Get protein sequence
   if (!protein_id %in% names(protein_seqs)) {
-    return(paste0(rep("X", 2 * n_aa + 1), collapse = ""))
+    return(NA_character_)
   }
   
   protein_seq <- protein_seqs[[protein_id]]
@@ -141,24 +187,25 @@ add_site_seq <- function(exp, fasta, n_aa = 7) {
   
   # Check if site is within sequence
   if (site < 1 || site > seq_length) {
-    return(paste0(rep("X", 2 * n_aa + 1), collapse = ""))
+    return(NA_character_)
   }
   
   # Calculate start and end positions
   start_pos <- site - n_aa
   end_pos <- site + n_aa
   
-  # Extract sequence with padding if necessary
-  site_seq <- character(2 * n_aa + 1)
+  # Create position vector for the sequence window
+  positions <- start_pos:end_pos
   
-  for (i in 1:(2 * n_aa + 1)) {
-    pos <- start_pos + i - 1
+  # Extract amino acids using purrr::map_chr and stringr
+  site_seq <- purrr::map_chr(positions, function(pos) {
     if (pos < 1 || pos > seq_length) {
-      site_seq[i] <- "X"
+      "X"
     } else {
-      site_seq[i] <- substr(protein_seq, pos, pos)
+      stringr::str_sub(protein_seq, pos, pos)
     }
-  }
+  })
   
-  paste(site_seq, collapse = "")
+  # Collapse into single string
+  stringr::str_c(site_seq, collapse = "")
 }
