@@ -21,7 +21,7 @@ test_that("add_site_seq works correctly", {
     glycan_type = "N"
   )
   
-  # Create a temporary FASTA file
+  # Create a temporary FASTA file using withr
   fasta_content <- c(
     ">sp|P12345|TEST1_HUMAN Test protein 1",
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
@@ -29,24 +29,22 @@ test_that("add_site_seq works correctly", {
     "MNPQRSTUVW"
   )
   
-  temp_fasta <- tempfile(fileext = ".fasta")
-  writeLines(fasta_content, temp_fasta)
-  
-  # Test the function
-  result <- suppressMessages(add_site_seq(exp, temp_fasta, n_aa = 3))
-  
-  # Check that site_sequence column was added
-  expect_true("site_sequence" %in% colnames(result$var_info))
-  
-  # Check the sequences
-  # P12345 site 10 (J) with n_aa=3: GHIJKLM
-  expect_equal(result$var_info$site_sequence[1], "GHIJKLM")
-  
-  # Q67890 site 5 (R) with n_aa=3: NPQRSTU (R is at position 5, sequence is MNPQRSTUVW)
-  expect_equal(result$var_info$site_sequence[2], "NPQRSTU")
-  
-  # Clean up
-  unlink(temp_fasta)
+  withr::with_tempfile("temp_fasta", fileext = ".fasta", {
+    writeLines(fasta_content, temp_fasta)
+    
+    # Test the function
+    result <- suppressMessages(add_site_seq(exp, temp_fasta, n_aa = 3))
+    
+    # Check that site_sequence column was added
+    expect_true("site_sequence" %in% colnames(result$var_info))
+    
+    # Check the sequences
+    # P12345 site 10 (J) with n_aa=3: GHIJKLM
+    expect_equal(result$var_info$site_sequence[1], "GHIJKLM")
+    
+    # Q67890 site 5 (R) with n_aa=3: NPQRSTU (R is at position 5, sequence is MNPQRSTUVW)
+    expect_equal(result$var_info$site_sequence[2], "NPQRSTU")
+  })
 })
 
 test_that("add_site_seq handles missing proteins gracefully", {
@@ -72,23 +70,21 @@ test_that("add_site_seq handles missing proteins gracefully", {
     glycan_type = "N"
   )
   
-  # Create a temporary FASTA file without the missing protein
+  # Create a temporary FASTA file without the missing protein using withr
   fasta_content <- c(
     ">sp|P12345|TEST1_HUMAN Test protein 1",
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   )
   
-  temp_fasta <- tempfile(fileext = ".fasta")
-  writeLines(fasta_content, temp_fasta)
-  
-  # Test with missing protein (should use X without warning)
-  result <- add_site_seq(exp, temp_fasta, n_aa = 3)
-  
-  # Should return all X's
-  expect_equal(result$var_info$site_sequence[1], "XXXXXXX")
-  
-  # Clean up
-  unlink(temp_fasta)
+  withr::with_tempfile("temp_fasta", fileext = ".fasta", {
+    writeLines(fasta_content, temp_fasta)
+    
+    # Test with missing protein (should use X without warning)
+    result <- add_site_seq(exp, temp_fasta, n_aa = 3)
+    
+    # Should return all X's
+    expect_equal(result$var_info$site_sequence[1], "XXXXXXX")
+  })
 })
 
 test_that("add_site_seq handles out-of-range sites gracefully", {
@@ -114,23 +110,21 @@ test_that("add_site_seq handles out-of-range sites gracefully", {
     glycan_type = "N"
   )
   
-  # Create a temporary FASTA file
+  # Create a temporary FASTA file using withr
   fasta_content <- c(
     ">sp|P12345|TEST1_HUMAN Test protein 1",
     "ABCDEFGHIJ"  # Only 10 amino acids
   )
   
-  temp_fasta <- tempfile(fileext = ".fasta")
-  writeLines(fasta_content, temp_fasta)
-  
-  # Test with out-of-range site (should use X without warning)
-  result <- add_site_seq(exp, temp_fasta, n_aa = 3)
-  
-  # Should return all X's
-  expect_equal(result$var_info$site_sequence[1], "XXXXXXX")
-  
-  # Clean up
-  unlink(temp_fasta)
+  withr::with_tempfile("temp_fasta", fileext = ".fasta", {
+    writeLines(fasta_content, temp_fasta)
+    
+    # Test with out-of-range site (should use X without warning)
+    result <- add_site_seq(exp, temp_fasta, n_aa = 3)
+    
+    # Should return all X's
+    expect_equal(result$var_info$site_sequence[1], "XXXXXXX")
+  })
 })
 
 test_that("add_site_seq requires correct columns", {
@@ -156,28 +150,26 @@ test_that("add_site_seq requires correct columns", {
     glycan_type = "N"
   )
   
-  temp_fasta <- tempfile(fileext = ".fasta")
-  writeLines(">P12345\nABCDEFGHIJ", temp_fasta)
-  
-  # Should error about missing protein column
-  expect_error(
-    add_site_seq(exp, temp_fasta),
-    "protein.*column does not exist"
-  )
-  
-  # Clean up
-  unlink(temp_fasta)
+  withr::with_tempfile("temp_fasta", fileext = ".fasta", {
+    writeLines(">P12345\nABCDEFGHIJ", temp_fasta)
+    
+    # Should error about missing protein column
+    expect_error(
+      add_site_seq(exp, temp_fasta),
+      "protein.*column does not exist"
+    )
+  })
 })
 
 test_that("add_site_seq rejects matrix input", {
   mat <- matrix(1:6, nrow = 2)
-  temp_fasta <- tempfile(fileext = ".fasta")
-  writeLines(">P12345\nABCDEFGHIJ", temp_fasta)
   
-  expect_error(
-    add_site_seq(mat, temp_fasta),
-    "does not support matrix input"
-  )
-  
-  unlink(temp_fasta)
+  withr::with_tempfile("temp_fasta", fileext = ".fasta", {
+    writeLines(">P12345\nABCDEFGHIJ", temp_fasta)
+    
+    expect_error(
+      add_site_seq(mat, temp_fasta),
+      "does not support matrix input"
+    )
+  })
 }) 
