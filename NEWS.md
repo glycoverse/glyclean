@@ -1,3 +1,9 @@
+# glyclean 0.6.0
+
+## Major changes
+
+- Add `add_site_seq()` function to add site sequences to a glycopeptide experiment.
+
 # glyclean 0.5.0
 
 ## Major changes
