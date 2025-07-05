@@ -24,9 +24,7 @@ If the head and tail amino acids of the peptide sequence are insufficient, fill 
 
 This function requires the following columns in the variable information tibble:
 \itemize{
-\item "protein": The protein uniprot accession. If "proteins" is used,
-please use \code{infer_protein()} first.
-\item "protein_site": The site on the protein sequence. If "protein_sites" is used,
-please use \code{infer_protein()} first.
+\item "protein": The protein uniprot accession.
+\item "protein_site": The site on the protein sequence.
 }
 }

@@ -6,10 +6,8 @@
 #' If the head and tail amino acids of the peptide sequence are insufficient, fill with "X".
 #'
 #' This function requires the following columns in the variable information tibble:
-#' - "protein": The protein uniprot accession. If "proteins" is used,
-#'   please use `infer_protein()` first.
-#' - "protein_site": The site on the protein sequence. If "protein_sites" is used,
-#'   please use `infer_protein()` first.
+#' - "protein": The protein uniprot accession.
+#' - "protein_site": The site on the protein sequence.
 #'
 #' @param exp A `glyexp::experiment()` object.
 #' @param fasta A character string specifying the path to the FASTA file containing protein sequences.
@@ -37,28 +35,14 @@ add_site_seq <- function(exp, fasta, n_aa = 7) {
   checkmate::assert_string(fasta)
   checkmate::assert_file_exists(fasta)
   checkmate::assert_int(n_aa, lower = 1)
-  
+
   # Check if required columns exist
   if (!"protein" %in% colnames(exp$var_info)) {
-    if ("proteins" %in% colnames(exp$var_info)) {
-      cli::cli_abort(c(
-        "The {.field protein} column does not exist.",
-        "i" = "A {.field proteins} column exists instead. Please call {.fn infer_protein} first."
-      ))
-    } else {
-      cli::cli_abort("The {.field protein} column does not exist.")
-    }
+    cli::cli_abort("The {.field protein} column does not exist.")
   }
-  
+
   if (!"protein_site" %in% colnames(exp$var_info)) {
-    if ("protein_sites" %in% colnames(exp$var_info)) {
-      cli::cli_abort(c(
-        "The {.field protein_site} column does not exist.",
-        "i" = "A {.field protein_sites} column exists instead. Please call {.fn infer_protein} first."
-      ))
-    } else {
-      cli::cli_abort("The {.field protein_site} column does not exist.")
-    }
+    cli::cli_abort("The {.field protein_site} column does not exist.")
   }
   
   # Read FASTA file

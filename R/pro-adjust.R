@@ -53,14 +53,7 @@ adjust_protein <- function(exp, pro_expr_mat, method = c("ratio", "reg")) {
 
   # Check if the protein column exists
   if (!"protein" %in% colnames(exp$var_info)) {
-    if ("proteins" %in% colnames(exp$var_info)) {
-      cli::cli_abort(c(
-        "The {.field protein} column does not exist.",
-        "i" = "A {.field proteins} column exists instead. Please call {.fn infer_protein} first."
-      ))
-    } else {
-      cli::cli_abort("The {.field protein} column does not exist.")
-    }
+    cli::cli_abort("The {.field protein} column does not exist.")
   }
 
   # Filter variables

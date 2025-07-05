@@ -138,19 +138,6 @@ test_that("adjust_protein handles missing protein column", {
   )
 })
 
-test_that("adjust_protein handles proteins column instead of protein", {
-  exp <- simple_exp(3, 4)
-  exp$var_info$proteins <- c("PRO1", "PRO2", "PRO3")
-  pro_expr_mat <- matrix(1:12, nrow = 3, ncol = 4)
-  colnames(pro_expr_mat) <- paste0("S", 1:4)
-  rownames(pro_expr_mat) <- c("PRO1", "PRO2", "PRO3")
-  
-  expect_error(
-    adjust_protein(exp, pro_expr_mat, method = "ratio"),
-    "proteins.*column exists instead.*infer_protein"
-  )
-})
-
 test_that("adjust_protein handles no common proteins", {
   exp <- simple_exp(3, 4)
   exp$var_info$protein <- c("PRO1", "PRO2", "PRO3")
