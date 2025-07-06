@@ -16,6 +16,18 @@
 #'   proteins, protein sites, and glycan compositions.
 #' - "gfs": Like "gf", but differentiates structures with the same composition.
 #' - "gps": Like "gp", but differentiates structures with the same composition.
+#' 
+#' Different levels of aggregation require different columns in the variable information.
+#' - "gf": "protein", "gene", "glycan_composition", "protein_site"
+#' - "gp": "peptide", "protein", "gene", "glycan_composition", "peptide_site", "protein_site"
+#' - "gfs": "protein", "gene", "glycan_composition", "glycan_structure", "protein_site"
+#' - "gps": "peptide", "protein", "gene", "glycan_composition", "glycan_structure",
+#'          "peptide_site", "protein_site"
+#'
+#' Note that `aggregate()` will remove all other columns in the variable information
+#' except the ones listed above.
+#' So please call `aggregate()` as early as possible, 
+#' before calling `add_site_seq()` or other motif annotation functions in `glymotif`.
 #'
 #' @param exp A `glyexp_experiment` object containing glycoproteomics data.
 #'   This function only works with `glyexp_experiment` objects as it requires
@@ -25,14 +37,6 @@
 #'   "gfs" (glycoforms with structures),
 #'   or "gps" (glycopeptides with structures).
 #'   See Details for more information.
-#'
-#' @details
-#' Different levels of aggregation require different columns in the variable information.
-#' - "gf": "protein", "gene", "glycan_composition", "protein_site"
-#' - "gp": "peptide", "protein", "gene", "glycan_composition", "peptide_site", "protein_site"
-#' - "gfs": "protein", "gene", "glycan_composition", "glycan_structure", "protein_site"
-#' - "gps": "peptide", "protein", "gene", "glycan_composition", "glycan_structure",
-#'          "peptide_site", "protein_site"
 #'
 #' @return A modified `glyexp_experiment` object
 #'   with aggregated expression matrix and

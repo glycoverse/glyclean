@@ -40,8 +40,7 @@ proteins, protein sites, and glycan compositions.
 \item "gfs": Like "gf", but differentiates structures with the same composition.
 \item "gps": Like "gp", but differentiates structures with the same composition.
 }
-}
-\details{
+
 Different levels of aggregation require different columns in the variable information.
 \itemize{
 \item "gf": "protein", "gene", "glycan_composition", "protein_site"
@@ -50,4 +49,9 @@ Different levels of aggregation require different columns in the variable inform
 \item "gps": "peptide", "protein", "gene", "glycan_composition", "glycan_structure",
 "peptide_site", "protein_site"
 }
+
+Note that \code{aggregate()} will remove all other columns in the variable information
+except the ones listed above.
+So please call \code{aggregate()} as early as possible,
+before calling \code{add_site_seq()} or other motif annotation functions in \code{glymotif}.
 }
