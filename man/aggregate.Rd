@@ -28,9 +28,7 @@ Aggregate glycoproteomics data to different levels
 This function sums up quantitative values for each
 unique combination of specified variables.
 It is recommended to call this function after missing value imputation.
-}
-\details{
-The \code{to_level} parameter determines the level of aggregation.
+
 The following levels are available:
 \itemize{
 \item "gf": Aggregate to glycoforms, which is the unique combination of proteins,
@@ -42,12 +40,14 @@ proteins, protein sites, and glycan compositions.
 \item "gfs": Like "gf", but differentiates structures with the same composition.
 \item "gps": Like "gp", but differentiates structures with the same composition.
 }
-
-If \code{aggregate} has never been called on an experiment,
-it has a "psm" (peptide-spectrum match) level by default.
-You can aggregate an experiment from "psm" to all other levels.
-You can also call \code{aggregate} on an experiment that has already been aggregated.
-However, you cannot aggregate from "gf" to "gp",
-as the peptide information is lost during "gf" aggregation.
-Similarly, you cannot aggregate from "gf" to "gfs", or "gp" to "gps".
+}
+\details{
+Different levels of aggregation require different columns in the variable information.
+\itemize{
+\item "gf": "protein", "gene", "glycan_composition", "protein_site"
+\item "gp": "peptide", "protein", "gene", "glycan_composition", "peptide_site", "protein_site"
+\item "gfs": "protein", "gene", "glycan_composition", "glycan_structure", "protein_site"
+\item "gps": "peptide", "protein", "gene", "glycan_composition", "glycan_structure",
+"peptide_site", "protein_site"
+}
 }

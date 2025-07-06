@@ -56,7 +56,7 @@ test_that("aggregating from glycopeptides to glycoforms works", {
 test_that("aggregating from glycoforms to glycopeptides fails", {
   exp <- complex_exp()
   exp <- aggregate(exp, to_level = "gf")
-  expect_snapshot(aggregate(exp, to_level = "gp"), error = TRUE)
+  expect_error(aggregate(exp, to_level = "gp"), "Missing columns")
 })
 
 
@@ -71,5 +71,5 @@ test_that("aggregating from glycoforms with structure to glycoforms without stru
 test_that("aggregating from glycoforms without structures to glycoforms with structures fails", {
   exp <- complex_exp()
   exp <- aggregate(exp, to_level = "gf")
-  expect_snapshot(aggregate(exp, to_level = "gfs"), error = TRUE)
+  expect_error(aggregate(exp, to_level = "gfs"), "Missing columns")
 })
