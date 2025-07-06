@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -101,42 +101,42 @@ proper <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.h
 <span>  glycan_type <span class="op">=</span> <span class="st">"N"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reading data</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Reading data <span style="color: #B2B2B2;">[374ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Reading data <span style="color: #B2B2B2;">[380ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Parsing glycan compositions</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Parsing glycan compositions <span style="color: #B2B2B2;">[220ms]</span></span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Parsing glycan structures</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Parsing glycan structures <span style="color: #B2B2B2;">[3s]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Parsing glycan compositions and structures</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Parsing glycan compositions and structures <span style="color: #B2B2B2;">[3.3s]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Packing experiment</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Packing experiment <span style="color: #B2B2B2;">[20ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Packing experiment <span style="color: #B2B2B2;">[21ms]</span></span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Performing protein inference</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Performing protein inference <span style="color: #B2B2B2;">[349ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="va">exp</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Experiment</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────────────────────</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Expression matrix: <span style="color: #0000BB;">12</span> samples, <span style="color: #0000BB;">500</span> variables</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Sample information fields: <span style="color: #00BB00;">group</span> and <span style="color: #00BB00;">batch</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Variable information fields: <span style="color: #00BB00;">peptide</span>, <span style="color: #00BB00;">proteins</span>, <span style="color: #00BB00;">genes</span>, <span style="color: #00BB00;">glycan_composition</span>, <span style="color: #00BB00;">glycan_structure</span>, <span style="color: #00BB00;">peptide_site</span>, <span style="color: #00BB00;">protein_sites</span>, <span style="color: #00BB00;">charge</span>, and <span style="color: #00BB00;">modifications</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Variable information fields: <span style="color: #00BB00;">peptide</span>, <span style="color: #00BB00;">glycan_composition</span>, <span style="color: #00BB00;">glycan_structure</span>, <span style="color: #00BB00;">peptide_site</span>, <span style="color: #00BB00;">charge</span>, <span style="color: #00BB00;">modifications</span>, <span style="color: #00BB00;">protein</span>, <span style="color: #00BB00;">gene</span>, and <span style="color: #00BB00;">protein_site</span></span></span></code></pre></div>
 <p>Let’s peek under the hood and see what we’re working with:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/get_var_info.html" class="external-link">get_var_info</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 500 × 10</span></span></span>
-<span><span class="co">#&gt;    variable peptide        proteins genes    glycan_composition glycan_structure</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;comp&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;structure&gt;</span>     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PSM1     JKTQGK         P08185   SERPINA6 Hex(5)HexNAc(4)Ne… NeuAc(??-?)Hex(…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PSM2     HSHNJJSSDLHPHK P04196   HRG      Hex(5)HexNAc(4)Ne… NeuAc(??-?)Hex(…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PSM3     HSHNJJSSDLHPHK P04196   HRG      Hex(5)HexNAc(4)    Hex(??-?)HexNAc…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PSM4     HSHNJJSSDLHPHK P04196   HRG      Hex(5)HexNAc(4)Ne… NeuAc(??-?)Hex(…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PSM5     HJSTGCLR       P10909   CLU      Hex(6)HexNAc(5)    Hex(??-?)HexNAc…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PSM6     HSHNJJSSDLHPHK P04196   HRG      Hex(5)HexNAc(4)Ne… NeuAc(??-?)Hex(…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PSM7     HSHNJJSSDLHPHK P04196   HRG      Hex(5)HexNAc(4)Ne… NeuAc(??-?)Hex(…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PSM8     HSHNJJSSDLHPHK P04196   HRG      Hex(5)HexNAc(4)Ne… NeuAc(??-?)Hex(…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PSM9     HSHNJJSSDLHPHK P04196   HRG      Hex(5)HexNAc(4)Ne… NeuAc(??-?)Hex(…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PSM10    HSHNJJSSDLHPHK P04196   HRG      Hex(5)HexNAc(4)    Hex(??-?)HexNAc…</span></span>
+<span><span class="co">#&gt;    variable peptide      glycan_composition glycan_structure peptide_site charge</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;comp&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;structure&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PSM1     JKTQGK       Hex(5)HexNAc(4)Ne… NeuAc(??-?)Hex(…            1      3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PSM2     HSHNJJSSDLH… Hex(5)HexNAc(4)Ne… NeuAc(??-?)Hex(…            5      4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PSM3     HSHNJJSSDLH… Hex(5)HexNAc(4)    Hex(??-?)HexNAc…            5      4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PSM4     HSHNJJSSDLH… Hex(5)HexNAc(4)Ne… NeuAc(??-?)Hex(…            5      5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PSM5     HJSTGCLR     Hex(6)HexNAc(5)    Hex(??-?)HexNAc…            2      3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PSM6     HSHNJJSSDLH… Hex(5)HexNAc(4)Ne… NeuAc(??-?)Hex(…            5      4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PSM7     HSHNJJSSDLH… Hex(5)HexNAc(4)Ne… NeuAc(??-?)Hex(…            5      4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PSM8     HSHNJJSSDLH… Hex(5)HexNAc(4)Ne… NeuAc(??-?)Hex(…            5      5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PSM9     HSHNJJSSDLH… Hex(5)HexNAc(4)Ne… NeuAc(??-?)Hex(…            5      5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PSM10    HSHNJJSSDLH… Hex(5)HexNAc(4)    Hex(??-?)HexNAc…            6      4</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 490 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 more variables: peptide_site &lt;int&gt;, protein_sites &lt;chr&gt;, charge &lt;int&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   modifications &lt;chr&gt;</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 more variables: modifications &lt;chr&gt;, protein &lt;chr&gt;, gene &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   protein_site &lt;int&gt;</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/get_sample_info.html" class="external-link">get_sample_info</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 12 × 3</span></span></span>
@@ -169,23 +169,23 @@ come from 3 different batches and represent 4 distinct biological groups
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clean_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_clean.html">auto_clean</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data (Median)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalizing data (Median) <span style="color: #B2B2B2;">[222ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalizing data (Median) <span style="color: #B2B2B2;">[145ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Removing variables with &gt;50% missing values</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Removing variables with &gt;50% missing values <span style="color: #B2B2B2;">[16ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Removing variables with &gt;50% missing values <span style="color: #B2B2B2;">[17ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Imputing missing values</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Sample size &lt;= 30, using sample minimum imputation</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Imputing missing values<span style="color: #00BB00;">✔</span> Imputing missing values <span style="color: #B2B2B2;">[15ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Imputing missing values<span style="color: #00BB00;">✔</span> Imputing missing values <span style="color: #B2B2B2;">[16ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Aggregating data</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Aggregating data <span style="color: #B2B2B2;">[122ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Aggregating data <span style="color: #B2B2B2;">[119ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Detecting batch effects using ANOVA for 263 variables...</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BB00;">✔</span> Batch effect detection completed. 1 out of 263 variables show significant batch effects (p &lt; 0.05).</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BBBB;">ℹ</span> Batch effects detected in 0.4% of variables (&lt;=10%). Skipping batch correction.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BB00;">✔</span> Normalizing data again <span style="color: #B2B2B2;">[656ms]</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BB00;">✔</span> Normalizing data again <span style="color: #B2B2B2;">[654ms]</span></span></span></code></pre></div>
 <p><strong>That’s it!</strong> Your data is now preprocessed and ready
 for analysis! 🎉</p>
 </div>
@@ -552,44 +552,8 @@ demonstration.</p>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Batch effect correction completed using ComBat algorithm.</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="step-6-protein-inference-solving-the-identity-crisis">Step 6: Protein Inference – Solving the Identity Crisis 🔍<a class="anchor" aria-label="anchor" href="#step-6-protein-inference-solving-the-identity-crisis"></a>
-</h3>
-<p>Imagine you’re at a costume party where everyone’s wearing masks, and
-some people look so similar that you can’t tell who’s who. That’s
-exactly what happens with protein assignments in mass spectrometry!</p>
-<p><strong>The Problem:</strong> pGlyco3 often reports multiple
-potential protein assignments for a single glycopeptide sequence. Why?
-Because many proteins share identical peptide sequences – they’re like
-molecular twins wearing the same outfit. This creates a headache when
-you want to perform protein-level analysis.</p>
-<p><strong>The Detective Work:</strong> Let’s see how many glycopeptides
-are suffering from this identity crisis:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Check how many glycopeptides have multiple protein assignments</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/get_var_info.html" class="external-link">get_var_info</a></span><span class="op">(</span><span class="va">aggregated_exp2</span><span class="op">)</span><span class="op">$</span><span class="va">proteins</span>, <span class="st">";"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 48</span></span></code></pre></div>
-<p><strong>The Solution:</strong> Enter <code><a href="../reference/infer_protein.html">infer_protein()</a></code> –
-your molecular detective! By default, it uses the “parsimony” method,
-which is like solving a puzzle by finding the minimum number of proteins
-needed to explain all your observed glycopeptides. Think of it as
-Occam’s razor for proteomics!</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">inferred_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/infer_protein.html">infer_protein</a></span><span class="op">(</span><span class="va">corrected_exp</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Now there are no multiple protein assignments,</span></span>
-<span><span class="co"># and the column name changed from "proteins" to "protein".</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/get_var_info.html" class="external-link">get_var_info</a></span><span class="op">(</span><span class="va">inferred_exp</span><span class="op">)</span><span class="op">$</span><span class="va">protein</span>, <span class="st">";"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
-<p><strong>Mystery solved!</strong> Each glycopeptide now has a single,
-confident protein assignment.</p>
-<p><strong>What <code><a href="../reference/auto_clean.html">auto_clean()</a></code> does:</strong> Nothing! This
-step requires your judgment about whether protein-level analysis is
-needed, so <code><a href="../reference/auto_clean.html">auto_clean()</a></code> leaves this decision in your
-capable hands.</p>
-</div>
-<div class="section level3">
-<h3 id="step-7-protein-expression-adjustment-separating-signal-from-noise">Step 7: Protein Expression Adjustment – Separating Signal from Noise
-🎯<a class="anchor" aria-label="anchor" href="#step-7-protein-expression-adjustment-separating-signal-from-noise"></a>
+<h3 id="step-6-protein-expression-adjustment-separating-signal-from-noise">Step 6: Protein Expression Adjustment – Separating Signal from Noise
+🎯<a class="anchor" aria-label="anchor" href="#step-6-protein-expression-adjustment-separating-signal-from-noise"></a>
 </h3>
 <p>Here’s a fascinating biological puzzle: when you measure a
 glycopeptide’s intensity, you’re actually seeing two stories at
@@ -610,7 +574,7 @@ bigger, or are they just more enthusiastic?</p>
 glycosylation changes (not protein abundance changes), you need to
 mathematically “subtract out” the protein expression component. Think of
 it as noise cancellation for biology!</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># We don't run the code here because we don't have the protein expression matrix.</span></span>
 <span><span class="va">adjusted_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/adjust_protein.html">adjust_protein</a></span><span class="op">(</span><span class="va">inferred_exp</span>, <span class="va">pro_expr_mat</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Important Prerequisites:</strong></p>
@@ -654,7 +618,7 @@ input! This means you can use the package’s powerful preprocessing
 capabilities even if you’re working with traditional data formats. The
 functions intelligently detect your input type and handle it
 appropriately.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Example: Using glyclean with a plain matrix</span></span>
 <span><span class="va">my_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="va">normalized_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">my_matrix</span><span class="op">)</span></span>
@@ -667,7 +631,7 @@ appropriately.</p>
 parameter for stratified processing. This parameter offers maximum
 flexibility – it accepts both column names from your sample metadata and
 direct vectors!</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Using column names (standard approach)</span></span>
 <span><span class="va">normalized_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">exp</span>, by <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span>
 <span></span>
