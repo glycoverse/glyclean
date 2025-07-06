@@ -1,3 +1,13 @@
+# glyclean 0.6.1
+
+## Minor improvements
+
+- Update the documentation of `aggregate()`.
+
+## Bug fixes
+
+- Fix a bug in `aggregate()` where it falled on experiments returned by most `glyread` functions.
+
 # glyclean 0.6.0
 
 ## Major changes
