@@ -18,7 +18,7 @@ complex_exp <- function() {
     group = c("A", "A", "A", "B", "B", "B"),
   )
   var_info <- tibble::tribble(
-    ~peptide, ~proteins, ~genes, ~glycan_composition, ~glycan_structure, ~peptide_site, ~protein_sites, ~charge, ~modifications,
+    ~peptide, ~protein, ~gene, ~glycan_composition, ~glycan_structure, ~peptide_site, ~protein_site, ~charge, ~modifications,
     "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4, 24, 2, "",
     "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4, 24, 2, "",  # same as row 1
     "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H)(H(H(H))))))", 4, 24, 2, "",  # different structure

@@ -4,8 +4,8 @@ test_that("aggregating to glycopeptides works", {
   expect_identical(nrow(res), 3L)
   expect_identical(
     colnames(res$var_info),
-    c("variable", "peptide", "proteins", "genes", "glycan_composition",
-      "peptide_site", "protein_sites")
+    c("variable", "peptide", "protein", "gene", "glycan_composition",
+      "peptide_site", "protein_site")
   )
 })
 
@@ -16,7 +16,7 @@ test_that("aggregating to glycoforms works", {
   expect_identical(nrow(res), 2L)
   expect_identical(
     colnames(res$var_info),
-    c("variable", "proteins", "genes", "glycan_composition", "protein_sites")
+    c("variable", "protein", "gene", "glycan_composition", "protein_site")
   )
 })
 
@@ -27,8 +27,8 @@ test_that("aggregating to glycopeptides (with structures) works", {
   expect_identical(nrow(res), 4L)
   expect_identical(
     colnames(res$var_info),
-    c("variable", "peptide", "proteins", "genes", "glycan_composition",
-      "glycan_structure", "peptide_site", "protein_sites")
+    c("variable", "peptide", "protein", "gene", "glycan_composition",
+      "glycan_structure", "peptide_site", "protein_site")
   )
 })
 
@@ -39,8 +39,8 @@ test_that("aggregating to glycoforms (with structures) works", {
   expect_identical(nrow(res), 3L)
   expect_identical(
     colnames(res$var_info),
-    c("variable", "proteins", "genes", "glycan_composition", "glycan_structure",
-      "protein_sites")
+    c("variable", "protein", "gene", "glycan_composition", "glycan_structure",
+      "protein_site")
   )
 })
 

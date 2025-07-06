@@ -63,7 +63,7 @@ test_that("auto_clean applies batch effect correction when batch column exists",
     group = rep(c("Ctrl", "Treat"), 6)
   )
   var_info <- tibble::tribble(
-    ~peptide, ~proteins, ~genes, ~glycan_composition, ~glycan_structure, ~peptide_site, ~protein_sites, ~charge, ~modifications,
+    ~peptide, ~protein, ~gene, ~glycan_composition, ~glycan_structure, ~peptide_site, ~protein_site, ~charge, ~modifications,
     "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4, 24, 2, "",
     "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4, 24, 2, "",
     "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H)(H(H(H))))))", 4, 24, 2, "",

@@ -67,13 +67,13 @@ aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
   # Perform aggregation
   var_info_cols <- switch(
     to_level,
-    gf = c("proteins", "genes", "glycan_composition", "protein_sites"),
-    gp = c("peptide", "proteins", "genes", "glycan_composition",
-           "peptide_site", "protein_sites"),
-    gfs = c("proteins", "genes", "glycan_composition", "glycan_structure",
-            "protein_sites"),
-    gps = c("peptide", "proteins", "genes", "glycan_composition",
-            "glycan_structure", "peptide_site", "protein_sites")
+    gf = c("protein", "gene", "glycan_composition", "protein_site"),
+    gp = c("peptide", "protein", "gene", "glycan_composition",
+           "peptide_site", "protein_site"),
+    gfs = c("protein", "gene", "glycan_composition", "glycan_structure",
+            "protein_site"),
+    gps = c("peptide", "protein", "gene", "glycan_composition",
+            "glycan_structure", "peptide_site", "protein_site")
   )
   sample_info_df <- exp$sample_info
   tb <- tibble::as_tibble(exp, sample_cols = NULL)
