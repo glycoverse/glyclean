@@ -1,3 +1,9 @@
+# glyclean 0.6.2
+
+## Bug fixes
+
+- Add `scales` to `Imports`.
+
 # glyclean 0.6.1
 
 ## Minor improvements

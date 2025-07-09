@@ -1,6 +1,6 @@
 Package: glyclean
 Title: Perform Preprocessing on Glycomics and Glycoproteomics Data
-Version: 0.6.1
+Version: 0.6.2
 Authors@R: 
     person("Bin", "Fu", , "23110220018@m.fudan.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-8567-2997"))
@@ -41,7 +41,8 @@ Imports:
     stringr,
     tidyr,
     tidyselect,
-    withr
+    withr,
+    scales
 Remotes: 
     glycoverse/glyexp,
     glycoverse/glyread
