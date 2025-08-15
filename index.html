@@ -59,10 +59,13 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of glyclean from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<p>You can install the latest release of glyclean from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"glycoverse/glyclean"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"glycoverse/glyclean@*release"</span><span class="op">)</span></span></code></pre></div>
+<p>Or install the development version:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"glycoverse/glyclean"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
@@ -83,11 +86,11 @@
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glycoverse.github.io/glyexp/" class="external-link">glyexp</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glycoverse.github.io/glyclean/">glyclean</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'glyclean'</span></span>
+<span><span class="co">#&gt; 载入程序包：'glyclean'</span></span>
 <span><span class="co">#&gt; The following object is masked from 'package:stats':</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;     aggregate</span></span>
@@ -96,10 +99,10 @@
 <span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/set_meta_data.html" class="external-link">set_exp_type</a></span><span class="op">(</span><span class="va">exp</span>, <span class="st">"glycomics"</span><span class="op">)</span></span>
 <span><span class="va">clean_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/auto_clean.html">auto_clean</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ Normalizing data (Median Quotient)</span></span>
-<span><span class="co">#&gt; ✔ Normalizing data (Median Quotient) [32ms]</span></span>
+<span><span class="co">#&gt; ✔ Normalizing data (Median Quotient) [14ms]</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ℹ Removing variables with &gt;50% missing values</span></span>
-<span><span class="co">#&gt; ✔ Removing variables with &gt;50% missing values [47ms]</span></span>
+<span><span class="co">#&gt; ✔ Removing variables with &gt;50% missing values [39ms]</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ℹ Imputing missing values</span></span>
 <span><span class="co">#&gt; ℹ Sample size &lt;= 30, using sample minimum imputation</span></span>
@@ -109,7 +112,7 @@
 <span><span class="co">#&gt; ℹ Detecting batch effects using ANOVA for 4 variables...</span></span>
 <span><span class="co">#&gt; ℹ Normalizing data (Total Area)✔ Batch effect detection completed. 0 out of 4 variables show significant batch effects (p &lt; 0.05).</span></span>
 <span><span class="co">#&gt; ℹ Normalizing data (Total Area)ℹ Batch effects detected in 0.0% of variables (&lt;=10%). Skipping batch correction.</span></span>
-<span><span class="co">#&gt; ℹ Normalizing data (Total Area)✔ Normalizing data (Total Area) [52ms]</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ Normalizing data (Total Area)✔ Normalizing data (Total Area) [45ms]</span></span></code></pre></div>
 <p>Yes, that’s it! Calling the magical <code><a href="reference/auto_clean.html">auto_clean()</a></code> function will automatically perform the following steps, in the most suitable way for your data:</p>
 <ul>
 <li>Normalization</li>
