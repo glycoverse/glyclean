@@ -28,10 +28,16 @@ so you can focus on the fun part: downstream analysis!
 
 ## Installation
 
-You can install the development version of glyclean from [GitHub](https://github.com/) with:
+You can install the latest release of glyclean from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("pak")
+pak::pak("glycoverse/glyclean@*release")
+```
+
+Or install the development version:
+
+``` r
 pak::pak("glycoverse/glyclean")
 ```
 

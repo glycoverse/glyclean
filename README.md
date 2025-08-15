@@ -20,11 +20,17 @@ on the fun part: downstream analysis!
 
 ## Installation
 
-You can install the development version of glyclean from
+You can install the latest release of glyclean from
 [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("pak")
+pak::pak("glycoverse/glyclean@*release")
+```
+
+Or install the development version:
+
+``` r
 pak::pak("glycoverse/glyclean")
 ```
 
@@ -49,7 +55,7 @@ with clean, analysis-ready data.
 library(glyexp)
 library(glyclean)
 #> 
-#> Attaching package: 'glyclean'
+#> 载入程序包：'glyclean'
 #> The following object is masked from 'package:stats':
 #> 
 #>     aggregate
@@ -58,10 +64,10 @@ exp <- toy_experiment()
 exp <- set_exp_type(exp, "glycomics")
 clean_exp <- auto_clean(exp)
 #> ℹ Normalizing data (Median Quotient)
-#> ✔ Normalizing data (Median Quotient) [32ms]
+#> ✔ Normalizing data (Median Quotient) [14ms]
 #> 
 #> ℹ Removing variables with >50% missing values
-#> ✔ Removing variables with >50% missing values [47ms]
+#> ✔ Removing variables with >50% missing values [39ms]
 #> 
 #> ℹ Imputing missing values
 #> ℹ Sample size <= 30, using sample minimum imputation
@@ -71,7 +77,7 @@ clean_exp <- auto_clean(exp)
 #> ℹ Detecting batch effects using ANOVA for 4 variables...
 #> ℹ Normalizing data (Total Area)✔ Batch effect detection completed. 0 out of 4 variables show significant batch effects (p < 0.05).
 #> ℹ Normalizing data (Total Area)ℹ Batch effects detected in 0.0% of variables (<=10%). Skipping batch correction.
-#> ℹ Normalizing data (Total Area)✔ Normalizing data (Total Area) [52ms]
+#> ℹ Normalizing data (Total Area)✔ Normalizing data (Total Area) [45ms]
 ```
 
 Yes, that’s it! Calling the magical `auto_clean()` function will
