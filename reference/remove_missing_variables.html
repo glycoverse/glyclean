@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -98,40 +98,45 @@ For matrix input, returns a filtered matrix.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># With glyexp_experiment</span></span></span>
-<span class="r-in"><span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu">glyexp</span><span class="fu">::</span><span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/toy_experiment.html" class="external-link">toy_experiment</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> attempt to apply non-function</span>
+<span class="r-in"><span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu">glyexp</span><span class="fu">::</span><span class="va"><a href="https://glycoverse.github.io/glyexp/reference/toy_experiment.html" class="external-link">toy_experiment</a></span></span></span>
 <span class="r-in"><span><span class="va">exp</span><span class="op">$</span><span class="va">expr_mat</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span>    <span class="co"># V1: 1/6 missing</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in `*tmp*`$expr_mat:</span> object of type 'builtin' is not subsettable</span>
 <span class="r-in"><span><span class="va">exp</span><span class="op">$</span><span class="va">expr_mat</span><span class="op">[</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span>  <span class="co"># V2: 3/6 missing</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in `*tmp*`$expr_mat:</span> object of type 'builtin' is not subsettable</span>
 <span class="r-in"><span><span class="va">exp</span><span class="op">$</span><span class="va">expr_mat</span><span class="op">[</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span>  <span class="co"># V3: 5/6 missing</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in `*tmp*`$expr_mat:</span> object of type 'builtin' is not subsettable</span>
 <span class="r-in"><span><span class="va">exp</span><span class="op">$</span><span class="va">expr_mat</span><span class="op">[</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span>  <span class="co"># V4: 6/6 missing</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in `*tmp*`$expr_mat:</span> object of type 'builtin' is not subsettable</span>
 <span class="r-in"><span><span class="va">exp</span><span class="op">$</span><span class="va">expr_mat</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in exp$expr_mat:</span> object of type 'builtin' is not subsettable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    S1 S2 S3 S4 S5 S6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> V1 NA  5  9 13 17 21</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> V2 NA NA NA 14 18 22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> V3 NA NA NA NA NA 23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> V4 NA NA NA NA NA NA</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Remove variables with more than 50% missing values.</span></span></span>
 <span class="r-in"><span><span class="fu">remove_missing_variables</span><span class="op">(</span><span class="va">exp</span>, prop <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">$</span><span class="va">expr_mat</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in .dispatch_on_input(x, fun_exp = .filter_exp_missing_variables,     fun_mat = .filter_matrix_missing_variables, prop = prop,     n = n, by = by, strict = strict, min_n = min_n):</span> Input `x` must be either a <span style="color: #0000BB;">&lt;glyexp_experiment&gt;</span> object or a <span style="color: #0000BB;">&lt;matrix&gt;</span>.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    S1 S2 S3 S4 S5 S6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> V1 NA  5  9 13 17 21</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> V2 NA NA NA 14 18 22</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Remove variables with more than 2 missing values.</span></span></span>
 <span class="r-in"><span><span class="fu">remove_missing_variables</span><span class="op">(</span><span class="va">exp</span>, n <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">$</span><span class="va">expr_mat</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in .dispatch_on_input(x, fun_exp = .filter_exp_missing_variables,     fun_mat = .filter_matrix_missing_variables, prop = prop,     n = n, by = by, strict = strict, min_n = min_n):</span> Input `x` must be either a <span style="color: #0000BB;">&lt;glyexp_experiment&gt;</span> object or a <span style="color: #0000BB;">&lt;matrix&gt;</span>.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    S1 S2 S3 S4 S5 S6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> V1 NA  5  9 13 17 21</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Remove variables if they have more than 1 missing value in all groups.</span></span></span>
 <span class="r-in"><span><span class="co"># In another word, keep variables as long as they have 1 or 0 missing value</span></span></span>
 <span class="r-in"><span><span class="co"># in any group.</span></span></span>
 <span class="r-in"><span><span class="fu">remove_missing_variables</span><span class="op">(</span><span class="va">exp</span>, by <span class="op">=</span> <span class="st">"group"</span>, strict <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">$</span><span class="va">expr_mat</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in .dispatch_on_input(x, fun_exp = .filter_exp_missing_variables,     fun_mat = .filter_matrix_missing_variables, prop = prop,     n = n, by = by, strict = strict, min_n = min_n):</span> Input `x` must be either a <span style="color: #0000BB;">&lt;glyexp_experiment&gt;</span> object or a <span style="color: #0000BB;">&lt;matrix&gt;</span>.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    S1 S2 S3 S4 S5 S6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> V1 NA  5  9 13 17 21</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> V2 NA NA NA 14 18 22</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Keep only variables with no missing values.</span></span></span>
 <span class="r-in"><span><span class="fu">remove_missing_variables</span><span class="op">(</span><span class="va">exp</span>, prop <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">$</span><span class="va">expr_mat</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in .dispatch_on_input(x, fun_exp = .filter_exp_missing_variables,     fun_mat = .filter_matrix_missing_variables, prop = prop,     n = n, by = by, strict = strict, min_n = min_n):</span> Input `x` must be either a <span style="color: #0000BB;">&lt;glyexp_experiment&gt;</span> object or a <span style="color: #0000BB;">&lt;matrix&gt;</span>.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      S1 S2 S3 S4 S5 S6</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Use custom min_n to require at least 4 non-missing values</span></span></span>
 <span class="r-in"><span><span class="fu">remove_missing_variables</span><span class="op">(</span><span class="va">exp</span>, min_n <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">$</span><span class="va">expr_mat</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in .dispatch_on_input(x, fun_exp = .filter_exp_missing_variables,     fun_mat = .filter_matrix_missing_variables, prop = prop,     n = n, by = by, strict = strict, min_n = min_n):</span> Input `x` must be either a <span style="color: #0000BB;">&lt;glyexp_experiment&gt;</span> object or a <span style="color: #0000BB;">&lt;matrix&gt;</span>.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    S1 S2 S3 S4 S5 S6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> V1 NA  5  9 13 17 21</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># With matrix</span></span></span>
 <span class="r-in"><span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="cn">NA</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="cn">NA</span>, <span class="fl">7</span>, <span class="fl">8</span>, <span class="fl">9</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
