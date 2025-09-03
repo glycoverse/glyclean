@@ -1,3 +1,9 @@
+# glyclean 0.6.3
+
+## Bug fixes
+
+- Fix bugs in documentation examples due to breaking changes introduced in `glyexp` 0.8.0.
+
 # glyclean 0.6.2
 
 ## Bug fixes
