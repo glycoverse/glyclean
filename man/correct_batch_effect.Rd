@@ -45,7 +45,7 @@ while correcting for batch effects.
 }
 \examples{
 # With glyexp_experiment and column names
-exp <- glyexp::toy_experiment()
+exp <- glyexp::toy_experiment
 exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
 exp$sample_info$group <- c("Ctrl", "Ctrl", "Treat", "Ctrl", "Treat", "Treat")
 corrected_exp <- correct_batch_effect(exp, batch = "batch", group = "group")

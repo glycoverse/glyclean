@@ -30,7 +30,7 @@ If \code{group} is provided, it will be used as a covariate in the ANOVA model.
 }
 \examples{
 # With glyexp_experiment and column names
-exp <- glyexp::toy_experiment()
+exp <- glyexp::toy_experiment
 exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
 exp$sample_info$group <- c("Ctrl", "Ctrl", "Treat", "Ctrl", "Treat", "Treat")
 p_values <- detect_batch_effect(exp, batch = "batch", group = "group")

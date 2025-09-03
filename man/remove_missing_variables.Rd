@@ -50,7 +50,7 @@ Remove Variables with Missing Values
 }
 \examples{
 # With glyexp_experiment
-exp <- glyexp::toy_experiment()
+exp <- glyexp::toy_experiment
 exp$expr_mat[1, 1] <- NA    # V1: 1/6 missing
 exp$expr_mat[2, 1:3] <- NA  # V2: 3/6 missing
 exp$expr_mat[3, 1:5] <- NA  # V3: 5/6 missing

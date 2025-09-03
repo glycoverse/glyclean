@@ -36,7 +36,7 @@
 #' 
 #' @examples
 #' # With glyexp_experiment and column names
-#' exp <- glyexp::toy_experiment()
+#' exp <- glyexp::toy_experiment
 #' exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
 #' exp$sample_info$group <- c("Ctrl", "Ctrl", "Treat", "Ctrl", "Treat", "Treat")
 #' corrected_exp <- correct_batch_effect(exp, batch = "batch", group = "group")
@@ -122,7 +122,7 @@ correct_batch_effect <- function(x, batch = "batch", group = NULL) {
 #'
 #' @examples
 #' # With glyexp_experiment and column names
-#' exp <- glyexp::toy_experiment()
+#' exp <- glyexp::toy_experiment
 #' exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
 #' exp$sample_info$group <- c("Ctrl", "Ctrl", "Treat", "Ctrl", "Treat", "Treat")
 #' p_values <- detect_batch_effect(exp, batch = "batch", group = "group")
