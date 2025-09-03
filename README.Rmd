@@ -31,14 +31,14 @@ so you can focus on the fun part: downstream analysis!
 You can install the latest release of glyclean from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("pak")
-pak::pak("glycoverse/glyclean@*release")
+# install.packages("devtools")
+devtools::install_github("glycoverse/glyclean@*release")
 ```
 
 Or install the development version:
 
 ``` r
-pak::pak("glycoverse/glyclean")
+devtools::install_github("glycoverse/glyclean")
 ```
 
 ## Documentation
@@ -59,7 +59,7 @@ enabling other packages like `glystats` to work with clean, analysis-ready data.
 library(glyexp)
 library(glyclean)
 
-exp <- toy_experiment()
+exp <- toy_experiment
 exp <- set_exp_type(exp, "glycomics")
 clean_exp <- auto_clean(exp)
 ```
