@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,11 +61,11 @@
 </h2>
 <p>You can install the latest release of glyclean from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"glycoverse/glyclean@*release"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"glycoverse/glyclean@*release"</span><span class="op">)</span></span></code></pre></div>
 <p>Or install the development version:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"glycoverse/glyclean"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"glycoverse/glyclean"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
@@ -99,20 +99,20 @@
 <span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/set_meta_data.html" class="external-link">set_exp_type</a></span><span class="op">(</span><span class="va">exp</span>, <span class="st">"glycomics"</span><span class="op">)</span></span>
 <span><span class="va">clean_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/auto_clean.html">auto_clean</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ Normalizing data (Median Quotient)</span></span>
-<span><span class="co">#&gt; ✔ Normalizing data (Median Quotient) [43ms]</span></span>
+<span><span class="co">#&gt; ✔ Normalizing data (Median Quotient) [14ms]</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ℹ Removing variables with &gt;50% missing values</span></span>
-<span><span class="co">#&gt; ✔ Removing variables with &gt;50% missing values [36ms]</span></span>
+<span><span class="co">#&gt; ✔ Removing variables with &gt;50% missing values [38ms]</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ℹ Imputing missing values</span></span>
 <span><span class="co">#&gt; ℹ Sample size &lt;= 30, using sample minimum imputation</span></span>
-<span><span class="co">#&gt; ℹ Imputing missing values✔ Imputing missing values [8ms]</span></span>
+<span><span class="co">#&gt; ℹ Imputing missing values✔ Imputing missing values [9ms]</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ℹ Normalizing data (Total Area)</span></span>
 <span><span class="co">#&gt; ℹ Detecting batch effects using ANOVA for 4 variables...</span></span>
 <span><span class="co">#&gt; ℹ Normalizing data (Total Area)✔ Batch effect detection completed. 0 out of 4 variables show significant batch effects (p &lt; 0.05).</span></span>
 <span><span class="co">#&gt; ℹ Normalizing data (Total Area)ℹ Batch effects detected in 0.0% of variables (&lt;=10%). Skipping batch correction.</span></span>
-<span><span class="co">#&gt; ℹ Normalizing data (Total Area)✔ Normalizing data (Total Area) [40ms]</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ Normalizing data (Total Area)✔ Normalizing data (Total Area) [43ms]</span></span></code></pre></div>
 <p>Yes, that’s it! Calling the magical <code><a href="reference/auto_clean.html">auto_clean()</a></code> function will automatically perform the following steps, in the most suitable way for your data:</p>
 <ul>
 <li>Normalization</li>
