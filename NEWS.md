@@ -1,3 +1,9 @@
+# glyclean 0.6.4
+
+## Minor improvements and bug fixes
+
+* Update dependencies to depend on release versions of glycoverse packages.
+
 # glyclean 0.6.3
 
 ## Bug fixes
