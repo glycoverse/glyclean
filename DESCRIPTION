@@ -11,9 +11,7 @@ Description:
 License: MIT + file LICENSE
 Suggests: 
     testthat (>= 3.0.0),
-    glyexp (>= 0.8.0),
     glyread (>= 0.2.1),
-    tibble,
     vsn,
     impute,
     imputeLCMD,
@@ -32,6 +30,7 @@ Imports:
     checkmate,
     cli,
     dplyr,
+    glyexp (>= 0.8.0),
     limma,
     magrittr,
     matrixStats,
@@ -40,6 +39,7 @@ Imports:
     seqinr,
     stringr,
     tidyr,
+    tibble,
     tidyselect,
     withr
 Remotes: 
