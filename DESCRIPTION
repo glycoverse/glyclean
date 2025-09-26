@@ -41,8 +41,7 @@ Imports:
     stringr,
     tidyr,
     tidyselect,
-    withr,
-    scales
+    withr
 Remotes: 
     glycoverse/glyexp@*release,
     glycoverse/glyread@*release

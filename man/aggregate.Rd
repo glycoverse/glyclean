@@ -18,8 +18,7 @@ or "gps" (glycopeptides with structures).
 See Details for more information.}
 }
 \value{
-A modified \code{glyexp_experiment} object
-with aggregated expression matrix and
+A modified \code{glyexp_experiment} object with aggregated expression matrix and
 updated variable information.
 }
 \description{
@@ -43,15 +42,18 @@ proteins, protein sites, and glycan compositions.
 
 Different levels of aggregation require different columns in the variable information.
 \itemize{
-\item "gf": "protein", "gene", "glycan_composition", "protein_site"
-\item "gp": "peptide", "protein", "gene", "glycan_composition", "peptide_site", "protein_site"
-\item "gfs": "protein", "gene", "glycan_composition", "glycan_structure", "protein_site"
-\item "gps": "peptide", "protein", "gene", "glycan_composition", "glycan_structure",
+\item "gf": "protein", "glycan_composition", "protein_site"
+\item "gp": "peptide", "protein", "glycan_composition", "peptide_site", "protein_site"
+\item "gfs": "protein", "glycan_composition", "glycan_structure", "protein_site"
+\item "gps": "peptide", "protein", "glycan_composition", "glycan_structure",
 "peptide_site", "protein_site"
 }
 
-Note that \code{aggregate()} will remove all other columns in the variable information
-except the ones listed above.
-So please call \code{aggregate()} as early as possible,
-before calling \code{add_site_seq()} or other motif annotation functions in \code{glymotif}.
+Other columns in the variable information tibble with "many-to-one" relationship
+with the unique combination of columns listed above will be kept.
+A common example is the "gene" column.
+For each "glycoform" (unique combination of "protein", "protein_site", and "glycan_composition"),
+there should be only one "gene" value, therefore it is kept for "gf" level.
+On the other hand, the "peptide" column is removed for "gf" level,
+as one "glycoform" can contain multiple "peptides".
 }

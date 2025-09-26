@@ -8,9 +8,8 @@ simple_exp <- function(n_var, n_samp) {
     expr_mat, sample_info, var_info, 
     exp_type = "glycoproteomics",
     glycan_type = "N"
-    )
+  )
 }
-
 
 complex_exp <- function() {
   sample_info <- tibble::tibble(
@@ -21,6 +20,7 @@ complex_exp <- function() {
     ~peptide, ~protein, ~gene, ~glycan_composition, ~glycan_structure, ~peptide_site, ~protein_site, ~charge, ~modifications,
     "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4, 24, 2, "",
     "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4, 24, 2, "",  # same as row 1
+    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 5, 25, 2, "",  # different site
     "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H)(H(H(H))))))", 4, 24, 2, "",  # different structure
     "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4, 24, 2, "6,Carbamidomethyl[C]",  # different modifications
     "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4, 24, 3, "",  # different charge
@@ -42,4 +42,9 @@ complex_exp <- function() {
     exp_type = "glycoproteomics",
     glycan_type = "N"
   )
+}
+
+real_exp <- function() {
+  glyexp::real_experiment |>
+    glyexp::slice_head_var(n = 100)
 }

@@ -16,18 +16,21 @@
 #'   proteins, protein sites, and glycan compositions.
 #' - "gfs": Like "gf", but differentiates structures with the same composition.
 #' - "gps": Like "gp", but differentiates structures with the same composition.
-#' 
+#'
 #' Different levels of aggregation require different columns in the variable information.
-#' - "gf": "protein", "gene", "glycan_composition", "protein_site"
-#' - "gp": "peptide", "protein", "gene", "glycan_composition", "peptide_site", "protein_site"
-#' - "gfs": "protein", "gene", "glycan_composition", "glycan_structure", "protein_site"
-#' - "gps": "peptide", "protein", "gene", "glycan_composition", "glycan_structure",
+#' - "gf": "protein", "glycan_composition", "protein_site"
+#' - "gp": "peptide", "protein", "glycan_composition", "peptide_site", "protein_site"
+#' - "gfs": "protein", "glycan_composition", "glycan_structure", "protein_site"
+#' - "gps": "peptide", "protein", "glycan_composition", "glycan_structure",
 #'          "peptide_site", "protein_site"
 #'
-#' Note that `aggregate()` will remove all other columns in the variable information
-#' except the ones listed above.
-#' So please call `aggregate()` as early as possible, 
-#' before calling `add_site_seq()` or other motif annotation functions in `glymotif`.
+#' Other columns in the variable information tibble with "many-to-one" relationship
+#' with the unique combination of columns listed above will be kept.
+#' A common example is the "gene" column.
+#' For each "glycoform" (unique combination of "protein", "protein_site", and "glycan_composition"),
+#' there should be only one "gene" value, therefore it is kept for "gf" level.
+#' On the other hand, the "peptide" column is removed for "gf" level,
+#' as one "glycoform" can contain multiple "peptides".
 #'
 #' @param exp A `glyexp_experiment` object containing glycoproteomics data.
 #'   This function only works with `glyexp_experiment` objects as it requires
@@ -38,8 +41,7 @@
 #'   or "gps" (glycopeptides with structures).
 #'   See Details for more information.
 #'
-#' @return A modified `glyexp_experiment` object
-#'   with aggregated expression matrix and
+#' @returns A modified `glyexp_experiment` object with aggregated expression matrix and
 #'   updated variable information.
 #' @export
 aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
@@ -50,13 +52,10 @@ aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
   # Perform aggregation
   var_info_cols <- switch(
     to_level,
-    gf = c("protein", "gene", "glycan_composition", "protein_site"),
-    gp = c("peptide", "protein", "gene", "glycan_composition",
-           "peptide_site", "protein_site"),
-    gfs = c("protein", "gene", "glycan_composition", "glycan_structure",
-            "protein_site"),
-    gps = c("peptide", "protein", "gene", "glycan_composition",
-            "glycan_structure", "peptide_site", "protein_site")
+    gf = c("protein", "glycan_composition", "protein_site"),
+    gp = c("peptide", "protein", "glycan_composition", "peptide_site", "protein_site"),
+    gfs = c("protein", "glycan_composition", "glycan_structure", "protein_site"),
+    gps = c("peptide", "protein", "glycan_composition", "glycan_structure", "peptide_site", "protein_site")
   )
   var_info <- exp$var_info
   missing_cols <- setdiff(var_info_cols, colnames(var_info))
@@ -73,9 +72,11 @@ aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
     value = sum(.data$value, na.rm = TRUE),
     .by = tidyselect::all_of(c(var_info_cols, "sample")),
   )
+  add_cols <- .get_aggr_var_info(var_info, var_info_cols)
   var_info_df <- new_tb %>%
     dplyr::distinct(dplyr::across(tidyselect::all_of(var_info_cols))) %>%
-    dplyr::mutate(variable = paste0("V", dplyr::row_number()), .before = 1)
+    dplyr::mutate(variable = paste0("V", dplyr::row_number()), .before = 1) %>%
+    dplyr::left_join(add_cols, by = var_info_cols)
   expr_mat <- new_tb %>%
     dplyr::left_join(var_info_df, by = var_info_cols) %>%
     dplyr::select(tidyselect::all_of(c("sample", "variable", "value"))) %>%
@@ -91,4 +92,30 @@ aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
   new_exp$expr_mat <- expr_mat
   new_exp$var_info <- var_info_df
   new_exp
+}
+
+#' Get Aggregation Descriptive Columns
+#'
+#' Get all columns in the variable information tibble that have "many-to-one" relationship
+#' with the unique combination of given columns.
+#'
+#' @param var_info A tibble with the variable information.
+#' @param aggr_cols Column names used for aggregation.
+#'
+#' @returns A tibble with the distinct values of the descriptive columns.
+#'
+#' @noRd
+.get_aggr_var_info <- function(var_info, aggr_cols) {
+  cols <- var_info |>
+    dplyr::select(-dplyr::all_of("variable")) |>
+    dplyr::summarise(
+      dplyr::across(dplyr::everything(), dplyr::n_distinct),
+      .by = dplyr::all_of(aggr_cols)
+    ) |>
+    dplyr::select(-dplyr::all_of(aggr_cols)) |>
+    dplyr::select(dplyr::where(~ all(.x == 1))) |>
+    colnames()
+  var_info |>
+    dplyr::select(dplyr::all_of(c(aggr_cols, cols))) |>
+    dplyr::distinct()
 }
