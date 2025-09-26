@@ -50,6 +50,7 @@
 #' @importFrom utils capture.output
 #' @export
 correct_batch_effect <- function(x, batch = "batch", group = NULL) {
+  rlang::check_installed("sva", reason = "to use `correct_batch_effect()`")
   
   # Handle different input types
   if (is.matrix(x)) {
