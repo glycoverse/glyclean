@@ -60,9 +60,19 @@ aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
   var_info <- exp$var_info
   missing_cols <- setdiff(var_info_cols, colnames(var_info))
   if (length(missing_cols) > 0) {
+    if (length(missing_cols) == 1 && missing_cols == "glycan_structure") {
+      # special case for missing "glycan_structure" column
+      cli::cli_abort(c(
+        "All required columns must be present in `var_info`.",
+        "i" = "Required columns: {.field {var_info_cols}}.",
+        "x" = "Missing columns: {.field {missing_cols}}.",
+        "i" = "You might want to aggregate to {.val gp} or {.val gf} level."
+      ))
+    }
     cli::cli_abort(c(
-      "Missing columns in variable information: {.field {missing_cols}}.",
-      i = "See {.run ?aggregate} for more details."
+      "All required columns must be present in `var_info`.",
+      "i" = "Required columns: {.field {var_info_cols}}.",
+      "x" = "Missing columns: {.field {missing_cols}}."
     ))
   }
   sample_info_df <- exp$sample_info
