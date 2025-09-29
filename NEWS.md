@@ -1,8 +1,20 @@
+# glyclean 0.7.0
+
+## Breaking changes
+
+- `aggregate()` now has a new logic for aggregating glycoproteomics data. Instead of dropping all other columns, aggregate() now keeps columns intelligently. Common columns including "gene" will be kept in this way. This new logic has an important implication: columns added by functions like `glymotif::add_motif_lgl()` or `glydet::add_meta_properties()` will be kept.
+
+## Minor improvements and bug fixes
+
+- Better error message for `aggregate()` when the user tries to aggregate to a level demanding structure but the structure column is missing.
+- Explicitly check if `sva` package is installed in `correct_batch_effect()`.
+- Update dependencies to explicitly require `tibble` and `glyexp`.
+
 # glyclean 0.6.4
 
 ## Minor improvements and bug fixes
 
-* Update dependencies to depend on release versions of glycoverse packages.
+-  Update dependencies to depend on release versions of glycoverse packages.
 
 # glyclean 0.6.3
 
