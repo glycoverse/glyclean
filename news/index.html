@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,6 +31,20 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.0" id="glyclean-070">glyclean 0.7.0<a class="anchor" aria-label="anchor" href="#glyclean-070"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-7-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-7-0"></a></h3>
+<ul><li>
+<code><a href="../reference/aggregate.html">aggregate()</a></code> now has a new logic for aggregating glycoproteomics data. Instead of dropping all other columns, aggregate() now keeps columns intelligently. Common columns including “gene” will be kept in this way. This new logic has an important implication: columns added by functions like <code>glymotif::add_motif_lgl()</code> or <code>glydet::add_meta_properties()</code> will be kept.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-and-bug-fixes-0-7-0">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-0-7-0"></a></h3>
+<ul><li>Better error message for <code><a href="../reference/aggregate.html">aggregate()</a></code> when the user tries to aggregate to a level demanding structure but the structure column is missing.</li>
+<li>Explicitly check if <code>sva</code> package is installed in <code><a href="../reference/correct_batch_effect.html">correct_batch_effect()</a></code>.</li>
+<li>Update dependencies to explicitly require <code>tibble</code> and <code>glyexp</code>.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.4" id="glyclean-064">glyclean 0.6.4<a class="anchor" aria-label="anchor" href="#glyclean-064"></a></h2>
 <div class="section level3">
