@@ -16,17 +16,20 @@ proteins, protein sites, and glycan compositions.
 
 
 Different levels of aggregation require different columns in the variable information.
-"gf": "protein", "gene", "glycan_composition", "protein_site"
-"gp": "peptide", "protein", "gene", "glycan_composition", "peptide_site", "protein_site"
-"gfs": "protein", "gene", "glycan_composition", "glycan_structure", "protein_site"
-"gps": "peptide", "protein", "gene", "glycan_composition", "glycan_structure",
+"gf": "protein", "glycan_composition", "protein_site"
+"gp": "peptide", "protein", "glycan_composition", "peptide_site", "protein_site"
+"gfs": "protein", "glycan_composition", "glycan_structure", "protein_site"
+"gps": "peptide", "protein", "glycan_composition", "glycan_structure",
 "peptide_site", "protein_site"
 
 
-Note that aggregate() will remove all other columns in the variable information
-except the ones listed above.
-So please call aggregate() as early as possible,
-before calling add_site_seq() or other motif annotation functions in glymotif.'><meta property="og:description" content='Aggregate glycoproteomics data to different levels
+Other columns in the variable information tibble with "many-to-one" relationship
+with the unique combination of columns listed above will be kept.
+A common example is the "gene" column.
+For each "glycoform" (unique combination of "protein", "protein_site", and "glycan_composition"),
+there should be only one "gene" value, therefore it is kept for "gf" level.
+On the other hand, the "peptide" column is removed for "gf" level,
+as one "glycoform" can contain multiple "peptides".'><meta property="og:description" content='Aggregate glycoproteomics data to different levels
 (glycoforms, glycopeptides, etc.).
 This function sums up quantitative values for each
 unique combination of specified variables.
@@ -43,17 +46,20 @@ proteins, protein sites, and glycan compositions.
 
 
 Different levels of aggregation require different columns in the variable information.
-"gf": "protein", "gene", "glycan_composition", "protein_site"
-"gp": "peptide", "protein", "gene", "glycan_composition", "peptide_site", "protein_site"
-"gfs": "protein", "gene", "glycan_composition", "glycan_structure", "protein_site"
-"gps": "peptide", "protein", "gene", "glycan_composition", "glycan_structure",
+"gf": "protein", "glycan_composition", "protein_site"
+"gp": "peptide", "protein", "glycan_composition", "peptide_site", "protein_site"
+"gfs": "protein", "glycan_composition", "glycan_structure", "protein_site"
+"gps": "peptide", "protein", "glycan_composition", "glycan_structure",
 "peptide_site", "protein_site"
 
 
-Note that aggregate() will remove all other columns in the variable information
-except the ones listed above.
-So please call aggregate() as early as possible,
-before calling add_site_seq() or other motif annotation functions in glymotif.'><meta property="og:image" content="https://glycoverse.github.io/glyclean/logo.png"></head><body>
+Other columns in the variable information tibble with "many-to-one" relationship
+with the unique combination of columns listed above will be kept.
+A common example is the "gene" column.
+For each "glycoform" (unique combination of "protein", "protein_site", and "glycan_composition"),
+there should be only one "gene" value, therefore it is kept for "gf" level.
+On the other hand, the "peptide" column is removed for "gf" level,
+as one "glycoform" can contain multiple "peptides".'><meta property="og:image" content="https://glycoverse.github.io/glyclean/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -100,15 +106,18 @@ which is the unique combination of peptides,
 proteins, protein sites, and glycan compositions.</p></li>
 <li><p>"gfs": Like "gf", but differentiates structures with the same composition.</p></li>
 <li><p>"gps": Like "gp", but differentiates structures with the same composition.</p></li>
-</ul><p>Different levels of aggregation require different columns in the variable information.</p><ul><li><p>"gf": "protein", "gene", "glycan_composition", "protein_site"</p></li>
-<li><p>"gp": "peptide", "protein", "gene", "glycan_composition", "peptide_site", "protein_site"</p></li>
-<li><p>"gfs": "protein", "gene", "glycan_composition", "glycan_structure", "protein_site"</p></li>
-<li><p>"gps": "peptide", "protein", "gene", "glycan_composition", "glycan_structure",
+</ul><p>Different levels of aggregation require different columns in the variable information.</p><ul><li><p>"gf": "protein", "glycan_composition", "protein_site"</p></li>
+<li><p>"gp": "peptide", "protein", "glycan_composition", "peptide_site", "protein_site"</p></li>
+<li><p>"gfs": "protein", "glycan_composition", "glycan_structure", "protein_site"</p></li>
+<li><p>"gps": "peptide", "protein", "glycan_composition", "glycan_structure",
 "peptide_site", "protein_site"</p></li>
-</ul><p>Note that <code>aggregate()</code> will remove all other columns in the variable information
-except the ones listed above.
-So please call <code>aggregate()</code> as early as possible,
-before calling <code><a href="add_site_seq.html">add_site_seq()</a></code> or other motif annotation functions in <code>glymotif</code>.</p>
+</ul><p>Other columns in the variable information tibble with "many-to-one" relationship
+with the unique combination of columns listed above will be kept.
+A common example is the "gene" column.
+For each "glycoform" (unique combination of "protein", "protein_site", and "glycan_composition"),
+there should be only one "gene" value, therefore it is kept for "gf" level.
+On the other hand, the "peptide" column is removed for "gf" level,
+as one "glycoform" can contain multiple "peptides".</p>
     </div>
 
     <div class="section level2">
@@ -136,8 +145,7 @@ See Details for more information.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A modified <code>glyexp_experiment</code> object
-with aggregated expression matrix and
+    <p>A modified <code>glyexp_experiment</code> object with aggregated expression matrix and
 updated variable information.</p>
     </div>
 
