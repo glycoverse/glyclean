@@ -5,9 +5,10 @@ simple_exp <- function(n_var, n_samp) {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
   glyexp::experiment(
-    expr_mat, sample_info, var_info, 
-    exp_type = "glycoproteomics",
-    glycan_type = "N"
+    expr_mat,
+    sample_info = sample_info,
+    var_info = var_info,
+    exp_type = "others"
   )
 }
 
@@ -38,9 +39,13 @@ complex_exp <- function() {
   colnames(exp_mat) <- sample_info$sample
   rownames(exp_mat) <- var_info$variable
   glyexp::experiment(
-    exp_mat, sample_info, var_info,
+    exp_mat,
+    sample_info = sample_info,
+    var_info = var_info,
     exp_type = "glycoproteomics",
-    glycan_type = "N"
+    glycan_type = "N",
+    coerce_col_types = FALSE,
+    check_col_types = FALSE
   )
 }
 

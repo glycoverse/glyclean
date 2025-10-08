@@ -12,19 +12,22 @@ test_that("auto_clean works for glycoproteomics data", {
 test_that("auto_clean works for glycomics data", {
   # Create proper glycomics experiment
   sample_info <- tibble::tibble(sample = paste0("S", 1:10))
-  var_info <- tibble::tibble(variable = paste0("V", 1:8))
+  var_info <- tibble::tibble(
+    variable = paste0("V", 1:8),
+    glycan_composition = rep(glyrepr::glycan_composition(c(Hex = 1)), 8)
+  )
   expr_mat <- matrix(runif(80), nrow = 8)
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
-  
+
   test_exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info, 
+    expr_mat, sample_info, var_info,
     exp_type = "glycomics",
     glycan_type = "N"
   )
-  
+
   result_exp <- suppressMessages(auto_clean(test_exp))
-  
+
   expect_s3_class(result_exp, "glyexp_experiment")
   expect_equal(glyexp::get_exp_type(result_exp), "glycomics")
   expect_false(any(is.na(result_exp$expr_mat)))
@@ -98,9 +101,13 @@ test_that("auto_clean applies batch effect correction when batch column exists",
   rownames(expr_mat) <- var_info$variable
   
   test_exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info, 
+    expr_mat,
+    sample_info = sample_info,
+    var_info = var_info,
     exp_type = "glycoproteomics",
-    glycan_type = "N"
+    glycan_type = "N",
+    coerce_col_types = FALSE,
+    check_col_types = FALSE
   )
   
   # Run auto_clean
@@ -125,7 +132,7 @@ test_that(".auto_batch_correct handles different batch effect scenarios", {
   test_exp_no_batch <- complex_exp()
   result_no_batch <- glyclean:::.auto_batch_correct(test_exp_no_batch)
   expect_identical(result_no_batch, test_exp_no_batch)
-  
+
   # Test 2: Minimal batch effects - should skip correction
   set.seed(123)
   sample_info_minimal <- tibble::tibble(
@@ -133,30 +140,32 @@ test_that(".auto_batch_correct handles different batch effect scenarios", {
     batch = rep(c("A", "B"), each = 4),
     group = rep(c("Ctrl", "Treat"), 4)
   )
-  
+
   expr_mat_minimal <- matrix(rnorm(20 * 8, mean = 10, sd = 1), nrow = 20, ncol = 8)
   colnames(expr_mat_minimal) <- sample_info_minimal$sample
   rownames(expr_mat_minimal) <- paste0("V", 1:20)
-  
+
   var_info_minimal <- tibble::tibble(variable = rownames(expr_mat_minimal))
-  
+
   test_exp_minimal <- glyexp::experiment(
-    expr_mat_minimal, sample_info_minimal, var_info_minimal, 
-    exp_type = "glycoproteomics", glycan_type = "N"
+    expr_mat_minimal,
+    sample_info = sample_info_minimal,
+    var_info = var_info_minimal,
+    exp_type = "others"
   )
-  
+
   result_minimal <- suppressMessages(glyclean:::.auto_batch_correct(test_exp_minimal))
   expect_equal(result_minimal$expr_mat, test_exp_minimal$expr_mat)
-  
+
   # Test 3: Strong batch effects - should apply correction
   set.seed(456)
   sample_info_strong <- tibble::tibble(
     sample = paste0("S", 1:12),
     batch = rep(c("A", "B", "C"), each = 4)
   )
-  
+
   expr_mat_strong <- matrix(rnorm(30 * 12, mean = 10, sd = 1), nrow = 30, ncol = 12)
-  
+
   # Add strong batch effects to most variables
   batch_a_samples <- which(sample_info_strong$batch == "A")
   batch_b_samples <- which(sample_info_strong$batch == "B")
@@ -167,15 +176,17 @@ test_that(".auto_batch_correct handles different batch effect scenarios", {
     expr_mat_strong[i, batch_b_samples] <- expr_mat_strong[i, batch_b_samples] - 2
     expr_mat_strong[i, batch_c_samples] <- expr_mat_strong[i, batch_c_samples] + 1
   }
-  
+
   colnames(expr_mat_strong) <- sample_info_strong$sample
   rownames(expr_mat_strong) <- paste0("V", 1:30)
-  
+
   var_info_strong <- tibble::tibble(variable = rownames(expr_mat_strong))
-  
+
   test_exp_strong <- glyexp::experiment(
-    expr_mat_strong, sample_info_strong, var_info_strong, 
-    exp_type = "glycoproteomics", glycan_type = "N"
+    expr_mat_strong,
+    sample_info = sample_info_strong,
+    var_info = var_info_strong,
+    exp_type = "others"
   )
   
   result_strong <- suppressMessages(glyclean:::.auto_batch_correct(test_exp_strong))
@@ -210,10 +221,12 @@ test_that(".auto_aggregate chooses correct aggregation level", {
   
   test_exp_no_structure <- glyexp::experiment(
     test_exp_with_structure$expr_mat,
-    test_exp_with_structure$sample_info,
-    var_info_no_structure,
+    sample_info = test_exp_with_structure$sample_info,
+    var_info = var_info_no_structure,
     exp_type = "glycoproteomics",
-    glycan_type = "N"
+    glycan_type = "N",
+    coerce_col_types = FALSE,
+    check_col_types = FALSE
   )
   
   captured_to_level <- NULL

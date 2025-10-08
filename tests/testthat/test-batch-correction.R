@@ -14,9 +14,10 @@ test_that("correct_batch_effect works with valid batch and group information", {
   rownames(expr_mat) <- var_info$variable
   
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info, 
-    exp_type = "glycoproteomics",
-    glycan_type = "N"
+    expr_mat,
+    sample_info = sample_info,
+    var_info = var_info,
+    exp_type = "others"
   )
   
   # Should work without error
@@ -81,9 +82,10 @@ test_that("correct_batch_effect works with batch info but no group info", {
   rownames(expr_mat) <- var_info$variable
   
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info, 
-    exp_type = "glycoproteomics",
-    glycan_type = "N"
+    expr_mat,
+    sample_info = sample_info,
+    var_info = var_info,
+    exp_type = "others"
   )
   
   # Should work without error
@@ -114,9 +116,10 @@ test_that("correct_batch_effect handles insufficient samples per batch", {
   rownames(expr_mat) <- var_info$variable
   
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info, 
-    exp_type = "glycoproteomics",
-    glycan_type = "N"
+    expr_mat,
+    sample_info = sample_info,
+    var_info = var_info,
+    exp_type = "others"
   )
   
   # Should warn and return original experiment
@@ -141,9 +144,10 @@ test_that("correct_batch_effect preserves experiment structure", {
   rownames(expr_mat) <- var_info$variable
   
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info, 
-    exp_type = "glycoproteomics",
-    glycan_type = "N"
+    expr_mat,
+    sample_info = sample_info,
+    var_info = var_info,
+    exp_type = "others"
   )
   
   # Test with group_col specified to use both batch and group information
@@ -182,9 +186,10 @@ test_that("detect_batch_effect works with valid batch information", {
   rownames(expr_mat) <- var_info$variable
   
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info, 
-    exp_type = "glycoproteomics",
-    glycan_type = "N"
+    expr_mat,
+    sample_info = sample_info,
+    var_info = var_info,
+    exp_type = "others"
   )
   
   # Test detection
@@ -214,9 +219,10 @@ test_that("detect_batch_effect works with batch and group information", {
   rownames(expr_mat) <- var_info$variable
   
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info, 
-    exp_type = "glycoproteomics",
-    glycan_type = "N"
+    expr_mat,
+    sample_info = sample_info,
+    var_info = var_info,
+    exp_type = "others"
   )
   
   # Test detection with group information
@@ -270,9 +276,10 @@ test_that("detect_batch_effect returns correct structure", {
   rownames(expr_mat) <- var_info$variable
   
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info, 
-    exp_type = "glycoproteomics",
-    glycan_type = "N"
+    expr_mat,
+    sample_info = sample_info,
+    var_info = var_info,
+    exp_type = "others"
   )
   
   suppressMessages(p_values <- detect_batch_effect(exp))
@@ -301,9 +308,10 @@ test_that("detect_batch_effect uses custom column names", {
   rownames(expr_mat) <- var_info$variable
   
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info, 
-    exp_type = "glycoproteomics",
-    glycan_type = "N"
+    expr_mat,
+    sample_info = sample_info,
+    var_info = var_info,
+    exp_type = "others"
   )
   
   # Test with custom column names
@@ -352,9 +360,10 @@ test_that("detect_batch_effect correctly identifies batch effects - mathematical
   }
   
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info, 
-    exp_type = "glycoproteomics",
-    glycan_type = "N"
+    expr_mat,
+    sample_info = sample_info,
+    var_info = var_info,
+    exp_type = "others"
   )
   
   # Test detection
@@ -405,9 +414,10 @@ test_that("detect_batch_effect with group covariate - mathematical validation", 
   }
   
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info, 
-    exp_type = "glycoproteomics",
-    glycan_type = "N"
+    expr_mat,
+    sample_info = sample_info,
+    var_info = var_info,
+    exp_type = "others"
   )
   
   # Test without group covariate (should detect both batch and group effects)
@@ -461,9 +471,10 @@ test_that("correct_batch_effect effectively removes batch effects - mathematical
   }
   
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info, 
-    exp_type = "glycoproteomics",
-    glycan_type = "N"
+    expr_mat,
+    sample_info = sample_info,
+    var_info = var_info,
+    exp_type = "others"
   )
   
   # Detect batch effects before correction
@@ -529,9 +540,10 @@ test_that("correct_batch_effect preserves group differences - mathematical valid
   }
   
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info, 
-    exp_type = "glycoproteomics",
-    glycan_type = "N"
+    expr_mat,
+    sample_info = sample_info,
+    var_info = var_info,
+    exp_type = "others"
   )
   
   # Calculate group differences before and after correction
@@ -591,9 +603,10 @@ test_that("batch correction reduces batch-related variance", {
   }
   
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info, 
-    exp_type = "glycoproteomics",
-    glycan_type = "N"
+    expr_mat,
+    sample_info = sample_info,
+    var_info = var_info,
+    exp_type = "others"
   )
   
   # Calculate batch-related variance before correction
@@ -905,11 +918,12 @@ test_that("batch correction with extreme data values", {
   expr_mat <- matrix(10 + rnorm(40, mean = 0, sd = 0.001), nrow = 5, ncol = 8)
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
-  
+
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info, 
-    exp_type = "glycoproteomics",
-    glycan_type = "N"
+    expr_mat,
+    sample_info = sample_info,
+    var_info = var_info,
+    exp_type = "others"
   )
   
   # Should handle extreme cases gracefully (may return original or corrected)

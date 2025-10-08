@@ -8,6 +8,7 @@ test_that("adjust_protein works with ratio method", {
   var_info <- tibble::tibble(
     variable = paste0("GP", 1:4),
     protein = c("PRO1", "PRO2", "PRO1", "PRO3"),
+    protein_site = c(1L, 2L, 3L, 4L),
     peptide = c("AAANAAK", "BBBNAAB", "CCCNAAC", "DDDNAAD"),
     glycan_composition = c("H5N2", "H3N2", "H4N2", "H5N3")
   )
@@ -26,7 +27,9 @@ test_that("adjust_protein works with ratio method", {
   exp <- glyexp::experiment(
     expr_mat, sample_info, var_info,
     exp_type = "glycoproteomics",
-    glycan_type = "N"
+    glycan_type = "N",
+    coerce_col_types = FALSE,
+    check_col_types = FALSE
   )
   
   # Create protein expression matrix
@@ -76,6 +79,7 @@ test_that("adjust_protein works with reg method", {
   var_info <- tibble::tibble(
     variable = paste0("GP", 1:2),
     protein = c("PRO1", "PRO2"),
+    protein_site = c(1L, 2L),
     peptide = c("AAANAAK", "BBBNAAB"),
     glycan_composition = c("H5N2", "H3N2")
   )
@@ -96,7 +100,9 @@ test_that("adjust_protein works with reg method", {
   exp <- glyexp::experiment(
     expr_mat, sample_info, var_info,
     exp_type = "glycoproteomics",
-    glycan_type = "N"
+    glycan_type = "N",
+    coerce_col_types = FALSE,
+    check_col_types = FALSE
   )
   
   # Create protein expression matrix
@@ -176,6 +182,7 @@ test_that("adjust_protein handles partial sample overlap", {
   var_info <- tibble::tibble(
     variable = paste0("GP", 1:2),
     protein = c("PRO1", "PRO2"),
+    protein_site = c(1L, 2L),
     peptide = c("AAANAAK", "BBBNAAB"),
     glycan_composition = c("H5N2", "H3N2")
   )
@@ -187,7 +194,9 @@ test_that("adjust_protein handles partial sample overlap", {
   exp <- glyexp::experiment(
     expr_mat, sample_info, var_info,
     exp_type = "glycoproteomics",
-    glycan_type = "N"
+    glycan_type = "N",
+    coerce_col_types = FALSE,
+    check_col_types = FALSE
   )
   
   # Create protein expression matrix with only 3 samples (S1, S2, S3)
@@ -214,6 +223,7 @@ test_that("adjust_protein handles regression with insufficient data", {
     variable = "GP1",
     protein = "PRO1",
     peptide = "AAANAAK",
+    protein_site = 1L,
     glycan_composition = "H5N2"
   )
   
@@ -224,7 +234,9 @@ test_that("adjust_protein handles regression with insufficient data", {
   exp <- glyexp::experiment(
     expr_mat, sample_info, var_info,
     exp_type = "glycoproteomics",
-    glycan_type = "N"
+    glycan_type = "N",
+    coerce_col_types = FALSE,
+    check_col_types = FALSE
   )
   
   pro_expr_mat <- matrix(c(10, 20), nrow = 1, ncol = 2)
@@ -250,6 +262,7 @@ test_that("adjust_protein handles NA values correctly", {
   var_info <- tibble::tibble(
     variable = "GP1",
     protein = "PRO1",
+    protein_site = 1L,
     peptide = "AAANAAK", 
     glycan_composition = "H5N2"
   )
@@ -261,7 +274,9 @@ test_that("adjust_protein handles NA values correctly", {
   exp <- glyexp::experiment(
     expr_mat, sample_info, var_info,
     exp_type = "glycoproteomics",
-    glycan_type = "N"
+    glycan_type = "N",
+    coerce_col_types = FALSE,
+    check_col_types = FALSE
   )
   
   pro_expr_mat <- matrix(c(10, 20, 30, NA, 50), nrow = 1, ncol = 5)
@@ -289,6 +304,7 @@ test_that("adjust_protein handles glycopeptides not present in protein matrix", 
   var_info <- tibble::tibble(
     variable = paste0("GP", 1:5),
     protein = c("PRO1", "PRO2", "PRO3", "PRO4", "PRO5"),  # 5 proteins
+    protein_site = c(1L, 2L, 3L, 4L, 5L),
     peptide = paste0("PEP", 1:5),
     glycan_composition = paste0("H", 3:7, "N2")
   )
@@ -300,7 +316,9 @@ test_that("adjust_protein handles glycopeptides not present in protein matrix", 
   exp <- glyexp::experiment(
     expr_mat, sample_info, var_info,
     exp_type = "glycoproteomics",
-    glycan_type = "N"
+    glycan_type = "N",
+    coerce_col_types = FALSE,
+    check_col_types = FALSE
   )
   
   # Create protein expression matrix with only 3 out of 5 proteins
