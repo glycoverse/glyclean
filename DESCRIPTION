@@ -11,7 +11,8 @@ Description:
 License: MIT + file LICENSE
 Suggests: 
     testthat (>= 3.0.0),
-    glyread (>= 0.2.1),
+    glyread (>= 0.6.1.9000),
+    glyrepr (>= 0.7.4),
     vsn,
     impute,
     imputeLCMD,
@@ -30,7 +31,7 @@ Imports:
     checkmate,
     cli,
     dplyr,
-    glyexp (>= 0.8.0),
+    glyexp (>= 0.9.0.9000),
     limma,
     magrittr,
     matrixStats,
@@ -42,7 +43,8 @@ Imports:
     tibble,
     tidyselect,
     withr
-Remotes: 
-    glycoverse/glyexp@*release,
-    glycoverse/glyread@*release
+Remotes:  
+    glycoverse/glyexp,
+    glycoverse/glyread,
+    glycoverse/glyrepr@*release
 VignetteBuilder: knitr
