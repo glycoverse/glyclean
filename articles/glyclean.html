@@ -102,17 +102,17 @@ proper <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.h
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reading data</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Finding leader proteins</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Finding leader proteins <span style="color: #B2B2B2;">[196ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Finding leader proteins <span style="color: #B2B2B2;">[92ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reading data<span style="color: #00BBBB;">ℹ</span> Parsing glycan compositions and structures</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Parsing glycan compositions and structures <span style="color: #B2B2B2;">[250ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reading dataColumn <span style="color: #00BB00;">group</span> converted to <span style="color: #0000BB;">&lt;factor&gt;</span>.Column <span style="color: #00BB00;">batch</span> converted to <span style="color: #0000BB;">&lt;factor&gt;</span>.<span style="color: #00BBBB;">ℹ</span> Parsing glycan compositions and structures</span></span>
+<span><span class="co">#&gt; Column <span style="color: #00BB00;">group</span> converted to <span style="color: #0000BB;">&lt;factor&gt;</span>.Column <span style="color: #00BB00;">batch</span> converted to <span style="color: #0000BB;">&lt;factor&gt;</span>.<span style="color: #00BB00;">✔</span> Parsing glycan compositions and structures <span style="color: #B2B2B2;">[282ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reading data<span style="color: #00BB00;">✔</span> Reading data <span style="color: #B2B2B2;">[855ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reading data<span style="color: #00BB00;">✔</span> Reading data <span style="color: #B2B2B2;">[867ms]</span></span></span>
 <span><span class="va">exp</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Glycoproteomics Experiment</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Expression matrix: <span style="color: #0000BB;">12</span> samples, <span style="color: #0000BB;">298</span> variables</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Sample information fields: <span style="color: #00BB00;">group</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">batch</span> <span style="color: #0000BB;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Sample information fields: <span style="color: #00BB00;">group</span> <span style="color: #0000BB;">&lt;fct&gt;</span>, <span style="color: #00BB00;">batch</span> <span style="color: #0000BB;">&lt;fct&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Variable information fields: <span style="color: #00BB00;">peptide</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">peptide_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">protein</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">protein_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">gene</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">glycan_composition</span> <span style="color: #0000BB;">&lt;comp&gt;</span></span></span></code></pre></div>
 <p>Let’s peek under the hood and see what we’re working with:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -135,19 +135,19 @@ proper <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.h
 <code class="sourceCode R"><span><span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/get_sample_info.html" class="external-link">get_sample_info</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 12 × 3</span></span></span>
 <span><span class="co">#&gt;    sample                  group batch</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 20241224-LXJ-Nglyco-C_1 C         1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 20241224-LXJ-Nglyco-C_2 C         2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 20241224-LXJ-Nglyco-C_3 C         3</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 20241224-LXJ-Nglyco-H_1 H         1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 20241224-LXJ-Nglyco-H_2 H         2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 20241224-LXJ-Nglyco-H_3 H         3</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 20241224-LXJ-Nglyco-M_1 M         1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 20241224-LXJ-Nglyco-M_2 M         2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 20241224-LXJ-Nglyco-M_3 M         3</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 20241224-LXJ-Nglyco-Y_1 Y         1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> 20241224-LXJ-Nglyco-Y_2 Y         2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> 20241224-LXJ-Nglyco-Y_3 Y         3</span></span></code></pre></div>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 20241224-LXJ-Nglyco-C_1 C     1    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 20241224-LXJ-Nglyco-C_2 C     2    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 20241224-LXJ-Nglyco-C_3 C     3    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 20241224-LXJ-Nglyco-H_1 H     1    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 20241224-LXJ-Nglyco-H_2 H     2    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 20241224-LXJ-Nglyco-H_3 H     3    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 20241224-LXJ-Nglyco-M_1 M     1    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 20241224-LXJ-Nglyco-M_2 M     2    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 20241224-LXJ-Nglyco-M_3 M     3    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 20241224-LXJ-Nglyco-Y_1 Y     1    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> 20241224-LXJ-Nglyco-Y_2 Y     2    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> 20241224-LXJ-Nglyco-Y_3 Y     3</span></span></code></pre></div>
 <p>What we have here is a beautiful N-glycoproteomics dataset featuring
 500 PSMs (Peptide Spectrum Matches) across 12 samples. These samples
 come from 3 different batches and represent 4 distinct biological groups
@@ -163,23 +163,23 @@ come from 3 different batches and represent 4 distinct biological groups
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clean_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_clean.html">auto_clean</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data (Median)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalizing data (Median) <span style="color: #B2B2B2;">[202ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalizing data (Median) <span style="color: #B2B2B2;">[222ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Removing variables with &gt;50% missing values</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Removing variables with &gt;50% missing values <span style="color: #B2B2B2;">[20ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Removing variables with &gt;50% missing values <span style="color: #B2B2B2;">[17ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Imputing missing values</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Sample size &lt;= 30, using sample minimum imputation</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Imputing missing values<span style="color: #00BB00;">✔</span> Imputing missing values <span style="color: #B2B2B2;">[19ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Aggregating data</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Aggregating data <span style="color: #B2B2B2;">[117ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Aggregating data <span style="color: #B2B2B2;">[122ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Detecting batch effects using ANOVA for 221 variables...</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BB00;">✔</span> Batch effect detection completed. 1 out of 221 variables show significant batch effects (p &lt; 0.05).</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BBBB;">ℹ</span> Batch effects detected in 0.5% of variables (&lt;=10%). Skipping batch correction.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BB00;">✔</span> Normalizing data again <span style="color: #B2B2B2;">[544ms]</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BB00;">✔</span> Normalizing data again <span style="color: #B2B2B2;">[565ms]</span></span></span></code></pre></div>
 <p><strong>That’s it!</strong> Your data is now preprocessed and ready
 for analysis! 🎉</p>
 </div>
