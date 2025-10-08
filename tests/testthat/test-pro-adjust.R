@@ -134,6 +134,7 @@ test_that("adjust_protein works with reg method", {
 
 test_that("adjust_protein handles missing protein column", {
   exp <- simple_exp(3, 4)
+  exp$meta_data$exp_type <- "glycoproteomics"
   pro_expr_mat <- matrix(1:12, nrow = 3, ncol = 4)
   colnames(pro_expr_mat) <- paste0("S", 1:4)
   rownames(pro_expr_mat) <- c("PRO1", "PRO2", "PRO3")
@@ -146,6 +147,7 @@ test_that("adjust_protein handles missing protein column", {
 
 test_that("adjust_protein handles no common proteins", {
   exp <- simple_exp(3, 4)
+  exp$meta_data$exp_type <- "glycoproteomics"
   exp$var_info$protein <- c("PRO1", "PRO2", "PRO3")
   
   pro_expr_mat <- matrix(1:12, nrow = 3, ncol = 4)
@@ -160,6 +162,7 @@ test_that("adjust_protein handles no common proteins", {
 
 test_that("adjust_protein handles no common samples", {
   exp <- simple_exp(3, 4)
+  exp$meta_data$exp_type <- "glycoproteomics"
   exp$var_info$protein <- c("PRO1", "PRO2", "PRO3")
   
   pro_expr_mat <- matrix(1:12, nrow = 3, ncol = 4)

@@ -32,21 +32,25 @@
 #' On the other hand, the "peptide" column is removed for "gf" level,
 #' as one "glycoform" can contain multiple "peptides".
 #'
-#' @param exp A `glyexp_experiment` object containing glycoproteomics data.
-#'   This function only works with `glyexp_experiment` objects as it requires
-#'   variable information for aggregation.
+#' @param exp A [glyexp::experiment()] object with "glycoproteomics" type.
 #' @param to_level The aggregation level,
 #'   one of: "gf" (glycoforms), "gp" (glycopeptides),
 #'   "gfs" (glycoforms with structures),
 #'   or "gps" (glycopeptides with structures).
 #'   See Details for more information.
 #'
-#' @returns A modified `glyexp_experiment` object with aggregated expression matrix and
+#' @returns A modified [glyexp::experiment()] object with aggregated expression matrix and
 #'   updated variable information.
 #' @export
 aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
   # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")
+  if (glyexp::get_exp_type(exp) != "glycoproteomics") {
+    cli::cli_abort(c(
+      "The experiment type must be {.val glycoproteomics}.",
+      "x" = "Got {.val {glyexp::get_exp_type(exp)}}."
+    ))
+  }
   to_level <- rlang::arg_match(to_level)
 
   # Perform aggregation

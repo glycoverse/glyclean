@@ -26,13 +26,13 @@
 #'
 #' In both methods, only glycoproteins identified in both `exp` and `pro_expr_mat` will be retained.
 #'
-#' @param exp A `glyexp_experiment` object containing glycoproteomics data.
+#' @param exp A [glyexp::experiment()] object with "glycoproteomics" type.
 #' @param pro_expr_mat A matrix of protein expression.
 #'  Columns are samples, rows are uniprot protein accessions.
 #' @param method The method to use for protein adjustment. 
 #'  Either "ratio" or "reg". Default is "ratio".
 #'
-#' @return A `glyexp_experiment` object with adjusted protein expression.
+#' @return A [glyexp::experiment()] object with adjusted protein expression.
 #' @export
 #' 
 #' @importFrom rlang .data
@@ -49,6 +49,12 @@ adjust_protein <- function(exp, pro_expr_mat, method = c("ratio", "reg")) {
 .adjust_protein_experiment <- function(exp, pro_expr_mat, method = c("ratio", "reg")) {
   # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")
+  if (glyexp::get_exp_type(exp) != "glycoproteomics") {
+    cli::cli_abort(c(
+      "The experiment type must be {.val glycoproteomics}.",
+      "x" = "Got {.val {glyexp::get_exp_type(exp)}}."
+    ))
+  }
   method <- rlang::arg_match(method)
 
   # Check if the protein column exists

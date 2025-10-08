@@ -9,12 +9,12 @@
 #' - "protein": The protein uniprot accession.
 #' - "protein_site": The site on the protein sequence.
 #'
-#' @param exp A `glyexp::experiment()` object.
+#' @param exp A [glyexp::experiment()] object with "glycoproteomics" type.
 #' @param fasta A character string specifying the path to the FASTA file containing protein sequences.
 #' @param n_aa The number of amino acids to the left and right of the glycosylation site.
 #' For example, if `n_aa = 5`, the resulting sequence will contain 11 amino acids.
 #'
-#' @returns A `glyexp::experiment()` object with the new "site_sequence" column.
+#' @returns A [glyexp::experiment()] object with the new "site_sequence" column.
 #' @export
 #' 
 #' @importFrom magrittr %>%
@@ -32,6 +32,12 @@ add_site_seq <- function(exp, fasta, n_aa = 7) {
 .add_site_seq_experiment <- function(exp, fasta, n_aa = 7) {
   # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")
+  if (glyexp::get_exp_type(exp) != "glycoproteomics") {
+    cli::cli_abort(c(
+      "The experiment type must be {.val glycoproteomics}.",
+      "x" = "Got {.val {glyexp::get_exp_type(exp)}}."
+    ))
+  }
   checkmate::assert_string(fasta)
   checkmate::assert_file_exists(fasta)
   checkmate::assert_int(n_aa, lower = 1)

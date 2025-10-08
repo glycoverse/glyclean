@@ -5,7 +5,7 @@
 #' normalization, missing value handling, imputation, aggregation (for
 #' glycoproteomics data), and batch effect correction.
 #'
-#' @param exp A `glyexp::experiment()` containing glycoproteomics or
+#' @param exp A [glyexp::experiment()] containing glycoproteomics or
 #'   glycomics data.
 #'
 #' @details
@@ -68,6 +68,12 @@
 #' @export
 auto_clean <- function(exp) {
   checkmate::assert_class(exp, "glyexp_experiment")
+  if (!checkmate::test_choice(glyexp::get_exp_type(exp), c("glycoproteomics", "glycomics"))) {
+    cli::cli_abort(c(
+      "The experiment type must be {.val glycoproteomics} or {.val glycomics}.",
+      "x" = "Got {.val {glyexp::get_exp_type(exp)}}."
+    ))
+  }
   switch(
     glyexp::get_exp_type(exp),
     glycoproteomics = .auto_clean_glycoproteomics(exp),

@@ -7,7 +7,7 @@
 auto_clean(exp)
 }
 \arguments{
-\item{exp}{A \code{glyexp::experiment()} containing glycoproteomics or
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} containing glycoproteomics or
 glycomics data.}
 }
 \value{

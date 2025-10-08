@@ -7,9 +7,7 @@
 aggregate(exp, to_level = c("gf", "gp", "gfs", "gps"))
 }
 \arguments{
-\item{exp}{A \code{glyexp_experiment} object containing glycoproteomics data.
-This function only works with \code{glyexp_experiment} objects as it requires
-variable information for aggregation.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with "glycoproteomics" type.}
 
 \item{to_level}{The aggregation level,
 one of: "gf" (glycoforms), "gp" (glycopeptides),
@@ -18,7 +16,7 @@ or "gps" (glycopeptides with structures).
 See Details for more information.}
 }
 \value{
-A modified \code{glyexp_experiment} object with aggregated expression matrix and
+A modified \code{\link[glyexp:experiment]{glyexp::experiment()}} object with aggregated expression matrix and
 updated variable information.
 }
 \description{

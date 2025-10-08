@@ -7,7 +7,7 @@
 adjust_protein(exp, pro_expr_mat, method = c("ratio", "reg"))
 }
 \arguments{
-\item{exp}{A \code{glyexp_experiment} object containing glycoproteomics data.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with "glycoproteomics" type.}
 
 \item{pro_expr_mat}{A matrix of protein expression.
 Columns are samples, rows are uniprot protein accessions.}
@@ -16,7 +16,7 @@ Columns are samples, rows are uniprot protein accessions.}
 Either "ratio" or "reg". Default is "ratio".}
 }
 \value{
-A \code{glyexp_experiment} object with adjusted protein expression.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with adjusted protein expression.
 }
 \description{
 This function adjusts the glycopeptide expression by the protein expression.

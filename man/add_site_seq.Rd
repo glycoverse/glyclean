@@ -7,7 +7,7 @@
 add_site_seq(exp, fasta, n_aa = 7)
 }
 \arguments{
-\item{exp}{A \code{glyexp::experiment()} object.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with "glycoproteomics" type.}
 
 \item{fasta}{A character string specifying the path to the FASTA file containing protein sequences.}
 
@@ -15,7 +15,7 @@ add_site_seq(exp, fasta, n_aa = 7)
 For example, if \code{n_aa = 5}, the resulting sequence will contain 11 amino acids.}
 }
 \value{
-A \code{glyexp::experiment()} object with the new "site_sequence" column.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with the new "site_sequence" column.
 }
 \description{
 This function adds a new "site_sequence" column to the variable information table.
