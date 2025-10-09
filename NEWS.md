@@ -1,4 +1,8 @@
-# glyclean (development version)
+# glyclean 0.7.1
+
+## Minor improvements and bug fixes
+
+- Fix bugs introduced by the breaking changes in `glyexp` 0.10.0.
 
 # glyclean 0.7.0
 
