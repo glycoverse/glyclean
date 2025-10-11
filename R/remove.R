@@ -1,3 +1,5 @@
+# ===== Remove Rare =====
+
 #' Remove Rare Variables with Too Many Missing Values
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
@@ -121,36 +123,34 @@ remove_rare <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min
   x[!vars_to_remove, , drop = FALSE]
 }
 
-
 .validate_filter_params <- function(prop, n, min_n) {
   # Set default prop if both prop and n are NULL
   if (is.null(n) && is.null(prop)) {
     prop <- 0.5
   }
-  
+
   # Check mutual exclusivity
   if (!is.null(n) && !is.null(prop)) {
     rlang::abort("Only one of `prop` or `n` can be provided.")
   }
-  
+
   # Validate prop
   if (!is.null(prop)) {
     checkmate::assert_number(prop, lower = 0, upper = 1)
   }
-  
+
   # Validate n
   if (!is.null(n)) {
     checkmate::assert_number(n, lower = 0)
   }
-  
+
   # Validate min_n
   if (!is.null(min_n)) {
     checkmate::assert_number(min_n, lower = 1)
   }
-  
+
   list(prop = prop, n = n, min_n = min_n)
 }
-
 
 .calculate_min_n <- function(n_samples, by_values, min_n) {
   if (!is.null(min_n)) {
@@ -170,7 +170,6 @@ remove_rare <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min
     return(list(global = NULL, by_group = group_min_n))
   }
 }
-
 
 .validate_min_n <- function(n_samples, by_values, min_n_values) {
   if (is.null(by_values)) {
@@ -200,7 +199,6 @@ remove_rare <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min
   }
 }
 
-
 .filter_rare_global <- function(expr_mat, prop, n, min_n) {
   # Calculate threshold-based removal
   if (is.null(n)) {
@@ -208,14 +206,13 @@ remove_rare <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min
   } else {
     vars_to_remove <- rowSums(is.na(expr_mat)) > n
   }
-  
+
   # Apply min_n constraint
   non_missing_counts <- rowSums(!is.na(expr_mat))
   vars_to_remove <- vars_to_remove | (non_missing_counts < min_n)
-  
+
   vars_to_remove
 }
-
 
 .filter_rare_by_group <- function(expr_mat, by_values, prop, n, min_n_values, strict) {
   groups <- split(seq_len(ncol(expr_mat)), by_values)
@@ -255,4 +252,204 @@ remove_rare <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min
   }
 
   vars_to_remove
+}
+
+# ===== Remove Low Variance =====
+
+#' Remove Variables with Low Variance
+#'
+#' Filters variables based on variance and coefficient of variation.
+#' Variables with variance and/or coefficient of variation below the thresholds will be removed.
+#' At least one of `var_cutoff` or `cv_cutoff` must be provided.
+#' If both are provided, the variable will be removed if it passes either threshold.
+#' Default behavior is to remove variables with zero variance.
+#'
+#' @param x Either a `glyexp_experiment` object or a matrix.
+#' @param var_cutoff The cutoff for variance. Defaults to 0
+#' @param cv_cutoff The cutoff for coefficient of variation. Defaults to NULL.
+#' @param by A factor specifying the groupings. Defaults to NULL.
+#' @param strict If `FALSE`, remove a variable only if it passes the variance and coefficient of variation thresholds in all groups.
+#'   If `TRUE`, remove a variable if it passes the variance and coefficient of variation thresholds in any group.
+#'
+#' @returns For `glyexp_experiment` input, returns a modified `glyexp_experiment` object.
+#'   For matrix input, returns a filtered matrix.
+#'
+#' @export
+remove_low_var <- function(x, var_cutoff = 0, cv_cutoff = NULL, by = NULL, strict = FALSE) {
+  UseMethod("remove_low_var")
+}
+
+#' @rdname remove_low_var
+#' @export
+remove_low_var.glyexp_experiment <- function(x, var_cutoff = 0, cv_cutoff = NULL, by = NULL, strict = FALSE) {
+  .filter_exp_low_var(x, var_cutoff, cv_cutoff, by, strict)
+}
+
+#' @rdname remove_low_var
+#' @export
+remove_low_var.matrix <- function(x, var_cutoff = 0, cv_cutoff = NULL, by = NULL, strict = FALSE) {
+  .filter_matrix_low_var(x, var_cutoff, cv_cutoff, by, strict)
+}
+
+#' @rdname remove_low_var
+#' @export
+remove_low_var.default <- function(x, var_cutoff = 0, cv_cutoff = NULL, by = NULL, strict = FALSE) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
+}
+
+.filter_exp_low_var <- function(x, var_cutoff = NULL, cv_cutoff = NULL, by = NULL, strict = FALSE) {
+  by_values <- .resolve_column_param(
+    by,
+    sample_info = x$sample_info,
+    param_name = "by",
+    n_samples = ncol(x$expr_mat),
+    allow_null = TRUE
+  )
+  new_expr_mat <- .filter_matrix_low_var(x$expr_mat, var_cutoff, cv_cutoff, by_values, strict)
+  x$expr_mat <- new_expr_mat
+  x$var_info <- x$var_info |>
+    dplyr::filter(.data$variable %in% rownames(new_expr_mat))
+  x
+}
+
+.filter_matrix_low_var <- function(x, var_cutoff = NULL, cv_cutoff = NULL, by = NULL, strict = FALSE) {
+  if (is.null(var_cutoff) && is.null(cv_cutoff)) {
+    cli::cli_abort("At least one of {.arg var_cutoff} or {.arg cv_cutoff} must be provided.")
+  }
+  checkmate::assert_number(var_cutoff, lower = 0, null.ok = TRUE)
+  checkmate::assert_number(cv_cutoff, lower = 0, null.ok = TRUE)
+  checkmate::assert_flag(strict)
+
+  if (is.null(by)) {
+    return(.filter_matrix_low_var_global(x, var_cutoff, cv_cutoff))
+  } else {
+    checkmate::assert_vector(by, len = ncol(x))
+    return(.filter_matrix_low_var_grouped(x, var_cutoff, cv_cutoff, by, strict))
+  }
+}
+
+.filter_matrix_low_var_global <- function(x, var_cutoff, cv_cutoff) {
+  # `variance` and `cv` are vectors of length nrow(x)
+  if (!is.null(var_cutoff)) {
+    variance <- .summarize_vars_mat(x, .var, by = NULL)
+    var_cond <- variance <= var_cutoff
+  } else {
+    var_cond <- rep(FALSE, nrow(x))
+  }
+  if (!is.null(cv_cutoff)) {
+    cv <- .summarize_vars_mat(x, .cv, by = NULL)
+    cv_cond <- cv <= cv_cutoff
+  } else {
+    cv_cond <- rep(FALSE, nrow(x))
+  }
+  vars_to_remove <- var_cond | cv_cond
+  x[!vars_to_remove, , drop = FALSE]
+}
+
+.filter_matrix_low_var_grouped <- function(x, var_cutoff, cv_cutoff, by_values, strict) {
+  # `variance` and `cv` are matrices with nrow(x) rows and length(levels(by_values)) columns
+  if (!is.null(var_cutoff)) {
+    variance <- .summarize_vars_mat(x, .var, by = by_values)
+    var_cond <- apply(variance <= var_cutoff, 1, if (strict) any else all)
+  } else {
+    var_cond <- rep(FALSE, nrow(x))
+  }
+  if (!is.null(cv_cutoff)) {
+    cv <- .summarize_vars_mat(x, .cv, by = by_values)
+    cv_cond <- apply(cv <= cv_cutoff, 1, if (strict) any else all)
+  } else {
+    cv_cond <- rep(FALSE, nrow(x))
+  }
+  vars_to_remove <- var_cond | cv_cond
+  x[!vars_to_remove, , drop = FALSE]
+}
+
+#' Robust CV
+#'
+#' The function is robust in these ways:
+#' - It ignores NA values.
+#' - When the mean is 0 or not finite, it returns Inf.
+#' - When x is all NA, it returns Inf.
+#'
+#' @param x A vector of numeric values.
+#' @returns A vector of CV values.
+#' @noRd
+.cv <- function(x) {
+  m <- mean(x, na.rm = TRUE)
+  if (m == 0 || !is.finite(m)) {
+    return(Inf)
+  } else {
+    return(sd(x, na.rm = TRUE) / abs(m))
+  }
+}
+
+#' Robust Variance
+#'
+#' The function is robust in these ways:
+#' - It ignores NA values.
+#' - When x is all NA, it returns Inf.
+#' - When the variance is not finite, it returns Inf.
+#'
+#' @param x A vector of numeric values.
+#' @returns A vector of variance values.
+#' @noRd
+.var <- function(x) {
+  if (all(is.na(x))) {
+    return(Inf)
+  }
+  res <- var(x, na.rm = TRUE)
+  if (!is.finite(res)) {
+    return(Inf)
+  }
+  res
+}
+
+# ===== Utilities =====
+#' Summarize Values of Variables for Matrices
+#'
+#' @param mat A matrix with variables in rows and samples in columns.
+#' @param .f A function to apply to the expression values of each variable.
+#' @param by A factor specifying the groupings. Defaults to NULL.
+#' @returns A vector of summary statistics for each variable, named by the rownames of the matrix.
+#' @noRd
+.summarize_vars_mat <- function(mat, .f, by = NULL) {
+  if (is.null(by)) {
+    apply(mat, 1, .f)
+  } else {
+    .summarize_vars_mat_by_group(mat, .f, by)
+  }
+}
+
+#' Summarize Values of Variables for Matrices by Group
+#'
+#' @param mat A matrix with variables in rows and samples in columns.
+#' @param .f A function to apply to the expression values of each variable.
+#' @param by A factor specifying the groupings.
+#' @returns A matrix of summary statistics for each variable with row names of `mat` as row names and levels of `by` as column names.
+#' @noRd
+.summarize_vars_mat_by_group <- function(mat, .f, by) {
+  by_f <- forcats::fct_drop(as.factor(by))
+
+  if (any(is.na(by_f))) {
+    cli::cli_abort("{.arg by} must not contain NA for grouped summarization.")
+  }
+
+  levs <- levels(by_f)
+  idx_list <- lapply(levs, function(lv) which(by_f == lv))
+
+  cols <- lapply(idx_list, function(idx) {
+    if (length(idx) == 0L) {
+      rep(NA_real_, nrow(mat))
+    } else {
+      apply(mat[, idx, drop = FALSE], 1, .f)
+    }
+  })
+
+  res <- do.call(cbind, cols)
+  rownames(res) <- rownames(mat)
+  colnames(res) <- levs
+  res
 }

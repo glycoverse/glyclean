@@ -421,3 +421,292 @@ test_that("remove_rare with matrix and various invalid inputs", {
   expect_error(remove_rare(mat, min_n = 0))
   expect_error(remove_rare(mat, min_n = -1))
 })
+
+test_that("remove_low_var works with matrix input", {
+  mat <- matrix(1:9, nrow = 3, byrow = TRUE)
+  rownames(mat) <- paste0("V", 1:3)
+  colnames(mat) <- paste0("S", 1:3)
+  mat[1, ] <- 1  # the first variable has zero variance
+
+  result <- remove_low_var(mat)
+  expect_equal(rownames(result), c("V2", "V3"))
+})
+
+test_that("remove_low_var works with experiment input", {
+  exp <- simple_exp(3, 3)
+  exp$expr_mat[1, ] <- 1  # the first variable has zero variance
+
+  result <- remove_low_var(exp)
+  expected_mat <- exp$expr_mat[-1, ]
+  expected_var_info <- exp$var_info[-1, ]
+  expect_equal(result$expr_mat, expected_mat)
+  expect_equal(result$var_info, expected_var_info)
+})
+
+test_that("remove_low_var works only with var_cutoff", {
+  mat <- matrix(c(5.0, 5.05, 4.95, 1, 2, 3), nrow = 2, byrow = TRUE)
+  rownames(mat) <- paste0("V", 1:2)
+  colnames(mat) <- paste0("S", 1:3)
+
+  result <- remove_low_var(mat, var_cutoff = 0.01, cv_cutoff = NULL)
+  expect_equal(rownames(result), c("V2"))
+})
+
+test_that("remove_low_var works only with cv_cutoff", {
+  mat <- matrix(c(100, 101, 99, 1, 2, 3), nrow = 2, byrow = TRUE)
+  rownames(mat) <- paste0("V", 1:2)
+  colnames(mat) <- paste0("S", 1:3)
+
+  result <- remove_low_var(mat, var_cutoff = NULL, cv_cutoff = 0.1)
+  expect_equal(rownames(result), c("V2"))
+})
+
+test_that("remove_low_var works with both var_cutoff and cv_cutoff", {
+  mat <- matrix(c(5.0, 5.05, 4.95, 100, 101, 99), nrow = 2, byrow = TRUE)
+  rownames(mat) <- paste0("V", 1:2)
+  colnames(mat) <- paste0("S", 1:3)
+
+  result <- remove_low_var(mat, var_cutoff = 0.01, cv_cutoff = 0.1)
+  expect_equal(nrow(result), 0)  # all variables are removed
+})
+
+test_that("remove_low_var raises error without neither var_cutoff nor cv_cutoff", {
+  mat <- matrix(c(5.0, 5.05, 4.95, 100, 101, 99), nrow = 2, byrow = TRUE)
+  expect_error(
+    remove_low_var(mat, var_cutoff = NULL, cv_cutoff = NULL),
+    "At least one of `var_cutoff` or `cv_cutoff` must be provided."
+  )
+})
+
+test_that("remove_low_var works with grouping: strict = FALSE (delete only if ALL groups pass threshold)", {
+  mat <- matrix(
+    c(
+      # V1: Group A all 5 (variance=0), Group B all 5 (variance=0) -> both groups low variance -> should be removed
+      5, 5, 5, 5, 5, 5,
+      # V2: Group A all 10 (variance=0), Group B 1,5,9 (variance>0) -> only Group A low variance -> should be kept in strict=FALSE
+      10, 10, 10, 1, 5, 9,
+      # V3: Both groups high variance -> should be kept
+      1, 2, 3, 4, 5, 6,
+      # V4: Both groups high variance -> should be kept
+      0, 10, 20, 30, 40, 50
+    ),
+    nrow = 4, byrow = TRUE
+  )
+  rownames(mat) <- paste0("V", 1:4)
+  colnames(mat) <- paste0("S", 1:6)
+  by_fac <- factor(c("A", "A", "A", "B", "B", "B"))
+
+  res <- remove_low_var(mat, var_cutoff = 0, cv_cutoff = NULL, by = by_fac, strict = FALSE)
+  # Only remove if all groups pass threshold -> V1 is removed, V2/V3/V4 are kept
+  expect_equal(rownames(res), c("V2", "V3", "V4"))
+})
+
+test_that("remove_low_var works with grouping: strict = TRUE (delete if ANY group passes threshold)", {
+  mat <- matrix(
+    c(
+      # V1: Group A zero variance, Group B zero variance -> any group meets threshold -> remove
+      5, 5, 5, 5, 5, 5,
+      # V2: Group A zero variance, Group B high variance -> any group meets threshold -> remove
+      10, 10, 10, 1, 5, 9,
+      # V3: Both groups high variance -> keep
+      1, 2, 3, 4, 5, 6,
+      # V4: Both groups high variance -> keep
+      0, 10, 20, 30, 40, 50
+    ),
+    nrow = 4, byrow = TRUE
+  )
+  rownames(mat) <- paste0("V", 1:4)
+  colnames(mat) <- paste0("S", 1:6)
+
+  by_fac <- factor(c("A", "A", "A", "B", "B", "B"))
+
+  res <- remove_low_var(mat, var_cutoff = 0, cv_cutoff = NULL, by = by_fac, strict = TRUE)
+  # Any group meets threshold -> V1 and V2 are removed, V3 and V4 are kept
+  expect_equal(rownames(res), c("V3", "V4"))
+})
+
+test_that("remove_low_var grouping works for by types: factor / character / numeric", {
+  mat <- matrix(
+    c(
+      5, 5, 5, 5, 5, 5,     # V1: Both groups low variance -> remove regardless of by type (strict=TRUE)
+      10, 10, 10, 1, 5, 9,  # V2: Group A low variance, Group B high variance -> remove in strict=TRUE
+      1, 2, 3, 4, 5, 6      # V3: Both groups high variance -> keep
+    ),
+    nrow = 3, byrow = TRUE
+  )
+  rownames(mat) <- paste0("V", 1:3)
+  colnames(mat) <- paste0("S", 1:6)
+
+  by_factor <- factor(c("A", "A", "A", "B", "B", "B"))
+  by_char   <- c("A", "A", "A", "B", "B", "B")
+  by_num    <- c(1, 1, 1, 2, 2, 2)
+
+  res_fac <- remove_low_var(mat, var_cutoff = 0, cv_cutoff = NULL, by = by_factor, strict = TRUE)
+  res_chr <- remove_low_var(mat, var_cutoff = 0, cv_cutoff = NULL, by = by_char,   strict = TRUE)
+  res_num <- remove_low_var(mat, var_cutoff = 0, cv_cutoff = NULL, by = by_num,    strict = TRUE)
+
+  # Three by types should get the same result: only V3 is kept
+  expect_equal(rownames(res_fac), c("V3"))
+  expect_equal(rownames(res_chr), c("V3"))
+  expect_equal(rownames(res_num), c("V3"))
+})
+
+test_that("remove_low_var errors when by length mismatches ncol(x)", {
+  mat <- matrix(1:12, nrow = 3)  # 3x4
+  by_bad <- c("A", "A", "B")       # less than 4
+
+  expect_error(
+    remove_low_var(mat, var_cutoff = 0, by = by_bad),
+    regexp = "len|length|ncol",  # tolerate different error messages
+    fixed = FALSE
+  )
+})
+
+test_that("remove_low_var errors when by contains NA for grouped summarization", {
+  mat <- matrix(1:12, nrow = 3)  # 3x4
+  by_na <- c("A", "A", NA, "B")
+
+  expect_error(
+    remove_low_var(mat, var_cutoff = 0, by = by_na),
+    regexp = "must not contain NA|NA",  # match cli_abort in implementation
+    fixed = FALSE
+  )
+})
+
+test_that("rows with some NAs are handled: var uses na.rm=TRUE; CV robust; no subscript-NA errors", {
+  # V1: contains NA but zero variance across non-NA values -> should be removed when var_cutoff = 0
+  # V2: contains NA but non-zero variance -> should be retained
+  # V3: normal row, retained
+  mat <- matrix(
+    c(
+      1, 1, NA,   # V1
+      1, 2, NA,   # V2
+      3, 4, 5     # V3
+    ),
+    nrow = 3, byrow = TRUE
+  )
+  rownames(mat) <- c("V1", "V2", "V3")
+  colnames(mat) <- c("S1", "S2", "S3")
+
+  # Only variance threshold: V1 has var=0 with na.rm=TRUE -> removed; V2/V3 stay.
+  expect_silent({
+    res <- remove_low_var(mat, var_cutoff = 0, cv_cutoff = NULL)
+    expect_equal(rownames(res), c("V2", "V3"))
+  })
+
+  # Only CV threshold (tiny cutoff): CV(V1)=0 -> would be removed;
+  # Here we ensure function still runs with NA present and filters accordingly.
+  expect_silent({
+    res_cv <- remove_low_var(mat, var_cutoff = NULL, cv_cutoff = 1e-6)
+    expect_equal(rownames(res_cv), c("V2", "V3"))
+  })
+})
+
+test_that("all-NA row is not removed and does not cause errors", {
+  # V1: all NA -> var = NA (with na.rm=TRUE), CV: mean NA -> CV returns Inf by design
+  # V2: normal varying row
+  # Expectation: V1 is NOT removed (unless an explicit policy says otherwise); no errors.
+  mat <- matrix(
+    c(
+      NA, NA, NA,  # V1: all NA
+      1,  2,  3    # V2
+    ),
+    nrow = 2, byrow = TRUE
+  )
+  rownames(mat) <- c("V1", "V2")
+  colnames(mat) <- c("S1", "S2", "S3")
+
+  # Use both thresholds to exercise OR-logic; with CV=Inf, and var=NA, row shouldn't be removed.
+  expect_silent({
+    res <- remove_low_var(mat, var_cutoff = 0, cv_cutoff = 0.1)
+    expect_equal(rownames(res), c("V1", "V2"))
+  })
+})
+
+test_that("zero-mean row yields CV = Inf and is not removed by CV cutoff", {
+  # V1: mean = 0, sd > 0 -> CV = Inf -> should NOT be removed by any finite cv_cutoff
+  # V2: a control row that stays
+  mat <- matrix(
+    c(
+      -1, 0, 1,    # V1: mean 0
+      10, 12, 14   # V2
+    ),
+    nrow = 2, byrow = TRUE
+  )
+  rownames(mat) <- c("V1", "V2")
+  colnames(mat) <- c("S1", "S2", "S3")
+
+  # Only CV threshold: V1 has CV = Inf -> Inf <= 0.5 is FALSE, so V1 must stay.
+  expect_silent({
+    res <- remove_low_var(mat, var_cutoff = NULL, cv_cutoff = 0.5)
+    expect_true("V1" %in% rownames(res))
+  })
+})
+
+test_that("negative-mean row uses abs(mean) for CV and can be removed if below cv_cutoff", {
+  # V1: mean ~ -10, sd ~ 1 -> CV ~ 0.1 (using abs(mean)); with cv_cutoff=0.2, it should be removed
+  # V2: higher CV -> retained
+  mat <- matrix(
+    c(
+      -10, -11, -9,   # V1: CV ~ 0.1
+      10,  14,   6    # V2: CV ~ 0.32
+    ),
+    nrow = 2, byrow = TRUE
+  )
+  rownames(mat) <- c("V1", "V2")
+  colnames(mat) <- c("S1", "S2", "S3")
+
+  expect_silent({
+    res <- remove_low_var(mat, var_cutoff = NULL, cv_cutoff = 0.2)
+    # V1 removed due to small CV; V2 retained
+    expect_equal(rownames(res), "V2")
+  })
+})
+
+test_that("rows containing NaN or Inf do not error and produce predictable filtering", {
+  # V1: includes NaN -> var with na.rm=TRUE should ignore NaN and use (1,2), var=0.5 -> not removed by small var_cutoff
+  # V2: includes +Inf -> var may be Inf; CV mean is Inf -> CV=Inf; with tiny thresholds it should be retained
+  # V3: constant finite row -> removed by var_cutoff=0
+  mat <- matrix(
+    c(
+      1,   NaN, 2,     # V1
+      100, 100, Inf,   # V2
+      5,   5,   5      # V3: zero variance
+    ),
+    nrow = 3, byrow = TRUE
+  )
+  rownames(mat) <- c("V1", "V2", "V3")
+  colnames(mat) <- c("S1", "S2", "S3")
+
+  # Use both thresholds (tiny), expect:
+  # - V3 removed due to zero variance;
+  # - V1 retained (var=0.5 > 0; CV finite and > tiny cutoff typically);
+  # - V2 retained (var likely Inf; CV = Inf), no errors thrown.
+  expect_silent({
+    res <- remove_low_var(mat, var_cutoff = 0, cv_cutoff = 1e-6)
+    expect_equal(rownames(res), c("V1", "V2"))
+  })
+})
+
+test_that("remove_low_var ignores unused levels of by", {
+  mat <- matrix(1:12, nrow = 3)
+  rownames(mat) <- c("V1", "V2", "V3")
+  colnames(mat) <- c("S1", "S2", "S3", "S4")
+  by <- factor(c("A", "A", "B", "B"), levels = c("A", "B", "C"))
+  res <- remove_low_var(mat, var_cutoff = 0, by = by)
+  expect_equal(rownames(res), c("V1", "V2", "V3"))
+})
+
+test_that("remove_low_var works with one-row matrix", {
+  mat <- matrix(1:4, nrow = 1)
+  rownames(mat) <- c("V1")
+  res <- remove_low_var(mat)
+  expect_equal(rownames(res), c("V1"))
+})
+
+test_that("remove_low_var works with one-column matrix", {
+  mat <- matrix(1:4, ncol = 1)
+  rownames(mat) <- c("V1", "V2", "V3", "V4")
+  res <- remove_low_var(mat)
+  expect_equal(rownames(res), c("V1", "V2", "V3", "V4"))
+})
