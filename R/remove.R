@@ -283,7 +283,7 @@ remove_low_var <- function(x, var_cutoff = 0, cv_cutoff = NULL, by = NULL, stric
 #' @rdname remove_low_var
 #' @export
 remove_low_var.glyexp_experiment <- function(x, var_cutoff = 0, cv_cutoff = NULL, by = NULL, strict = FALSE) {
-  .filter_exp_low_var(x, var_cutoff, cv_cutoff, by, strict)
+  .filter_exp(x, by, strict, .filter_matrix_low_var, var_cutoff = var_cutoff, cv_cutoff = cv_cutoff)
 }
 
 #' @rdname remove_low_var
@@ -299,21 +299,6 @@ remove_low_var.default <- function(x, var_cutoff = 0, cv_cutoff = NULL, by = NUL
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
     "x" = "Got {.cls {class(x)}}."
   ))
-}
-
-.filter_exp_low_var <- function(x, var_cutoff = NULL, cv_cutoff = NULL, by = NULL, strict = FALSE) {
-  by_values <- .resolve_column_param(
-    by,
-    sample_info = x$sample_info,
-    param_name = "by",
-    n_samples = ncol(x$expr_mat),
-    allow_null = TRUE
-  )
-  new_expr_mat <- .filter_matrix_low_var(x$expr_mat, var_cutoff, cv_cutoff, by_values, strict)
-  x$expr_mat <- new_expr_mat
-  x$var_info <- x$var_info |>
-    dplyr::filter(.data$variable %in% rownames(new_expr_mat))
-  x
 }
 
 .filter_matrix_low_var <- function(x, var_cutoff = NULL, cv_cutoff = NULL, by = NULL, strict = FALSE) {
@@ -429,6 +414,7 @@ remove_constant <- function(x, by = NULL, strict = FALSE) {
 }
 
 # ===== Utilities =====
+
 #' Summarize Values of Variables for Matrices
 #'
 #' @param mat A matrix with variables in rows and samples in columns.
@@ -473,4 +459,28 @@ remove_constant <- function(x, by = NULL, strict = FALSE) {
   rownames(res) <- rownames(mat)
   colnames(res) <- levs
   res
+}
+
+#' Filter an Experiment
+#'
+#' @param x An `glyexp_experiment` object.
+#' @param by The `by` parameter for `remove_xxx()` functions.
+#' @param strict The `strict` parameter for `remove_xxx()` functions.
+#' @param filter_mat_fun A function to filter the expression matrix.
+#' @param ... Additional arguments to pass to `filter_mat_fun`.
+#' @returns A modified `glyexp_experiment` object.
+#' @noRd
+.filter_exp <- function(x, by = NULL, strict = FALSE, filter_mat_fun, ...) {
+  by_values <- .resolve_column_param(
+    by,
+    sample_info = x$sample_info,
+    param_name = "by",
+    n_samples = ncol(x$expr_mat),
+    allow_null = TRUE
+  )
+  new_expr_mat <- filter_mat_fun(x$expr_mat, by_values, strict, ...)
+  x$expr_mat <- new_expr_mat
+  x$var_info <- x$var_info |>
+    dplyr::filter(.data$variable %in% rownames(new_expr_mat))
+  x
 }
