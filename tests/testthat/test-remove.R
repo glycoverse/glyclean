@@ -710,3 +710,12 @@ test_that("remove_low_var works with one-column matrix", {
   res <- remove_low_var(mat)
   expect_equal(rownames(res), c("V1", "V2", "V3", "V4"))
 })
+
+test_that("remove_constant works", {
+  mat <- matrix(1:9, nrow = 3)
+  rownames(mat) <- c("V1", "V2", "V3")
+  colnames(mat) <- c("S1", "S2", "S3")
+  mat[1, ] <- 1
+  res <- remove_constant(mat)
+  expect_equal(rownames(res), c("V2", "V3"))
+})

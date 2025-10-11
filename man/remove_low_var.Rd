@@ -38,3 +38,6 @@ At least one of \code{var_cutoff} or \code{cv_cutoff} must be provided.
 If both are provided, the variable will be removed if it passes either threshold.
 Default behavior is to remove variables with zero variance.
 }
+\seealso{
+\code{\link[=remove_constant]{remove_constant()}}
+}

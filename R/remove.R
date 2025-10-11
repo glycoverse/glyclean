@@ -274,6 +274,7 @@ remove_rare <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min
 #' @returns For `glyexp_experiment` input, returns a modified `glyexp_experiment` object.
 #'   For matrix input, returns a filtered matrix.
 #'
+#' @seealso [remove_constant()]
 #' @export
 remove_low_var <- function(x, var_cutoff = 0, cv_cutoff = NULL, by = NULL, strict = FALSE) {
   UseMethod("remove_low_var")
@@ -405,6 +406,26 @@ remove_low_var.default <- function(x, var_cutoff = 0, cv_cutoff = NULL, by = NUL
     return(Inf)
   }
   res
+}
+
+# ===== Remove Constant =====
+#' Remove Constant Variables
+#'
+#' Constant variables are variables with the same value in all samples.
+#' This function is equivalent to `remove_low_var(x, var_cutoff = 0, cv_cutoff = NULL, by = by, strict = strict)`.
+#'
+#' @param x Either a `glyexp_experiment` object or a matrix.
+#' @param by Either a column name in `sample_info` (string) or a vector specifying group assignments for each sample.
+#' @param strict If `FALSE`, remove a variable only if it is constant in all groups.
+#'   If `TRUE`, remove a variable if it is constant in any group. Defaults to FALSE.
+#'
+#' @returns For `glyexp_experiment` input, returns a modified `glyexp_experiment` object.
+#'   For matrix input, returns a filtered matrix.
+#'
+#' @seealso [remove_low_var()]
+#' @export
+remove_constant <- function(x, by = NULL, strict = FALSE) {
+  remove_low_var(x, var_cutoff = 0, cv_cutoff = NULL, by = by, strict = strict)
 }
 
 # ===== Utilities =====
