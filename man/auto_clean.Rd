@@ -75,7 +75,7 @@ cleaned_exp <- auto_clean(glycomics_exp)
 
 }
 \seealso{
-\code{\link[=aggregate]{aggregate()}}, \code{\link[=normalize_median]{normalize_median()}}, \code{\link[=remove_missing_variables]{remove_missing_variables()}},
+\code{\link[=aggregate]{aggregate()}}, \code{\link[=normalize_median]{normalize_median()}}, \code{\link[=remove_rare]{remove_rare()}},
 \code{\link[=impute_sample_min]{impute_sample_min()}}, \code{\link[=impute_min_prob]{impute_min_prob()}}, \code{\link[=impute_miss_forest]{impute_miss_forest()}},
 \code{\link[=correct_batch_effect]{correct_batch_effect()}}
 }

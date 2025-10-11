@@ -119,12 +119,12 @@ written as a manual pipeline:
 # The complete glycoproteomics preprocessing pipeline
 # This is essentially what auto_clean() does automatically!
 cleaned_exp <- exp |>
-  normalize_median() |>                       # Step 1: Initial normalization
-  remove_missing_variables(prop = 0.5) |>     # Step 2: Remove variables with >50% missing
-  impute_sample_min() |>                      # Step 3: Impute missing values (for small datasets)
-  aggregate(to_level = "gfs") |>              # Step 4: Aggregate to glycoform level
-  normalize_median() |>                       # Step 5: Re-normalize after aggregation
-  correct_batch_effect()                      # Step 6: Correct batch effects (if batch column exists)
+  normalize_median() |>             # Step 1: Initial normalization
+  remove_rare(prop = 0.5) |>        # Step 2: Remove variables with >50% missing
+  impute_sample_min() |>            # Step 3: Impute missing values (for small datasets)
+  aggregate(to_level = "gfs") |>    # Step 4: Aggregate to glycoform level
+  normalize_median() |>             # Step 5: Re-normalize after aggregation
+  correct_batch_effect()            # Step 6: Correct batch effects (if batch column exists)
 ```
 
 **Why use pipes?**
@@ -209,7 +209,7 @@ Removes variables with >50% missing values
 **Manual approach (do it differently):**
 
 ```{r}
-filtered_exp <- remove_missing_variables(normed_exp, n = 0, by = "group", strict = FALSE)
+filtered_exp <- remove_rare(normed_exp, n = 0, by = "group", strict = FALSE)
 ```
 
 This code translates to: 

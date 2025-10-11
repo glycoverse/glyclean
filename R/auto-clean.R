@@ -62,7 +62,7 @@
 #' cleaned_exp <- auto_clean(glycomics_exp)
 #' }
 #' 
-#' @seealso [aggregate()], [normalize_median()], [remove_missing_variables()],
+#' @seealso [aggregate()], [normalize_median()], [remove_rare()],
 #'   [impute_sample_min()], [impute_min_prob()], [impute_miss_forest()],
 #'   [correct_batch_effect()]
 #' @export
@@ -85,7 +85,7 @@ auto_clean <- function(exp) {
   cli::cli_progress_step("Normalizing data (Median)")
   exp <- normalize_median(exp)
   cli::cli_progress_step("Removing variables with >50% missing values")
-  exp <- remove_missing_variables(exp, prop = 0.5)
+  exp <- remove_rare(exp, prop = 0.5)
   cli::cli_progress_step("Imputing missing values")
   exp <- .auto_impute(exp)
   cli::cli_progress_step("Aggregating data")
@@ -100,7 +100,7 @@ auto_clean <- function(exp) {
   cli::cli_progress_step("Normalizing data (Median Quotient)")
   exp <- normalize_median_quotient(exp)
   cli::cli_progress_step("Removing variables with >50% missing values")
-  exp <- remove_missing_variables(exp, prop = 0.5)
+  exp <- remove_rare(exp, prop = 0.5)
   cli::cli_progress_step("Imputing missing values")
   exp <- .auto_impute(exp)
   cli::cli_progress_step("Normalizing data (Total Area)")

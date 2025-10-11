@@ -1,4 +1,4 @@
-#' Remove Variables with Missing Values
+#' Remove Rare Variables with Too Many Missing Values
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
@@ -30,25 +30,25 @@
 #' exp$expr_mat
 #'
 #' # Remove variables with more than 50% missing values.
-#' remove_missing_variables(exp, prop = 0.5)$expr_mat
+#' remove_rare(exp, prop = 0.5)$expr_mat
 #'
 #' # Remove variables with more than 2 missing values.
-#' remove_missing_variables(exp, n = 2)$expr_mat
+#' remove_rare(exp, n = 2)$expr_mat
 #'
 #' # Remove variables if they have more than 1 missing value in all groups.
 #' # In another word, keep variables as long as they have 1 or 0 missing value
 #' # in any group.
-#' remove_missing_variables(exp, by = "group", strict = FALSE)$expr_mat
+#' remove_rare(exp, by = "group", strict = FALSE)$expr_mat
 #'
 #' # Keep only variables with no missing values.
-#' remove_missing_variables(exp, prop = 0)$expr_mat
+#' remove_rare(exp, prop = 0)$expr_mat
 #'
 #' # Use custom min_n to require at least 4 non-missing values
-#' remove_missing_variables(exp, min_n = 4)$expr_mat
+#' remove_rare(exp, min_n = 4)$expr_mat
 #'
 #' # With matrix
 #' mat <- matrix(c(1, 2, NA, 4, 5, NA, 7, 8, 9), nrow = 3)
-#' mat_filtered <- remove_missing_variables(mat, prop = 0.5)
+#' mat_filtered <- remove_rare(mat, prop = 0.5)
 #'
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
@@ -56,16 +56,16 @@
 #' @return For `glyexp_experiment` input, returns a modified `glyexp_experiment` object.
 #'   For matrix input, returns a filtered matrix.
 #' @export
-remove_missing_variables <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
+remove_rare <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
   .dispatch_on_input(
     x,
-    fun_exp = .filter_exp_missing_variables,
-    fun_mat = .filter_matrix_missing_variables,
+    fun_exp = .filter_exp_rare,
+    fun_mat = .filter_matrix_rare,
     prop = prop, n = n, by = by, strict = strict, min_n = min_n
   )
 }
 
-.filter_exp_missing_variables <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
+.filter_exp_rare <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
   # Resolve by parameter
   by_values <- .resolve_column_param(
     by,
@@ -76,7 +76,7 @@ remove_missing_variables <- function(x, prop = NULL, n = NULL, by = NULL, strict
   )
 
   # Filter the matrix
-  filtered_mat <- .filter_matrix_missing_variables(
+  filtered_mat <- .filter_matrix_rare(
     x$expr_mat, prop, n, by_values, strict, min_n
   )
 
@@ -87,7 +87,7 @@ remove_missing_variables <- function(x, prop = NULL, n = NULL, by = NULL, strict
   x
 }
 
-.filter_matrix_missing_variables <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
+.filter_matrix_rare <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
   # For matrix input, by must be a vector (not a column name)
   if (!is.null(by) && is.character(by) && length(by) == 1) {
     cli::cli_abort("For matrix input, {.arg by} must be a vector, not a column name.")
@@ -112,9 +112,9 @@ remove_missing_variables <- function(x, prop = NULL, n = NULL, by = NULL, strict
 
   # Filter variables based on missing values
   if (is.null(by_values)) {
-    vars_to_remove <- .filter_missing_global(x, params$prop, params$n, min_n_values$global)
+    vars_to_remove <- .filter_rare_global(x, params$prop, params$n, min_n_values$global)
   } else {
-    vars_to_remove <- .filter_missing_by_group(x, by_values, params$prop, params$n, min_n_values, strict)
+    vars_to_remove <- .filter_rare_by_group(x, by_values, params$prop, params$n, min_n_values, strict)
   }
 
   # Apply filtering
@@ -201,7 +201,7 @@ remove_missing_variables <- function(x, prop = NULL, n = NULL, by = NULL, strict
 }
 
 
-.filter_missing_global <- function(expr_mat, prop, n, min_n) {
+.filter_rare_global <- function(expr_mat, prop, n, min_n) {
   # Calculate threshold-based removal
   if (is.null(n)) {
     vars_to_remove <- rowMeans(is.na(expr_mat)) > prop
@@ -217,7 +217,7 @@ remove_missing_variables <- function(x, prop = NULL, n = NULL, by = NULL, strict
 }
 
 
-.filter_missing_by_group <- function(expr_mat, by_values, prop, n, min_n_values, strict) {
+.filter_rare_by_group <- function(expr_mat, by_values, prop, n, min_n_values, strict) {
   groups <- split(seq_len(ncol(expr_mat)), by_values)
 
   group_results <- lapply(names(groups), function(group_name) {
