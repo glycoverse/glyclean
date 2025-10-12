@@ -59,8 +59,7 @@ enabling other packages like `glystats` to work with clean, analysis-ready data.
 library(glyexp)
 library(glyclean)
 
-exp <- toy_experiment
-exp <- set_exp_type(exp, "glycomics")
+exp <- real_experiment
 clean_exp <- auto_clean(exp)
 ```
 

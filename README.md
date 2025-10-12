@@ -60,24 +60,23 @@ library(glyclean)
 #> 
 #>     aggregate
 
-exp <- toy_experiment
-exp <- set_exp_type(exp, "glycomics")
+exp <- real_experiment
 clean_exp <- auto_clean(exp)
-#> ℹ Normalizing data (Median Quotient)
-#> ✔ Normalizing data (Median Quotient) [14ms]
+#> ℹ Normalizing data (Median)
+#> ✔ Normalizing data (Median) [70ms]
 #> 
 #> ℹ Removing variables with >50% missing values
 #> ✔ Removing variables with >50% missing values [38ms]
 #> 
 #> ℹ Imputing missing values
 #> ℹ Sample size <= 30, using sample minimum imputation
-#> ℹ Imputing missing values✔ Imputing missing values [9ms]
+#> ℹ Imputing missing values✔ Imputing missing values [12ms]
 #> 
-#> ℹ Normalizing data (Total Area)
-#> ℹ Detecting batch effects using ANOVA for 4 variables...
-#> ℹ Normalizing data (Total Area)✔ Batch effect detection completed. 0 out of 4 variables show significant batch effects (p < 0.05).
-#> ℹ Normalizing data (Total Area)ℹ Batch effects detected in 0.0% of variables (<=10%). Skipping batch correction.
-#> ℹ Normalizing data (Total Area)✔ Normalizing data (Total Area) [43ms]
+#> ℹ Aggregating data
+#> ✔ Aggregating data [422ms]
+#> 
+#> ℹ Normalizing data again
+#> ✔ Normalizing data again [7ms]
 ```
 
 Yes, that’s it! Calling the magical `auto_clean()` function will
