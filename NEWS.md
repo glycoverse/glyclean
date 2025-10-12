@@ -1,4 +1,20 @@
-# glyclean (development version)
+# glyclean 0.8.0
+
+## Breaking changes
+
+- Rename `remove_missing_variables()` to `remove_rare()`.
+
+## New features
+
+- All functions in `glyclean` are generic now. This makes it easier to extend `glyclean` to other data types.
+- Add `remove_low_var()` for removing variables with low variance.
+- Add `remove_low_cv()` for removing variables with low coefficient of variation.
+- Add `remove_constant()` for removing constant variables.
+- Add `remove_low_expr()` for removing variables with low expression or abundance.
+
+## Minor improvements
+
+- Update documentation to include the newly added functions.
 
 # glyclean 0.7.1
 
