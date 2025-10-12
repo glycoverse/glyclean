@@ -206,6 +206,16 @@ variables with too many missing values are often more noise than signal.
 **What `auto_clean()` does:**
 Removes variables with >50% missing values
 
+**Available variable filtering functions in `glyclean`:**
+
+| Function | Description | Best For |
+|----------|-------------|----------|
+| `remove_rare()` | Remove variables with too many missing values | General use |
+| `remove_low_var()` | Remove variables with low variance | General use |
+| `remove_low_cv()` | Remove variables with low coefficient of variation | General use |
+| `remove_constant()` | Remove constant variables | General use |
+| `remove_low_expr()` | Remove variables with low expression | General use |
+
 **Manual approach (do it differently):**
 
 ```{r}
