@@ -2,9 +2,15 @@
 % Please edit documentation in R/auto-clean.R
 \name{auto_clean}
 \alias{auto_clean}
+\alias{auto_clean.glyexp_experiment}
+\alias{auto_clean.default}
 \title{Automatic Data Preprocessing}
 \usage{
 auto_clean(exp)
+
+\method{auto_clean}{glyexp_experiment}(exp)
+
+\method{auto_clean}{default}(exp)
 }
 \arguments{
 \item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} containing glycoproteomics or

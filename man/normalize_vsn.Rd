@@ -2,9 +2,18 @@
 % Please edit documentation in R/normalize.R
 \name{normalize_vsn}
 \alias{normalize_vsn}
+\alias{normalize_vsn.glyexp_experiment}
+\alias{normalize_vsn.matrix}
+\alias{normalize_vsn.default}
 \title{Variance Stabilizing Normalization}
 \usage{
 normalize_vsn(x, by = NULL, ...)
+
+\method{normalize_vsn}{glyexp_experiment}(x, by = NULL, ...)
+
+\method{normalize_vsn}{matrix}(x, by = NULL, ...)
+
+\method{normalize_vsn}{default}(x, by = NULL, ...)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

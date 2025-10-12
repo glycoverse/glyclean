@@ -2,9 +2,18 @@
 % Please edit documentation in R/batch-correction.R
 \name{correct_batch_effect}
 \alias{correct_batch_effect}
+\alias{correct_batch_effect.glyexp_experiment}
+\alias{correct_batch_effect.matrix}
+\alias{correct_batch_effect.default}
 \title{Correct Batch Effect}
 \usage{
 correct_batch_effect(x, batch = "batch", group = NULL)
+
+\method{correct_batch_effect}{glyexp_experiment}(x, batch = "batch", group = NULL)
+
+\method{correct_batch_effect}{matrix}(x, batch = "batch", group = NULL)
+
+\method{correct_batch_effect}{default}(x, batch = "batch", group = NULL)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

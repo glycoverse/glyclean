@@ -2,9 +2,18 @@
 % Please edit documentation in R/impute.R
 \name{impute_sw_knn}
 \alias{impute_sw_knn}
+\alias{impute_sw_knn.glyexp_experiment}
+\alias{impute_sw_knn.matrix}
+\alias{impute_sw_knn.default}
 \title{Sample-wise KNN Imputation}
 \usage{
 impute_sw_knn(x, k = 5, by = NULL, ...)
+
+\method{impute_sw_knn}{glyexp_experiment}(x, k = 5, by = NULL, ...)
+
+\method{impute_sw_knn}{matrix}(x, k = 5, by = NULL, ...)
+
+\method{impute_sw_knn}{default}(x, k = 5, by = NULL, ...)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

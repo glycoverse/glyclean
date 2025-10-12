@@ -2,9 +2,18 @@
 % Please edit documentation in R/impute.R
 \name{impute_fw_knn}
 \alias{impute_fw_knn}
+\alias{impute_fw_knn.glyexp_experiment}
+\alias{impute_fw_knn.matrix}
+\alias{impute_fw_knn.default}
 \title{Feature-wise KNN Imputation}
 \usage{
 impute_fw_knn(x, k = 5, by = NULL, ...)
+
+\method{impute_fw_knn}{glyexp_experiment}(x, k = 5, by = NULL, ...)
+
+\method{impute_fw_knn}{matrix}(x, k = 5, by = NULL, ...)
+
+\method{impute_fw_knn}{default}(x, k = 5, by = NULL, ...)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

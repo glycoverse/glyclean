@@ -2,9 +2,15 @@
 % Please edit documentation in R/site-seq.R
 \name{add_site_seq}
 \alias{add_site_seq}
+\alias{add_site_seq.glyexp_experiment}
+\alias{add_site_seq.default}
 \title{Add site-specific sequence information.}
 \usage{
 add_site_seq(exp, fasta, n_aa = 7)
+
+\method{add_site_seq}{glyexp_experiment}(exp, fasta, n_aa = 7)
+
+\method{add_site_seq}{default}(exp, fasta, n_aa = 7)
 }
 \arguments{
 \item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with "glycoproteomics" type.}

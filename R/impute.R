@@ -10,7 +10,27 @@
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_zero <- function(x) {
+  UseMethod("impute_zero")
+}
+
+#' @rdname impute_zero
+#' @export
+impute_zero.glyexp_experiment <- function(x) {
   .dispatch_and_apply_by_group(x, .impute_zero, by = NULL)
+}
+
+#' @rdname impute_zero
+#' @export
+impute_zero.matrix <- function(x) {
+  .dispatch_and_apply_by_group(x, .impute_zero, by = NULL)
+}
+
+#' @rdname impute_zero
+impute_zero.default <- function(x) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -29,7 +49,27 @@ impute_zero <- function(x) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_sample_min <- function(x) {
+  UseMethod("impute_sample_min")
+}
+
+#' @rdname impute_sample_min
+#' @export
+impute_sample_min.glyexp_experiment <- function(x) {
   .dispatch_and_apply_by_group(x, .impute_sample_min, by = NULL)
+}
+
+#' @rdname impute_sample_min
+#' @export
+impute_sample_min.matrix <- function(x) {
+  .dispatch_and_apply_by_group(x, .impute_sample_min, by = NULL)
+}
+
+#' @rdname impute_sample_min
+impute_sample_min.default <- function(x) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -48,7 +88,27 @@ impute_sample_min <- function(x) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_half_sample_min <- function(x) {
+  UseMethod("impute_half_sample_min")
+}
+
+#' @rdname impute_half_sample_min
+#' @export
+impute_half_sample_min.glyexp_experiment <- function(x) {
   .dispatch_and_apply_by_group(x, .impute_half_sample_min, by = NULL)
+}
+
+#' @rdname impute_half_sample_min
+#' @export
+impute_half_sample_min.matrix <- function(x) {
+  .dispatch_and_apply_by_group(x, .impute_half_sample_min, by = NULL)
+}
+
+#' @rdname impute_half_sample_min
+impute_half_sample_min.default <- function(x) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -73,7 +133,27 @@ impute_half_sample_min <- function(x) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_sw_knn <- function(x, k = 5, by = NULL, ...) {
+  UseMethod("impute_sw_knn")
+}
+
+#' @rdname impute_sw_knn
+#' @export
+impute_sw_knn.glyexp_experiment <- function(x, k = 5, by = NULL, ...) {
   .dispatch_and_apply_by_group(x, .impute_sw_knn, k = k, by = by, ...)
+}
+
+#' @rdname impute_sw_knn
+#' @export
+impute_sw_knn.matrix <- function(x, k = 5, by = NULL, ...) {
+  .dispatch_and_apply_by_group(x, .impute_sw_knn, k = k, by = by, ...)
+}
+
+#' @rdname impute_sw_knn
+impute_sw_knn.default <- function(x, k = 5, by = NULL, ...) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -95,7 +175,27 @@ impute_sw_knn <- function(x, k = 5, by = NULL, ...) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_fw_knn <- function(x, k = 5, by = NULL, ...) {
+  UseMethod("impute_fw_knn")
+}
+
+#' @rdname impute_fw_knn
+#' @export
+impute_fw_knn.glyexp_experiment <- function(x, k = 5, by = NULL, ...) {
   .dispatch_and_apply_by_group(x, .impute_fw_knn, k = k, by = by, ...)
+}
+
+#' @rdname impute_fw_knn
+#' @export
+impute_fw_knn.matrix <- function(x, k = 5, by = NULL, ...) {
+  .dispatch_and_apply_by_group(x, .impute_fw_knn, k = k, by = by, ...)
+}
+
+#' @rdname impute_fw_knn
+impute_fw_knn.default <- function(x, k = 5, by = NULL, ...) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -120,7 +220,27 @@ impute_fw_knn <- function(x, k = 5, by = NULL, ...) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_bpca <- function(x, by = NULL, ...) {
+  UseMethod("impute_bpca")
+}
+
+#' @rdname impute_bpca
+#' @export
+impute_bpca.glyexp_experiment <- function(x, by = NULL, ...) {
   .dispatch_and_apply_by_group(x, .impute_bpca, by = by, ...)
+}
+
+#' @rdname impute_bpca
+#' @export
+impute_bpca.matrix <- function(x, by = NULL, ...) {
+  .dispatch_and_apply_by_group(x, .impute_bpca, by = by, ...)
+}
+
+#' @rdname impute_bpca
+impute_bpca.default <- function(x, by = NULL, ...) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -141,7 +261,27 @@ impute_bpca <- function(x, by = NULL, ...) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_ppca <- function(x, by = NULL, ...) {
+  UseMethod("impute_ppca")
+}
+
+#' @rdname impute_ppca
+#' @export
+impute_ppca.glyexp_experiment <- function(x, by = NULL, ...) {
   .dispatch_and_apply_by_group(x, .impute_ppca, by = by, ...)
+}
+
+#' @rdname impute_ppca
+#' @export
+impute_ppca.matrix <- function(x, by = NULL, ...) {
+  .dispatch_and_apply_by_group(x, .impute_ppca, by = by, ...)
+}
+
+#' @rdname impute_ppca
+impute_ppca.default <- function(x, by = NULL, ...) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -163,7 +303,27 @@ impute_ppca <- function(x, by = NULL, ...) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_svd <- function(x, by = NULL, ...) {
+  UseMethod("impute_svd")
+}
+
+#' @rdname impute_svd
+#' @export
+impute_svd.glyexp_experiment <- function(x, by = NULL, ...) {
   .dispatch_and_apply_by_group(x, .impute_svd, by = by, ...)
+}
+
+#' @rdname impute_svd
+#' @export
+impute_svd.matrix <- function(x, by = NULL, ...) {
+  .dispatch_and_apply_by_group(x, .impute_svd, by = by, ...)
+}
+
+#' @rdname impute_svd
+impute_svd.default <- function(x, by = NULL, ...) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -184,7 +344,27 @@ impute_svd <- function(x, by = NULL, ...) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_min_prob <- function(x, by = NULL, ...) {
+  UseMethod("impute_min_prob")
+}
+
+#' @rdname impute_min_prob
+#' @export
+impute_min_prob.glyexp_experiment <- function(x, by = NULL, ...) {
   .dispatch_and_apply_by_group(x, .impute_min_prob, by = by, ...)
+}
+
+#' @rdname impute_min_prob
+#' @export
+impute_min_prob.matrix <- function(x, by = NULL, ...) {
+  .dispatch_and_apply_by_group(x, .impute_min_prob, by = by, ...)
+}
+
+#' @rdname impute_min_prob
+impute_min_prob.default <- function(x, by = NULL, ...) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -205,7 +385,27 @@ impute_min_prob <- function(x, by = NULL, ...) {
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
 impute_miss_forest <- function(x, by = NULL, ...) {
+  UseMethod("impute_miss_forest")
+}
+
+#' @rdname impute_miss_forest
+#' @export
+impute_miss_forest.glyexp_experiment <- function(x, by = NULL, ...) {
   .dispatch_and_apply_by_group(x, .impute_miss_forest, by = by, ...)
+}
+
+#' @rdname impute_miss_forest
+#' @export
+impute_miss_forest.matrix <- function(x, by = NULL, ...) {
+  .dispatch_and_apply_by_group(x, .impute_miss_forest, by = by, ...)
+}
+
+#' @rdname impute_miss_forest
+impute_miss_forest.default <- function(x, by = NULL, ...) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 

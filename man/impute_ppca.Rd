@@ -2,9 +2,18 @@
 % Please edit documentation in R/impute.R
 \name{impute_ppca}
 \alias{impute_ppca}
+\alias{impute_ppca.glyexp_experiment}
+\alias{impute_ppca.matrix}
+\alias{impute_ppca.default}
 \title{PPCA Imputation}
 \usage{
 impute_ppca(x, by = NULL, ...)
+
+\method{impute_ppca}{glyexp_experiment}(x, by = NULL, ...)
+
+\method{impute_ppca}{matrix}(x, by = NULL, ...)
+
+\method{impute_ppca}{default}(x, by = NULL, ...)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

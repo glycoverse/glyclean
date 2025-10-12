@@ -2,9 +2,18 @@
 % Please edit documentation in R/normalize.R
 \name{normalize_rlrmacyc}
 \alias{normalize_rlrmacyc}
+\alias{normalize_rlrmacyc.glyexp_experiment}
+\alias{normalize_rlrmacyc.matrix}
+\alias{normalize_rlrmacyc.default}
 \title{Robust Linear Regression with Median Adjustment and Cyclic Normalization}
 \usage{
 normalize_rlrmacyc(x, n_iter = 3, by = NULL)
+
+\method{normalize_rlrmacyc}{glyexp_experiment}(x, n_iter = 3, by = NULL)
+
+\method{normalize_rlrmacyc}{matrix}(x, n_iter = 3, by = NULL)
+
+\method{normalize_rlrmacyc}{default}(x, n_iter = 3, by = NULL)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

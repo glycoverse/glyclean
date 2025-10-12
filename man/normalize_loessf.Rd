@@ -2,9 +2,18 @@
 % Please edit documentation in R/normalize.R
 \name{normalize_loessf}
 \alias{normalize_loessf}
+\alias{normalize_loessf.glyexp_experiment}
+\alias{normalize_loessf.matrix}
+\alias{normalize_loessf.default}
 \title{LoessF Normalization}
 \usage{
 normalize_loessf(x, by = NULL, ...)
+
+\method{normalize_loessf}{glyexp_experiment}(x, by = NULL, ...)
+
+\method{normalize_loessf}{matrix}(x, by = NULL, ...)
+
+\method{normalize_loessf}{default}(x, by = NULL, ...)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

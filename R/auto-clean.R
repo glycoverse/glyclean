@@ -67,6 +67,12 @@
 #'   [correct_batch_effect()]
 #' @export
 auto_clean <- function(exp) {
+  UseMethod("auto_clean")
+}
+
+#' @rdname auto_clean
+#' @export
+auto_clean.glyexp_experiment <- function(exp) {
   checkmate::assert_class(exp, "glyexp_experiment")
   if (!checkmate::test_choice(glyexp::get_exp_type(exp), c("glycoproteomics", "glycomics"))) {
     cli::cli_abort(c(
@@ -79,6 +85,15 @@ auto_clean <- function(exp) {
     glycoproteomics = .auto_clean_glycoproteomics(exp),
     glycomics = .auto_clean_glycomics(exp)
   )
+}
+
+#' @rdname auto_clean
+ #' @export
+auto_clean.default <- function(exp) {
+  cli::cli_abort(c(
+    "{.arg exp} must be a {.cls glyexp_experiment} object.",
+    "x" = "Got {.cls {class(exp)}}."
+  ))
 }
 
 .auto_clean_glycoproteomics <- function(exp) {

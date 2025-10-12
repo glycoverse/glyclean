@@ -3,7 +3,7 @@
     Code
       aggregate(exp, to_level = "gp")
     Condition
-      Error in `aggregate()`:
+      Error in `glyclean_aggregate()`:
       ! All required columns must be present in `var_info`.
       i Required columns: peptide, protein, glycan_composition, peptide_site, and protein_site.
       x Missing columns: peptide and peptide_site.
@@ -13,7 +13,7 @@
     Code
       aggregate(exp, to_level = "gfs")
     Condition
-      Error in `aggregate()`:
+      Error in `glyclean_aggregate()`:
       ! All required columns must be present in `var_info`.
       i Required columns: protein, glycan_composition, glycan_structure, and protein_site.
       x Missing columns: glycan_structure.

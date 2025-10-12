@@ -2,9 +2,18 @@
 % Please edit documentation in R/normalize.R
 \name{normalize_quantile}
 \alias{normalize_quantile}
+\alias{normalize_quantile.glyexp_experiment}
+\alias{normalize_quantile.matrix}
+\alias{normalize_quantile.default}
 \title{Quantile Normalization}
 \usage{
 normalize_quantile(x, by = NULL, ...)
+
+\method{normalize_quantile}{glyexp_experiment}(x, by = NULL, ...)
+
+\method{normalize_quantile}{matrix}(x, by = NULL, ...)
+
+\method{normalize_quantile}{default}(x, by = NULL, ...)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

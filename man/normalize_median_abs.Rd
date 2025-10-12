@@ -2,9 +2,18 @@
 % Please edit documentation in R/normalize.R
 \name{normalize_median_abs}
 \alias{normalize_median_abs}
+\alias{normalize_median_abs.glyexp_experiment}
+\alias{normalize_median_abs.matrix}
+\alias{normalize_median_abs.default}
 \title{Absolute Median Normalization}
 \usage{
 normalize_median_abs(x)
+
+\method{normalize_median_abs}{glyexp_experiment}(x)
+
+\method{normalize_median_abs}{matrix}(x)
+
+\method{normalize_median_abs}{default}(x)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

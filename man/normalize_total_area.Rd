@@ -2,9 +2,18 @@
 % Please edit documentation in R/normalize.R
 \name{normalize_total_area}
 \alias{normalize_total_area}
+\alias{normalize_total_area.glyexp_experiment}
+\alias{normalize_total_area.matrix}
+\alias{normalize_total_area.default}
 \title{Total Area Normalization}
 \usage{
 normalize_total_area(x)
+
+\method{normalize_total_area}{glyexp_experiment}(x)
+
+\method{normalize_total_area}{matrix}(x)
+
+\method{normalize_total_area}{default}(x)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

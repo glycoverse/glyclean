@@ -43,6 +43,16 @@
 #'   updated variable information.
 #' @export
 aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
+  glyclean_aggregate(exp, to_level = to_level)
+}
+
+glyclean_aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
+  UseMethod("glyclean_aggregate")
+}
+
+#' @rdname aggregate
+#' @export
+glyclean_aggregate.glyexp_experiment <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
   # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")
   if (glyexp::get_exp_type(exp) != "glycoproteomics") {
@@ -106,6 +116,14 @@ aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
   new_exp$expr_mat <- expr_mat
   new_exp$var_info <- var_info_df
   new_exp
+}
+
+#' @rdname aggregate
+glyclean_aggregate.default <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
+  cli::cli_abort(c(
+    "{.arg exp} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(exp)}}."
+  ))
 }
 
 #' Get Aggregation Descriptive Columns

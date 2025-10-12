@@ -23,7 +23,27 @@
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_median <- function(x) {
+  UseMethod("normalize_median")
+}
+
+#' @rdname normalize_median
+#' @export
+normalize_median.glyexp_experiment <- function(x) {
   .dispatch_and_apply_by_group(x, .normalize_median, by = NULL)
+}
+
+#' @rdname normalize_median
+#' @export
+normalize_median.matrix <- function(x) {
+  .dispatch_and_apply_by_group(x, .normalize_median, by = NULL)
+}
+
+#' @rdname normalize_median
+normalize_median.default <- function(x) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -40,7 +60,27 @@ normalize_median <- function(x) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_median_abs <- function(x) {
+  UseMethod("normalize_median_abs")
+}
+
+#' @rdname normalize_median_abs
+#' @export
+normalize_median_abs.glyexp_experiment <- function(x) {
   .dispatch_and_apply_by_group(x, .normalize_median_abs, by = NULL)
+}
+
+#' @rdname normalize_median_abs
+#' @export
+normalize_median_abs.matrix <- function(x) {
+  .dispatch_and_apply_by_group(x, .normalize_median_abs, by = NULL)
+}
+
+#' @rdname normalize_median_abs
+normalize_median_abs.default <- function(x) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -61,7 +101,27 @@ normalize_median_abs <- function(x) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_total_area <- function(x) {
+  UseMethod("normalize_total_area")
+}
+
+#' @rdname normalize_total_area
+#' @export
+normalize_total_area.glyexp_experiment <- function(x) {
   .dispatch_and_apply_by_group(x, .normalize_total_area, by = NULL)
+}
+
+#' @rdname normalize_total_area
+#' @export
+normalize_total_area.matrix <- function(x) {
+  .dispatch_and_apply_by_group(x, .normalize_total_area, by = NULL)
+}
+
+#' @rdname normalize_total_area
+normalize_total_area.default <- function(x) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -86,7 +146,27 @@ normalize_total_area <- function(x) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_quantile <- function(x, by = NULL, ...) {
+  UseMethod("normalize_quantile")
+}
+
+#' @rdname normalize_quantile
+#' @export
+normalize_quantile.glyexp_experiment <- function(x, by = NULL, ...) {
   .dispatch_and_apply_by_group(x, .normalize_quantile, by = by, ...)
+}
+
+#' @rdname normalize_quantile
+#' @export
+normalize_quantile.matrix <- function(x, by = NULL, ...) {
+  .dispatch_and_apply_by_group(x, .normalize_quantile, by = by, ...)
+}
+
+#' @rdname normalize_quantile
+normalize_quantile.default <- function(x, by = NULL, ...) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -111,7 +191,27 @@ normalize_quantile <- function(x, by = NULL, ...) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_loessf <- function(x, by = NULL, ...) {
+  UseMethod("normalize_loessf")
+}
+
+#' @rdname normalize_loessf
+#' @export
+normalize_loessf.glyexp_experiment <- function(x, by = NULL, ...) {
   .dispatch_and_apply_by_group(x, .normalize_loessf, by = by, ...)
+}
+
+#' @rdname normalize_loessf
+#' @export
+normalize_loessf.matrix <- function(x, by = NULL, ...) {
+  .dispatch_and_apply_by_group(x, .normalize_loessf, by = by, ...)
+}
+
+#' @rdname normalize_loessf
+normalize_loessf.default <- function(x, by = NULL, ...) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -135,7 +235,27 @@ normalize_loessf <- function(x, by = NULL, ...) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_loesscyc <- function(x, by = NULL, ...) {
+  UseMethod("normalize_loesscyc")
+}
+
+#' @rdname normalize_loesscyc
+#' @export
+normalize_loesscyc.glyexp_experiment <- function(x, by = NULL, ...) {
   .dispatch_and_apply_by_group(x, .normalize_loesscyc, by = by, ...)
+}
+
+#' @rdname normalize_loesscyc
+#' @export
+normalize_loesscyc.matrix <- function(x, by = NULL, ...) {
+  .dispatch_and_apply_by_group(x, .normalize_loesscyc, by = by, ...)
+}
+
+#' @rdname normalize_loesscyc
+normalize_loesscyc.default <- function(x, by = NULL, ...) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -166,7 +286,27 @@ normalize_loesscyc <- function(x, by = NULL, ...) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_vsn <- function(x, by = NULL, ...) {
+  UseMethod("normalize_vsn")
+}
+
+#' @rdname normalize_vsn
+#' @export
+normalize_vsn.glyexp_experiment <- function(x, by = NULL, ...) {
   .dispatch_and_apply_by_group(x, .normalize_vsn, by = by, ...)
+}
+
+#' @rdname normalize_vsn
+#' @export
+normalize_vsn.matrix <- function(x, by = NULL, ...) {
+  .dispatch_and_apply_by_group(x, .normalize_vsn, by = by, ...)
+}
+
+#' @rdname normalize_vsn
+normalize_vsn.default <- function(x, by = NULL, ...) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -195,7 +335,27 @@ normalize_vsn <- function(x, by = NULL, ...) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_median_quotient <- function(x, by = NULL) {
+  UseMethod("normalize_median_quotient")
+}
+
+#' @rdname normalize_median_quotient
+#' @export
+normalize_median_quotient.glyexp_experiment <- function(x, by = NULL) {
   .dispatch_and_apply_by_group(x, .normalize_median_quotient, by = by)
+}
+
+#' @rdname normalize_median_quotient
+#' @export
+normalize_median_quotient.matrix <- function(x, by = NULL) {
+  .dispatch_and_apply_by_group(x, .normalize_median_quotient, by = by)
+}
+
+#' @rdname normalize_median_quotient
+normalize_median_quotient.default <- function(x, by = NULL) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -221,7 +381,27 @@ normalize_median_quotient <- function(x, by = NULL) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_rlr <- function(x, by = NULL) {
+  UseMethod("normalize_rlr")
+}
+
+#' @rdname normalize_rlr
+#' @export
+normalize_rlr.glyexp_experiment <- function(x, by = NULL) {
   .dispatch_and_apply_by_group(x, .normalize_rlr, by = by)
+}
+
+#' @rdname normalize_rlr
+#' @export
+normalize_rlr.matrix <- function(x, by = NULL) {
+  .dispatch_and_apply_by_group(x, .normalize_rlr, by = by)
+}
+
+#' @rdname normalize_rlr
+normalize_rlr.default <- function(x, by = NULL) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -243,7 +423,27 @@ normalize_rlr <- function(x, by = NULL) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_rlrma <- function(x, by = NULL) {
+  UseMethod("normalize_rlrma")
+}
+
+#' @rdname normalize_rlrma
+#' @export
+normalize_rlrma.glyexp_experiment <- function(x, by = NULL) {
   .dispatch_and_apply_by_group(x, .normalize_rlrma, by = by)
+}
+
+#' @rdname normalize_rlrma
+#' @export
+normalize_rlrma.matrix <- function(x, by = NULL) {
+  .dispatch_and_apply_by_group(x, .normalize_rlrma, by = by)
+}
+
+#' @rdname normalize_rlrma
+normalize_rlrma.default <- function(x, by = NULL) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 
@@ -269,7 +469,27 @@ normalize_rlrma <- function(x, by = NULL) {
 #'   If `x` is a matrix, returns a normalized matrix.
 #' @export
 normalize_rlrmacyc <- function(x, n_iter = 3, by = NULL) {
+  UseMethod("normalize_rlrmacyc")
+}
+
+#' @rdname normalize_rlrmacyc
+#' @export
+normalize_rlrmacyc.glyexp_experiment <- function(x, n_iter = 3, by = NULL) {
   .dispatch_and_apply_by_group(x, .normalize_rlrmacyc, by = by, n_iter = n_iter)
+}
+
+#' @rdname normalize_rlrmacyc
+#' @export
+normalize_rlrmacyc.matrix <- function(x, n_iter = 3, by = NULL) {
+  .dispatch_and_apply_by_group(x, .normalize_rlrmacyc, by = by, n_iter = n_iter)
+}
+
+#' @rdname normalize_rlrmacyc
+normalize_rlrmacyc.default <- function(x, n_iter = 3, by = NULL) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 

@@ -51,12 +51,12 @@
 #' @export
 correct_batch_effect <- function(x, batch = "batch", group = NULL) {
   rlang::check_installed("sva", reason = "to use `correct_batch_effect()`")
-  
-  # Handle different input types
-  if (is.matrix(x)) {
-    return(.correct_batch_effect_matrix(x, batch = batch, group = group))
-  }
-  
+  UseMethod("correct_batch_effect")
+}
+
+#' @rdname correct_batch_effect
+#' @export
+correct_batch_effect.glyexp_experiment <- function(x, batch = "batch", group = NULL) {
   # For experiment input, extract batch and group from sample_info
   batch_group_info <- .extract_batch_group_from_experiment(x, batch, group, require_batch = TRUE)
   if (is.null(batch_group_info)) {
@@ -81,6 +81,20 @@ correct_batch_effect <- function(x, batch = "batch", group = NULL) {
   new_exp$expr_mat <- corrected_expr_mat
   
   return(new_exp)
+}
+
+#' @rdname correct_batch_effect
+#' @export
+correct_batch_effect.matrix <- function(x, batch = "batch", group = NULL) {
+  .correct_batch_effect_matrix(x, batch = batch, group = group)
+}
+
+#' @rdname correct_batch_effect
+correct_batch_effect.default <- function(x, batch = "batch", group = NULL) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
 }
 
 .correct_batch_effect_matrix <- function(x, batch, group = NULL) {
@@ -136,16 +150,12 @@ correct_batch_effect <- function(x, batch = "batch", group = NULL) {
 #'
 #' @export
 detect_batch_effect <- function(x, batch = "batch", group = NULL) {
-  .dispatch_on_input(
-    x,
-    fun_exp = .detect_batch_effect_experiment,
-    fun_mat = .detect_batch_effect_matrix,
-    batch = batch,
-    group = group
-  )
+  UseMethod("detect_batch_effect")
 }
 
-.detect_batch_effect_experiment <- function(x, batch = "batch", group = NULL) {
+#' @rdname detect_batch_effect
+#' @export
+detect_batch_effect.glyexp_experiment <- function(x, batch = "batch", group = NULL) {
   # For experiment input, extract batch and group from sample_info
   batch_group_info <- .extract_batch_group_from_experiment(x, batch, group, require_batch = TRUE)
   if (is.null(batch_group_info)) {
@@ -160,7 +170,9 @@ detect_batch_effect <- function(x, batch = "batch", group = NULL) {
   ))
 }
 
-.detect_batch_effect_matrix <- function(x, batch, group = NULL) {
+#' @rdname detect_batch_effect
+#' @export
+detect_batch_effect.matrix <- function(x, batch = "batch", group = NULL) {
   # Validate and prepare batch/group vectors
   batch_group_info <- .validate_and_prepare_batch_group(x, batch, group, require_batch = TRUE)
   if (is.null(batch_group_info)) {
@@ -172,6 +184,14 @@ detect_batch_effect <- function(x, batch = "batch", group = NULL) {
     x,
     batch_group_info$batch,
     batch_group_info$group
+  ))
+}
+
+#' @rdname detect_batch_effect
+detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
   ))
 }
 

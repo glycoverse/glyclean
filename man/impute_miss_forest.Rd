@@ -2,9 +2,18 @@
 % Please edit documentation in R/impute.R
 \name{impute_miss_forest}
 \alias{impute_miss_forest}
+\alias{impute_miss_forest.glyexp_experiment}
+\alias{impute_miss_forest.matrix}
+\alias{impute_miss_forest.default}
 \title{MissForest Imputation}
 \usage{
 impute_miss_forest(x, by = NULL, ...)
+
+\method{impute_miss_forest}{glyexp_experiment}(x, by = NULL, ...)
+
+\method{impute_miss_forest}{matrix}(x, by = NULL, ...)
+
+\method{impute_miss_forest}{default}(x, by = NULL, ...)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

@@ -2,9 +2,15 @@
 % Please edit documentation in R/aggregate.R
 \name{aggregate}
 \alias{aggregate}
+\alias{glyclean_aggregate.glyexp_experiment}
+\alias{glyclean_aggregate.default}
 \title{Aggregate Data}
 \usage{
 aggregate(exp, to_level = c("gf", "gp", "gfs", "gps"))
+
+\method{glyclean_aggregate}{glyexp_experiment}(exp, to_level = c("gf", "gp", "gfs", "gps"))
+
+\method{glyclean_aggregate}{default}(exp, to_level = c("gf", "gp", "gfs", "gps"))
 }
 \arguments{
 \item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with "glycoproteomics" type.}

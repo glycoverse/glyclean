@@ -251,6 +251,6 @@ test_that("auto_clean rejects matrix input", {
   # auto_clean should reject matrix input since it requires experiment metadata
   expect_error(
     auto_clean(test_mat),
-    "Must inherit from class.*glyexp_experiment"
+    "must be a <glyexp_experiment> object"
   )
 })

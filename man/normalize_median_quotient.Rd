@@ -2,9 +2,18 @@
 % Please edit documentation in R/normalize.R
 \name{normalize_median_quotient}
 \alias{normalize_median_quotient}
+\alias{normalize_median_quotient.glyexp_experiment}
+\alias{normalize_median_quotient.matrix}
+\alias{normalize_median_quotient.default}
 \title{Median Quotient Normalization}
 \usage{
 normalize_median_quotient(x, by = NULL)
+
+\method{normalize_median_quotient}{glyexp_experiment}(x, by = NULL)
+
+\method{normalize_median_quotient}{matrix}(x, by = NULL)
+
+\method{normalize_median_quotient}{default}(x, by = NULL)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

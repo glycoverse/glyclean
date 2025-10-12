@@ -2,9 +2,18 @@
 % Please edit documentation in R/normalize.R
 \name{normalize_rlrma}
 \alias{normalize_rlrma}
+\alias{normalize_rlrma.glyexp_experiment}
+\alias{normalize_rlrma.matrix}
+\alias{normalize_rlrma.default}
 \title{Robust Linear Regression with Median Adjustment Normalization}
 \usage{
 normalize_rlrma(x, by = NULL)
+
+\method{normalize_rlrma}{glyexp_experiment}(x, by = NULL)
+
+\method{normalize_rlrma}{matrix}(x, by = NULL)
+
+\method{normalize_rlrma}{default}(x, by = NULL)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

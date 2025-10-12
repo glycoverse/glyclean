@@ -2,9 +2,18 @@
 % Please edit documentation in R/impute.R
 \name{impute_min_prob}
 \alias{impute_min_prob}
+\alias{impute_min_prob.glyexp_experiment}
+\alias{impute_min_prob.matrix}
+\alias{impute_min_prob.default}
 \title{Minimum Probability Imputation}
 \usage{
 impute_min_prob(x, by = NULL, ...)
+
+\method{impute_min_prob}{glyexp_experiment}(x, by = NULL, ...)
+
+\method{impute_min_prob}{matrix}(x, by = NULL, ...)
+
+\method{impute_min_prob}{default}(x, by = NULL, ...)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

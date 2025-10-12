@@ -2,9 +2,18 @@
 % Please edit documentation in R/normalize.R
 \name{normalize_loesscyc}
 \alias{normalize_loesscyc}
+\alias{normalize_loesscyc.glyexp_experiment}
+\alias{normalize_loesscyc.matrix}
+\alias{normalize_loesscyc.default}
 \title{LoessCyc Normalization}
 \usage{
 normalize_loesscyc(x, by = NULL, ...)
+
+\method{normalize_loesscyc}{glyexp_experiment}(x, by = NULL, ...)
+
+\method{normalize_loesscyc}{matrix}(x, by = NULL, ...)
+
+\method{normalize_loesscyc}{default}(x, by = NULL, ...)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

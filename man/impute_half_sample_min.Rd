@@ -2,9 +2,18 @@
 % Please edit documentation in R/impute.R
 \name{impute_half_sample_min}
 \alias{impute_half_sample_min}
+\alias{impute_half_sample_min.glyexp_experiment}
+\alias{impute_half_sample_min.matrix}
+\alias{impute_half_sample_min.default}
 \title{Half Sample Minimum Imputation}
 \usage{
 impute_half_sample_min(x)
+
+\method{impute_half_sample_min}{glyexp_experiment}(x)
+
+\method{impute_half_sample_min}{matrix}(x)
+
+\method{impute_half_sample_min}{default}(x)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

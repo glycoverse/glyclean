@@ -2,9 +2,18 @@
 % Please edit documentation in R/impute.R
 \name{impute_zero}
 \alias{impute_zero}
+\alias{impute_zero.glyexp_experiment}
+\alias{impute_zero.matrix}
+\alias{impute_zero.default}
 \title{Zero Imputation}
 \usage{
 impute_zero(x)
+
+\method{impute_zero}{glyexp_experiment}(x)
+
+\method{impute_zero}{matrix}(x)
+
+\method{impute_zero}{default}(x)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

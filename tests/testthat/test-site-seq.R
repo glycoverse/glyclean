@@ -144,7 +144,7 @@ test_that("add_site_seq rejects matrix input", {
     
     expect_error(
       add_site_seq(mat, temp_fasta),
-      "does not support matrix input"
+      "must be a <glyexp_experiment> object"
     )
   })
 }) 

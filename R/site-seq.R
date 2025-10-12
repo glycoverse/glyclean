@@ -20,13 +20,21 @@
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
 add_site_seq <- function(exp, fasta, n_aa = 7) {
-  .dispatch_on_input(
-    exp,
-    fun_exp = .add_site_seq_experiment,
-    fun_mat = .add_site_seq_matrix,
-    fasta = fasta,
-    n_aa = n_aa
-  )
+  UseMethod("add_site_seq")
+}
+
+#' @rdname add_site_seq
+#' @export
+add_site_seq.glyexp_experiment <- function(exp, fasta, n_aa = 7) {
+  .add_site_seq_experiment(exp, fasta = fasta, n_aa = n_aa)
+}
+
+#' @rdname add_site_seq
+add_site_seq.default <- function(exp, fasta, n_aa = 7) {
+  cli::cli_abort(c(
+    "{.arg exp} must be a {.cls glyexp_experiment} object.",
+    "x" = "Got {.cls {class(exp)}}."
+  ))
 }
 
 .add_site_seq_experiment <- function(exp, fasta, n_aa = 7) {
@@ -108,10 +116,6 @@ add_site_seq <- function(exp, fasta, n_aa = 7) {
   new_exp <- exp
   new_exp$var_info <- var_info
   new_exp
-}
-
-.add_site_seq_matrix <- function(exp, fasta, n_aa = 7) {
-  cli::cli_abort("The {.fn add_site_seq} function does not support matrix input.")
 }
 
 # Helper function to read FASTA file using seqinr

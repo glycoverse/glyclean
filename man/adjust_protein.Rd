@@ -2,9 +2,15 @@
 % Please edit documentation in R/pro-adjust.R
 \name{adjust_protein}
 \alias{adjust_protein}
+\alias{adjust_protein.glyexp_experiment}
+\alias{adjust_protein.default}
 \title{Adjust Protein Expression}
 \usage{
 adjust_protein(exp, pro_expr_mat, method = c("ratio", "reg"))
+
+\method{adjust_protein}{glyexp_experiment}(exp, pro_expr_mat, method = c("ratio", "reg"))
+
+\method{adjust_protein}{default}(exp, pro_expr_mat, method = c("ratio", "reg"))
 }
 \arguments{
 \item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with "glycoproteomics" type.}

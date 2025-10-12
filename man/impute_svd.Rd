@@ -2,9 +2,18 @@
 % Please edit documentation in R/impute.R
 \name{impute_svd}
 \alias{impute_svd}
+\alias{impute_svd.glyexp_experiment}
+\alias{impute_svd.matrix}
+\alias{impute_svd.default}
 \title{SVD Imputation}
 \usage{
 impute_svd(x, by = NULL, ...)
+
+\method{impute_svd}{glyexp_experiment}(x, by = NULL, ...)
+
+\method{impute_svd}{matrix}(x, by = NULL, ...)
+
+\method{impute_svd}{default}(x, by = NULL, ...)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.
