@@ -453,6 +453,97 @@ remove_constant <- function(x, by = NULL, strict = FALSE) {
   remove_low_var(x, var_cutoff = 0, by = by, strict = strict)
 }
 
+# ===== Remove Low Expression =====
+
+#' Remove Variables with Low Expression
+#'
+#' Filters variables based on median expression values.
+#' Variables with median expression values below certain percentile will be removed.
+#'
+#' @param x Either a `glyexp_experiment` object or a matrix.
+#' @param percentile The percentile for median expression values.
+#'   Defaults to 0.05, i.e., the 5% lowest median expression values will be removed.
+#' @param by Either a column name in `sample_info` (string) or a vector specifying group assignments for each sample.
+#' @param strict If `FALSE`, remove a variable only if it passes the abundance thresholds in all groups.
+#'   If `TRUE`, remove a variable if it passes the abundance thresholds in any group. Defaults to FALSE.
+#'
+#' @returns For `glyexp_experiment` input, returns a modified `glyexp_experiment` object.
+#'   For matrix input, returns a filtered matrix.
+#' @export
+remove_low_expr <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
+  UseMethod("remove_low_expr")
+}
+
+#' @rdname remove_low_expr
+#' @export
+remove_low_expr.glyexp_experiment <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
+  .filter_exp(x, by, strict, .filter_matrix_low_expr, percentile = percentile)
+}
+
+#' @rdname remove_low_expr
+#' @export
+remove_low_expr.matrix <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
+  .filter_matrix_low_expr(x, percentile, by, strict)
+}
+
+#' @rdname remove_low_expr
+#' @export
+remove_low_expr.default <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
+}
+
+.filter_matrix_low_expr <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
+  checkmate::assert_number(percentile, lower = 0, upper = 1)
+
+  if (is.null(by)) {
+    return(.filter_matrix_low_expr_global(x, percentile))
+  } else {
+    checkmate::assert_vector(by, len = ncol(x))
+    return(.filter_matrix_low_expr_grouped(x, percentile, by, strict))
+  }
+}
+
+.filter_matrix_low_expr_global <- function(x, percentile) {
+  median_expr <- .summarize_vars_mat(x, .median)
+  thr <- stats::quantile(median_expr, probs = percentile, na.rm = TRUE, names = FALSE)
+  # There might be NA in thr, so regard them as FALSE
+  vars_to_remove <- if (is.na(thr)) {
+    rep(FALSE, length(median_expr))
+  } else {
+    cmp <- median_expr <= thr
+    cmp[is.na(cmp)] <- FALSE
+    cmp
+  }
+  x[!vars_to_remove, , drop = FALSE]
+}
+
+.filter_matrix_low_expr_grouped <- function(x, percentile, by, strict) {
+  median_expr_mat <- .summarize_vars_mat(x, .median, by)
+  # thr is a vector of length n_groups, quantile of each group
+  thr <- apply(median_expr_mat, 2, stats::quantile, probs = percentile, na.rm = TRUE)
+  # cond is a TRUE/FALSE matrix with nrow x n_groups
+  cond <- sweep(median_expr_mat, 2, thr, FUN = function(a, b) a <= b)
+  # Handle NA, do not remove the variable
+  cond[is.na(cond)] <- FALSE
+  if (any(is.na(thr))) {
+    cond[, is.na(thr), drop = FALSE] <- FALSE
+  }
+  # Decide if the variable is to be removed based on strict
+  reducer <- if (isTRUE(strict)) any else all
+  vars_to_remove <- apply(cond, 1, reducer)
+  # Apply filtering
+  x[!vars_to_remove, , drop = FALSE]
+}
+
+#' Robust Median
+#' @noRd
+.median <- function(x) {
+  stats::median(x, na.rm = TRUE)
+}
+
 # ===== Utilities =====
 
 #' Summarize Values of Variables for Matrices

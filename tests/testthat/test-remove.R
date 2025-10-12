@@ -795,7 +795,6 @@ test_that("remove_low_cv handles NaN and Inf gracefully", {
   })
 })
 
-
 test_that("remove_constant works", {
   mat <- matrix(1:9, nrow = 3)
   rownames(mat) <- c("V1", "V2", "V3")
@@ -803,4 +802,313 @@ test_that("remove_constant works", {
   mat[1, ] <- 1
   res <- remove_constant(mat)
   expect_equal(rownames(res), c("V2", "V3"))
+})
+
+test_that("remove_low_expr matrix input retains matrix type and dimnames", {
+  mat <- matrix(
+    c(
+      1, 3, 5,
+      2, 4, 6,
+      10, 12, 14,
+      11, 13, 15
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  rownames(mat) <- paste0("r", 1:4)
+  colnames(mat) <- paste0("c", 1:3)
+
+  res <- remove_low_expr(mat, percentile = 0.5)
+
+  expect_true(is.matrix(res))
+  expect_identical(colnames(res), colnames(mat))
+  expect_identical(rownames(res), c("r3", "r4"))
+})
+
+test_that("remove_low_expr filters glyexp_experiment while preserving class", {
+  exp <- simple_exp(4, 4)
+  exp$expr_mat[1, ] <- c(0, 1, 2, 3)
+  exp$expr_mat[2, ] <- c(2, 2, 2, 2)
+  exp$expr_mat[3, ] <- c(5, 5, 5, 5)
+  exp$expr_mat[4, ] <- c(9, 9, 9, 9)
+
+  res <- remove_low_expr(exp, percentile = 0.5)
+
+  expect_s3_class(res, "glyexp_experiment")
+  expect_identical(rownames(res$expr_mat), c("V3", "V4"))
+  expect_identical(res$var_info$variable, c("V3", "V4"))
+})
+
+test_that("remove_low_expr by column name or vector gives identical results", {
+  exp <- simple_exp(4, 6)
+  exp$sample_info$group <- rep(c("A", "B", "C"), each = 2)
+  exp$expr_mat[1, ] <- c(1, 1, 9, 9, 9, 9)
+  exp$expr_mat[2, ] <- c(2, 2, 2, 2, 2, 2)
+  exp$expr_mat[3, ] <- c(3, 3, 3, 3, 3, 3)
+  exp$expr_mat[4, ] <- c(10, 10, 10, 10, 10, 10)
+
+  res_by_name <- remove_low_expr(exp, percentile = 0.4, by = "group", strict = TRUE)
+  res_by_vec <- remove_low_expr(exp, percentile = 0.4, by = exp$sample_info$group, strict = TRUE)
+
+  expect_identical(res_by_name$expr_mat, res_by_vec$expr_mat)
+  expect_identical(res_by_name$var_info, res_by_vec$var_info)
+})
+
+test_that("remove_low_expr errors on non-numeric inputs", {
+  char_mat <- matrix(letters[1:6], nrow = 2)
+  expect_error(remove_low_expr(char_mat, percentile = 0.5), "numeric")
+
+  df_input <- data.frame(char_mat, stringsAsFactors = FALSE)
+  expect_error(remove_low_expr(df_input), "must be a .*matrix")
+})
+
+test_that("remove_low_expr validates percentile bounds", {
+  mat <- matrix(1:9, nrow = 3)
+
+  expect_error(remove_low_expr(mat, percentile = -0.01), "percentile")
+  expect_error(remove_low_expr(mat, percentile = 1.01), "percentile")
+})
+
+test_that("remove_low_expr validates by length and NA content", {
+  mat <- matrix(1:9, nrow = 3)
+
+  expect_error(
+    remove_low_expr(mat, percentile = 0.5, by = c("A", "B")),
+    "length 3"
+  )
+  expect_error(
+    remove_low_expr(mat, percentile = 0.5, by = c("A", NA, "B")),
+    "`by` must not contain NA"
+  )
+})
+
+test_that("remove_low_expr global filtering removes rows at or below threshold", {
+  mat <- matrix(
+    c(
+      1, 1, 1,
+      2, 2, 2,
+      5, 5, 5
+    ),
+    nrow = 3,
+    byrow = TRUE
+  )
+  rownames(mat) <- paste0("V", 1:3)
+
+  res <- remove_low_expr(mat, percentile = 0.5)
+
+  expect_identical(rownames(res), "V3")
+})
+
+test_that("remove_low_expr percentile extremes behave as expected", {
+  mat <- matrix(
+    c(
+      0, 0, 0,
+      0, 0, 1,
+      5, 5, 5
+    ),
+    nrow = 3,
+    byrow = TRUE
+  )
+  rownames(mat) <- paste0("V", 1:3)
+  colnames(mat) <- paste0("S", 1:3)
+
+  res_min <- remove_low_expr(mat, percentile = 0)
+  expect_identical(rownames(res_min), "V3")
+
+  res_max <- remove_low_expr(mat, percentile = 1)
+  expect_true(is.matrix(res_max))
+  expect_equal(nrow(res_max), 0)
+  expect_identical(colnames(res_max), colnames(mat))
+})
+
+test_that("remove_low_expr grouped filtering uses per-group thresholds", {
+  mat <- matrix(
+    c(
+      1, 1, 10, 10,
+      2, 2, 2, 2,
+      5, 5, 1, 1,
+      9, 9, 9, 9
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  rownames(mat) <- paste0("V", 1:4)
+  by <- c("A", "A", "B", "B")
+
+  res_group <- remove_low_expr(mat, percentile = 0.5, by = by, strict = FALSE)
+  res_global <- remove_low_expr(mat, percentile = 0.5)
+
+  expect_identical(rownames(res_group), c("V1", "V3", "V4"))
+  expect_identical(rownames(res_global), c("V1", "V4"))
+})
+
+test_that("remove_low_expr strict flag controls grouped filtering", {
+  mat <- matrix(
+    c(
+      1, 1, 10, 10,
+      2, 2, 2, 2,
+      5, 5, 1, 1,
+      9, 9, 9, 9
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  rownames(mat) <- paste0("V", 1:4)
+  by <- c("A", "A", "B", "B")
+
+  res_all <- remove_low_expr(mat, percentile = 0.5, by = by, strict = FALSE)
+  res_any <- remove_low_expr(mat, percentile = 0.5, by = by, strict = TRUE)
+
+  expect_identical(rownames(res_all), c("V1", "V3", "V4"))
+  expect_identical(rownames(res_any), "V4")
+})
+
+test_that("remove_low_expr handles different by input types consistently", {
+  mat <- matrix(
+    c(
+      1, 1, 10, 10,
+      2, 2, 2, 2,
+      5, 5, 1, 1,
+      9, 9, 9, 9
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  rownames(mat) <- paste0("V", 1:4)
+  by_factor <- factor(c("A", "A", "B", "B"))
+  by_char <- c("A", "A", "B", "B")
+  by_num <- c(1, 1, 2, 2)
+
+  res_factor <- remove_low_expr(mat, percentile = 0.4, by = by_factor, strict = TRUE)
+  res_char <- remove_low_expr(mat, percentile = 0.4, by = by_char, strict = TRUE)
+  res_num <- remove_low_expr(mat, percentile = 0.4, by = by_num, strict = TRUE)
+
+  expect_identical(res_factor, res_char)
+  expect_identical(res_factor, res_num)
+})
+
+test_that("remove_low_expr outcome is invariant to column order when by is aligned", {
+  mat <- matrix(
+    c(
+      1, 1, 10, 10,
+      2, 2, 2, 2,
+      5, 5, 1, 1,
+      9, 9, 9, 9
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  rownames(mat) <- paste0("V", 1:4)
+  by <- c("A", "A", "B", "B")
+
+  baseline <- remove_low_expr(mat, percentile = 0.5, by = by, strict = FALSE)
+
+  perm <- c(3, 4, 1, 2)
+  mat_perm <- mat[, perm]
+  by_perm <- by[perm]
+  res_perm <- remove_low_expr(mat_perm, percentile = 0.5, by = by_perm, strict = FALSE)
+
+  expect_identical(rownames(baseline), rownames(res_perm))
+  expect_identical(colnames(res_perm), colnames(mat_perm))
+})
+
+test_that("remove_low_expr tolerates empty grouping levels", {
+  mat <- matrix(
+    c(
+      1, 1, 1, 1,
+      9, 9, 9, 9
+    ),
+    nrow = 2,
+    byrow = TRUE
+  )
+  rownames(mat) <- paste0("V", 1:2)
+  by <- factor(c("A", "A", "B", "B"), levels = c("A", "B", "C"))
+
+  res <- remove_low_expr(mat, percentile = 0.5, by = by, strict = TRUE)
+
+  expect_identical(rownames(res), "V2")
+})
+
+test_that("remove_low_expr handles NA, NaN, and Inf without dropping unexpectedly", {
+  mat <- matrix(
+    c(
+      NA, NA, NA,
+      1, 2, NA,
+      NaN, NaN, NaN,
+      Inf, 100, 200
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  rownames(mat) <- paste0("V", 1:4)
+
+  res <- remove_low_expr(mat, percentile = 0.4)
+
+  expect_true("V1" %in% rownames(res))  # all NA row kept
+  expect_true("V3" %in% rownames(res))  # NaN-only row kept
+  expect_true("V4" %in% rownames(res))  # Inf handled
+})
+
+test_that("remove_low_expr honours strict logic when some groups are entirely NA", {
+  mat <- matrix(
+    c(
+      1, NA, 0, 0,
+      0, NA, 0, 0,
+      NA, NA, 5, 5
+    ),
+    nrow = 3,
+    byrow = TRUE
+  )
+  rownames(mat) <- paste0("V", 1:3)
+  by <- c("A", "A", "B", "B")
+
+  res_all <- remove_low_expr(mat, percentile = 0.5, by = by, strict = FALSE)
+  res_any <- remove_low_expr(mat, percentile = 0.5, by = by, strict = TRUE)
+
+  expect_identical(rownames(res_all), c("V1", "V3"))
+  expect_identical(rownames(res_any), "V3")
+})
+
+test_that("remove_low_expr handles single row or single column matrices", {
+  single_row <- matrix(c(1, 2, 3), nrow = 1)
+  colnames(single_row) <- paste0("S", 1:3)
+  res_row <- remove_low_expr(single_row, percentile = 0.5)
+  expect_true(is.matrix(res_row))
+  expect_equal(nrow(res_row), 0)
+  expect_identical(colnames(res_row), colnames(single_row))
+
+  single_col <- matrix(c(1, 2, 3), nrow = 3)
+  rownames(single_col) <- paste0("V", 1:3)
+  res_col <- remove_low_expr(single_col, percentile = 0.2)
+  expect_true(is.matrix(res_col))
+  expect_true(all(rownames(res_col) %in% rownames(single_col)))
+})
+
+test_that("remove_low_expr returns input unchanged when all medians are NA", {
+  mat <- matrix(NA_real_, nrow = 3, ncol = 4)
+  rownames(mat) <- paste0("V", 1:3)
+  colnames(mat) <- paste0("S", 1:4)
+
+  res <- remove_low_expr(mat, percentile = 0.75)
+
+  expect_identical(res, mat)
+})
+
+test_that("remove_low_expr is deterministic across repeated calls", {
+  mat <- matrix(
+    c(
+      1, 1, 1, 1,
+      2, 2, 2, 2,
+      3, 3, 3, 3,
+      10, 10, 10, 10
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  by <- c("A", "A", "B", "B")
+
+  res1 <- remove_low_expr(mat, percentile = 0.4, by = by, strict = FALSE)
+  res2 <- remove_low_expr(mat, percentile = 0.4, by = by, strict = FALSE)
+
+  expect_identical(res1, res2)
 })
