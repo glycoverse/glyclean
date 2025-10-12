@@ -20,7 +20,7 @@ For matrix input, returns a filtered matrix.
 }
 \description{
 Constant variables are variables with the same value in all samples.
-This function is equivalent to \code{remove_low_var(x, var_cutoff = 0, cv_cutoff = NULL, by = by, strict = strict)}.
+This function is equivalent to \code{remove_low_var(x, var_cutoff = 0, by = by, strict = strict)}.
 }
 \seealso{
 \code{\link[=remove_low_var]{remove_low_var()}}

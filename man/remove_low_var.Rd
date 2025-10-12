@@ -5,39 +5,35 @@
 \alias{remove_low_var.glyexp_experiment}
 \alias{remove_low_var.matrix}
 \alias{remove_low_var.default}
-\title{Remove Variables with Low Variance}
+\title{Remove Variables with Low Variance
+Remove Variables with Low Variance}
 \usage{
-remove_low_var(x, var_cutoff = 0, cv_cutoff = NULL, by = NULL, strict = FALSE)
+remove_low_var(x, var_cutoff = 0, by = NULL, strict = FALSE)
 
-\method{remove_low_var}{glyexp_experiment}(x, var_cutoff = 0, cv_cutoff = NULL, by = NULL, strict = FALSE)
+\method{remove_low_var}{glyexp_experiment}(x, var_cutoff = 0, by = NULL, strict = FALSE)
 
-\method{remove_low_var}{matrix}(x, var_cutoff = 0, cv_cutoff = NULL, by = NULL, strict = FALSE)
+\method{remove_low_var}{matrix}(x, var_cutoff = 0, by = NULL, strict = FALSE)
 
-\method{remove_low_var}{default}(x, var_cutoff = 0, cv_cutoff = NULL, by = NULL, strict = FALSE)
+\method{remove_low_var}{default}(x, var_cutoff = 0, by = NULL, strict = FALSE)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.}
 
-\item{var_cutoff}{The cutoff for variance. Defaults to 0}
-
-\item{cv_cutoff}{The cutoff for coefficient of variation. Defaults to NULL.}
+\item{var_cutoff}{The cutoff for variance. Defaults to 0.}
 
 \item{by}{A factor specifying the groupings. Defaults to NULL.}
 
-\item{strict}{If \code{FALSE}, remove a variable only if it passes the variance and coefficient of variation thresholds in all groups.
-If \code{TRUE}, remove a variable if it passes the variance and coefficient of variation thresholds in any group.}
+\item{strict}{If \code{FALSE}, remove a variable only if it passes the variance threshold in all groups.
+If \code{TRUE}, remove a variable if it passes the variance threshold in any group.}
 }
 \value{
 For \code{glyexp_experiment} input, returns a modified \code{glyexp_experiment} object.
 For matrix input, returns a filtered matrix.
 }
 \description{
-Filters variables based on variance and coefficient of variation.
-Variables with variance and/or coefficient of variation below the thresholds will be removed.
-At least one of \code{var_cutoff} or \code{cv_cutoff} must be provided.
-If both are provided, the variable will be removed if it passes either threshold.
+Filters variables whose variance falls below a threshold.
 Default behavior is to remove variables with zero variance.
 }
 \seealso{
-\code{\link[=remove_constant]{remove_constant()}}
+\code{\link[=remove_low_cv]{remove_low_cv()}}, \code{\link[=remove_constant]{remove_constant()}}
 }
