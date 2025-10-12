@@ -2,9 +2,18 @@
 % Please edit documentation in R/remove.R
 \name{remove_rare}
 \alias{remove_rare}
+\alias{remove_rare.glyexp_experiment}
+\alias{remove_rare.matrix}
+\alias{remove_rare.default}
 \title{Remove Rare Variables with Too Many Missing Values}
 \usage{
 remove_rare(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL)
+
+\method{remove_rare}{glyexp_experiment}(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL)
+
+\method{remove_rare}{matrix}(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL)
+
+\method{remove_rare}{default}(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.

@@ -52,45 +52,32 @@
 #' mat <- matrix(c(1, 2, NA, 4, 5, NA, 7, 8, 9), nrow = 3)
 #' mat_filtered <- remove_rare(mat, prop = 0.5)
 #'
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @return For `glyexp_experiment` input, returns a modified `glyexp_experiment` object.
 #'   For matrix input, returns a filtered matrix.
 #' @export
 remove_rare <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
-  .dispatch_on_input(
+  UseMethod("remove_rare")
+}
+
+#' @rdname remove_rare
+#' @export
+remove_rare.glyexp_experiment <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
+  .filter_exp(
     x,
-    fun_exp = .filter_exp_rare,
-    fun_mat = .filter_matrix_rare,
-    prop = prop, n = n, by = by, strict = strict, min_n = min_n
-  )
-}
-
-.filter_exp_rare <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
-  # Resolve by parameter
-  by_values <- .resolve_column_param(
     by,
-    sample_info = x$sample_info,
-    param_name = "by",
-    n_samples = ncol(x$expr_mat),
-    allow_null = TRUE
+    strict,
+    .filter_matrix_rare,
+    prop = prop,
+    n = n,
+    min_n = min_n
   )
-
-  # Filter the matrix
-  filtered_mat <- .filter_matrix_rare(
-    x$expr_mat, prop, n, by_values, strict, min_n
-  )
-
-  # Apply filtering to the experiment object
-  x$expr_mat <- filtered_mat
-  x$var_info <- x$var_info %>%
-    dplyr::filter(.data$variable %in% rownames(x$expr_mat))
-  x
 }
 
-.filter_matrix_rare <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
-  # For matrix input, by must be a vector (not a column name)
+#' @rdname remove_rare
+#' @export
+remove_rare.matrix <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
   if (!is.null(by) && is.character(by) && length(by) == 1) {
     cli::cli_abort("For matrix input, {.arg by} must be a vector, not a column name.")
   }
@@ -103,20 +90,42 @@ remove_rare <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min
     allow_null = TRUE
   )
 
+  .filter_matrix_rare(
+    x,
+    by = by_values,
+    strict = strict,
+    prop = prop,
+    n = n,
+    min_n = min_n
+  )
+}
+
+#' @rdname remove_rare
+#' @export
+remove_rare.default <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
+}
+
+.filter_matrix_rare <- function(x, by = NULL, strict = FALSE, prop = NULL, n = NULL, min_n = NULL) {
+  checkmate::assert_flag(strict)
+
   # Validate and standardize parameters
   params <- .validate_filter_params(prop, n, min_n)
 
   # Calculate min_n if not provided
-  min_n_values <- .calculate_min_n(ncol(x), by_values, params$min_n)
+  min_n_values <- .calculate_min_n(ncol(x), by, params$min_n)
 
   # Validate min_n against sample sizes
-  .validate_min_n(ncol(x), by_values, min_n_values)
+  .validate_min_n(ncol(x), by, min_n_values)
 
   # Filter variables based on missing values
-  if (is.null(by_values)) {
+  if (is.null(by)) {
     vars_to_remove <- .filter_rare_global(x, params$prop, params$n, min_n_values$global)
   } else {
-    vars_to_remove <- .filter_rare_by_group(x, by_values, params$prop, params$n, min_n_values, strict)
+    vars_to_remove <- .filter_rare_by_group(x, by, params$prop, params$n, min_n_values, strict)
   }
 
   # Apply filtering
