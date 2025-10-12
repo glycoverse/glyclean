@@ -39,6 +39,7 @@ normalize_median.matrix <- function(x) {
 }
 
 #' @rdname normalize_median
+#' @export
 normalize_median.default <- function(x) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -76,6 +77,7 @@ normalize_median_abs.matrix <- function(x) {
 }
 
 #' @rdname normalize_median_abs
+#' @export
 normalize_median_abs.default <- function(x) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -117,6 +119,7 @@ normalize_total_area.matrix <- function(x) {
 }
 
 #' @rdname normalize_total_area
+#' @export
 normalize_total_area.default <- function(x) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -162,6 +165,7 @@ normalize_quantile.matrix <- function(x, by = NULL, ...) {
 }
 
 #' @rdname normalize_quantile
+#' @export
 normalize_quantile.default <- function(x, by = NULL, ...) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -207,6 +211,7 @@ normalize_loessf.matrix <- function(x, by = NULL, ...) {
 }
 
 #' @rdname normalize_loessf
+#' @export
 normalize_loessf.default <- function(x, by = NULL, ...) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -251,6 +256,7 @@ normalize_loesscyc.matrix <- function(x, by = NULL, ...) {
 }
 
 #' @rdname normalize_loesscyc
+#' @export
 normalize_loesscyc.default <- function(x, by = NULL, ...) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -302,6 +308,7 @@ normalize_vsn.matrix <- function(x, by = NULL, ...) {
 }
 
 #' @rdname normalize_vsn
+#' @export
 normalize_vsn.default <- function(x, by = NULL, ...) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -351,6 +358,7 @@ normalize_median_quotient.matrix <- function(x, by = NULL) {
 }
 
 #' @rdname normalize_median_quotient
+#' @export
 normalize_median_quotient.default <- function(x, by = NULL) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -397,6 +405,7 @@ normalize_rlr.matrix <- function(x, by = NULL) {
 }
 
 #' @rdname normalize_rlr
+#' @export
 normalize_rlr.default <- function(x, by = NULL) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -439,6 +448,7 @@ normalize_rlrma.matrix <- function(x, by = NULL) {
 }
 
 #' @rdname normalize_rlrma
+#' @export
 normalize_rlrma.default <- function(x, by = NULL) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -485,6 +495,7 @@ normalize_rlrmacyc.matrix <- function(x, n_iter = 3, by = NULL) {
 }
 
 #' @rdname normalize_rlrmacyc
+#' @export
 normalize_rlrmacyc.default <- function(x, n_iter = 3, by = NULL) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",

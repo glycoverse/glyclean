@@ -90,6 +90,7 @@ correct_batch_effect.matrix <- function(x, batch = "batch", group = NULL) {
 }
 
 #' @rdname correct_batch_effect
+#' @export
 correct_batch_effect.default <- function(x, batch = "batch", group = NULL) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -188,6 +189,7 @@ detect_batch_effect.matrix <- function(x, batch = "batch", group = NULL) {
 }
 
 #' @rdname detect_batch_effect
+#' @export
 detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",

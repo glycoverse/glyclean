@@ -119,9 +119,10 @@ glyclean_aggregate.glyexp_experiment <- function(exp, to_level = c("gf", "gp", "
 }
 
 #' @rdname aggregate
+#' @export
 glyclean_aggregate.default <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
   cli::cli_abort(c(
-    "{.arg exp} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "{.arg exp} must be a {.cls glyexp_experiment} object.",
     "x" = "Got {.cls {class(exp)}}."
   ))
 }

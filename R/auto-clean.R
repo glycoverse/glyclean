@@ -88,7 +88,7 @@ auto_clean.glyexp_experiment <- function(exp) {
 }
 
 #' @rdname auto_clean
- #' @export
+#' @export
 auto_clean.default <- function(exp) {
   cli::cli_abort(c(
     "{.arg exp} must be a {.cls glyexp_experiment} object.",

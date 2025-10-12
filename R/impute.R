@@ -26,6 +26,7 @@ impute_zero.matrix <- function(x) {
 }
 
 #' @rdname impute_zero
+#' @export
 impute_zero.default <- function(x) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -65,6 +66,7 @@ impute_sample_min.matrix <- function(x) {
 }
 
 #' @rdname impute_sample_min
+#' @export
 impute_sample_min.default <- function(x) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -104,6 +106,7 @@ impute_half_sample_min.matrix <- function(x) {
 }
 
 #' @rdname impute_half_sample_min
+#' @export
 impute_half_sample_min.default <- function(x) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -149,6 +152,7 @@ impute_sw_knn.matrix <- function(x, k = 5, by = NULL, ...) {
 }
 
 #' @rdname impute_sw_knn
+#' @export
 impute_sw_knn.default <- function(x, k = 5, by = NULL, ...) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -191,6 +195,7 @@ impute_fw_knn.matrix <- function(x, k = 5, by = NULL, ...) {
 }
 
 #' @rdname impute_fw_knn
+#' @export
 impute_fw_knn.default <- function(x, k = 5, by = NULL, ...) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -236,6 +241,7 @@ impute_bpca.matrix <- function(x, by = NULL, ...) {
 }
 
 #' @rdname impute_bpca
+#' @export
 impute_bpca.default <- function(x, by = NULL, ...) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -277,6 +283,7 @@ impute_ppca.matrix <- function(x, by = NULL, ...) {
 }
 
 #' @rdname impute_ppca
+#' @export
 impute_ppca.default <- function(x, by = NULL, ...) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -319,6 +326,7 @@ impute_svd.matrix <- function(x, by = NULL, ...) {
 }
 
 #' @rdname impute_svd
+#' @export
 impute_svd.default <- function(x, by = NULL, ...) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -360,6 +368,7 @@ impute_min_prob.matrix <- function(x, by = NULL, ...) {
 }
 
 #' @rdname impute_min_prob
+#' @export
 impute_min_prob.default <- function(x, by = NULL, ...) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
@@ -401,6 +410,7 @@ impute_miss_forest.matrix <- function(x, by = NULL, ...) {
 }
 
 #' @rdname impute_miss_forest
+#' @export
 impute_miss_forest.default <- function(x, by = NULL, ...) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",

@@ -47,6 +47,7 @@ adjust_protein.glyexp_experiment <- function(exp, pro_expr_mat, method = c("rati
 }
 
 #' @rdname adjust_protein
+#' @export
 adjust_protein.default <- function(exp, pro_expr_mat, method = c("ratio", "reg")) {
   cli::cli_abort(c(
     "{.arg exp} must be a {.cls glyexp_experiment} object.",

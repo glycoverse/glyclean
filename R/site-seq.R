@@ -30,6 +30,7 @@ add_site_seq.glyexp_experiment <- function(exp, fasta, n_aa = 7) {
 }
 
 #' @rdname add_site_seq
+#' @export
 add_site_seq.default <- function(exp, fasta, n_aa = 7) {
   cli::cli_abort(c(
     "{.arg exp} must be a {.cls glyexp_experiment} object.",
