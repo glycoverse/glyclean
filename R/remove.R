@@ -417,7 +417,7 @@ remove_low_cv.default <- function(x, cv_cutoff = 0, by = NULL, strict = FALSE) {
   if (m == 0 || !is.finite(m)) {
     return(Inf)
   } else {
-    return(sd(x, na.rm = TRUE) / abs(m))
+    return(stats::sd(x, na.rm = TRUE) / abs(m))
   }
 }
 
@@ -435,7 +435,7 @@ remove_low_cv.default <- function(x, cv_cutoff = 0, by = NULL, strict = FALSE) {
   if (all(is.na(x))) {
     return(Inf)
   }
-  res <- var(x, na.rm = TRUE)
+  res <- stats::var(x, na.rm = TRUE)
   if (!is.finite(res)) {
     return(Inf)
   }

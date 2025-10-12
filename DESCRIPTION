@@ -42,7 +42,8 @@ Imports:
     tidyr,
     tibble,
     tidyselect,
-    withr
+    withr,
+    forcats
 Remotes: 
     glycoverse/glyexp@*release,
     glycoverse/glyread@*release,
