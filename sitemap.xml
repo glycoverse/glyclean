@@ -42,6 +42,10 @@
 <url><loc>https://glycoverse.github.io/glyclean/reference/normalize_rlrmacyc.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/normalize_total_area.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/normalize_vsn.html</loc></url>
-<url><loc>https://glycoverse.github.io/glyclean/reference/remove_missing_variables.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/remove_constant.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/remove_low_cv.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/remove_low_expr.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/remove_low_var.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/remove_rare.html</loc></url>
 </urlset>
 

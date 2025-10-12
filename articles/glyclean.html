@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -102,12 +102,12 @@ proper <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.h
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reading data</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Finding leader proteins</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Finding leader proteins <span style="color: #B2B2B2;">[130ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Finding leader proteins <span style="color: #B2B2B2;">[135ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reading dataColumn <span style="color: #00BB00;">group</span> converted to <span style="color: #0000BB;">&lt;factor&gt;</span>.Column <span style="color: #00BB00;">batch</span> converted to <span style="color: #0000BB;">&lt;factor&gt;</span>.<span style="color: #00BBBB;">ℹ</span> Parsing glycan compositions and structures</span></span>
-<span><span class="co">#&gt; Column <span style="color: #00BB00;">group</span> converted to <span style="color: #0000BB;">&lt;factor&gt;</span>.Column <span style="color: #00BB00;">batch</span> converted to <span style="color: #0000BB;">&lt;factor&gt;</span>.<span style="color: #00BB00;">✔</span> Parsing glycan compositions and structures <span style="color: #B2B2B2;">[284ms]</span></span></span>
+<span><span class="co">#&gt; Column <span style="color: #00BB00;">group</span> converted to <span style="color: #0000BB;">&lt;factor&gt;</span>.Column <span style="color: #00BB00;">batch</span> converted to <span style="color: #0000BB;">&lt;factor&gt;</span>.<span style="color: #00BB00;">✔</span> Parsing glycan compositions and structures <span style="color: #B2B2B2;">[285ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reading data<span style="color: #00BB00;">✔</span> Reading data <span style="color: #B2B2B2;">[892ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reading data<span style="color: #00BB00;">✔</span> Reading data <span style="color: #B2B2B2;">[908ms]</span></span></span>
 <span><span class="va">exp</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Glycoproteomics Experiment</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────</span></span></span>
@@ -163,14 +163,14 @@ come from 3 different batches and represent 4 distinct biological groups
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clean_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_clean.html">auto_clean</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data (Median)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalizing data (Median) <span style="color: #B2B2B2;">[218ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalizing data (Median) <span style="color: #B2B2B2;">[224ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Removing variables with &gt;50% missing values</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Removing variables with &gt;50% missing values <span style="color: #B2B2B2;">[18ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Removing variables with &gt;50% missing values <span style="color: #B2B2B2;">[21ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Imputing missing values</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Sample size &lt;= 30, using sample minimum imputation</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Imputing missing values<span style="color: #00BB00;">✔</span> Imputing missing values <span style="color: #B2B2B2;">[19ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Imputing missing values<span style="color: #00BB00;">✔</span> Imputing missing values <span style="color: #B2B2B2;">[20ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Aggregating data</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Aggregating data <span style="color: #B2B2B2;">[123ms]</span></span></span>
@@ -179,7 +179,7 @@ come from 3 different batches and represent 4 distinct biological groups
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Detecting batch effects using ANOVA for 221 variables...</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BB00;">✔</span> Batch effect detection completed. 1 out of 221 variables show significant batch effects (p &lt; 0.05).</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BBBB;">ℹ</span> Batch effects detected in 0.5% of variables (&lt;=10%). Skipping batch correction.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BB00;">✔</span> Normalizing data again <span style="color: #B2B2B2;">[565ms]</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BB00;">✔</span> Normalizing data again <span style="color: #B2B2B2;">[577ms]</span></span></span></code></pre></div>
 <p><strong>That’s it!</strong> Your data is now preprocessed and ready
 for analysis! 🎉</p>
 </div>
@@ -218,12 +218,12 @@ glycoproteomics data, written as a manual pipeline:</p>
 <code class="sourceCode R"><span><span class="co"># The complete glycoproteomics preprocessing pipeline</span></span>
 <span><span class="co"># This is essentially what auto_clean() does automatically!</span></span>
 <span><span class="va">cleaned_exp</span> <span class="op">&lt;-</span> <span class="va">exp</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span>                       <span class="co"># Step 1: Initial normalization</span></span>
-<span>  <span class="fu"><a href="../reference/remove_missing_variables.html">remove_missing_variables</a></span><span class="op">(</span>prop <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">|&gt;</span>     <span class="co"># Step 2: Remove variables with &gt;50% missing</span></span>
-<span>  <span class="fu"><a href="../reference/impute_sample_min.html">impute_sample_min</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span>                      <span class="co"># Step 3: Impute missing values (for small datasets)</span></span>
-<span>  <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span>to_level <span class="op">=</span> <span class="st">"gfs"</span><span class="op">)</span> <span class="op">|&gt;</span>              <span class="co"># Step 4: Aggregate to glycoform level</span></span>
-<span>  <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span>                       <span class="co"># Step 5: Re-normalize after aggregation</span></span>
-<span>  <span class="fu"><a href="../reference/correct_batch_effect.html">correct_batch_effect</a></span><span class="op">(</span><span class="op">)</span>                      <span class="co"># Step 6: Correct batch effects (if batch column exists)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span>             <span class="co"># Step 1: Initial normalization</span></span>
+<span>  <span class="fu"><a href="../reference/remove_rare.html">remove_rare</a></span><span class="op">(</span>prop <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">|&gt;</span>        <span class="co"># Step 2: Remove variables with &gt;50% missing</span></span>
+<span>  <span class="fu"><a href="../reference/impute_sample_min.html">impute_sample_min</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span>            <span class="co"># Step 3: Impute missing values (for small datasets)</span></span>
+<span>  <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span>to_level <span class="op">=</span> <span class="st">"gfs"</span><span class="op">)</span> <span class="op">|&gt;</span>    <span class="co"># Step 4: Aggregate to glycoform level</span></span>
+<span>  <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span>             <span class="co"># Step 5: Re-normalize after aggregation</span></span>
+<span>  <span class="fu"><a href="../reference/correct_batch_effect.html">correct_batch_effect</a></span><span class="op">(</span><span class="op">)</span>            <span class="co"># Step 6: Correct batch effects (if batch column exists)</span></span></code></pre></div>
 <p><strong>Why use pipes?</strong></p>
 <ul>
 <li>
@@ -370,9 +370,50 @@ variables with too many missing values are often more noise than
 signal.</p>
 <p><strong>What <code><a href="../reference/auto_clean.html">auto_clean()</a></code> does:</strong> Removes
 variables with &gt;50% missing values</p>
+<p><strong>Available variable filtering functions in
+<code>glyclean</code>:</strong></p>
+<table class="table">
+<colgroup>
+<col width="30%">
+<col width="39%">
+<col width="30%">
+</colgroup>
+<thead><tr class="header">
+<th>Function</th>
+<th>Description</th>
+<th>Best For</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code><a href="../reference/remove_rare.html">remove_rare()</a></code></td>
+<td>Remove variables with too many missing values</td>
+<td>General use</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/remove_low_var.html">remove_low_var()</a></code></td>
+<td>Remove variables with low variance</td>
+<td>General use</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/remove_low_cv.html">remove_low_cv()</a></code></td>
+<td>Remove variables with low coefficient of variation</td>
+<td>General use</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/remove_constant.html">remove_constant()</a></code></td>
+<td>Remove constant variables</td>
+<td>General use</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/remove_low_expr.html">remove_low_expr()</a></code></td>
+<td>Remove variables with low expression</td>
+<td>General use</td>
+</tr>
+</tbody>
+</table>
 <p><strong>Manual approach (do it differently):</strong></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">filtered_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_missing_variables.html">remove_missing_variables</a></span><span class="op">(</span><span class="va">normed_exp</span>, n <span class="op">=</span> <span class="fl">0</span>, by <span class="op">=</span> <span class="st">"group"</span>, strict <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">filtered_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_rare.html">remove_rare</a></span><span class="op">(</span><span class="va">normed_exp</span>, n <span class="op">=</span> <span class="fl">0</span>, by <span class="op">=</span> <span class="st">"group"</span>, strict <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>This code translates to: “Keep any variable that has complete data in
 at least one biological group.” Perfect for maximizing the number of
 glycopeptides retained!</p>
