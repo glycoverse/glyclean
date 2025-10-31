@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -102,12 +102,12 @@ proper <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.h
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reading data</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Finding leader proteins</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Finding leader proteins <span style="color: #B2B2B2;">[326ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Finding leader proteins <span style="color: #B2B2B2;">[77ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reading dataColumn <span style="color: #00BB00;">group</span> converted to <span style="color: #0000BB;">&lt;factor&gt;</span>.Column <span style="color: #00BB00;">batch</span> converted to <span style="color: #0000BB;">&lt;factor&gt;</span>.<span style="color: #00BBBB;">ℹ</span> Parsing glycan compositions and structures</span></span>
-<span><span class="co">#&gt; Column <span style="color: #00BB00;">group</span> converted to <span style="color: #0000BB;">&lt;factor&gt;</span>.Column <span style="color: #00BB00;">batch</span> converted to <span style="color: #0000BB;">&lt;factor&gt;</span>.<span style="color: #00BB00;">✔</span> Parsing glycan compositions and structures <span style="color: #B2B2B2;">[293ms]</span></span></span>
+<span><span class="co">#&gt; Column <span style="color: #00BB00;">group</span> converted to <span style="color: #0000BB;">&lt;factor&gt;</span>.Column <span style="color: #00BB00;">batch</span> converted to <span style="color: #0000BB;">&lt;factor&gt;</span>.<span style="color: #00BB00;">✔</span> Parsing glycan compositions and structures <span style="color: #B2B2B2;">[261ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reading data<span style="color: #00BB00;">✔</span> Reading data <span style="color: #B2B2B2;">[1.1s]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reading data<span style="color: #00BB00;">✔</span> Reading data <span style="color: #B2B2B2;">[801ms]</span></span></span>
 <span><span class="va">exp</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Glycoproteomics Experiment</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────</span></span></span>
@@ -120,16 +120,16 @@ proper <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.h
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 298 × 7</span></span></span>
 <span><span class="co">#&gt;    variable peptide   peptide_site protein protein_site gene  glycan_composition</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;comp&gt;</span>            </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> GP1      JKTQGK               1 P08185           176 SERP… Hex(5)HexNAc(4)Ne…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> GP2      HSHNJJSS…            5 P04196           344 HRG   Hex(5)HexNAc(4)Ne…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> GP3      HSHNJJSS…            5 P04196           344 HRG   Hex(5)HexNAc(4)   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> GP4      HSHNJJSS…            5 P04196           344 HRG   Hex(5)HexNAc(4)Ne…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> GP5      HJSTGCLR             2 P10909           291 CLU   Hex(6)HexNAc(5)   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> GP6      HSHNJJSS…            5 P04196           344 HRG   Hex(5)HexNAc(4)Ne…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> GP7      HSHNJJSS…            6 P04196           345 HRG   Hex(5)HexNAc(4)   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> GP8      HSHNJJSS…            5 P04196           344 HRG   Hex(5)HexNAc(4)dH…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> GP9      HSHNJJSS…            5 P04196           344 HRG   Hex(4)HexNAc(3)   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> GP10     HSHNJJSS…            5 P04196           344 HRG   Hex(4)HexNAc(4)Ne…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> GP1      JKTQGK               1 P08185           176 SERP… <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> GP2      HSHNJJSS…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> GP3      HSHNJJSS…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> GP4      HSHNJJSS…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> GP5      HJSTGCLR             2 P10909           291 CLU   <span style="color: #000000;">Hex</span>(6)<span style="color: #000000;">HexNAc</span>(5)   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> GP6      HSHNJJSS…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> GP7      HSHNJJSS…            6 P04196           345 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> GP8      HSHNJJSS…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">dH</span>…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> GP9      HSHNJJSS…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(4)<span style="color: #000000;">HexNAc</span>(3)   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> GP10     HSHNJJSS…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(4)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 288 more rows</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/get_sample_info.html" class="external-link">get_sample_info</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
@@ -163,23 +163,23 @@ come from 3 different batches and represent 4 distinct biological groups
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clean_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_clean.html">auto_clean</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data (Median)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalizing data (Median) <span style="color: #B2B2B2;">[227ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalizing data (Median) <span style="color: #B2B2B2;">[203ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Removing variables with &gt;50% missing values</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Removing variables with &gt;50% missing values <span style="color: #B2B2B2;">[21ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Removing variables with &gt;50% missing values <span style="color: #B2B2B2;">[19ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Imputing missing values</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Sample size &lt;= 30, using sample minimum imputation</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Imputing missing values<span style="color: #00BB00;">✔</span> Imputing missing values <span style="color: #B2B2B2;">[20ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Imputing missing values<span style="color: #00BB00;">✔</span> Imputing missing values <span style="color: #B2B2B2;">[19ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Aggregating data</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Aggregating data <span style="color: #B2B2B2;">[123ms]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Aggregating data <span style="color: #B2B2B2;">[117ms]</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Detecting batch effects using ANOVA for 221 variables...</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BB00;">✔</span> Batch effect detection completed. 1 out of 221 variables show significant batch effects (p &lt; 0.05).</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BBBB;">ℹ</span> Batch effects detected in 0.5% of variables (&lt;=10%). Skipping batch correction.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BB00;">✔</span> Normalizing data again <span style="color: #B2B2B2;">[576ms]</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalizing data again<span style="color: #00BB00;">✔</span> Normalizing data again <span style="color: #B2B2B2;">[555ms]</span></span></span></code></pre></div>
 <p><strong>That’s it!</strong> Your data is now preprocessed and ready
 for analysis! 🎉</p>
 </div>
