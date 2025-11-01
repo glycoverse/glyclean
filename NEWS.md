@@ -1,4 +1,8 @@
-# glyclean (development version)
+# glyclean 0.8.1
+
+## Minor improvements and fixes
+
+* glyclean now depends on the CRAN version of glyrepr.
 
 # glyclean 0.8.0
 
