@@ -387,37 +387,39 @@ impute_min_prob.default <- function(x, by = NULL, ...) {
 #'   If a matrix, rows should be variables and columns should be samples.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Used for grouping when imputing missing values.
+#' @param seed Integer seed for random number generation. Default is 123.
 #' @param ... Additional arguments to pass to `missForest::missForest()`.
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
 #'   returns a `glyexp_experiment` with missing values imputed.
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
-impute_miss_forest <- function(x, by = NULL, ...) {
+impute_miss_forest <- function(x, by = NULL, seed = 123, ...) {
   UseMethod("impute_miss_forest")
 }
 
 #' @rdname impute_miss_forest
 #' @export
-impute_miss_forest.glyexp_experiment <- function(x, by = NULL, ...) {
-  .dispatch_and_apply_by_group(x, .impute_miss_forest, by = by, ...)
+impute_miss_forest.glyexp_experiment <- function(x, by = NULL, seed = 123, ...) {
+  .dispatch_and_apply_by_group(x, .impute_miss_forest, by = by, seed = seed, ...)
 }
 
 #' @rdname impute_miss_forest
 #' @export
-impute_miss_forest.matrix <- function(x, by = NULL, ...) {
-  .dispatch_and_apply_by_group(x, .impute_miss_forest, by = by, ...)
+impute_miss_forest.matrix <- function(x, by = NULL, seed = 123, ...) {
+  .dispatch_and_apply_by_group(x, .impute_miss_forest, by = by, seed = seed, ...)
 }
 
 #' @rdname impute_miss_forest
 #' @export
-impute_miss_forest.default <- function(x, by = NULL, ...) {
+impute_miss_forest.default <- function(x, by = NULL, seed = 123, ...) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
     "x" = "Got {.cls {class(x)}}."
   ))
 }
 
+# ===== Implementation =====
 
 .impute_zero <- function(mat) {
   mat[is.na(mat)] <- 0
@@ -497,7 +499,7 @@ impute_miss_forest.default <- function(x, by = NULL, ...) {
 }
 
 
-.impute_miss_forest <- function(mat, ...) {
+.impute_miss_forest <- function(mat, seed, ...) {
   rlang::check_installed("missForest", reason = "to use `impute_miss_forest()`")
-  missForest::missForest(mat, ...)$ximp
+  withr::with_seed(seed, missForest::missForest(mat, ...)$ximp)
 }

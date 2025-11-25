@@ -7,13 +7,13 @@
 \alias{impute_miss_forest.default}
 \title{MissForest Imputation}
 \usage{
-impute_miss_forest(x, by = NULL, ...)
+impute_miss_forest(x, by = NULL, seed = 123, ...)
 
-\method{impute_miss_forest}{glyexp_experiment}(x, by = NULL, ...)
+\method{impute_miss_forest}{glyexp_experiment}(x, by = NULL, seed = 123, ...)
 
-\method{impute_miss_forest}{matrix}(x, by = NULL, ...)
+\method{impute_miss_forest}{matrix}(x, by = NULL, seed = 123, ...)
 
-\method{impute_miss_forest}{default}(x, by = NULL, ...)
+\method{impute_miss_forest}{default}(x, by = NULL, seed = 123, ...)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.
@@ -21,6 +21,8 @@ If a matrix, rows should be variables and columns should be samples.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
 specifying group assignments for each sample. Used for grouping when imputing missing values.}
+
+\item{seed}{Integer seed for random number generation. Default is 123.}
 
 \item{...}{Additional arguments to pass to \code{missForest::missForest()}.}
 }
