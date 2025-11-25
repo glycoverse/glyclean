@@ -128,6 +128,9 @@ remove_rare.default <- function(x, prop = NULL, n = NULL, by = NULL, strict = FA
     vars_to_remove <- .filter_rare_by_group(x, by, params$prop, params$n, min_n_values, strict)
   }
 
+  # Inform filtering result
+  .inform_filter_result(n_before = nrow(x), n_after = nrow(x) - sum(vars_to_remove))
+
   # Apply filtering
   x[!vars_to_remove, , drop = FALSE]
 }
@@ -312,11 +315,14 @@ remove_low_var.default <- function(x, var_cutoff = 0, by = NULL, strict = FALSE)
   checkmate::assert_flag(strict)
 
   if (is.null(by)) {
-    return(.filter_matrix_low_var_global(x, var_cutoff))
+    res <- .filter_matrix_low_var_global(x, var_cutoff)
   } else {
     checkmate::assert_vector(by, len = ncol(x))
-    return(.filter_matrix_low_var_grouped(x, var_cutoff, by, strict))
+    res <- .filter_matrix_low_var_grouped(x, var_cutoff, by, strict)
   }
+
+  .inform_filter_result(nrow(x), nrow(res))
+  res
 }
 
 .filter_matrix_low_var_global <- function(x, var_cutoff) {
@@ -381,11 +387,14 @@ remove_low_cv.default <- function(x, cv_cutoff = 0, by = NULL, strict = FALSE) {
   checkmate::assert_flag(strict)
 
   if (is.null(by)) {
-    return(.filter_matrix_low_cv_global(x, cv_cutoff))
+    res <- .filter_matrix_low_cv_global(x, cv_cutoff)
   } else {
     checkmate::assert_vector(by, len = ncol(x))
-    return(.filter_matrix_low_cv_grouped(x, cv_cutoff, by, strict))
+    res <- .filter_matrix_low_cv_grouped(x, cv_cutoff, by, strict)
   }
+
+  .inform_filter_result(nrow(x), nrow(res))
+  res
 }
 
 .filter_matrix_low_cv_global <- function(x, cv_cutoff) {
@@ -508,11 +517,14 @@ remove_low_expr.default <- function(x, percentile = 0.05, by = NULL, strict = FA
   checkmate::assert_number(percentile, lower = 0, upper = 1)
 
   if (is.null(by)) {
-    return(.filter_matrix_low_expr_global(x, percentile))
+    res <- .filter_matrix_low_expr_global(x, percentile)
   } else {
     checkmate::assert_vector(by, len = ncol(x))
-    return(.filter_matrix_low_expr_grouped(x, percentile, by, strict))
+    res <- .filter_matrix_low_expr_grouped(x, percentile, by, strict)
   }
+
+  .inform_filter_result(nrow(x), nrow(res))
+  res
 }
 
 .filter_matrix_low_expr_global <- function(x, percentile) {
@@ -623,4 +635,12 @@ remove_low_expr.default <- function(x, percentile = 0.05, by = NULL, strict = FA
   x$var_info <- x$var_info |>
     dplyr::filter(.data$variable %in% rownames(new_expr_mat))
   x
+}
+
+.inform_filter_result <- function(n_before, n_after) {
+  n_remove <- n_before - n_after
+  if (n_remove > 0) {
+    prop_remove <- round((n_remove / n_before) * 100, 2)
+    cli::cli_alert_info("Removed {.val {n_remove}} of {.val {n_before}} ({.val {prop_remove}}%) variables.")
+  }
 }
