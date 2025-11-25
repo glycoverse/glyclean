@@ -507,6 +507,9 @@ normalize_rlrmacyc.default <- function(x, n_iter = 3, by = NULL) {
 # ---------- Implementation ----------
 .normalize_median <- function(mat) {
   normed <- limma::normalizeMedianValues(mat)
+  if (any(colMeans(is.nan(normed)) == 1)) {
+    cli::cli_warn("Some samples have median values of {.val 0}, producing all NaNs after normalization.")
+  }
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
   normed

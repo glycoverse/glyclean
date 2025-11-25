@@ -16,6 +16,14 @@ test_that("normalize_median works", {
 })
 
 
+test_that("normalize_median raises warnings for NaNs", {
+  test_exp <- simple_exp(3, 3)
+  test_exp$expr_mat <- matrix(0, nrow = 3, ncol = 3)
+  test_exp$expr_mat[1, ] <- 1
+  expect_warning(normalize_median(test_exp))
+})
+
+
 test_that("normalize_median_abs works", {
   test_exp <- simple_exp(3, 3)
   original_exp <- test_exp
