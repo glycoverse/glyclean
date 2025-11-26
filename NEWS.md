@@ -1,10 +1,16 @@
 # glyclean (development version)
 
+## Minor improvements and fixes
+
+- `remove_xxx()` functions now print a message about the number and proportion of variables removed.
+- Add a `seed` argument to `impute_miss_forest()` to make the imputation results reproducible.
+- `normalize_median()` now issues a warning if any sample has a median value of 0, producing all NaNs in the result.
+
 # glyclean 0.8.1
 
 ## Minor improvements and fixes
 
-* glyclean now depends on the CRAN version of glyrepr.
+- glyclean now depends on the CRAN version of glyrepr.
 
 # glyclean 0.8.0
 
