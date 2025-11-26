@@ -18,13 +18,14 @@
 #'   - [normalize_quantile()]: quantile normalization
 #'   - [normalize_median_quotient()]: median quitient normalization
 #'   - [normalize_loessf()]: LoessF normalization
+#' @param info Internal parameter used by [auto_clean()].
 #'
 #' @returns The normalized experiment.
 #' @examples
 #' library(glyexp)
 #' exp_normed <- auto_normalize(real_experiment)
 #' @export
-auto_normalize <- function(exp, group_col = "group", qc_name = "QC", to_try = NULL) {
+auto_normalize <- function(exp, group_col = "group", qc_name = "QC", to_try = NULL, info = NULL) {
   # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")
   checkmate::assert_string(group_col, null.ok = TRUE)
@@ -43,22 +44,19 @@ auto_normalize <- function(exp, group_col = "group", qc_name = "QC", to_try = NU
     )
   }
 
-  # Check if QC samples exist
-  has_qc <- FALSE
-  if (!is.null(group_col) && group_col %in% colnames(exp$sample_info)) {
-    if (qc_name %in% exp$sample_info[[group_col]]) {
-      has_qc <- TRUE
-    }
+  # Get experiment inspection
+  if (is.null(info)) {
+    info <- inspect_experiment(exp, group_col = group_col, qc_name = qc_name)
   }
 
-  if (has_qc) {
-    .auto_normalize_with_qc(exp, group_col, qc_name, to_try)
+  if (info$has_qc) {
+    .auto_normalize_with_qc(exp, to_try, info)
   } else {
     .auto_normalize_default(exp)
   }
 }
 
-.auto_normalize_with_qc <- function(exp, group_col, qc_name, to_try) {
+.auto_normalize_with_qc <- function(exp, to_try, info) {
   cli::cli_inform("QC samples found. Choosing the best normalization method based on QC samples.")
 
   best_method <- NULL
@@ -66,8 +64,7 @@ auto_normalize <- function(exp, group_col = "group", qc_name = "QC", to_try = NU
   best_exp <- NULL
 
   # Calculate CV for raw data
-  qc_samples <- exp$sample_info$sample[exp$sample_info[[group_col]] == qc_name]
-  raw_cv <- .calc_median_cv(exp$expr_mat[, qc_samples, drop = FALSE])
+  raw_cv <- .calc_median_cv(exp$expr_mat[, info$qc_samples, drop = FALSE])
   cli::cli_inform("Median CV of raw data: {.val {signif(raw_cv, 4)}}")
 
   for (method_name in names(to_try)) {
@@ -76,7 +73,7 @@ auto_normalize <- function(exp, group_col = "group", qc_name = "QC", to_try = NU
     # Try normalization
     tryCatch({
       normed_exp <- method(exp)
-      normed_mat <- normed_exp$expr_mat[, qc_samples, drop = FALSE]
+      normed_mat <- normed_exp$expr_mat[, info$qc_samples, drop = FALSE]
       cv <- .calc_median_cv(normed_mat)
 
       cli::cli_ul("Method {.val {method_name}}: Median CV = {.val {signif(cv, 4)}}")

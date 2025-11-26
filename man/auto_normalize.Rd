@@ -4,7 +4,13 @@
 \alias{auto_normalize}
 \title{Automatic Normalization}
 \usage{
-auto_normalize(exp, group_col = "group", qc_name = "QC", to_try = NULL)
+auto_normalize(
+  exp,
+  group_col = "group",
+  qc_name = "QC",
+  to_try = NULL,
+  info = NULL
+)
 }
 \arguments{
 \item{exp}{An \code{\link[glyexp:experiment]{glyexp::experiment()}}.}
@@ -24,6 +30,8 @@ Only used when \code{group_col} is not NULL.}
 \item \code{\link[=normalize_median_quotient]{normalize_median_quotient()}}: median quitient normalization
 \item \code{\link[=normalize_loessf]{normalize_loessf()}}: LoessF normalization
 }}
+
+\item{info}{Internal parameter used by \code{\link[=auto_clean]{auto_clean()}}.}
 }
 \value{
 The normalized experiment.
