@@ -11,12 +11,8 @@ test_that("auto_normalize works with QC samples", {
   # But we can just check if it runs and returns a valid experiment.
 
   # Let's just verify it runs and picks a method
-  expect_no_error(normed <- auto_normalize(exp, group_col = "group", qc_name = "QC"))
+  expect_snapshot(normed <- auto_normalize(exp, group_col = "group", qc_name = "QC"))
   expect_s3_class(normed, "glyexp_experiment")
-
-  # Check if it returns one of the expected results
-  # We can't easily predict which one it picks without crafting data, 
-  # but we know it should be one of the to_try methods.
 })
 
 test_that("auto_normalize works for glycomics without QC", {
@@ -25,12 +21,12 @@ test_that("auto_normalize works for glycomics without QC", {
   exp$meta_data$glycan_type <- "N" # Required if not others
 
   # Manual application
-  manual <- exp |> 
-    normalize_median_quotient() |> 
+  manual <- exp |>
+    normalize_median_quotient() |>
     normalize_total_area()
 
   # Auto application
-  auto <- auto_normalize(exp, group_col = NULL)
+  expect_snapshot(auto <- auto_normalize(exp, group_col = NULL))
 
   expect_equal(auto$expr_mat, manual$expr_mat)
 })
@@ -44,7 +40,7 @@ test_that("auto_normalize works for glycoproteomics without QC", {
   manual <- normalize_median(exp)
 
   # Auto application
-  auto <- auto_normalize(exp, group_col = NULL)
+  expect_snapshot(auto <- auto_normalize(exp, group_col = NULL))
 
   expect_equal(auto$expr_mat, manual$expr_mat)
 })
@@ -57,7 +53,7 @@ test_that("auto_normalize falls back to median for others", {
   manual <- normalize_median(exp)
 
   # Auto application
-  auto <- auto_normalize(exp, group_col = NULL)
+  expect_snapshot(auto <- auto_normalize(exp, group_col = NULL))
 
   expect_equal(auto$expr_mat, manual$expr_mat)
 })
