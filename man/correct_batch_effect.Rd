@@ -90,7 +90,7 @@ exp$sample_info$group <- c("Ctrl", "Ctrl", "Treat", "Ctrl", "Treat", "Treat")
 corrected_exp <- correct_batch_effect(exp, batch = "batch", group = "group")
 
 # With matrix and factor vectors
-mat <- matrix(rnorm(200), nrow = 20, ncol = 10)
+mat <- matrix(abs(rnorm(200)), nrow = 20, ncol = 10)
 batch_factor <- factor(rep(c("A", "B"), each = 5))
 group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
 corrected_mat <- correct_batch_effect(mat, batch = batch_factor, group = group_factor)
