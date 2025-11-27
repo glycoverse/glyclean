@@ -27,8 +27,12 @@ Only used when \code{group_col} is not NULL.}
 \item \code{\link[=normalize_median_abs]{normalize_median_abs()}}: absolute median normalization
 \item \code{\link[=normalize_total_area]{normalize_total_area()}}: total area mormalization
 \item \code{\link[=normalize_quantile]{normalize_quantile()}}: quantile normalization
-\item \code{\link[=normalize_median_quotient]{normalize_median_quotient()}}: median quitient normalization
 \item \code{\link[=normalize_loessf]{normalize_loessf()}}: LoessF normalization
+\item \code{\link[=normalize_loesscyc]{normalize_loesscyc()}}: LoessCyc normalization
+\item \code{\link[=normalize_median_quotient]{normalize_median_quotient()}}: median quitient normalization
+\item \code{\link[=normalize_rlr]{normalize_rlr()}}: Robust Linear Regression normalization
+\item \code{\link[=normalize_rlrma]{normalize_rlrma()}}: Robust Linear Regression with Median Adjustment normalization
+\item \code{\link[=normalize_rlrmacyc]{normalize_rlrmacyc()}}: Robust Linear Regression with Median Adjustment and Cyclic normalization
 }}
 
 \item{info}{Internal parameter used by \code{\link[=auto_clean]{auto_clean()}}.}
@@ -42,6 +46,11 @@ If Quality Control (QC) samples are present, the method that best stabilizes the
 (i.e., yields the lowest median coefficient of variation) is chosen.
 Otherwise, it defaults to median normalization for glycoproteomics data,
 and a combination of median quotient and total area normalization for glycomics data.
+}
+\details{
+By default, all normalization methods except for VSN are included for benchmarking.
+VSN is excluded because it compresses fold change estimate significantly
+thus not suitable for regular omics context.
 }
 \examples{
 library(glyexp)
