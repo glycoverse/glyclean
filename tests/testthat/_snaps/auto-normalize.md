@@ -11,6 +11,10 @@
       * Method "normalize_quantile": Median CV = 0
       * Method "normalize_median_quotient": Median CV = 0.002167
       * Method "normalize_loessf": Median CV = 4.539e-06
+      * Method "normalize_loesscyc": Median CV = 6.451e-05
+      * Method "normalize_rlr": Median CV = 5.19e-05
+      * Method "normalize_rlrma": Median CV = 5.182e-06
+      * Method "normalize_rlrmacyc": Median CV = 0.0002218
       v Best method: "normalize_quantile" with Median CV = 0
 
 # auto_normalize works for glycomics without QC

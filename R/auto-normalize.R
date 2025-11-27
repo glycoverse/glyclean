@@ -6,6 +6,11 @@
 #' Otherwise, it defaults to median normalization for glycoproteomics data,
 #' and a combination of median quotient and total area normalization for glycomics data.
 #'
+#' @details
+#' By default, all normalization methods except for VSN are included for benchmarking.
+#' VSN is excluded because it compresses fold change estimate significantly
+#' thus not suitable for regular omics context.
+#'
 #' @param exp An [glyexp::experiment()].
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
@@ -16,8 +21,12 @@
 #'   - [normalize_median_abs()]: absolute median normalization
 #'   - [normalize_total_area()]: total area mormalization
 #'   - [normalize_quantile()]: quantile normalization
-#'   - [normalize_median_quotient()]: median quitient normalization
 #'   - [normalize_loessf()]: LoessF normalization
+#'   - [normalize_loesscyc()]: LoessCyc normalization
+#'   - [normalize_median_quotient()]: median quitient normalization
+#'   - [normalize_rlr()]: Robust Linear Regression normalization
+#'   - [normalize_rlrma()]: Robust Linear Regression with Median Adjustment normalization
+#'   - [normalize_rlrmacyc()]: Robust Linear Regression with Median Adjustment and Cyclic normalization
 #' @param info Internal parameter used by [auto_clean()].
 #'
 #' @returns The normalized experiment.
@@ -40,7 +49,11 @@ auto_normalize <- function(exp, group_col = "group", qc_name = "QC", to_try = NU
       normalize_total_area = normalize_total_area,
       normalize_quantile = normalize_quantile,
       normalize_median_quotient = normalize_median_quotient,
-      normalize_loessf = normalize_loessf
+      normalize_loessf = normalize_loessf,
+      normalize_loesscyc = normalize_loesscyc,
+      normalize_rlr = normalize_rlr,
+      normalize_rlrma = normalize_rlrma,
+      normalize_rlrmacyc = normalize_rlrmacyc
     )
   }
 
