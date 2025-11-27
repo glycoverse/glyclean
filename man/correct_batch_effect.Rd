@@ -44,7 +44,7 @@ If no batch information is available, the function will return the original data
 
 If group information is provided via \code{group},
 the function will check for confounding between batch and group variables.
-If batch and group are highly confounded (complete overlap),
+If batch and group are highly confounded,
 the function will issue a warning and return the original data unchanged
 to avoid over-correction.
 

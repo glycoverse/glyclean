@@ -5,8 +5,8 @@
     Condition
       Warning:
       Batch and group variables are highly confounded.
-      i Each batch contains only one group, making batch correction problematic.
-      i Returning original data unchanged to avoid over-correction.
+      i Batch effect correction may not be appropriate.
+      i Returning original data unchanged.
 
 # correct_batch_effect handles insufficient samples per batch
 

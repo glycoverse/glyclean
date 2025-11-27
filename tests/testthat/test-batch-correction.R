@@ -757,7 +757,7 @@ test_that("correct_batch_effect handles single batch scenario", {
   # Should handle single batch gracefully with warning
   expect_warning(
     result <- correct_batch_effect(exp, batch = "batch"),
-    "ComBat failed to correct batch effects"
+    "Less than 2 batches found"
   )
   expect_s3_class(result, "glyexp_experiment")
   expect_identical(result, exp)  # Should return original when correction fails
