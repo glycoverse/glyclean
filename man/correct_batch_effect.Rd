@@ -7,13 +7,37 @@
 \alias{correct_batch_effect.default}
 \title{Correct Batch Effect}
 \usage{
-correct_batch_effect(x, batch = "batch", group = NULL)
+correct_batch_effect(
+  x,
+  batch = "batch",
+  group = NULL,
+  check_confounding = TRUE,
+  confounding_threshold = 0.4
+)
 
-\method{correct_batch_effect}{glyexp_experiment}(x, batch = "batch", group = NULL)
+\method{correct_batch_effect}{glyexp_experiment}(
+  x,
+  batch = "batch",
+  group = NULL,
+  check_confounding = TRUE,
+  confounding_threshold = 0.4
+)
 
-\method{correct_batch_effect}{matrix}(x, batch = "batch", group = NULL)
+\method{correct_batch_effect}{matrix}(
+  x,
+  batch = "batch",
+  group = NULL,
+  check_confounding = TRUE,
+  confounding_threshold = 0.4
+)
 
-\method{correct_batch_effect}{default}(x, batch = "batch", group = NULL)
+\method{correct_batch_effect}{default}(
+  x,
+  batch = "batch",
+  group = NULL,
+  check_confounding = TRUE,
+  confounding_threshold = 0.4
+)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.
@@ -28,6 +52,12 @@ or a string specifying the column name in sample_info (for experiment input only
 If provided, it will be used as a covariate in the ComBat model.
 This is useful when you have an unbalanced design.
 Default to NULL.}
+
+\item{check_confounding}{Whether to check for confounding between batch and group variables.
+Default to TRUE.}
+
+\item{confounding_threshold}{The threshold for Cramer's V to consider batch and group variables highly confounded.
+Only used when \code{check_confounding} is TRUE. Default to 0.4.}
 }
 \value{
 For \code{glyexp_experiment} input, returns a modified \code{glyexp_experiment} object.
@@ -44,7 +74,7 @@ If no batch information is available, the function will return the original data
 
 If group information is provided via \code{group},
 the function will check for confounding between batch and group variables.
-If batch and group are highly confounded,
+If batch and group are highly confounded (|Cramer's V| > \code{threshold}),
 the function will issue a warning and return the original data unchanged
 to avoid over-correction.
 

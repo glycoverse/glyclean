@@ -12,7 +12,7 @@
 #'
 #' If group information is provided via `group`,
 #' the function will check for confounding between batch and group variables.
-#' If batch and group are highly confounded,
+#' If batch and group are highly confounded (|Cramer's V| > `threshold`),
 #' the function will issue a warning and return the original data unchanged
 #' to avoid over-correction.
 #'
@@ -30,6 +30,10 @@
 #'   If provided, it will be used as a covariate in the ComBat model.
 #'   This is useful when you have an unbalanced design.
 #'   Default to NULL.
+#' @param check_confounding Whether to check for confounding between batch and group variables.
+#'   Default to TRUE.
+#' @param confounding_threshold The threshold for Cramer's V to consider batch and group variables highly confounded.
+#'   Only used when `check_confounding` is TRUE. Default to 0.4.
 #'
 #' @return For `glyexp_experiment` input, returns a modified `glyexp_experiment` object.
 #'   For matrix input, returns a batch-corrected matrix.
@@ -49,14 +53,26 @@
 #'
 #' @importFrom utils capture.output
 #' @export
-correct_batch_effect <- function(x, batch = "batch", group = NULL) {
+correct_batch_effect <- function(
+  x,
+  batch = "batch",
+  group = NULL,
+  check_confounding = TRUE,
+  confounding_threshold = 0.4
+) {
   rlang::check_installed("sva", reason = "to use `correct_batch_effect()`")
   UseMethod("correct_batch_effect")
 }
 
 #' @rdname correct_batch_effect
 #' @export
-correct_batch_effect.glyexp_experiment <- function(x, batch = "batch", group = NULL) {
+correct_batch_effect.glyexp_experiment <- function(
+  x,
+  batch = "batch",
+  group = NULL,
+  check_confounding = TRUE,
+  confounding_threshold = 0.4
+) {
   # For experiment input, extract batch and group from sample_info
   batch_group_info <- .extract_batch_group_from_experiment(x, batch, group, require_batch = TRUE)
   if (is.null(batch_group_info)) {
@@ -66,9 +82,11 @@ correct_batch_effect.glyexp_experiment <- function(x, batch = "batch", group = N
 
   # Apply batch correction to expression matrix
   corrected_expr_mat <- .apply_batch_correction(
-    x$expr_mat, 
-    batch_group_info$batch, 
-    batch_group_info$group
+    x$expr_mat,
+    batch_group_info$batch,
+    batch_group_info$group,
+    check_confounding = check_confounding,
+    confounding_threshold = confounding_threshold
   )
 
   # Return original if correction failed
@@ -85,20 +103,35 @@ correct_batch_effect.glyexp_experiment <- function(x, batch = "batch", group = N
 
 #' @rdname correct_batch_effect
 #' @export
-correct_batch_effect.matrix <- function(x, batch = "batch", group = NULL) {
-  .correct_batch_effect_matrix(x, batch = batch, group = group)
+correct_batch_effect.matrix <- function(
+  x,
+  batch = "batch",
+  group = NULL,
+  check_confounding = TRUE,
+  confounding_threshold = 0.4
+) {
+  .correct_batch_effect_matrix(
+    x, batch = batch, group = group,
+    check_confounding = check_confounding,
+    confounding_threshold = confounding_threshold
+  )
 }
 
 #' @rdname correct_batch_effect
 #' @export
-correct_batch_effect.default <- function(x, batch = "batch", group = NULL) {
+correct_batch_effect.default <- function(
+  x,
+  batch = "batch",
+  group = NULL,
+  check_confounding = TRUE,
+  confounding_threshold = 0.4) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
     "x" = "Got {.cls {class(x)}}."
   ))
 }
 
-.correct_batch_effect_matrix <- function(x, batch, group = NULL) {
+.correct_batch_effect_matrix <- function(x, batch, group, check_confounding, confounding_threshold) {
   # Validate and prepare batch/group vectors
   batch_group_info <- .validate_and_prepare_batch_group(x, batch, group)
   if (is.null(batch_group_info)) {
@@ -109,11 +142,13 @@ correct_batch_effect.default <- function(x, batch = "batch", group = NULL) {
   corrected_expr_mat <- .apply_batch_correction(
     x,
     batch_group_info$batch,
-    batch_group_info$group
+    batch_group_info$group,
+    check_confounding = check_confounding,
+    confounding_threshold = confounding_threshold
   )
 
   # Return corrected matrix or original if correction failed
-  return(if (is.null(corrected_expr_mat)) x else corrected_expr_mat)
+  if (is.null(corrected_expr_mat)) x else corrected_expr_mat
 }
 
 
@@ -313,7 +348,7 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
   all(batch_counts >= 2)
 }
 
-.apply_batch_correction <- function(expr_mat, batch, group = NULL) {
+.apply_batch_correction <- function(expr_mat, batch, group = NULL, check_confounding = TRUE, confounding_threshold = 0.4) {
   # Check if there are at least 2 batches
   if (length(unique(batch)) < 2) {
     cli::cli_warn("Less than 2 batches found. Batch correction requires at least 2 batches. Returning original data unchanged.")
@@ -321,7 +356,7 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
   }
 
   # Check for confounding
-  if (!is.null(group) && .check_batch_group_confounding(batch, group)) {
+  if (check_confounding && !is.null(group) && .check_batch_group_confounding(batch, group, confounding_threshold)) {
     cli::cli_warn(c(
       "Batch and group variables are highly confounded.",
       "i" = "Batch effect correction may not be appropriate.",
