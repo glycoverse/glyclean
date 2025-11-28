@@ -1,10 +1,24 @@
 # glyclean (development version)
 
+## Breaking changes
+
+- `auto_clean()` has been redesigned to be more flexible and robust. It now calls `auto_
+
+## New features
+
+- Add `auto_normalize()` to automatically normalize the data.
+- Add `auto_remove()` to automatically remove variables with too many missing values.
+- Add `auto_impute()` to automatically impute the missing values.
+- Add `auto_aggregate()` to automatically aggregate the data.
+- Add `auto_correct_batch_effect()` to automatically correct the batch effects.
+
 ## Minor improvements and fixes
 
 - `remove_xxx()` functions now print a message about the number and proportion of variables removed.
 - Add a `seed` argument to `impute_miss_forest()` to make the imputation results reproducible.
 - `normalize_median()` now issues a warning if any sample has a median value of 0, producing all NaNs in the result.
+- `correct_batch_effect()` now uses a new method to detect group-batch confounding. It uses Cramer's V to measure the strength of the association between batch and group variables.
+- Fix an error in `correct_batch_effect()` examples.
 
 # glyclean 0.8.1
 
