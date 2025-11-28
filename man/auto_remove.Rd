@@ -26,6 +26,9 @@ Only used when \code{group_col} is not NULL.}
 
 \item{info}{Internal parameter used by \code{\link[=auto_clean]{auto_clean()}}.}
 }
+\value{
+A modified \code{\link[glyexp:experiment]{glyexp::experiment()}} object.
+}
 \description{
 This function uses preset rules to remove variables with low quality.
 Available presets:
@@ -38,4 +41,10 @@ and ensure less than 60\% of missing values in all groups.
 }
 
 QC samples will not be considered in the removal process.
+}
+\examples{
+library(glyexp)
+exp <- real_experiment
+auto_remove(exp)
+
 }
