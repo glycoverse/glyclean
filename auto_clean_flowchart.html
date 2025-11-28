@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Clean Flowchart</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .mermaid {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="mermaid">
+flowchart TD
+    %% Main Entry
+    Start([Start: auto_clean]) --> CheckType{Experiment Type?}
+
+    %% ========================================================
+    %% Path 1: Glycoproteomics
+    %% ========================================================
+    CheckType -- Glycoproteomics --> GP_Step1
+
+    subgraph GP_Pipeline [Pipeline: Glycoproteomics]
+        direction TB
+        
+        %% Step 1: Normalization
+        subgraph GP_Step1 [Step 1: auto_normalize]
+            direction TB
+            GP_N1_Start(Start) --> GP_N1_QC{Has QC?}
+            
+            %% Has QC
+            GP_N1_QC -- Yes --> GP_N1_Bench[Benchmark Methods<br>Calculate Median CV]
+            GP_N1_Bench --> GP_N1_Best[Select Method with<br>Lowest CV]
+            
+            %% No QC
+            GP_N1_QC -- No --> GP_N1_Def[Default: Median Normalization]
+            
+            GP_N1_Best --> GP_N1_End(End)
+            GP_N1_Def --> GP_N1_End
+        end
+
+        %% Step 2: Removal
+        GP_Step1 --> GP_Step2
+        subgraph GP_Step2 [Step 2: auto_remove]
+            direction TB
+            GP_R_Start(Start) --> GP_R_QC[Exclude QC Samples]
+            GP_R_QC --> GP_R_Preset{Preset?}
+            
+            GP_R_Preset -- simple --> GP_R_Sim[Remove vars > 50% missing]
+            GP_R_Preset -- discovery --> GP_R_Dis[Remove > 80% missing<br>Keep if < 50% missing in 1 group]
+            GP_R_Preset -- biomarker --> GP_R_Bio[Remove > 40% missing<br>Keep if < 60% missing in all groups]
+            
+            GP_R_Sim --> GP_R_End(End)
+            GP_R_Dis --> GP_R_End
+            GP_R_Bio --> GP_R_End
+        end
+
+        %% Step 3: Imputation
+        GP_Step2 --> GP_Step3
+        subgraph GP_Step3 [Step 3: auto_impute]
+            direction TB
+            GP_I_Start(Start) --> GP_I_QC{Has QC?}
+            
+            %% Has QC
+            GP_I_QC -- Yes --> GP_I_Bench[Benchmark Methods<br>Calculate Median CV]
+            GP_I_Bench --> GP_I_Best[Select Method with<br>Lowest CV]
+            
+            %% No QC
+            GP_I_QC -- No --> GP_I_Size{Sample Size N?}
+            GP_I_Size -- N <= 30 --> GP_I_Min[impute_sample_min]
+            GP_I_Size -- 30 < N <= 100 --> GP_I_Prob[impute_min_prob]
+            GP_I_Size -- N > 100 --> GP_I_MF[impute_miss_forest]
+            
+            GP_I_Best --> GP_I_End(End)
+            GP_I_Min --> GP_I_End
+            GP_I_Prob --> GP_I_End
+            GP_I_MF --> GP_I_End
+        end
+
+        %% Step 4: Aggregation
+        GP_Step3 --> GP_Step4
+        subgraph GP_Step4 [Step 4: auto_aggregate]
+            direction TB
+            GP_A_Start(Start) --> GP_A_Check{Has glycan_structure?}
+            GP_A_Check -- Yes --> GP_A_GFS[Aggregate to 'gfs'<br>Glycoforms w/ Structures]
+            GP_A_Check -- No --> GP_A_GF[Aggregate to 'gf'<br>Glycoforms w/ Compositions]
+            GP_A_GFS --> GP_A_End(End)
+            GP_A_GF --> GP_A_End
+        end
+
+        %% Step 5: Normalization (Again)
+        GP_Step4 --> GP_Step5
+        subgraph GP_Step5 [Step 5: auto_normalize]
+            direction TB
+            GP_N2_Note[Re-run auto_normalize logic<br>on aggregated data]
+        end
+
+        %% Step 6: Batch Correction
+        GP_Step5 --> GP_Step6
+        subgraph GP_Step6 [Step 6: auto_correct_batch_effect]
+            direction TB
+            GP_B_Start(Start) --> GP_B_Col{Has Batch Col?}
+            GP_B_Col -- No --> GP_B_Skip[Skip]
+            GP_B_Col -- Yes --> GP_B_Det[Detect Batch Effect<br>ANOVA]
+            GP_B_Det --> GP_B_Prop{Sig Vars > 30%?}
+            GP_B_Prop -- Yes --> GP_B_Cor[Apply ComBat Correction]
+            GP_B_Prop -- No --> GP_B_Skip
+            GP_B_Cor --> GP_B_End(End)
+            GP_B_Skip --> GP_B_End
+        end
+    end
+
+    %% ========================================================
+    %% Path 2: Glycomics
+    %% ========================================================
+    CheckType -- Glycomics --> G_Step1
+
+    subgraph G_Pipeline [Pipeline: Glycomics]
+        direction TB
+
+        %% Step 1: Removal
+        subgraph G_Step1 [Step 1: auto_remove]
+            direction TB
+            G_R_Note[Logic same as Glycoproteomics]
+        end
+
+        %% Step 2: Normalization
+        G_Step1 --> G_Step2
+        subgraph G_Step2 [Step 2: auto_normalize]
+            direction TB
+            G_N_Start(Start) --> G_N_QC{Has QC?}
+            
+            %% Has QC
+            G_N_QC -- Yes --> G_N_Bench[Benchmark Methods<br>Select Best by CV]
+            
+            %% No QC (Glycomics specific)
+            G_N_QC -- No --> G_N_Def[Default: Median Quotient<br>+ Total Area]
+            
+            G_N_Bench --> G_N_End(End)
+            G_N_Def --> G_N_End
+        end
+
+        %% Step 3: Total Area Normalization
+        G_Step2 --> G_Step3
+        subgraph G_Step3 [Step 3: normalize_total_area]
+            direction TB
+            G_TA_Run[Run normalize_total_area]
+        end
+
+        %% Step 4: Imputation
+        G_Step3 --> G_Step4
+        subgraph G_Step4 [Step 4: auto_impute]
+            direction TB
+            G_I_Note[Logic same as Glycoproteomics]
+        end
+
+        %% Step 5: Batch Correction
+        G_Step4 --> G_Step5
+        subgraph G_Step5 [Step 5: auto_correct_batch_effect]
+            direction TB
+            G_B_Note[Logic same as Glycoproteomics]
+        end
+    end
+
+    %% End
+    GP_Step6 --> End([End: Return Experiment])
+    G_Step5 --> End
+    </div>
+</body>
+</html>

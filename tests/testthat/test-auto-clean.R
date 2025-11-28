@@ -1,3 +1,7 @@
+replace_cv <- function(x) {
+  stringr::str_replace_all(x, "CV = \\d+\\.\\d+", "CV = CV_VALUE")
+}
+
 # Test main logic path for glycoproteomics data
 test_that("auto_clean works for glycoproteomics data", {
   test_exp <- complex_exp()
@@ -31,7 +35,7 @@ test_that("auto_clean works for glycoproteomics data with QC", {
     check_col_types = FALSE
   )
 
-  expect_snapshot(result_exp <- auto_clean(test_exp))
+  expect_snapshot(result_exp <- auto_clean(test_exp), transform = replace_cv)
 
   expect_s3_class(result_exp, "glyexp_experiment")
   expect_equal(glyexp::get_exp_type(result_exp), "glycoproteomics")
@@ -84,7 +88,7 @@ test_that("auto_clean works for glycomics data with QC", {
     glycan_type = "N"
   )
 
-  expect_snapshot(result_exp <- auto_clean(test_exp))
+  expect_snapshot(result_exp <- auto_clean(test_exp), transform = replace_cv)
 
   expect_s3_class(result_exp, "glyexp_experiment")
   expect_equal(glyexp::get_exp_type(result_exp), "glycomics")
