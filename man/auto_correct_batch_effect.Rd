@@ -51,6 +51,6 @@ the function will return the original experiment.
 }
 \examples{
 exp <- glyexp::real_experiment
-exp <- auto_batch_correction(exp)
+exp <- auto_correct_batch_effect(exp)
 
 }
