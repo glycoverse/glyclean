@@ -42,7 +42,7 @@
       -- Normalizing data --
       
       QC samples found. Choosing the best normalization method based on QC samples.
-      Median CV of raw data: 0.0204
+      * Raw data: Median CV = CV_VALUE
       * Method "normalize_median": Median CV = CV_VALUE
       * Method "normalize_median_abs": Median CV = CV_VALUE
       * Method "normalize_total_area": Median CV = CV_VALUE
@@ -64,7 +64,7 @@
       -- Imputing missing values --
       
       QC samples found. Choosing the best imputation method based on QC samples.
-      Median CV of raw data (excluding NA): 0.01822
+      * Raw data: Median CV = CV_VALUE
       * Method "impute_zero": Median CV = CV_VALUE
       * Method "impute_sample_min": Median CV = CV_VALUE
       * Method "impute_half_sample_min": Median CV = CV_VALUE
@@ -84,7 +84,7 @@
       -- Normalizing data again --
       
       QC samples found. Choosing the best normalization method based on QC samples.
-      Median CV of raw data: 0.03443
+      * Raw data: Median CV = CV_VALUE
       * Method "normalize_median": Median CV = CV_VALUE
       * Method "normalize_median_abs": Median CV = CV_VALUE
       * Method "normalize_total_area": Median CV = CV_VALUE
@@ -144,7 +144,7 @@
       -- Normalizing data --
       
       QC samples found. Choosing the best normalization method based on QC samples.
-      Median CV of raw data: 0.7512
+      * Raw data: Median CV = CV_VALUE
       * Method "normalize_median": Median CV = CV_VALUE
       * Method "normalize_median_abs": Median CV = CV_VALUE
       * Method "normalize_total_area": Median CV = CV_VALUE
@@ -162,17 +162,13 @@
       -- Imputing missing values --
       
       QC samples found. Choosing the best imputation method based on QC samples.
-      Median CV of raw data (excluding NA): 0.01094
+      * Raw data: Median CV = CV_VALUE
       * Method "impute_zero": Median CV = CV_VALUE
       * Method "impute_sample_min": Median CV = CV_VALUE
       * Method "impute_half_sample_min": Median CV = CV_VALUE
       * Method "impute_sw_knn": Median CV = CV_VALUE
       * Method "impute_fw_knn": Median CV = CV_VALUE
       * Method "impute_bpca": Median CV = CV_VALUE
-    Condition
-      Warning in `ppca()`:
-      stopped after max iterations, but rel_ch was > threshold
-    Message
       * Method "impute_ppca": Median CV = CV_VALUE
       * Method "impute_svd": Median CV = CV_VALUE
       * Method "impute_min_prob": Median CV = CV_VALUE

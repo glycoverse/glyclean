@@ -78,7 +78,7 @@ auto_normalize <- function(exp, group_col = "group", qc_name = "QC", to_try = NU
 
   # Calculate CV for raw data
   raw_cv <- .calc_median_cv(exp$expr_mat[, info$qc_samples, drop = FALSE])
-  cli::cli_inform("Median CV of raw data: {.val {signif(raw_cv, 4)}}")
+  cli::cli_ul("Raw data: Median CV = {.val {signif(raw_cv, 4)}}")
 
   for (method_name in names(to_try)) {
     method <- to_try[[method_name]]

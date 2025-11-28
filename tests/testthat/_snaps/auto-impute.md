@@ -4,7 +4,7 @@
       imputed <- auto_impute(exp, group_col = "group", qc_name = "QC")
     Message
       QC samples found. Choosing the best imputation method based on QC samples.
-      Median CV of raw data (excluding NA): 0.07814
+      * Raw data: Median CV = 0.07814
       * Method "impute_zero": Median CV = 0.07814
       * Method "impute_sample_min": Median CV = 0.07814
       * Method "impute_half_sample_min": Median CV = 0.07814
@@ -55,7 +55,7 @@
       result <- auto_impute(exp, to_try = custom_methods)
     Message
       QC samples found. Choosing the best imputation method based on QC samples.
-      Median CV of raw data (excluding NA): 0.07814
+      * Raw data: Median CV = 0.07814
       * Method "impute_zero": Median CV = 0.07814
       * Method "impute_sample_min": Median CV = 0.07814
       v Best method: "impute_zero" with Median CV = 0.07814

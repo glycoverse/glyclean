@@ -1,5 +1,5 @@
 replace_cv <- function(x) {
-  stringr::str_replace_all(x, "CV = \\d+\\.\\d+", "CV = CV_VALUE")
+  x <- stringr::str_replace_all(x, "CV = \\d+\\.\\d+", "CV = CV_VALUE")
 }
 
 # Test main logic path for glycoproteomics data

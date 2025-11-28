@@ -4,7 +4,7 @@
       normed <- auto_normalize(exp, group_col = "group", qc_name = "QC")
     Message
       QC samples found. Choosing the best normalization method based on QC samples.
-      Median CV of raw data: 0.07814
+      * Raw data: Median CV = 0.07814
       * Method "normalize_median": Median CV = 0.002167
       * Method "normalize_median_abs": Median CV = 0.002167
       * Method "normalize_total_area": Median CV = 0.002167
