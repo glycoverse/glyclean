@@ -339,7 +339,7 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
 }
 
 .cramers_v <- function(conf_table) {
-  statistic <- as.numeric(suppressWarnings(chisq.test(conf_table))$statistic)
+  statistic <- as.numeric(suppressWarnings(stats::chisq.test(conf_table))$statistic)
   sqrt((statistic / sum(conf_table)) / min(dim(conf_table) - 1))
 }
 
