@@ -1,5 +1,7 @@
 replace_cv <- function(x) {
   x <- stringr::str_replace_all(x, "CV = \\d+\\.\\d+", "CV = CV_VALUE")
+  x <- stringr::str_replace_all(x, 'Best method: ".*?"', 'Best method: "BEST_METHOD"')
+  x
 }
 
 # Test main logic path for glycoproteomics data

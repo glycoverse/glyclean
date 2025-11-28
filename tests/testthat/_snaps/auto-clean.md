@@ -53,7 +53,7 @@
       * Method "normalize_rlr": Median CV = CV_VALUE
       * Method "normalize_rlrma": Median CV = CV_VALUE
       * Method "normalize_rlrmacyc": Median CV = CV_VALUE
-      v Best method: "normalize_rlrma" with Median CV = CV_VALUE
+      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
       
       -- Removing variables with too many missing values --
       
@@ -75,7 +75,7 @@
       * Method "impute_svd": Median CV = CV_VALUE
       * Method "impute_min_prob": Median CV = CV_VALUE
       * Method "impute_miss_forest": Median CV = CV_VALUE
-      v Best method: "impute_zero" with Median CV = CV_VALUE
+      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
       
       -- Aggregating data --
       
@@ -95,7 +95,7 @@
       * Method "normalize_rlr": Median CV = CV_VALUE
       * Method "normalize_rlrma": Median CV = CV_VALUE
       * Method "normalize_rlrmacyc": Median CV = CV_VALUE
-      v Best method: "normalize_loessf" with Median CV = 0
+      v Best method: "BEST_METHOD" with Median CV = 0
       
       -- Correcting batch effects --
       
@@ -155,7 +155,7 @@
       * Method "normalize_rlr": Median CV = CV_VALUE
       * Method "normalize_rlrma": Median CV = CV_VALUE
       * Method "normalize_rlrmacyc": Median CV = CV_VALUE
-      v Best method: "normalize_loesscyc" with Median CV = CV_VALUE
+      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
       
       -- Normalizing data (Total Area) --
       
@@ -173,7 +173,7 @@
       * Method "impute_svd": Median CV = CV_VALUE
       * Method "impute_min_prob": Median CV = CV_VALUE
       * Method "impute_miss_forest": Median CV = CV_VALUE
-      v Best method: "impute_zero" with Median CV = CV_VALUE
+      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
       
       -- Correcting batch effects --
       
