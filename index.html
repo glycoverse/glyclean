@@ -97,21 +97,52 @@
 <span></span>
 <span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="va">real_experiment</span></span>
 <span><span class="va">clean_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/auto_clean.html">auto_clean</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ℹ Normalizing data (Median)</span></span>
-<span><span class="co">#&gt; ✔ Normalizing data (Median) [70ms]</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ Removing variables with &gt;50% missing values</span></span>
-<span><span class="co">#&gt; ✔ Removing variables with &gt;50% missing values [38ms]</span></span>
+<span><span class="co">#&gt; ── Normalizing data ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ Imputing missing values</span></span>
-<span><span class="co">#&gt; ℹ Sample size &lt;= 30, using sample minimum imputation</span></span>
-<span><span class="co">#&gt; ℹ Imputing missing values✔ Imputing missing values [12ms]</span></span>
+<span><span class="co">#&gt; No QC samples found. Using default normalization method based on experiment</span></span>
+<span><span class="co">#&gt; type.</span></span>
+<span><span class="co">#&gt; Experiment type is "glycoproteomics". Using `normalize_median()`.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ Aggregating data</span></span>
-<span><span class="co">#&gt; ✔ Aggregating data [422ms]</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ Normalizing data again</span></span>
-<span><span class="co">#&gt; ✔ Normalizing data again [7ms]</span></span></code></pre></div>
+<span><span class="co">#&gt; ── Removing variables with too many missing values ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; No QC samples found. Using all samples.</span></span>
+<span><span class="co">#&gt; Applying preset "discovery"...</span></span>
+<span><span class="co">#&gt; Total removed: 24 (0.56%) variables.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Imputing missing values ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; No QC samples found. Using default imputation method based on sample size.</span></span>
+<span><span class="co">#&gt; Sample size &lt;= 30, using `impute_sample_min()`.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Aggregating data ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Aggregating to "gfs" level</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Normalizing data again ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; No QC samples found. Using default normalization method based on experiment</span></span>
+<span><span class="co">#&gt; type.</span></span>
+<span><span class="co">#&gt; Experiment type is "glycoproteomics". Using `normalize_median()`.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Correcting batch effects ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ℹ Batch column  not found in sample_info. Skipping batch correction.</span></span></code></pre></div>
 <p>Yes, that’s it! Calling the magical <code><a href="reference/auto_clean.html">auto_clean()</a></code> function will automatically perform the following steps, in the most suitable way for your data:</p>
 <ul>
 <li>Normalization</li>

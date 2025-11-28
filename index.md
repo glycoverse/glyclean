@@ -48,21 +48,52 @@ library(glyclean)
 
 exp <- real_experiment
 clean_exp <- auto_clean(exp)
-#> ℹ Normalizing data (Median)
-#> ✔ Normalizing data (Median) [70ms]
 #> 
-#> ℹ Removing variables with >50% missing values
-#> ✔ Removing variables with >50% missing values [38ms]
+#> ── Normalizing data ──
 #> 
-#> ℹ Imputing missing values
-#> ℹ Sample size <= 30, using sample minimum imputation
-#> ℹ Imputing missing values✔ Imputing missing values [12ms]
+#> No QC samples found. Using default normalization method based on experiment
+#> type.
+#> Experiment type is "glycoproteomics". Using `normalize_median()`.
 #> 
-#> ℹ Aggregating data
-#> ✔ Aggregating data [422ms]
 #> 
-#> ℹ Normalizing data again
-#> ✔ Normalizing data again [7ms]
+#> ── Removing variables with too many missing values ──
+#> 
+#> 
+#> 
+#> No QC samples found. Using all samples.
+#> Applying preset "discovery"...
+#> Total removed: 24 (0.56%) variables.
+#> 
+#> 
+#> ── Imputing missing values ──
+#> 
+#> 
+#> 
+#> No QC samples found. Using default imputation method based on sample size.
+#> Sample size <= 30, using `impute_sample_min()`.
+#> 
+#> 
+#> ── Aggregating data ──
+#> 
+#> 
+#> 
+#> Aggregating to "gfs" level
+#> 
+#> 
+#> ── Normalizing data again ──
+#> 
+#> 
+#> 
+#> No QC samples found. Using default normalization method based on experiment
+#> type.
+#> Experiment type is "glycoproteomics". Using `normalize_median()`.
+#> 
+#> 
+#> ── Correcting batch effects ──
+#> 
+#> 
+#> 
+#> ℹ Batch column  not found in sample_info. Skipping batch correction.
 ```
 
 Yes, that’s it! Calling the magical
