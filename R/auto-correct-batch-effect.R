@@ -45,7 +45,7 @@ auto_correct_batch_effect <- function(
 
   # Check if batch column exists
   if (is.null(batch_col) || !batch_col %in% colnames(exp$sample_info)) {
-    cli::cli_alert_info("Batch column '{batch_col}' not found in sample_info. Skipping batch correction.")
+    cli::cli_alert_info("Batch column {.field {batch_col}} not found in sample_info. Skipping batch correction.")
     return(exp)
   }
 
@@ -76,7 +76,7 @@ auto_correct_batch_effect <- function(
 
   # Decide whether to correct
   if (prop_significant > prop_threshold) {
-    cli::cli_alert_info("Batch effects detected in {prop_pct} of variables (threshold: {threshold_pct}). Performing batch correction.")
+    cli::cli_alert_info("Batch effects detected in {.val {prop_pct}} of variables (threshold: {.val {threshold_pct}}). Performing batch correction.")
 
     # Perform correction
     exp <- correct_batch_effect(
@@ -89,7 +89,7 @@ auto_correct_batch_effect <- function(
 
     cli::cli_alert_success("Batch correction completed.")
   } else {
-    cli::cli_alert_info("Batch effects detected in {prop_pct} of variables (<= {threshold_pct}). Skipping batch correction.")
+    cli::cli_alert_info("Batch effects detected in {.val {prop_pct}} of variables (<= {.val {threshold_pct}}). Skipping batch correction.")
   }
 
   exp
