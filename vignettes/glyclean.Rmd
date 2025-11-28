@@ -37,12 +37,10 @@ we highly recommend checking out [its introduction](https://glycoverse.github.io
 We'll also be using the [glyread](https://github.com/glycoverse/glyread) package to load our data – 
 it's the go-to tool in the `glycoverse` ecosystem.
 
-
-
 ```{r setup}
 library(glyclean)
-library(glyread)
 library(glyexp)
+library(glyrepr)  # for printing glycan compositions and structures
 ```
 
 ## Meet Our Star Player: Real Glycoproteomics Data 🌟
@@ -51,11 +49,7 @@ Let's dive in with a real-world dataset that will showcase what `glyclean` can d
 We'll use `glyread::read_pglyco3_pglycoquant()` to load our data into a proper `glyexp::experiment()` object.
 
 ```{r}
-exp <- read_pglyco3_pglycoquant(
-  "glycopeptides.list",
-  sample_info = "sample_info.csv",
-  glycan_type = "N"
-)
+exp <- real_experiment
 exp
 ```
 
@@ -75,8 +69,6 @@ a perfect playground for demonstrating preprocessing techniques!
 
 ## The Magic Wand: One Function to Rule Them All ✨
 
-### Meet `auto_clean()` – Your Preprocessing Superhero
-
 Ready for some magic? 
 Watch this:
 
@@ -85,11 +77,9 @@ clean_exp <- auto_clean(exp)
 ```
 
 **That's it!** 
-Your data is now preprocessed and ready for analysis! 
-🎉
+Your data is now preprocessed and ready for analysis! 🎉
 
-### But Wait, What Just Happened? The Science Behind the Magic
-
+But Wait, What Just Happened?
 `auto_clean()` isn't actually magic (sorry to disappoint) – 
 it's a carefully designed intelligent pipeline that:
 
@@ -97,53 +87,59 @@ it's a carefully designed intelligent pipeline that:
 - **Selects optimal methods**: Chooses the best preprocessing strategy for your specific dataset
 - **Executes the pipeline**: Runs everything in the optimal order
 
-Here's the complete workflow (and yes,
-it's impressively comprehensive):
+## Still Like Magic, but With More Control?
 
-```{r out.width = "40%", fig.align = "center", echo = FALSE}
-knitr::include_graphics("workflow.png")
+Let's look into the details of what `auto_clean()` does.
+Here is a simplified version of the function:
+
+```r
+auto_clean <- function(exp, ...) {
+  # ... are other arguments, see documentation for more details
+  if (glyexp::get_exp_type(exp) == "glycoproteomics") {
+    exp <- auto_normalize(exp, ...)
+    exp <- auto_remove(exp, ...)
+    exp <- auto_impute(exp, ...)
+    exp <- auto_aggregate(exp)
+    exp <- auto_normalize(exp, ...)
+    exp <- auto_correct_batch_effect(exp, ...)
+  } else if (glyexp::get_exp_type(exp) == "glycomics") {
+    exp <- auto_remove(exp, ...)
+    exp <- auto_normalize(exp, ...)
+    exp <- normalize_total_area(exp)
+    exp <- auto_impute(exp, ...)
+    exp <- auto_correct_batch_effect(exp, ...)
+  } else {
+    stop("The experiment type must be 'glycoproteomics' or 'glycomics'.")
+  }
+  exp
+}
 ```
 
-## The Pipeline Approach: Chaining Operations Like a Pro 🔗
+As you can see, `auto_clean()` calls the following functions in sequence:
 
-Before we dive into individual steps,
-let's talk about a powerful R technique: **piping**! 
-You can use either the native pipe operator `|>` (R ≥ 4.1.0) 
-or the magrittr pipe `%>%` to chain preprocessing operations together.
-This makes your code more readable and your workflow more elegant.
+- [auto_normalize()]: Automatically normalize the data
+- [auto_remove()]: Automatically remove variables with too many missing values
+- [auto_impute()]: Automatically impute the missing values
+- [auto_aggregate()]: Automatically aggregate the data
+- [auto_correct_batch_effect()]: Automatically correct the batch effects
 
-Here's how `auto_clean()` works under the hood for our glycoproteomics data,
-written as a manual pipeline:
+These functions automatically choose the best method for the given dataset.
+For example, if a "group" column exists and there are QC samples,
+[auto_normalize()] will try all normalization methods and choose the one that best stabilizes the QC samples.
 
-```{r eval=FALSE}
-# The complete glycoproteomics preprocessing pipeline
-# This is essentially what auto_clean() does automatically!
-cleaned_exp <- exp |>
-  normalize_median() |>             # Step 1: Initial normalization
-  remove_rare(prop = 0.5) |>        # Step 2: Remove variables with >50% missing
-  impute_sample_min() |>            # Step 3: Impute missing values (for small datasets)
-  aggregate(to_level = "gfs") |>    # Step 4: Aggregate to glycoform level
-  normalize_median() |>             # Step 5: Re-normalize after aggregation
-  correct_batch_effect()            # Step 6: Correct batch effects (if batch column exists)
+You can make a custom pipeline by calling these functions in different orders:
+
+```{r}
+clean_exp <- exp |>
+  auto_remove() |>
+  auto_normalize() |>
+  auto_impute() |>
+  auto_aggregate()
 ```
-
-**Why use pipes?**
-
-- **Cleaner code**: No need for intermediate variables
-- **Logical flow**: Operations read left-to-right, top-to-bottom
-- **Fewer errors**: Less chance of mixing up variable names
-- **Easy experimentation**: Simply comment out or modify steps
-
-**Pro Tips for Pipeline Usage:**
-
-- Use `|>` for new R versions (≥ 4.1.0) or `%>%` for older versions
-- Break long pipelines across multiple lines for readability
-- Comment each step to document your reasoning
-- Save intermediate results when debugging: `intermediate_result <- exp |> step1() |> step2()`
 
 ## Taking the Scenic Route: Step-by-Step Preprocessing 🚶‍♀️
 
-While `auto_clean()` is fantastic for getting started,
+While `auto_clean()` and other `auto_xxx()` functions are fantastic for getting started,
 you'll eventually want more control over your preprocessing pipeline.
 Let's explore each step individually – 
 think of it as learning to cook rather than just ordering takeout!
@@ -151,17 +147,9 @@ think of it as learning to cook rather than just ordering takeout!
 ### Step 1: Normalization – Getting Everyone on the Same Page 📏
 
 Imagine you're comparing heights of people measured in different units – 
-some in feet,
-some in meters,
-some in furlongs (okay,
-maybe not furlongs).
+some in feet, some in meters, some in furlongs (okay, maybe not furlongs).
 Normalization does the same thing for your omics data,
 bringing all intensities to a comparable scale.
-
-**What `auto_clean()` does:**
-
-- **Glycoproteomics data**: Median normalization
-- **Glycomics data**: Median quotient normalization followed by total area normalization
 
 **Available normalization methods in `glyclean`:**
 
@@ -180,8 +168,11 @@ bringing all intensities to a comparable scale.
 | `normalize_vsn()` | Variance stabilizing normalization | Heteroscedastic data |
 
 **Pro Tips:** 
-- Notice the `by` parameter in many functions? This allows stratified normalization within groups – super useful when you have distinct experimental conditions!
-- **Maximum flexibility**: The `by` parameter accepts both column names from your sample metadata and direct vectors! This gives you complete control over grouping, even for custom groupings that aren't stored in your experiment object.
+
+- Notice the `by` parameter in many functions? This allows stratified normalization within groups – 
+  super useful when you have distinct experimental conditions!
+- **Maximum flexibility**: The `by` parameter accepts both column names from your sample metadata and direct vectors!
+  This gives you complete control over grouping, even for custom groupings that aren't stored in your experiment object.
 
 ```{r eval=FALSE}
 # Example: Using by parameter with a custom vector
@@ -200,11 +191,7 @@ normed_exp <- normalize_median(exp)
 
 Some variables are like that friend who never shows up to plans – 
 they're missing most of the time and aren't very helpful.
-In omics data,
-variables with too many missing values are often more noise than signal.
-
-**What `auto_clean()` does:**
-Removes variables with >50% missing values
+In omics data, variables with too many missing values are often more noise than signal.
 
 **Available variable filtering functions in `glyclean`:**
 
@@ -216,15 +203,11 @@ Removes variables with >50% missing values
 | `remove_constant()` | Remove constant variables | General use |
 | `remove_low_expr()` | Remove variables with low expression | General use |
 
-**Manual approach (do it differently):**
+Here we remove variables with more than 50% missing values in all samples:
 
 ```{r}
-filtered_exp <- remove_rare(normed_exp, n = 0, by = "group", strict = FALSE)
+filtered_exp <- remove_rare(normed_exp, prop = 0.5)
 ```
-
-This code translates to: 
-"Keep any variable that has complete data in at least one biological group."
-Perfect for maximizing the number of glycopeptides retained!
 
 ### Step 3: Imputation – Filling in the Blanks Intelligently 🔮
 
@@ -232,16 +215,10 @@ Here's where things get scientifically interesting!
 Missing values in mass spectrometry aren't randomly distributed – 
 they follow patterns based on the physics and chemistry of the measurement process.
 
-**The Science:** Missing values are typically "Missing At Random" (MAR),
+**The Science:** Missing values in MS-based omics data are typically "Missing Not At Random" (MNAR),
 meaning they're related to the intensity of the signal.
 Low-abundance ions are more likely to be missed,
 either due to poor ionization efficiency or because they fall below the detection threshold.
-
-**What `auto_clean()` does (intelligently based on sample size):**
-
-- **Small studies (≤30 samples)**: Sample minimum imputation (ultra-robust)
-- **Medium studies (30-100 samples)**: Minimum probability imputation (statistically principled)
-- **Large studies (>100 samples)**: MissForest imputation (machine learning power)
 
 **Your imputation toolkit:**
 
@@ -288,11 +265,6 @@ the specific glycan structures attached to specific protein sites.
 - **"gfs"**: Glycoforms with structures (recommended default)
 - **"gf"**: Glycoforms with compositions (most condensed)
 
-**What `auto_clean()` does:**
-If `glycan_structure` column exists,
-aggregate to "gfs" level.
-Otherwise, aggregate to "gf" level.
-
 ```{r}
 aggregated_exp <- aggregate(imputed_exp, to_level = "gf")
 ```
@@ -313,10 +285,6 @@ or environmental conditions can introduce systematic bias.
 
 **The Good News:** If your experimental design is well-controlled (conditions distributed across batches),
 batch effect correction can work wonders!
-
-**What `auto_clean()` does:**
-Automatically detects and corrects batch effects when it finds a "batch" column in your sample metadata,
-and batch effects are detected for more than 10% variables.
 
 ```{r}
 # To detect batch effects:
@@ -367,22 +335,11 @@ Most `glyclean` functions happily accept plain matrices as input,
 so you can preprocess your protein expression data using the same toolkit.
 Consistency is key!
 
-**What `auto_clean()` does:** 
-Nothing again! 
-This step requires external protein expression data,
-which `auto_clean()` can't magically conjure up.
-You're the chef here – `auto_clean()` just provides the ingredients!
-
 ### 🎉 Mission Accomplished!
 
 Congratulations! 
-You now have beautifully preprocessed,
-analysis-ready glycoproteomics data.
-Your data has been normalized,
-filtered,
-imputed,
-aggregated,
-and batch-corrected – 
+You now have beautifully preprocessed, analysis-ready glycoproteomics data.
+Your data has been normalized, filtered, imputed, aggregated, and batch-corrected – 
 it's ready to reveal its biological secrets!
 
 ## Advanced Usage: Beyond `glyexp::experiment()` Objects 🔧
