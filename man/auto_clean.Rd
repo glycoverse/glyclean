@@ -2,86 +2,114 @@
 % Please edit documentation in R/auto-clean.R
 \name{auto_clean}
 \alias{auto_clean}
-\alias{auto_clean.glyexp_experiment}
-\alias{auto_clean.default}
 \title{Automatic Data Preprocessing}
 \usage{
-auto_clean(exp)
-
-\method{auto_clean}{glyexp_experiment}(exp)
-
-\method{auto_clean}{default}(exp)
+auto_clean(
+  exp,
+  group_col = "group",
+  batch_col = "batch",
+  qc_name = "QC",
+  normalize_to_try = NULL,
+  impute_to_try = NULL,
+  remove_preset = "discovery",
+  batch_prop_threshold = 0.3,
+  check_batch_confounding = TRUE,
+  batch_confounding_threshold = 0.4
+)
 }
 \arguments{
 \item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} containing glycoproteomics or
 glycomics data.}
+
+\item{group_col}{The column name in sample_info for groups. Default is "group".
+Can be NULL when no group information is available.}
+
+\item{batch_col}{The column name in sample_info for batches. Default is "batch".
+Can be NULL when no batch information is available.}
+
+\item{qc_name}{The name of QC samples in the \code{group_col} column. Default is "QC".
+Only used when \code{group_col} is not NULL.}
+
+\item{normalize_to_try}{Normalization functions to try. A list. Default includes:
+\itemize{
+\item \code{\link[=normalize_median]{normalize_median()}}: median normalization
+\item \code{\link[=normalize_median_abs]{normalize_median_abs()}}: absolute median normalization
+\item \code{\link[=normalize_total_area]{normalize_total_area()}}: total area mormalization
+\item \code{\link[=normalize_quantile]{normalize_quantile()}}: quantile normalization
+\item \code{\link[=normalize_loessf]{normalize_loessf()}}: LoessF normalization
+\item \code{\link[=normalize_loesscyc]{normalize_loesscyc()}}: LoessCyc normalization
+\item \code{\link[=normalize_rlr]{normalize_rlr()}}: RLR normalization
+\item \code{\link[=normalize_rlrma]{normalize_rlrma()}}: RLRMA normalization
+\item \code{\link[=normalize_rlrmacyc]{normalize_rlrmacyc()}}: RLRMAcyc normalization
+}}
+
+\item{impute_to_try}{Imputation functions to try. A list. Default includes:
+\itemize{
+\item \code{\link[=impute_zero]{impute_zero()}}: zero imputation
+\item \code{\link[=impute_sample_min]{impute_sample_min()}}: sample-wise minimum imputation
+\item \code{\link[=impute_half_sample_min]{impute_half_sample_min()}}: half sample-wise minimum imputation
+\item \code{\link[=impute_sw_knn]{impute_sw_knn()}}: sample-wise KNN imputation
+\item \code{\link[=impute_fw_knn]{impute_fw_knn()}}: feature-wise KNN imputation
+\item \code{\link[=impute_bpca]{impute_bpca()}}: BPCA imputation
+\item \code{\link[=impute_ppca]{impute_ppca()}}: PPCA imputation
+\item \code{\link[=impute_svd]{impute_svd()}}: SVD imputation
+\item \code{\link[=impute_min_prob]{impute_min_prob()}}: minimum probability imputation
+\item \code{\link[=impute_miss_forest]{impute_miss_forest()}}: MissForest imputation
+}}
+
+\item{remove_preset}{The preset for removing variables. Default is "discovery".
+Available presets:
+\itemize{
+\item "simple": remove variables with more than 50\% missing values.
+\item "discovery": more lenient, remove variables with more than 80\% missing values,
+but ensure less than 50\% of missing values in at least one group.
+\item "biomarker": more strict, remove variables with more than 40\% missing values,
+and ensure less than 60\% of missing values in all groups.
+}}
+
+\item{batch_prop_threshold}{The proportion of variables that must show significant batch effects to perform batch correction.
+Default is 0.3 (30\%).}
+
+\item{check_batch_confounding}{Whether to check for confounding between batch and group variables.
+Default to TRUE.}
+
+\item{batch_confounding_threshold}{The threshold for Cramer's V to consider batch and group variables highly confounded.
+Only used when \code{check_batch_confounding} is TRUE. Default to 0.4.}
 }
 \value{
 A modified \code{glyexp::experiment()} object.
 }
 \description{
 Perform automatic data preprocessing on glycoproteomics or glycomics data.
-This function applies a standardized preprocessing pipeline that includes
+This function applies an intelligent preprocessing pipeline that includes
 normalization, missing value handling, imputation, aggregation (for
 glycoproteomics data), and batch effect correction.
-}
-\details{
-The preprocessing pipeline differs based on the experiment type:
 
-For Glycoproteomics Data:
-\enumerate{
-\item Median normalization
-\item Remove variables with \\>50\% missing values
-\item Automatic imputation (method depends on sample size)
-\item Automatic aggregation (gfs level if structure available, otherwise gf level)
-\item Final median normalization
-\item Intelligent batch effect correction
-}
-
-For Glycomics Data:
-\enumerate{
-\item Median quotient normalization
-\item Remove variables with \\>50\% missing values
-\item Automatic imputation (method depends on sample size)
-\item Total area normalization
-\item Intelligent batch effect correction
-}
-
-Automatic Imputation Strategy:
+For glycomics data, this function calls these functions in sequence:
 \itemize{
-\item <=30 samples: Sample minimum imputation
-\item 31-100 samples: Minimum probability imputation
-\item \\>100 samples: MissForest imputation
+\item \code{\link[=auto_remove]{auto_remove()}}
+\item \code{\link[=auto_normalize]{auto_normalize()}}
+\item \code{\link[=normalize_total_area]{normalize_total_area()}}
+\item \code{\link[=auto_impute]{auto_impute()}}
+\item \code{\link[=auto_correct_batch_effect]{auto_correct_batch_effect()}}
 }
 
-Automatic Aggregation Strategy (Glycoproteomics Only):
+For glycoproteomics data, this function calls these functions in sequence:
 \itemize{
-\item If \code{glycan_structure} column exists: Aggregate to "gfs" level
-\item If no \code{glycan_structure} column: Aggregate to "gf" level
+\item \code{\link[=auto_normalize]{auto_normalize()}}
+\item \code{\link[=auto_remove]{auto_remove()}}
+\item \code{\link[=auto_impute]{auto_impute()}}
+\item \code{\link[=auto_aggregate]{auto_aggregate()}}
+\item \code{\link[=auto_normalize]{auto_normalize()}}
+\item \code{\link[=auto_correct_batch_effect]{auto_correct_batch_effect()}}
 }
-
-Intelligent Batch Effect Correction:
-
-The function first detects batch effects using ANOVA.
-Batch correction is only performed if more than 10\% of variables
-show significant batch effects (p < 0.05).
-If a \code{group} column exists in the sample information,
-it will be used as a covariate in both detection and correction
-to preserve biological variation.
-The batches are defined by the \code{batch} column in the sample information tibble.
 }
 \examples{
-\dontrun{
-# For glycoproteomics data
-cleaned_exp <- auto_clean(glycoprot_exp)
-
-# For glycomics data
-cleaned_exp <- auto_clean(glycomics_exp)
-}
+library(glyexp)
+exp <- real_experiment
+auto_clean(exp)
 
 }
 \seealso{
-\code{\link[=aggregate]{aggregate()}}, \code{\link[=normalize_median]{normalize_median()}}, \code{\link[=remove_rare]{remove_rare()}},
-\code{\link[=impute_sample_min]{impute_sample_min()}}, \code{\link[=impute_min_prob]{impute_min_prob()}}, \code{\link[=impute_miss_forest]{impute_miss_forest()}},
-\code{\link[=correct_batch_effect]{correct_batch_effect()}}
+\code{\link[=auto_normalize]{auto_normalize()}}, \code{\link[=auto_remove]{auto_remove()}}, \code{\link[=auto_impute]{auto_impute()}}, \code{\link[=auto_aggregate]{auto_aggregate()}}, \code{\link[=auto_correct_batch_effect]{auto_correct_batch_effect()}}
 }

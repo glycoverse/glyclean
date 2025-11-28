@@ -1,178 +1,166 @@
 #' Automatic Data Preprocessing
 #'
+#' @description
 #' Perform automatic data preprocessing on glycoproteomics or glycomics data.
-#' This function applies a standardized preprocessing pipeline that includes
+#' This function applies an intelligent preprocessing pipeline that includes
 #' normalization, missing value handling, imputation, aggregation (for
 #' glycoproteomics data), and batch effect correction.
 #'
+#' For glycomics data, this function calls these functions in sequence:
+#' - [auto_remove()]
+#' - [auto_normalize()]
+#' - [normalize_total_area()]
+#' - [auto_impute()]
+#' - [auto_correct_batch_effect()]
+#'
+#' For glycoproteomics data, this function calls these functions in sequence:
+#' - [auto_normalize()]
+#' - [auto_remove()]
+#' - [auto_impute()]
+#' - [auto_aggregate()]
+#' - [auto_normalize()]
+#' - [auto_correct_batch_effect()]
+#'
 #' @param exp A [glyexp::experiment()] containing glycoproteomics or
 #'   glycomics data.
-#'
-#' @details
-#' The preprocessing pipeline differs based on the experiment type:
-#' 
-#' For Glycoproteomics Data:
-#' 
-#' 1. Median normalization
-#' 2. Remove variables with \\>50% missing values
-#' 3. Automatic imputation (method depends on sample size)
-#' 4. Automatic aggregation (gfs level if structure available, otherwise gf level)
-#' 5. Final median normalization
-#' 6. Intelligent batch effect correction
-#' 
-#' For Glycomics Data:
-#' 
-#' 1. Median quotient normalization
-#' 2. Remove variables with \\>50% missing values  
-#' 3. Automatic imputation (method depends on sample size)
-#' 4. Total area normalization
-#' 5. Intelligent batch effect correction
-#' 
-#' Automatic Imputation Strategy:
-#' 
-#' - <=30 samples: Sample minimum imputation
-#' - 31-100 samples: Minimum probability imputation
-#' - \\>100 samples: MissForest imputation
-#' 
-#' Automatic Aggregation Strategy (Glycoproteomics Only):
-#' 
-#' - If `glycan_structure` column exists: Aggregate to "gfs" level
-#' - If no `glycan_structure` column: Aggregate to "gf" level
-#' 
-#' Intelligent Batch Effect Correction:
-#' 
-#' The function first detects batch effects using ANOVA.
-#' Batch correction is only performed if more than 10% of variables 
-#' show significant batch effects (p < 0.05).
-#' If a `group` column exists in the sample information,
-#' it will be used as a covariate in both detection and correction
-#' to preserve biological variation.
-#' The batches are defined by the `batch` column in the sample information tibble.
-#'
-#' @importFrom magrittr %>%
+#' @param group_col The column name in sample_info for groups. Default is "group".
+#'   Can be NULL when no group information is available.
+#' @param batch_col The column name in sample_info for batches. Default is "batch".
+#'   Can be NULL when no batch information is available.
+#' @param qc_name The name of QC samples in the `group_col` column. Default is "QC".
+#'   Only used when `group_col` is not NULL.
+#' @param normalize_to_try Normalization functions to try. A list. Default includes:
+#'   - [normalize_median()]: median normalization
+#'   - [normalize_median_abs()]: absolute median normalization
+#'   - [normalize_total_area()]: total area mormalization
+#'   - [normalize_quantile()]: quantile normalization
+#'   - [normalize_loessf()]: LoessF normalization
+#'   - [normalize_loesscyc()]: LoessCyc normalization
+#'   - [normalize_rlr()]: RLR normalization
+#'   - [normalize_rlrma()]: RLRMA normalization
+#'   - [normalize_rlrmacyc()]: RLRMAcyc normalization
+#' @param impute_to_try Imputation functions to try. A list. Default includes:
+#'   - [impute_zero()]: zero imputation
+#'   - [impute_sample_min()]: sample-wise minimum imputation
+#'   - [impute_half_sample_min()]: half sample-wise minimum imputation
+#'   - [impute_sw_knn()]: sample-wise KNN imputation
+#'   - [impute_fw_knn()]: feature-wise KNN imputation
+#'   - [impute_bpca()]: BPCA imputation
+#'   - [impute_ppca()]: PPCA imputation
+#'   - [impute_svd()]: SVD imputation
+#'   - [impute_min_prob()]: minimum probability imputation
+#'   - [impute_miss_forest()]: MissForest imputation
+#' @param remove_preset The preset for removing variables. Default is "discovery".
+#'   Available presets:
+#'   - "simple": remove variables with more than 50% missing values.
+#'   - "discovery": more lenient, remove variables with more than 80% missing values,
+#'     but ensure less than 50% of missing values in at least one group.
+#'   - "biomarker": more strict, remove variables with more than 40% missing values,
+#'     and ensure less than 60% of missing values in all groups.
+#' @param batch_prop_threshold The proportion of variables that must show significant batch effects to perform batch correction.
+#'   Default is 0.3 (30%).
+#' @param check_batch_confounding Whether to check for confounding between batch and group variables.
+#'   Default to TRUE.
+#' @param batch_confounding_threshold The threshold for Cramer's V to consider batch and group variables highly confounded.
+#'   Only used when `check_batch_confounding` is TRUE. Default to 0.4.
 #'
 #' @return A modified `glyexp::experiment()` object.
-#' 
+#'
 #' @examples
-#' \dontrun{
-#' # For glycoproteomics data
-#' cleaned_exp <- auto_clean(glycoprot_exp)
-#' 
-#' # For glycomics data
-#' cleaned_exp <- auto_clean(glycomics_exp)
-#' }
-#' 
-#' @seealso [aggregate()], [normalize_median()], [remove_rare()],
-#'   [impute_sample_min()], [impute_min_prob()], [impute_miss_forest()],
-#'   [correct_batch_effect()]
+#' library(glyexp)
+#' exp <- real_experiment
+#' auto_clean(exp)
+#'
+#' @seealso [auto_normalize()], [auto_remove()], [auto_impute()], [auto_aggregate()], [auto_correct_batch_effect()]
 #' @export
-auto_clean <- function(exp) {
-  UseMethod("auto_clean")
-}
-
-#' @rdname auto_clean
-#' @export
-auto_clean.glyexp_experiment <- function(exp) {
+auto_clean <- function(
+  exp,
+  group_col = "group",
+  batch_col = "batch",
+  qc_name = "QC",
+  normalize_to_try = NULL,
+  impute_to_try = NULL,
+  remove_preset = "discovery",
+  batch_prop_threshold = 0.3,
+  check_batch_confounding = TRUE,
+  batch_confounding_threshold = 0.4
+) {
   checkmate::assert_class(exp, "glyexp_experiment")
+  checkmate::assert_string(group_col)
+  checkmate::assert_string(qc_name)
+  checkmate::assert_list(normalize_to_try, types = "function", null.ok = TRUE)
+  checkmate::assert_list(impute_to_try, types = "function", null.ok = TRUE)
+  checkmate::assert_choice(remove_preset, c("simple", "discovery", "biomarker"))
+  checkmate::assert_number(batch_prop_threshold, lower = 0, upper = 1)
+  checkmate::assert_flag(check_batch_confounding)
+  checkmate::assert_number(batch_confounding_threshold, lower = 0, upper = 1)
   if (!checkmate::test_choice(glyexp::get_exp_type(exp), c("glycoproteomics", "glycomics"))) {
     cli::cli_abort(c(
       "The experiment type must be {.val glycoproteomics} or {.val glycomics}.",
       "x" = "Got {.val {glyexp::get_exp_type(exp)}}."
     ))
   }
+
+  params <- list(
+    group_col = group_col,
+    qc_name = qc_name,
+    normalize_to_try = normalize_to_try,
+    impute_to_try = impute_to_try,
+    remove_preset = remove_preset,
+    batch_prop_threshold = batch_prop_threshold,
+    check_batch_confounding = check_batch_confounding,
+    batch_confounding_threshold = batch_confounding_threshold
+  )
+  info <- inspect_experiment(exp)
   switch(
     glyexp::get_exp_type(exp),
-    glycoproteomics = .auto_clean_glycoproteomics(exp),
-    glycomics = .auto_clean_glycomics(exp)
+    glycoproteomics = .auto_clean_glycoproteomics(exp, params, info),
+    glycomics = .auto_clean_glycomics(exp, params, info)
   )
 }
 
-#' @rdname auto_clean
-#' @export
-auto_clean.default <- function(exp) {
-  cli::cli_abort(c(
-    "{.arg exp} must be a {.cls glyexp_experiment} object.",
-    "x" = "Got {.cls {class(exp)}}."
-  ))
-}
-
-.auto_clean_glycoproteomics <- function(exp) {
-  cli::cli_progress_step("Normalizing data (Median)")
-  exp <- normalize_median(exp)
-  cli::cli_progress_step("Removing variables with >50% missing values")
-  exp <- remove_rare(exp, prop = 0.5)
-  cli::cli_progress_step("Imputing missing values")
-  exp <- .auto_impute(exp)
-  cli::cli_progress_step("Aggregating data")
-  exp <- .auto_aggregate(exp)
-  cli::cli_progress_step("Normalizing data again")
-  exp <- normalize_median(exp)
-  exp <- .auto_batch_correct(exp)
+.auto_clean_glycoproteomics <- function(exp, params, info) {
+  cli::cli_h2("Normalizing data")
+  exp <- auto_normalize(exp, params$group_col, params$qc_name, params$normalize_to_try, info)
+  cli::cli_h2("Removing variables with too many missing values")
+  exp <- auto_remove(exp, params$remove_preset, params$group_col, params$qc_name, info)
+  cli::cli_h2("Imputing missing values")
+  exp <- auto_impute(exp, params$group_col, params$qc_name, params$impute_to_try, info)
+  cli::cli_h2("Aggregating data")
+  exp <- auto_aggregate(exp)
+  cli::cli_h2("Normalizing data again")
+  exp <- auto_normalize(exp, params$group_col, params$qc_name, params$normalize_to_try, info)
+  cli::cli_h2("Correcting batch effects")
+  exp <- auto_correct_batch_effect(
+    exp,
+    params$group_col,
+    params$batch_col,
+    params$batch_prop_threshold,
+    params$check_batch_confounding,
+    params$batch_confounding_threshold,
+    info
+  )
   exp
 }
 
-.auto_clean_glycomics <- function(exp) {
-  cli::cli_progress_step("Normalizing data (Median Quotient)")
-  exp <- normalize_median_quotient(exp)
-  cli::cli_progress_step("Removing variables with >50% missing values")
-  exp <- remove_rare(exp, prop = 0.5)
-  cli::cli_progress_step("Imputing missing values")
-  exp <- .auto_impute(exp)
-  cli::cli_progress_step("Normalizing data (Total Area)")
+.auto_clean_glycomics <- function(exp, params, info) {
+  cli::cli_h2("Removing variables with too many missing values")
+  exp <- auto_remove(exp, params$remove_preset, params$group_col, params$qc_name, info)
+  cli::cli_h2("Normalizing data")
+  exp <- auto_normalize(exp, params$group_col, params$qc_name, params$normalize_to_try, info)
+  cli::cli_h2("Normalizing data (Total Area)")
   exp <- normalize_total_area(exp)
-  exp <- .auto_batch_correct(exp)
-  exp
-}
-
-
-.auto_impute <- function(exp) {
-  if (ncol(exp) <= 30) {
-    cli::cli_alert_info("Sample size <= 30, using sample minimum imputation")
-    impute_sample_min(exp)
-  } else if (ncol(exp) <= 100) {
-    cli::cli_alert_info("Sample size <= 100, using minimum probability imputation")
-    impute_min_prob(exp)
-  } else {
-    cli::cli_alert_info("Sample size > 100, using MissForest imputation")
-    impute_miss_forest(exp)
-  }
-}
-
-
-.auto_aggregate <- function(exp) {
-  # Aggregate to "glycoform" level.
-  if ("glycan_structure" %in% colnames(glyexp::get_var_info(exp))) {
-    aggregate(exp, to_level = "gfs")
-  } else {
-    aggregate(exp, to_level = "gf")
-  }
-}
-
-
-.auto_batch_correct <- function(exp) {
-  # Check if batch column exists
-  if (!"batch" %in% colnames(exp$sample_info)) {
-    return(exp)
-  }
-
-  # Determine if group column exists for use as covariate
-  group_col <- if ("group" %in% colnames(exp$sample_info)) "group" else NULL
-  
-  # Detect batch effects
-  p_values <- detect_batch_effect(exp, batch = "batch", group = group_col)
-  
-  # Calculate proportion of significant variables (p < 0.05)
-  significant_vars <- sum(p_values < 0.05, na.rm = TRUE)
-  total_vars <- length(p_values[!is.na(p_values)])
-  prop_significant <- significant_vars / total_vars
-  
-  # Only correct batch effects if >10% of variables are significant
-  if (prop_significant > 0.1) {
-    cli::cli_progress_step("Correcting batch effects ({scales::percent(prop_significant, accuracy = 0.1)} of variables affected)")
-    exp <- correct_batch_effect(exp, batch = "batch", group = group_col)
-  } else {
-    cli::cli_alert_info("Batch effects detected in {scales::percent(prop_significant, accuracy = 0.1)} of variables (<=10%). Skipping batch correction.")
-  }
-  
+  cli::cli_h2("Imputing missing values")
+  exp <- auto_impute(exp, params$group_col, params$qc_name, params$impute_to_try, info)
+  cli::cli_h2("Correcting batch effects")
+  exp <- auto_correct_batch_effect(
+    exp,
+    params$group_col,
+    params$batch_col,
+    params$batch_prop_threshold,
+    params$check_batch_confounding,
+    params$batch_confounding_threshold,
+    info
+  )
   exp
 }
