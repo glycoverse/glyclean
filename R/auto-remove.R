@@ -48,6 +48,11 @@ auto_remove <- function(exp, preset = "discovery", group_col = "group", qc_name 
   exp_sub$expr_mat <- exp$expr_mat[, samples_to_use, drop = FALSE]
   exp_sub$sample_info <- exp$sample_info[exp$sample_info$sample %in% samples_to_use, , drop = FALSE]
 
+  # Drop unused levels in group column if present to avoid empty groups in removal functions
+  if (info$has_group && is.factor(exp_sub$sample_info[[group_col]])) {
+    exp_sub$sample_info[[group_col]] <- droplevels(exp_sub$sample_info[[group_col]])
+  }
+
   # Determine group column to use
   use_group_col <- if (info$has_group) group_col else NULL
 
