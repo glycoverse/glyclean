@@ -2,6 +2,8 @@
 
 ## glyclean (development version)
 
+## glyclean 0.9.0
+
 ### Breaking changes
 
 - [`auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.md)
