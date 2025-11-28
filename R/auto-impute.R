@@ -86,7 +86,7 @@ auto_impute <- function(exp, group_col = "group", qc_name = "QC", to_try = NULL,
 
     # Try imputation
     tryCatch({
-      imputed_exp <- method(exp)
+      suppressWarnings(imputed_exp <- method(exp))
       imputed_mat <- imputed_exp$expr_mat[, info$qc_samples, drop = FALSE]
       cv <- .calc_median_cv(imputed_mat)
 
