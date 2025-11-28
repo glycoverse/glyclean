@@ -4,7 +4,7 @@
 
 ## Breaking changes
 
-- `auto_clean()` has been redesigned to be more flexible and robust. It now calls `auto_
+- `auto_clean()` has been redesigned to be more flexible and robust. It now calls `auto_normalize()`, `auto_remove()`, `auto_impute()`, `auto_aggregate()`, and `auto_correct_batch_effect()` in sequence, depending on the experiment type.
 
 ## New features
 
