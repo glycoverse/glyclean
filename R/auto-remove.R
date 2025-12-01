@@ -42,10 +42,10 @@ auto_remove <- function(exp, preset = "discovery", group_col = "group", qc_name 
   all_samples <- exp$sample_info$sample
   if (info$has_qc) {
     samples_to_use <- setdiff(all_samples, info$qc_samples)
-    cli::cli_inform("QC samples found. Excluding {.val {length(info$qc_samples)}} QC samples from removal process.")
+    cli::cli_alert_info("QC samples found. Excluding {.val {length(info$qc_samples)}} QC samples from removal process.")
   } else {
     samples_to_use <- all_samples
-    cli::cli_inform("No QC samples found. Using all samples.")
+    cli::cli_alert_info("No QC samples found. Using all samples.")
   }
 
   if (length(samples_to_use) == 0) {
@@ -65,7 +65,7 @@ auto_remove <- function(exp, preset = "discovery", group_col = "group", qc_name 
   # Determine group column to use
   use_group_col <- if (info$has_group) group_col else NULL
 
-  cli::cli_inform("Applying preset {.val {preset}}...")
+  cli::cli_alert_info("Applying preset {.val {preset}}...")
 
   if (preset == "simple") {
     exp_sub <- suppressMessages(remove_rare(exp_sub, prop = 0.5, min_n = 1))
@@ -88,9 +88,9 @@ auto_remove <- function(exp, preset = "discovery", group_col = "group", qc_name 
     exp$var_info <- exp$var_info |> dplyr::filter(.data$variable %in% kept_vars)
 
     prop_removed <- round(n_removed / n_before * 100, 2)
-    cli::cli_inform("Total removed: {.val {n_removed}} ({.val {prop_removed}}%) variables.")
+    cli::cli_alert_info("Total removed: {.val {n_removed}} ({.val {prop_removed}}%) variables.")
   } else {
-    cli::cli_inform("No variables removed.")
+    cli::cli_alert_info("No variables removed.")
   }
 
   exp

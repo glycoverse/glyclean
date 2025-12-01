@@ -3,7 +3,7 @@
     Code
       result_exp <- auto_aggregate(exp)
     Message
-      Aggregating to "gfs" level
+      i Aggregating to "gfs" level
 
 # auto_aggregate rejects non-glycoproteomics experiments
 
@@ -19,5 +19,5 @@
     Code
       result_exp <- auto_aggregate(exp)
     Message
-      Aggregating to "gf" level
+      i Aggregating to "gf" level
 

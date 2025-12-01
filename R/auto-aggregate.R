@@ -24,10 +24,10 @@ auto_aggregate <- function(exp) {
     ))
   }
   if ("glycan_structure" %in% colnames(glyexp::get_var_info(exp))) {
-    cli::cli_inform("Aggregating to {.val gfs} level")
+    cli::cli_alert_info("Aggregating to {.val gfs} level")
     glyclean_aggregate.glyexp_experiment(exp, to_level = "gfs")
   } else {
-    cli::cli_inform("Aggregating to {.val gf} level")
+    cli::cli_alert_info("Aggregating to {.val gf} level")
     glyclean_aggregate.glyexp_experiment(exp, to_level = "gf")
   }
 }

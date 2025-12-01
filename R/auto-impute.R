@@ -71,7 +71,7 @@ auto_impute <- function(exp, group_col = "group", qc_name = "QC", to_try = NULL,
 }
 
 .auto_impute_with_qc <- function(exp, to_try, info) {
-  cli::cli_inform("QC samples found. Choosing the best imputation method based on QC samples.")
+  cli::cli_alert_info("QC samples found. Choosing the best imputation method based on QC samples.")
 
   best_method <- NULL
   best_cv <- Inf
@@ -98,7 +98,7 @@ auto_impute <- function(exp, group_col = "group", qc_name = "QC", to_try = NULL,
         best_exp <- imputed_exp
       }
     }, error = function(e) {
-      cli::cli_warn("Method {.val {method_name}} failed: {e$message}")
+      cli::cli_alert_warning("Method {.val {method_name}} failed: {e$message}")
     })
   }
 
@@ -106,24 +106,24 @@ auto_impute <- function(exp, group_col = "group", qc_name = "QC", to_try = NULL,
     cli::cli_alert_success("Best method: {.val {best_method}} with Median CV = {.val {signif(best_cv, 4)}}")
     best_exp
   } else {
-    cli::cli_warn("All imputation methods failed. Returning original experiment.")
+    cli::cli_alert_warning("All imputation methods failed. Returning original experiment.")
     exp
   }
 }
 
 .auto_impute_default <- function(exp) {
-  cli::cli_inform("No QC samples found. Using default imputation method based on sample size.")
+  cli::cli_alert_info("No QC samples found. Using default imputation method based on sample size.")
 
   n_samples <- ncol(exp)
 
   if (n_samples <= 30) {
-    cli::cli_inform("Sample size <= 30, using {.fn impute_sample_min}.")
+    cli::cli_alert_info("Sample size <= 30, using {.fn impute_sample_min}.")
     impute_sample_min(exp)
   } else if (n_samples <= 100) {
-    cli::cli_inform("Sample size <= 100, using {.fn impute_min_prob}.")
+    cli::cli_alert_info("Sample size <= 100, using {.fn impute_min_prob}.")
     impute_min_prob(exp)
   } else {
-    cli::cli_inform("Sample size > 100, using {.fn impute_miss_forest}.")
+    cli::cli_alert_info("Sample size > 100, using {.fn impute_miss_forest}.")
     impute_miss_forest(exp)
   }
 }

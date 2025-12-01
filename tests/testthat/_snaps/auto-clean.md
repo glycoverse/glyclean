@@ -6,32 +6,38 @@
       
       -- Normalizing data --
       
-      No QC samples found. Using default normalization method based on experiment type.
-      Experiment type is "glycoproteomics". Using `normalize_median()`.
+      i No QC samples found. Using default normalization method based on experiment type.
+      i Experiment type is "glycoproteomics". Using `normalize_median()`.
+      v Normalization completed.
       
       -- Removing variables with too many missing values --
       
-      No QC samples found. Using all samples.
-      Applying preset "discovery"...
-      No variables removed.
+      i No QC samples found. Using all samples.
+      i Applying preset "discovery"...
+      i No variables removed.
+      v Variable removal completed.
       
       -- Imputing missing values --
       
-      No QC samples found. Using default imputation method based on sample size.
-      Sample size <= 30, using `impute_sample_min()`.
+      i No QC samples found. Using default imputation method based on sample size.
+      i Sample size <= 30, using `impute_sample_min()`.
+      v Imputation completed.
       
       -- Aggregating data --
       
-      Aggregating to "gfs" level
+      i Aggregating to "gfs" level
+      v Aggregation completed.
       
       -- Normalizing data again --
       
-      No QC samples found. Using default normalization method based on experiment type.
-      Experiment type is "glycoproteomics". Using `normalize_median()`.
+      i No QC samples found. Using default normalization method based on experiment type.
+      i Experiment type is "glycoproteomics". Using `normalize_median()`.
+      v Normalization completed.
       
       -- Correcting batch effects --
       
       i Batch column  not found in sample_info. Skipping batch correction.
+      v Batch correction completed.
 
 # auto_clean works for glycoproteomics data with QC
 
@@ -41,7 +47,7 @@
       
       -- Normalizing data --
       
-      QC samples found. Choosing the best normalization method based on QC samples.
+      i QC samples found. Choosing the best normalization method based on QC samples.
       * Raw data: Median CV = CV_VALUE
       * Method "normalize_median": Median CV = CV_VALUE
       * Method "normalize_median_abs": Median CV = CV_VALUE
@@ -54,16 +60,18 @@
       * Method "normalize_rlrma": Median CV = CV_VALUE
       * Method "normalize_rlrmacyc": Median CV = CV_VALUE
       v Best method: "BEST_METHOD" with Median CV = CV_VALUE
+      v Normalization completed.
       
       -- Removing variables with too many missing values --
       
-      QC samples found. Excluding 2 QC samples from removal process.
-      Applying preset "discovery"...
-      No variables removed.
+      i QC samples found. Excluding 2 QC samples from removal process.
+      i Applying preset "discovery"...
+      i No variables removed.
+      v Variable removal completed.
       
       -- Imputing missing values --
       
-      QC samples found. Choosing the best imputation method based on QC samples.
+      i QC samples found. Choosing the best imputation method based on QC samples.
       * Raw data: Median CV = CV_VALUE
       * Method "impute_zero": Median CV = CV_VALUE
       * Method "impute_sample_min": Median CV = CV_VALUE
@@ -76,14 +84,16 @@
       * Method "impute_min_prob": Median CV = CV_VALUE
       * Method "impute_miss_forest": Median CV = CV_VALUE
       v Best method: "BEST_METHOD" with Median CV = CV_VALUE
+      v Imputation completed.
       
       -- Aggregating data --
       
-      Aggregating to "gfs" level
+      i Aggregating to "gfs" level
+      v Aggregation completed.
       
       -- Normalizing data again --
       
-      QC samples found. Choosing the best normalization method based on QC samples.
+      i QC samples found. Choosing the best normalization method based on QC samples.
       * Raw data: Median CV = CV_VALUE
       * Method "normalize_median": Median CV = CV_VALUE
       * Method "normalize_median_abs": Median CV = CV_VALUE
@@ -96,10 +106,12 @@
       * Method "normalize_rlrma": Median CV = CV_VALUE
       * Method "normalize_rlrmacyc": Median CV = CV_VALUE
       v Best method: "BEST_METHOD" with Median CV = 0
+      v Normalization completed.
       
       -- Correcting batch effects --
       
       i Batch column  not found in sample_info. Skipping batch correction.
+      v Batch correction completed.
 
 # auto_clean works for glycomics data
 
@@ -109,25 +121,31 @@
       
       -- Removing variables with too many missing values --
       
-      No QC samples found. Using all samples.
-      Applying preset "discovery"...
-      No variables removed.
+      i No QC samples found. Using all samples.
+      i Applying preset "discovery"...
+      i No variables removed.
+      v Variable removal completed.
       
       -- Normalizing data --
       
-      No QC samples found. Using default normalization method based on experiment type.
-      Experiment type is "glycomics". Using `normalize_median_quotient()` + `normalize_total_area()`.
+      i No QC samples found. Using default normalization method based on experiment type.
+      i Experiment type is "glycomics". Using `normalize_median_quotient()` + `normalize_total_area()`.
+      v Normalization completed.
       
       -- Normalizing data (Total Area) --
       
+      v Total area normalization completed.
+      
       -- Imputing missing values --
       
-      No QC samples found. Using default imputation method based on sample size.
-      Sample size <= 30, using `impute_sample_min()`.
+      i No QC samples found. Using default imputation method based on sample size.
+      i Sample size <= 30, using `impute_sample_min()`.
+      v Imputation completed.
       
       -- Correcting batch effects --
       
       i Batch column  not found in sample_info. Skipping batch correction.
+      v Batch correction completed.
 
 # auto_clean works for glycomics data with QC
 
@@ -137,13 +155,14 @@
       
       -- Removing variables with too many missing values --
       
-      QC samples found. Excluding 2 QC samples from removal process.
-      Applying preset "discovery"...
-      No variables removed.
+      i QC samples found. Excluding 2 QC samples from removal process.
+      i Applying preset "discovery"...
+      i No variables removed.
+      v Variable removal completed.
       
       -- Normalizing data --
       
-      QC samples found. Choosing the best normalization method based on QC samples.
+      i QC samples found. Choosing the best normalization method based on QC samples.
       * Raw data: Median CV = CV_VALUE
       * Method "normalize_median": Median CV = CV_VALUE
       * Method "normalize_median_abs": Median CV = CV_VALUE
@@ -156,12 +175,15 @@
       * Method "normalize_rlrma": Median CV = CV_VALUE
       * Method "normalize_rlrmacyc": Median CV = CV_VALUE
       v Best method: "BEST_METHOD" with Median CV = CV_VALUE
+      v Normalization completed.
       
       -- Normalizing data (Total Area) --
       
+      v Total area normalization completed.
+      
       -- Imputing missing values --
       
-      QC samples found. Choosing the best imputation method based on QC samples.
+      i QC samples found. Choosing the best imputation method based on QC samples.
       * Raw data: Median CV = CV_VALUE
       * Method "impute_zero": Median CV = CV_VALUE
       * Method "impute_sample_min": Median CV = CV_VALUE
@@ -174,8 +196,10 @@
       * Method "impute_min_prob": Median CV = CV_VALUE
       * Method "impute_miss_forest": Median CV = CV_VALUE
       v Best method: "BEST_METHOD" with Median CV = CV_VALUE
+      v Imputation completed.
       
       -- Correcting batch effects --
       
       i Batch column  not found in sample_info. Skipping batch correction.
+      v Batch correction completed.
 

@@ -70,7 +70,7 @@ auto_normalize <- function(exp, group_col = "group", qc_name = "QC", to_try = NU
 }
 
 .auto_normalize_with_qc <- function(exp, to_try, info) {
-  cli::cli_inform("QC samples found. Choosing the best normalization method based on QC samples.")
+  cli::cli_alert_info("QC samples found. Choosing the best normalization method based on QC samples.")
 
   best_method <- NULL
   best_cv <- Inf
@@ -97,7 +97,7 @@ auto_normalize <- function(exp, group_col = "group", qc_name = "QC", to_try = NU
         best_exp <- normed_exp
       }
     }, error = function(e) {
-      cli::cli_warn("Method {.val {method_name}} failed: {e$message}")
+      cli::cli_alert_warning("Method {.val {method_name}} failed: {e$message}")
     })
   }
 
@@ -105,30 +105,30 @@ auto_normalize <- function(exp, group_col = "group", qc_name = "QC", to_try = NU
     cli::cli_alert_success("Best method: {.val {best_method}} with Median CV = {.val {signif(best_cv, 4)}}")
     best_exp
   } else {
-    cli::cli_warn("All normalization methods failed. Returning original experiment.")
+    cli::cli_alert_warning("All normalization methods failed. Returning original experiment.")
     exp
   }
 }
 
 .auto_normalize_default <- function(exp) {
-  cli::cli_inform("No QC samples found. Using default normalization method based on experiment type.")
+  cli::cli_alert_info("No QC samples found. Using default normalization method based on experiment type.")
 
   exp_type <- exp$meta_data$exp_type
 
   if (is.null(exp_type)) {
     # Fallback if exp_type is missing (though it should be there)
-    cli::cli_warn("Experiment type not found. Defaulting to median normalization.")
+    cli::cli_alert_warning("Experiment type not found. Defaulting to median normalization.")
     return(normalize_median(exp))
   }
 
   if (exp_type == "glycomics") {
-    cli::cli_inform("Experiment type is {.val glycomics}. Using {.fn normalize_median_quotient} + {.fn normalize_total_area}.")
+    cli::cli_alert_info("Experiment type is {.val glycomics}. Using {.fn normalize_median_quotient} + {.fn normalize_total_area}.")
     exp <- normalize_median_quotient(exp)
     exp <- normalize_total_area(exp)
     exp
   } else {
     # Default for glycoproteomics and others
-    cli::cli_inform("Experiment type is {.val {exp_type}}. Using {.fn normalize_median}.")
+    cli::cli_alert_info("Experiment type is {.val {exp_type}}. Using {.fn normalize_median}.")
     normalize_median(exp)
   }
 }
