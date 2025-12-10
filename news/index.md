@@ -1,6 +1,10 @@
 # Changelog
 
-## glyclean (development version)
+## glyclean 0.9.1
+
+### Minor improvements and fixes
+
+- Optimize the message printing of `auto_xxx()` functions.
 
 ## glyclean 0.9.0
 
