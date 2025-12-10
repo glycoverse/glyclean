@@ -108,49 +108,38 @@ clean_exp <- auto_clean(exp)
 #> 
 #> ── Normalizing data ──
 #> 
-#> No QC samples found. Using default normalization method based on experiment
-#> type.
-#> Experiment type is "glycoproteomics". Using `normalize_median()`.
-#> 
+#> ℹ No QC samples found. Using default normalization method based on experiment type.
+#> ℹ Experiment type is "glycoproteomics". Using `normalize_median()`.
+#> ✔ Normalization completed.
 #> 
 #> ── Removing variables with too many missing values ──
 #> 
-#> 
-#> 
-#> No QC samples found. Using all samples.
-#> Applying preset "discovery"...
-#> Total removed: 24 (0.56%) variables.
-#> 
+#> ℹ No QC samples found. Using all samples.
+#> ℹ Applying preset "discovery"...
+#> ℹ Total removed: 24 (0.56%) variables.
+#> ✔ Variable removal completed.
 #> 
 #> ── Imputing missing values ──
 #> 
-#> 
-#> 
-#> No QC samples found. Using default imputation method based on sample size.
-#> Sample size <= 30, using `impute_sample_min()`.
-#> 
+#> ℹ No QC samples found. Using default imputation method based on sample size.
+#> ℹ Sample size <= 30, using `impute_sample_min()`.
+#> ✔ Imputation completed.
 #> 
 #> ── Aggregating data ──
 #> 
-#> 
-#> 
-#> Aggregating to "gfs" level
-#> 
+#> ℹ Aggregating to "gfs" level
+#> ✔ Aggregation completed.
 #> 
 #> ── Normalizing data again ──
 #> 
-#> 
-#> 
-#> No QC samples found. Using default normalization method based on experiment
-#> type.
-#> Experiment type is "glycoproteomics". Using `normalize_median()`.
-#> 
+#> ℹ No QC samples found. Using default normalization method based on experiment type.
+#> ℹ Experiment type is "glycoproteomics". Using `normalize_median()`.
+#> ✔ Normalization completed.
 #> 
 #> ── Correcting batch effects ──
 #> 
-#> 
-#> 
 #> ℹ Batch column  not found in sample_info. Skipping batch correction.
+#> ✔ Batch correction completed.
 ```
 
 **That’s it!** Your data is now preprocessed and ready for analysis! 🎉
@@ -226,15 +215,14 @@ clean_exp <- exp |>
   auto_normalize() |>
   auto_impute() |>
   auto_aggregate()
-#> No QC samples found. Using all samples.
-#> Applying preset "discovery"...
-#> Total removed: 24 (0.56%) variables.
-#> No QC samples found. Using default normalization method based on experiment
-#> type.
-#> Experiment type is "glycoproteomics". Using `normalize_median()`.
-#> No QC samples found. Using default imputation method based on sample size.
-#> Sample size <= 30, using `impute_sample_min()`.
-#> Aggregating to "gfs" level
+#> ℹ No QC samples found. Using all samples.
+#> ℹ Applying preset "discovery"...
+#> ℹ Total removed: 24 (0.56%) variables.
+#> ℹ No QC samples found. Using default normalization method based on experiment type.
+#> ℹ Experiment type is "glycoproteomics". Using `normalize_median()`.
+#> ℹ No QC samples found. Using default imputation method based on sample size.
+#> ℹ Sample size <= 30, using `impute_sample_min()`.
+#> ℹ Aggregating to "gfs" level
 ```
 
 ## Taking the Scenic Route: Step-by-Step Preprocessing 🚶‍♀️

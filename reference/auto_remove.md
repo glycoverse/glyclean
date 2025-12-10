@@ -64,9 +64,9 @@ object.
 library(glyexp)
 exp <- real_experiment
 auto_remove(exp)
-#> No QC samples found. Using all samples.
-#> Applying preset "discovery"...
-#> Total removed: 24 (0.56%) variables.
+#> ℹ No QC samples found. Using all samples.
+#> ℹ Applying preset "discovery"...
+#> ℹ Total removed: 24 (0.56%) variables.
 #> 
 #> ── Glycoproteomics Experiment ──────────────────────────────────────────────────
 #> ℹ Expression matrix: 12 samples, 4238 variables

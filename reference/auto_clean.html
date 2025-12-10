@@ -47,7 +47,7 @@ auto_correct_batch_effect()
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -199,34 +199,38 @@ Only used when <code>check_batch_confounding</code> is TRUE. Default to 0.4.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Normalizing data</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> No QC samples found. Using default normalization method based on experiment</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> type.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Experiment type is <span style="color: #0000BB;">"glycoproteomics"</span>. Using `normalize_median()`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using default normalization method based on experiment type.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Experiment type is <span style="color: #0000BB;">"glycoproteomics"</span>. Using `normalize_median()`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Normalization completed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Removing variables with too many missing values</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> No QC samples found. Using all samples.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Applying preset <span style="color: #0000BB;">"discovery"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Total removed: <span style="color: #0000BB;">24</span> (<span style="color: #0000BB;">0.56</span>%) variables.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using all samples.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Applying preset <span style="color: #0000BB;">"discovery"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Total removed: <span style="color: #0000BB;">24</span> (<span style="color: #0000BB;">0.56</span>%) variables.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Variable removal completed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Imputing missing values</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> No QC samples found. Using default imputation method based on sample size.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Sample size &lt;= 30, using `impute_sample_min()`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using default imputation method based on sample size.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Sample size &lt;= 30, using `impute_sample_min()`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Imputation completed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Aggregating data</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aggregating to <span style="color: #0000BB;">"gfs"</span> level</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Aggregating to <span style="color: #0000BB;">"gfs"</span> level</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Aggregation completed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Normalizing data again</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> No QC samples found. Using default normalization method based on experiment</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> type.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Experiment type is <span style="color: #0000BB;">"glycoproteomics"</span>. Using `normalize_median()`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using default normalization method based on experiment type.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Experiment type is <span style="color: #0000BB;">"glycoproteomics"</span>. Using `normalize_median()`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Normalization completed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Correcting batch effects</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Batch column  not found in sample_info. Skipping batch correction.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Batch correction completed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Glycoproteomics Experiment</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Expression matrix: <span style="color: #0000BB;">12</span> samples, <span style="color: #0000BB;">3979</span> variables</span>

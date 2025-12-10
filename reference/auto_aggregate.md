@@ -31,7 +31,7 @@ information.
 library(glyexp)
 exp <- real_experiment
 auto_aggregate(exp)
-#> Aggregating to "gfs" level
+#> ℹ Aggregating to "gfs" level
 #> 
 #> ── Glycoproteomics Experiment ──────────────────────────────────────────────────
 #> ℹ Expression matrix: 12 samples, 4001 variables

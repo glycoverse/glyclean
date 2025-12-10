@@ -15,7 +15,7 @@ and a combination of median quotient and total area normalization for glycomics 
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -110,9 +110,8 @@ thus not suitable for regular omics context.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glycoverse.github.io/glyexp/" class="external-link">glyexp</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">exp_normed</span> <span class="op">&lt;-</span> <span class="fu">auto_normalize</span><span class="op">(</span><span class="va">real_experiment</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> No QC samples found. Using default normalization method based on experiment</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> type.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Experiment type is <span style="color: #0000BB;">"glycoproteomics"</span>. Using `normalize_median()`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using default normalization method based on experiment type.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Experiment type is <span style="color: #0000BB;">"glycoproteomics"</span>. Using `normalize_median()`.</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -92,7 +92,6 @@ significantly thus not suitable for regular omics context.
 ``` r
 library(glyexp)
 exp_normed <- auto_normalize(real_experiment)
-#> No QC samples found. Using default normalization method based on experiment
-#> type.
-#> Experiment type is "glycoproteomics". Using `normalize_median()`.
+#> ℹ No QC samples found. Using default normalization method based on experiment type.
+#> ℹ Experiment type is "glycoproteomics". Using `normalize_median()`.
 ```

@@ -1,12 +1,20 @@
 # Changelog
 
+## glyclean (development version)
+
 ## glyclean 0.9.0
 
 ### Breaking changes
 
 - [`auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.md)
   has been redesigned to be more flexible and robust. It now calls
-  \`auto\_
+  [`auto_normalize()`](https://glycoverse.github.io/glyclean/reference/auto_normalize.md),
+  [`auto_remove()`](https://glycoverse.github.io/glyclean/reference/auto_remove.md),
+  [`auto_impute()`](https://glycoverse.github.io/glyclean/reference/auto_impute.md),
+  [`auto_aggregate()`](https://glycoverse.github.io/glyclean/reference/auto_aggregate.md),
+  and
+  [`auto_correct_batch_effect()`](https://glycoverse.github.io/glyclean/reference/auto_correct_batch_effect.md)
+  in sequence, depending on the experiment type.
 
 ### New features
 

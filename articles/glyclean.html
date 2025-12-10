@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -152,49 +152,38 @@ come from 3 different batches and represent 4 distinct biological groups
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Normalizing data</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; No QC samples found. Using default normalization method based on experiment</span></span>
-<span><span class="co">#&gt; type.</span></span>
-<span><span class="co">#&gt; Experiment type is <span style="color: #0000BB;">"glycoproteomics"</span>. Using `normalize_median()`.</span></span>
-<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using default normalization method based on experiment type.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Experiment type is <span style="color: #0000BB;">"glycoproteomics"</span>. Using `normalize_median()`.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalization completed.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Removing variables with too many missing values</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; No QC samples found. Using all samples.</span></span>
-<span><span class="co">#&gt; Applying preset <span style="color: #0000BB;">"discovery"</span>...</span></span>
-<span><span class="co">#&gt; Total removed: <span style="color: #0000BB;">24</span> (<span style="color: #0000BB;">0.56</span>%) variables.</span></span>
-<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using all samples.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Applying preset <span style="color: #0000BB;">"discovery"</span>...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Total removed: <span style="color: #0000BB;">24</span> (<span style="color: #0000BB;">0.56</span>%) variables.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Variable removal completed.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Imputing missing values</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; No QC samples found. Using default imputation method based on sample size.</span></span>
-<span><span class="co">#&gt; Sample size &lt;= 30, using `impute_sample_min()`.</span></span>
-<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using default imputation method based on sample size.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Sample size &lt;= 30, using `impute_sample_min()`.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Imputation completed.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Aggregating data</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Aggregating to <span style="color: #0000BB;">"gfs"</span> level</span></span>
-<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Aggregating to <span style="color: #0000BB;">"gfs"</span> level</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Aggregation completed.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Normalizing data again</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; No QC samples found. Using default normalization method based on experiment</span></span>
-<span><span class="co">#&gt; type.</span></span>
-<span><span class="co">#&gt; Experiment type is <span style="color: #0000BB;">"glycoproteomics"</span>. Using `normalize_median()`.</span></span>
-<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using default normalization method based on experiment type.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Experiment type is <span style="color: #0000BB;">"glycoproteomics"</span>. Using `normalize_median()`.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalization completed.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Correcting batch effects</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Batch column  not found in sample_info. Skipping batch correction.</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Batch column  not found in sample_info. Skipping batch correction.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Batch correction completed.</span></span></code></pre></div>
 <p><strong>That’s it!</strong> Your data is now preprocessed and ready
 for analysis! 🎉</p>
 <p>But Wait, What Just Happened? <code><a href="../reference/auto_clean.html">auto_clean()</a></code> isn’t
@@ -267,15 +256,14 @@ different orders:</p>
 <span>  <span class="fu"><a href="../reference/auto_normalize.html">auto_normalize</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/auto_impute.html">auto_impute</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/auto_aggregate.html">auto_aggregate</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; No QC samples found. Using all samples.</span></span>
-<span><span class="co">#&gt; Applying preset <span style="color: #0000BB;">"discovery"</span>...</span></span>
-<span><span class="co">#&gt; Total removed: <span style="color: #0000BB;">24</span> (<span style="color: #0000BB;">0.56</span>%) variables.</span></span>
-<span><span class="co">#&gt; No QC samples found. Using default normalization method based on experiment</span></span>
-<span><span class="co">#&gt; type.</span></span>
-<span><span class="co">#&gt; Experiment type is <span style="color: #0000BB;">"glycoproteomics"</span>. Using `normalize_median()`.</span></span>
-<span><span class="co">#&gt; No QC samples found. Using default imputation method based on sample size.</span></span>
-<span><span class="co">#&gt; Sample size &lt;= 30, using `impute_sample_min()`.</span></span>
-<span><span class="co">#&gt; Aggregating to <span style="color: #0000BB;">"gfs"</span> level</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using all samples.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Applying preset <span style="color: #0000BB;">"discovery"</span>...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Total removed: <span style="color: #0000BB;">24</span> (<span style="color: #0000BB;">0.56</span>%) variables.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using default normalization method based on experiment type.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Experiment type is <span style="color: #0000BB;">"glycoproteomics"</span>. Using `normalize_median()`.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using default imputation method based on sample size.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Sample size &lt;= 30, using `impute_sample_min()`.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Aggregating to <span style="color: #0000BB;">"gfs"</span> level</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="taking-the-scenic-route-step-by-step-preprocessing">Taking the Scenic Route: Step-by-Step Preprocessing 🚶‍♀️<a class="anchor" aria-label="anchor" href="#taking-the-scenic-route-step-by-step-preprocessing"></a>

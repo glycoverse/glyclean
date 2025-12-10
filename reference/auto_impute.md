@@ -95,6 +95,6 @@ slow for large datasets.
 ``` r
 library(glyexp)
 exp_imputed <- auto_impute(real_experiment)
-#> No QC samples found. Using default imputation method based on sample size.
-#> Sample size <= 30, using `impute_sample_min()`.
+#> ℹ No QC samples found. Using default imputation method based on sample size.
+#> ℹ Sample size <= 30, using `impute_sample_min()`.
 ```
