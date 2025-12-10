@@ -3,7 +3,7 @@ pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   glyclean: glyclean.html
-last_built: 2025-12-10T07:32Z
+last_built: 2025-12-10T07:34Z
 urls:
   reference: https://glycoverse.github.io/glyclean/reference
   article: https://glycoverse.github.io/glyclean/articles
