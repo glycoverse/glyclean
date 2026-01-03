@@ -57,3 +57,17 @@ test_that("plot_rle supports grouping", {
 
   vdiffr::expect_doppelganger("plot_rle_by_group", plot_rle(test_exp, by = "group"))
 })
+
+test_that("plot_batch_pca returns ggplot", {
+  skip_if_not_installed("factoextra")
+  test_exp <- simple_exp(4, 4)
+  test_exp$sample_info$batch <- c("A", "A", "B", "B")
+
+  vdiffr::expect_doppelganger("plot_batch_pca", plot_batch_pca(test_exp, batch_col = "batch"))
+})
+
+test_that("plot_batch_pca rejects experiment without batch column", {
+  skip_if_not_installed("factoextra")
+  test_exp <- simple_exp(4, 4)
+  expect_error(plot_batch_pca(test_exp), "does not exist")
+})

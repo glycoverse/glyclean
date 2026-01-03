@@ -236,3 +236,78 @@ plot_rle <- function(exp, by = NULL) {
 
   plot + ggplot2::labs(x = "Sample", y = "Relative log expression")
 }
+
+#' Plot PCA Score by Batch
+#'
+#' Draw a PCA score plot for samples and color points by batch.
+#' PCA is computed on log2-transformed intensities after removing variables
+#' with missing values.
+#'
+#' @param exp A [glyexp::experiment()] object.
+#' @param batch_col Column name in `sample_info`, or a factor/vector with length
+#'   equal to the number of samples.
+#'
+#' @returns A ggplot object of PCA scores.
+#'
+#' @examples
+#' exp <- glyexp::toy_experiment
+#' exp$sample_info$batch <- rep(c("A", "B"), each = 3)
+#' plot_batch_pca(exp, batch_col = "batch")
+#'
+#' @export
+plot_batch_pca <- function(exp, batch_col = "batch") {
+  checkmate::assert_class(exp, "glyexp_experiment")
+  rlang::check_installed("factoextra", reason = "to use `plot_batch_pca()`")
+
+  mat <- exp$expr_mat
+  if (ncol(mat) < 2 || nrow(mat) < 2) {
+    cli::cli_abort("PCA requires at least two samples and two variables.")
+  }
+
+  sample_names <- colnames(mat)
+  if (is.null(sample_names)) {
+    sample_names <- as.character(seq_len(ncol(mat)))
+  }
+
+  batch_values <- .resolve_column_param(
+    batch_col,
+    sample_info = exp$sample_info,
+    param_name = "batch_col",
+    n_samples = ncol(mat),
+    allow_null = FALSE
+  )
+  batch_factor <- if (is.factor(batch_values)) {
+    droplevels(batch_values)
+  } else {
+    factor(as.character(batch_values))
+  }
+
+  log_mat <- log2(mat)
+  log_mat[!is.finite(log_mat)] <- NA_real_
+  complete_rows <- stats::complete.cases(log_mat)
+  if (!any(complete_rows)) {
+    cli::cli_abort("No complete variables available for PCA after removing missing values.")
+  }
+  log_mat <- log_mat[complete_rows, , drop = FALSE]
+
+  row_sds <- matrixStats::rowSds(log_mat)
+  log_mat <- log_mat[row_sds > 0, , drop = FALSE]
+  if (nrow(log_mat) < 2) {
+    cli::cli_abort("PCA requires at least two variables with non-zero variance.")
+  }
+
+  pca_mat <- t(log_mat)
+  rownames(pca_mat) <- sample_names
+  if (min(dim(pca_mat)) < 2) {
+    cli::cli_abort("PCA requires at least two samples and two variables after filtering.")
+  }
+
+  pca <- stats::prcomp(pca_mat, center = TRUE, scale. = TRUE)
+
+  factoextra::fviz_pca_ind(
+    pca,
+    geom.ind = "point",
+    habillage = batch_factor
+  ) +
+    ggplot2::labs(color = "Batch")
+}
