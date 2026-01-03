@@ -40,3 +40,15 @@ test_that("plot_int_boxplot supports grouping", {
     plot_int_boxplot(test_exp, by = "group")
   )
 })
+
+test_that("plot_rle computes relative log expression values", {
+  test_exp <- simple_exp(3, 3)
+  vdiffr::expect_doppelganger("plot_rle", plot_rle(test_exp))
+})
+
+test_that("plot_rle supports grouping", {
+  test_exp <- simple_exp(3, 3)
+  test_exp$sample_info$group <- c("A", "A", "B")
+
+  vdiffr::expect_doppelganger("plot_rle_by_group", plot_rle(test_exp, by = "group"))
+})
