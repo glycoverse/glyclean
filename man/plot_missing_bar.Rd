@@ -2,21 +2,24 @@
 % Please edit documentation in R/qc.R
 \name{plot_missing_bar}
 \alias{plot_missing_bar}
-\title{Plot Missing Value Proportions by Sample}
+\title{Plot Missing Value Proportions by Sample or Variable}
 \usage{
-plot_missing_bar(exp, ...)
+plot_missing_bar(exp, on = "sample", ...)
 }
 \arguments{
 \item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
+\item{on}{Whether to plot missingness by \code{"sample(s)"} or \code{"variable(s)"}.
+Defaults to \code{"sample"}.}
+
 \item{...}{Other arguments passed to \code{ggplot2::geom_col()}.}
 }
 \value{
-A ggplot object of missing value proportions by sample.
+A ggplot object of missing value proportions by item.
 }
 \description{
-Draw a bar plot of missing value proportions for each sample.
-Samples are ordered from low to high missing proportion.
+Draw a bar plot of missing value proportions for each sample or variable.
+Items are ordered from low to high missing proportion.
 }
 \examples{
 plot_missing_bar(glyexp::toy_experiment)
