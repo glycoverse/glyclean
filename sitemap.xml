@@ -48,6 +48,15 @@
 <url><loc>https://glycoverse.github.io/glyclean/reference/normalize_rlrmacyc.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/normalize_total_area.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/normalize_vsn.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/plot_batch_pca.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/plot_cv_dent.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/plot_int_boxplot.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/plot_missing_bar.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/plot_missing_heatmap.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/plot_rank_abundance.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/plot_rep_scatter.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/plot_rle.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/plot_tic_bar.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/remove_constant.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/remove_low_cv.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/remove_low_expr.html</loc></url>

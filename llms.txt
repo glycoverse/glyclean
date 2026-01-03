@@ -110,52 +110,30 @@ and other steps that are necessary for downstream analysis.
 
 # Package index
 
-## All functions
+## Automactic Processing
 
-- [`add_site_seq()`](https://glycoverse.github.io/glyclean/reference/add_site_seq.md)
-  : Add site-specific sequence information.
-- [`adjust_protein()`](https://glycoverse.github.io/glyclean/reference/adjust_protein.md)
-  : Adjust Protein Expression
-- [`aggregate()`](https://glycoverse.github.io/glyclean/reference/aggregate.md)
-  [`glyclean_aggregate(`*`<glyexp_experiment>`*`)`](https://glycoverse.github.io/glyclean/reference/aggregate.md)
-  [`glyclean_aggregate(`*`<default>`*`)`](https://glycoverse.github.io/glyclean/reference/aggregate.md)
-  : Aggregate Data
-- [`auto_aggregate()`](https://glycoverse.github.io/glyclean/reference/auto_aggregate.md)
-  : Automatic Aggregation
 - [`auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.md)
   : Automatic Data Preprocessing
-- [`auto_correct_batch_effect()`](https://glycoverse.github.io/glyclean/reference/auto_correct_batch_effect.md)
-  : Automatic Batch Correction
+- [`auto_aggregate()`](https://glycoverse.github.io/glyclean/reference/auto_aggregate.md)
+  : Automatic Aggregation
 - [`auto_impute()`](https://glycoverse.github.io/glyclean/reference/auto_impute.md)
   : Automatic Imputation
 - [`auto_normalize()`](https://glycoverse.github.io/glyclean/reference/auto_normalize.md)
   : Automatic Normalization
 - [`auto_remove()`](https://glycoverse.github.io/glyclean/reference/auto_remove.md)
   : Automatic Removing Variables
-- [`correct_batch_effect()`](https://glycoverse.github.io/glyclean/reference/correct_batch_effect.md)
-  : Correct Batch Effect
-- [`detect_batch_effect()`](https://glycoverse.github.io/glyclean/reference/detect_batch_effect.md)
-  : Detect batch effect
-- [`impute_bpca()`](https://glycoverse.github.io/glyclean/reference/impute_bpca.md)
-  : BPCA Imputation
-- [`impute_fw_knn()`](https://glycoverse.github.io/glyclean/reference/impute_fw_knn.md)
-  : Feature-wise KNN Imputation
-- [`impute_half_sample_min()`](https://glycoverse.github.io/glyclean/reference/impute_half_sample_min.md)
-  : Half Sample Minimum Imputation
-- [`impute_min_prob()`](https://glycoverse.github.io/glyclean/reference/impute_min_prob.md)
-  : Minimum Probability Imputation
-- [`impute_miss_forest()`](https://glycoverse.github.io/glyclean/reference/impute_miss_forest.md)
-  : MissForest Imputation
-- [`impute_ppca()`](https://glycoverse.github.io/glyclean/reference/impute_ppca.md)
-  : PPCA Imputation
-- [`impute_sample_min()`](https://glycoverse.github.io/glyclean/reference/impute_sample_min.md)
-  : Sample Minimum Imputation
-- [`impute_svd()`](https://glycoverse.github.io/glyclean/reference/impute_svd.md)
-  : SVD Imputation
-- [`impute_sw_knn()`](https://glycoverse.github.io/glyclean/reference/impute_sw_knn.md)
-  : Sample-wise KNN Imputation
-- [`impute_zero()`](https://glycoverse.github.io/glyclean/reference/impute_zero.md)
-  : Zero Imputation
+- [`auto_correct_batch_effect()`](https://glycoverse.github.io/glyclean/reference/auto_correct_batch_effect.md)
+  : Automatic Batch Correction
+
+## Aggregation
+
+- [`aggregate()`](https://glycoverse.github.io/glyclean/reference/aggregate.md)
+  [`glyclean_aggregate(`*`<glyexp_experiment>`*`)`](https://glycoverse.github.io/glyclean/reference/aggregate.md)
+  [`glyclean_aggregate(`*`<default>`*`)`](https://glycoverse.github.io/glyclean/reference/aggregate.md)
+  : Aggregate Data
+
+## Normalization
+
 - [`normalize_loesscyc()`](https://glycoverse.github.io/glyclean/reference/normalize_loesscyc.md)
   : LoessCyc Normalization
 - [`normalize_loessf()`](https://glycoverse.github.io/glyclean/reference/normalize_loessf.md)
@@ -179,6 +157,32 @@ and other steps that are necessary for downstream analysis.
   : Total Area Normalization
 - [`normalize_vsn()`](https://glycoverse.github.io/glyclean/reference/normalize_vsn.md)
   : Variance Stabilizing Normalization
+
+## Imputation
+
+- [`impute_bpca()`](https://glycoverse.github.io/glyclean/reference/impute_bpca.md)
+  : BPCA Imputation
+- [`impute_fw_knn()`](https://glycoverse.github.io/glyclean/reference/impute_fw_knn.md)
+  : Feature-wise KNN Imputation
+- [`impute_half_sample_min()`](https://glycoverse.github.io/glyclean/reference/impute_half_sample_min.md)
+  : Half Sample Minimum Imputation
+- [`impute_min_prob()`](https://glycoverse.github.io/glyclean/reference/impute_min_prob.md)
+  : Minimum Probability Imputation
+- [`impute_miss_forest()`](https://glycoverse.github.io/glyclean/reference/impute_miss_forest.md)
+  : MissForest Imputation
+- [`impute_ppca()`](https://glycoverse.github.io/glyclean/reference/impute_ppca.md)
+  : PPCA Imputation
+- [`impute_sample_min()`](https://glycoverse.github.io/glyclean/reference/impute_sample_min.md)
+  : Sample Minimum Imputation
+- [`impute_svd()`](https://glycoverse.github.io/glyclean/reference/impute_svd.md)
+  : SVD Imputation
+- [`impute_sw_knn()`](https://glycoverse.github.io/glyclean/reference/impute_sw_knn.md)
+  : Sample-wise KNN Imputation
+- [`impute_zero()`](https://glycoverse.github.io/glyclean/reference/impute_zero.md)
+  : Zero Imputation
+
+## Filtering
+
 - [`remove_constant()`](https://glycoverse.github.io/glyclean/reference/remove_constant.md)
   : Remove Constant Variables
 - [`remove_low_cv()`](https://glycoverse.github.io/glyclean/reference/remove_low_cv.md)
@@ -190,6 +194,44 @@ and other steps that are necessary for downstream analysis.
   Variance
 - [`remove_rare()`](https://glycoverse.github.io/glyclean/reference/remove_rare.md)
   : Remove Rare Variables with Too Many Missing Values
+
+## Batch Effects
+
+- [`correct_batch_effect()`](https://glycoverse.github.io/glyclean/reference/correct_batch_effect.md)
+  : Correct Batch Effect
+- [`detect_batch_effect()`](https://glycoverse.github.io/glyclean/reference/detect_batch_effect.md)
+  : Detect batch effect
+- [`plot_batch_pca()`](https://glycoverse.github.io/glyclean/reference/plot_batch_pca.md)
+  : Plot PCA Score by Batch
+
+## Protein Adjustment
+
+- [`adjust_protein()`](https://glycoverse.github.io/glyclean/reference/adjust_protein.md)
+  : Adjust Protein Expression
+
+## Annotation
+
+- [`add_site_seq()`](https://glycoverse.github.io/glyclean/reference/add_site_seq.md)
+  : Add site-specific sequence information.
+
+## QC Plots
+
+- [`plot_cv_dent()`](https://glycoverse.github.io/glyclean/reference/plot_cv_dent.md)
+  : Plot CV Density
+- [`plot_int_boxplot()`](https://glycoverse.github.io/glyclean/reference/plot_int_boxplot.md)
+  : Plot Log-Intensity Boxplots by Sample
+- [`plot_missing_bar()`](https://glycoverse.github.io/glyclean/reference/plot_missing_bar.md)
+  : Plot Missing Value Proportions by Sample or Variable
+- [`plot_missing_heatmap()`](https://glycoverse.github.io/glyclean/reference/plot_missing_heatmap.md)
+  : Plot Missing Value Heatmap
+- [`plot_rep_scatter()`](https://glycoverse.github.io/glyclean/reference/plot_rep_scatter.md)
+  : Plot Replicate Scatter Plots
+- [`plot_rle()`](https://glycoverse.github.io/glyclean/reference/plot_rle.md)
+  : Plot Relative Log Expression (RLE) Boxplots
+- [`plot_tic_bar()`](https://glycoverse.github.io/glyclean/reference/plot_tic_bar.md)
+  : Plot Total Intensity by Sample
+- [`plot_rank_abundance()`](https://glycoverse.github.io/glyclean/reference/plot_rank_abundance.md)
+  : Plot Rank Abundance
 
 # Articles
 
