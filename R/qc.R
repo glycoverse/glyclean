@@ -237,6 +237,79 @@ plot_rle <- function(exp, by = NULL) {
   plot + ggplot2::labs(x = "Sample", y = "Relative log expression")
 }
 
+#' Plot CV Density
+#'
+#' Compute coefficient of variation (CV) for each variable and plot its density.
+#' When `by` is provided, CVs are computed within each group and densities are
+#' shown with different fills.
+#'
+#' @param exp A [glyexp::experiment()] object.
+#' @param by Grouping variable for samples. Can be a column name in `sample_info`
+#'   or a vector/factor with length equal to the number of samples. When provided,
+#'   CVs are computed within each group and densities are shown with different fills.
+#'
+#' @returns A ggplot object of CV density.
+#'
+#' @examples
+#' plot_cv_dent(glyexp::toy_experiment)
+#' exp <- glyexp::toy_experiment
+#' exp$sample_info$group <- rep(c("A", "B"), length.out = ncol(exp$expr_mat))
+#' plot_cv_dent(exp, by = "group")
+#'
+#' @export
+plot_cv_dent <- function(exp, by = NULL) {
+  checkmate::assert_class(exp, "glyexp_experiment")
+
+  mat <- exp$expr_mat
+  var_names <- rownames(mat)
+  if (is.null(var_names)) {
+    var_names <- as.character(seq_len(nrow(mat)))
+  }
+
+  by_values <- .resolve_column_param(
+    by,
+    sample_info = exp$sample_info,
+    param_name = "by",
+    n_samples = ncol(mat),
+    allow_null = TRUE
+  )
+
+  if (is.null(by_values)) {
+    cvs <- apply(mat, 1, .cv)
+    plot_data <- tibble::tibble(variable = var_names, cv = cvs)
+  } else {
+    cv_mat <- .summarize_vars_mat(mat, .cv, by = by_values)
+    rownames(cv_mat) <- var_names
+    plot_data <- tibble::as_tibble(cv_mat, rownames = "variable")
+    plot_data <- tidyr::pivot_longer(
+      plot_data,
+      cols = -dplyr::all_of("variable"),
+      names_to = "group",
+      values_to = "cv"
+    )
+    plot_data$group <- factor(plot_data$group, levels = colnames(cv_mat))
+  }
+
+  plot_data <- dplyr::filter(plot_data, is.finite(.data$cv))
+  if (nrow(plot_data) == 0) {
+    cli::cli_abort("No finite CV values available for plotting.")
+  }
+
+  plot <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$cv))
+  if (is.null(by_values)) {
+    plot <- plot + ggplot2::geom_density()
+  } else {
+    plot <- plot + ggplot2::geom_density(ggplot2::aes(fill = .data$group), alpha = 0.4)
+  }
+
+  plot <- plot + ggplot2::labs(x = "CV", y = "Density")
+  if (!is.null(by_values)) {
+    plot <- plot + ggplot2::labs(fill = "Group")
+  }
+
+  plot
+}
+
 #' Plot PCA Score by Batch
 #'
 #' Draw a PCA score plot for samples and color points by batch.

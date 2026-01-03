@@ -58,6 +58,17 @@ test_that("plot_rle supports grouping", {
   vdiffr::expect_doppelganger("plot_rle_by_group", plot_rle(test_exp, by = "group"))
 })
 
+test_that("plot_cv_dent computes CV per variable", {
+  test_exp <- simple_exp(3, 3)
+  vdiffr::expect_doppelganger("plot_cv_dent", plot_cv_dent(test_exp))
+})
+
+test_that("plot_cv_dent supports grouping", {
+  test_exp <- simple_exp(3, 4)
+  test_exp$sample_info$group <- c("A", "A", "B", "B")
+  vdiffr::expect_doppelganger("plot_cv_dent_by_group", plot_cv_dent(test_exp, by = "group"))
+})
+
 test_that("plot_batch_pca returns ggplot", {
   skip_if_not_installed("factoextra")
   test_exp <- simple_exp(4, 4)
