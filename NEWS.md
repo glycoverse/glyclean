@@ -1,4 +1,22 @@
-# glyclean (development version)
+# glyclean 0.10.0
+
+## New features
+
+- Added a comprehensive suite of Quality Control (QC) plotting functions:
+    - `plot_missing_heatmap()`: Binary heatmap of missing value patterns.
+    - `plot_missing_bar()`: Bar plot of missing proportions by sample or variable.
+    - `plot_tic_bar()`: Total intensity (TIC) bar plot by sample.
+    - `plot_rank_abundance()`: Protein rank abundance plot.
+    - `plot_int_boxplot()`: Log2-intensity boxplots by sample, with optional grouping.
+    - `plot_rle()`: Relative Log Expression (RLE) boxplots for detecting sample-wise bias.
+    - `plot_cv_dent()`: CV density plot, with optional stratified groups.
+    - `plot_batch_pca()`: PCA score plot colored by batch.
+    - `plot_rep_scatter()`: Scatter plots of replicate sample pairs with $R^2$ values.
+
+## Minor improvements and fixes
+
+- Add `pheatmap`, `ggplotify`, `factoextra`, and `patchwork` to `Suggests` to support enhanced QC visualizations.
+- Document and provide examples for the new QC functions in the main vignette.
 
 # glyclean 0.9.1
 
