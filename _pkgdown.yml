@@ -1,4 +1,44 @@
 url: https://glycoverse.github.io/glyclean/
 template:
   bootstrap: 5
-
+reference:
+  - title: Automactic Processing
+    contents:
+      - auto_clean
+      - auto_aggregate
+      - auto_impute
+      - auto_normalize
+      - auto_remove
+      - auto_correct_batch_effect
+  - title: Aggregation
+    contents:
+      - aggregate
+  - title: Normalization
+    contents:
+      - starts_with("normalize_")
+  - title: Imputation
+    contents:
+      - starts_with("impute_")
+  - title: Filtering
+    contents:
+      - starts_with("remove_")
+  - title: Batch Effects
+    contents:
+      - correct_batch_effect
+      - detect_batch_effect
+      - plot_batch_pca
+  - title: Protein Adjustment
+    contents:
+      - adjust_protein
+  - title: Annotation
+    contents:
+      - add_site_seq
+  - title: QC Plots
+    contents:
+      - plot_cv_dent
+      - plot_int_boxplot
+      - plot_missing_bar
+      - plot_missing_heatmap
+      - plot_rep_scatter
+      - plot_rle
+      - plot_tic_bar
