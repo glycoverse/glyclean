@@ -69,17 +69,11 @@ plot_missing_bar <- function(exp, on = "sample") {
 
   on <- match.arg(on, c("sample", "samples", "variable", "variables"))
   if (on %in% c("sample", "samples")) {
-    item_names <- colnames(mat)
-    if (is.null(item_names)) {
-      item_names <- as.character(seq_len(ncol(mat)))
-    }
+    item_names <- .get_sample_names(mat)
     missing_prop <- colMeans(is.na(mat))
     x_label <- "Sample"
   } else {
-    item_names <- rownames(mat)
-    if (is.null(item_names)) {
-      item_names <- as.character(seq_len(nrow(mat)))
-    }
+    item_names <- .get_var_names(mat)
     missing_prop <- rowMeans(is.na(mat))
     x_label <- "Variable"
   }
@@ -114,10 +108,7 @@ plot_tic_bar <- function(exp) {
   checkmate::assert_class(exp, "glyexp_experiment")
 
   mat <- exp$expr_mat
-  sample_names <- colnames(mat)
-  if (is.null(sample_names)) {
-    sample_names <- as.character(seq_len(ncol(mat)))
-  }
+  sample_names <- .get_sample_names(mat)
 
   tic <- colSums(mat, na.rm = TRUE)
   names(tic) <- sample_names
@@ -155,14 +146,8 @@ plot_int_boxplot <- function(exp, by = NULL) {
   checkmate::assert_class(exp, "glyexp_experiment")
 
   mat <- exp$expr_mat
-  sample_names <- colnames(mat)
-  if (is.null(sample_names)) {
-    sample_names <- as.character(seq_len(ncol(mat)))
-  }
-
-  log_mat <- log2(mat)
-  log_mat[!is.finite(log_mat)] <- NA_real_
-  colnames(log_mat) <- sample_names
+  sample_names <- .get_sample_names(mat)
+  log_mat <- .log2_matrix(mat, sample_names = sample_names)
 
   by_values <- .resolve_column_param(
     by,
@@ -172,29 +157,18 @@ plot_int_boxplot <- function(exp, by = NULL) {
     allow_null = TRUE
   )
 
-  sample_order <- sample_names
-  if (!is.null(by_values)) {
-    group_levels <- if (is.factor(by_values)) levels(by_values) else unique(as.character(by_values))
-    group_factor <- factor(as.character(by_values), levels = group_levels)
-    group_df <- tibble::tibble(sample = sample_names, group = group_factor)
-    sample_order <- sample_names[order(match(group_factor, group_levels))]
-  }
-
-  plot_data <- tibble::as_tibble(log_mat, .name_repair = "minimal")
-  plot_data <- tidyr::pivot_longer(
-    plot_data,
-    cols = dplyr::all_of(sample_names),
-    names_to = "sample",
-    values_to = "log_intensity"
+  boxplot_data <- .prepare_sample_boxplot_data(
+    log_mat,
+    sample_names = sample_names,
+    by_values = by_values,
+    value_name = "log_intensity"
   )
-  if (!is.null(by_values)) {
-    plot_data <- dplyr::left_join(plot_data, group_df, by = "sample")
-  }
 
-  plot_data$sample <- factor(plot_data$sample, levels = sample_order)
-
-  plot <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$sample, y = .data$log_intensity))
-  if (!is.null(by_values)) {
+  plot <- ggplot2::ggplot(
+    boxplot_data$plot_data,
+    ggplot2::aes(x = .data$sample, y = .data$log_intensity)
+  )
+  if (boxplot_data$has_group) {
     plot <- plot + ggplot2::geom_boxplot(ggplot2::aes(fill = .data$group))
   } else {
     plot <- plot + ggplot2::geom_boxplot()
@@ -224,16 +198,10 @@ plot_rle <- function(exp, by = NULL) {
   checkmate::assert_class(exp, "glyexp_experiment")
 
   mat <- exp$expr_mat
-  sample_names <- colnames(mat)
-  if (is.null(sample_names)) {
-    sample_names <- as.character(seq_len(ncol(mat)))
-  }
-
-  log_mat <- log2(mat)
-  log_mat[!is.finite(log_mat)] <- NA_real_
+  sample_names <- .get_sample_names(mat)
+  log_mat <- .log2_matrix(mat, sample_names = sample_names)
   row_medians <- matrixStats::rowMedians(log_mat, na.rm = TRUE)
   rle_mat <- sweep(log_mat, 1, row_medians, "-")
-  colnames(rle_mat) <- sample_names
 
   by_values <- .resolve_column_param(
     by,
@@ -243,29 +211,18 @@ plot_rle <- function(exp, by = NULL) {
     allow_null = TRUE
   )
 
-  sample_order <- sample_names
-  if (!is.null(by_values)) {
-    group_levels <- if (is.factor(by_values)) levels(by_values) else unique(as.character(by_values))
-    group_factor <- factor(as.character(by_values), levels = group_levels)
-    group_df <- tibble::tibble(sample = sample_names, group = group_factor)
-    sample_order <- sample_names[order(match(group_factor, group_levels))]
-  }
-
-  plot_data <- tibble::as_tibble(rle_mat, .name_repair = "minimal")
-  plot_data <- tidyr::pivot_longer(
-    plot_data,
-    cols = dplyr::all_of(sample_names),
-    names_to = "sample",
-    values_to = "rle"
+  boxplot_data <- .prepare_sample_boxplot_data(
+    rle_mat,
+    sample_names = sample_names,
+    by_values = by_values,
+    value_name = "rle"
   )
-  if (!is.null(by_values)) {
-    plot_data <- dplyr::left_join(plot_data, group_df, by = "sample")
-  }
 
-  plot_data$sample <- factor(plot_data$sample, levels = sample_order)
-
-  plot <- ggplot2::ggplot(plot_data, ggplot2::aes(x = sample, y = rle))
-  if (!is.null(by_values)) {
+  plot <- ggplot2::ggplot(
+    boxplot_data$plot_data,
+    ggplot2::aes(x = .data$sample, y = .data$rle)
+  )
+  if (boxplot_data$has_group) {
     plot <- plot + ggplot2::geom_boxplot(ggplot2::aes(fill = .data$group))
   } else {
     plot <- plot + ggplot2::geom_boxplot()
@@ -298,10 +255,7 @@ plot_cv_dent <- function(exp, by = NULL) {
   checkmate::assert_class(exp, "glyexp_experiment")
 
   mat <- exp$expr_mat
-  var_names <- rownames(mat)
-  if (is.null(var_names)) {
-    var_names <- as.character(seq_len(nrow(mat)))
-  }
+  var_names <- .get_var_names(mat)
 
   by_values <- .resolve_column_param(
     by,
@@ -312,7 +266,9 @@ plot_cv_dent <- function(exp, by = NULL) {
   )
 
   if (is.null(by_values)) {
-    cvs <- apply(mat, 1, .cv)
+    cvs <- purrr::map_dbl(seq_len(nrow(mat)), function(i) {
+      .cv(mat[i, , drop = TRUE])
+    })
     plot_data <- tibble::tibble(variable = var_names, cv = cvs)
   } else {
     cv_mat <- .summarize_vars_mat(mat, .cv, by = by_values)
@@ -374,10 +330,7 @@ plot_batch_pca <- function(exp, batch_col = "batch") {
     cli::cli_abort("PCA requires at least two samples and two variables.")
   }
 
-  sample_names <- colnames(mat)
-  if (is.null(sample_names)) {
-    sample_names <- as.character(seq_len(ncol(mat)))
-  }
+  sample_names <- .get_sample_names(mat)
 
   batch_values <- .resolve_column_param(
     batch_col,
@@ -453,10 +406,7 @@ plot_rep_scatter <- function(exp, rep_col, n_pairs = 9) {
     cli::cli_abort("Replicate scatter plots require at least two samples and two variables.")
   }
 
-  sample_names <- colnames(mat)
-  if (is.null(sample_names)) {
-    sample_names <- as.character(seq_len(ncol(mat)))
-  }
+  sample_names <- .get_sample_names(mat)
 
   rep_values <- .resolve_column_param(
     rep_col,
@@ -481,7 +431,7 @@ plot_rep_scatter <- function(exp, rep_col, n_pairs = 9) {
     if (length(samples) < 2) {
       return(list())
     }
-    combn(samples, 2, simplify = FALSE)
+    utils::combn(samples, 2, simplify = FALSE)
   })
   pairs <- purrr::flatten(pair_list)
   if (length(pairs) == 0) {
@@ -497,9 +447,7 @@ plot_rep_scatter <- function(exp, rep_col, n_pairs = 9) {
 
   selected_pairs <- pairs[sample.int(length(pairs), size = n_pairs)]
 
-  log_mat <- log2(mat)
-  log_mat[!is.finite(log_mat)] <- NA_real_
-  colnames(log_mat) <- sample_names
+  log_mat <- .log2_matrix(mat, sample_names = sample_names)
 
   plots <- purrr::map(selected_pairs, function(pair) {
     plot_data <- tibble::tibble(
@@ -532,4 +480,59 @@ plot_rep_scatter <- function(exp, rep_col, n_pairs = 9) {
   })
 
   patchwork::wrap_plots(plots)
+}
+
+.get_sample_names <- function(mat) {
+  sample_names <- colnames(mat)
+  if (is.null(sample_names)) {
+    sample_names <- as.character(seq_len(ncol(mat)))
+  }
+  sample_names
+}
+
+.get_var_names <- function(mat) {
+  var_names <- rownames(mat)
+  if (is.null(var_names)) {
+    var_names <- as.character(seq_len(nrow(mat)))
+  }
+  var_names
+}
+
+.log2_matrix <- function(mat, sample_names = NULL) {
+  log_mat <- log2(mat)
+  log_mat[!is.finite(log_mat)] <- NA_real_
+  if (!is.null(sample_names)) {
+    colnames(log_mat) <- sample_names
+  }
+  log_mat
+}
+
+.prepare_sample_grouping <- function(sample_names, by_values) {
+  if (is.null(by_values)) {
+    return(list(group_df = NULL, sample_order = sample_names))
+  }
+
+  group_levels <- if (is.factor(by_values)) levels(by_values) else unique(as.character(by_values))
+  group_factor <- factor(as.character(by_values), levels = group_levels)
+  group_df <- tibble::tibble(sample = sample_names, group = group_factor)
+  sample_order <- sample_names[order(match(group_factor, group_levels))]
+
+  list(group_df = group_df, sample_order = sample_order)
+}
+
+.prepare_sample_boxplot_data <- function(value_mat, sample_names, by_values, value_name) {
+  grouping <- .prepare_sample_grouping(sample_names, by_values)
+  plot_data <- tibble::as_tibble(value_mat, .name_repair = "minimal")
+  plot_data <- tidyr::pivot_longer(
+    plot_data,
+    cols = dplyr::all_of(sample_names),
+    names_to = "sample",
+    values_to = value_name
+  )
+  if (!is.null(grouping$group_df)) {
+    plot_data <- dplyr::left_join(plot_data, grouping$group_df, by = "sample")
+  }
+  plot_data$sample <- factor(plot_data$sample, levels = grouping$sample_order)
+
+  list(plot_data = plot_data, has_group = !is.null(grouping$group_df))
 }
