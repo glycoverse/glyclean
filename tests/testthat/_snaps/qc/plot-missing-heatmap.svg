@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' class='svglite' data-engine-version='2.0' width='720.00pt' height='576.00pt' viewBox='0 0 720.00 576.00'>
+<defs>
+  <style type='text/css'><![CDATA[
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+  ]]></style>
+</defs>
+<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
+<defs>
+  <clipPath id='cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA='>
+    <rect x='0.00' y='0.00' width='720.00' height='576.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
+<rect x='0.00' y='0.00' width='720.00' height='576.00' style='stroke-width: 0.00; stroke: none;' />
+</g>
+<defs>
+  <clipPath id='cpMC4wMHw3MjAuMDB8MTcuMzB8NTc2LjAw'>
+    <rect x='0.00' y='17.30' width='720.00' height='558.70' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MTcuMzB8NTc2LjAw)'>
+</g>
+<defs>
+  <clipPath id='cpNS4wMHw2NTguMjR8MTcuMzB8NzIuMzA='>
+    <rect x='5.00' y='17.30' width='653.24' height='55.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpNS4wMHw2NTguMjR8MTcuMzB8NzIuMzA=)'>
+<polyline points='331.62,72.30 331.62,46.11 549.37,46.11 549.37,72.30 ' style='stroke-width: 0.75;' />
+<polyline points='113.87,72.30 113.87,19.92 440.50,19.92 440.50,46.11 ' style='stroke-width: 0.75;' />
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MTcuMzB8NTc2LjAw)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
+<rect x='5.00' y='72.30' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #4682B4;' />
+<rect x='5.00' y='232.79' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #CCCCCC;' />
+<rect x='5.00' y='393.28' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #CCCCCC;' />
+<rect x='222.75' y='72.30' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #4682B4;' />
+<rect x='222.75' y='232.79' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #4682B4;' />
+<rect x='222.75' y='393.28' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #CCCCCC;' />
+<rect x='440.50' y='72.30' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #4682B4;' />
+<rect x='440.50' y='232.79' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #4682B4;' />
+<rect x='440.50' y='393.28' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #4682B4;' />
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MTcuMzB8NTc2LjAw)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
+<text transform='translate(110.43,556.77) rotate(-270)' style='font-size: 10.00px; font-family: sans;' textLength='12.23px' lengthAdjust='spacingAndGlyphs'>S2</text>
+<text transform='translate(328.18,556.77) rotate(-270)' style='font-size: 10.00px; font-family: sans;' textLength='12.23px' lengthAdjust='spacingAndGlyphs'>S1</text>
+<text transform='translate(545.93,556.77) rotate(-270)' style='font-size: 10.00px; font-family: sans;' textLength='12.23px' lengthAdjust='spacingAndGlyphs'>S3</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MTcuMzB8NTc2LjAw)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
+<rect x='663.24' y='147.30' width='10.00' height='75.00' style='stroke-width: 0.75; stroke: none; fill: #CCCCCC;' />
+<rect x='663.24' y='72.30' width='10.00' height='75.00' style='stroke-width: 0.75; stroke: none; fill: #4682B4;' />
+<text x='677.24' y='225.75' style='font-size: 10.00px; font-family: sans;' textLength='33.91px' lengthAdjust='spacingAndGlyphs'>Missing</text>
+<text x='677.24' y='75.75' style='font-size: 10.00px; font-family: sans;' textLength='34.47px' lengthAdjust='spacingAndGlyphs'>Present</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MTcuMzB8NTc2LjAw)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
+<text x='0.00' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='132.10px' lengthAdjust='spacingAndGlyphs'>plot_missing_heatmap</text>
+</g>
+</svg>
