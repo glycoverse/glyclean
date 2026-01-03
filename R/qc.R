@@ -54,7 +54,6 @@ plot_missing_heatmap <- function(exp, ...) {
 #' @param exp A [glyexp::experiment()] object.
 #' @param on Whether to plot missingness by `"sample(s)"` or `"variable(s)"`.
 #'   Defaults to `"sample"`.
-#' @param ... Other arguments passed to `ggplot2::geom_col()`.
 #'
 #' @returns A ggplot object of missing value proportions by item.
 #'
@@ -62,7 +61,7 @@ plot_missing_heatmap <- function(exp, ...) {
 #' plot_missing_bar(glyexp::toy_experiment)
 #'
 #' @export
-plot_missing_bar <- function(exp, on = "sample", ...) {
+plot_missing_bar <- function(exp, on = "sample") {
   checkmate::assert_class(exp, "glyexp_experiment")
 
   mat <- exp$expr_mat
@@ -92,8 +91,8 @@ plot_missing_bar <- function(exp, on = "sample", ...) {
     missing_prop = missing_prop[item_order]
   )
 
-  ggplot2::ggplot(plot_data, ggplot2::aes(x = item, y = missing_prop)) +
-    ggplot2::geom_col(...) +
+  ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$item, y = .data$missing_prop)) +
+    ggplot2::geom_col() +
     ggplot2::labs(x = x_label, y = "Missing proportion")
 }
 
@@ -106,7 +105,6 @@ plot_missing_bar <- function(exp, on = "sample", ...) {
 #' @param by Grouping variable for samples. Can be a column name in `sample_info`
 #'   or a vector/factor with length equal to the number of samples. When provided,
 #'   samples are grouped along the x-axis and boxplots are colored by group.
-#' @param ... Other arguments passed to `ggplot2::geom_boxplot()`.
 #'
 #' @returns A ggplot object of log-intensity boxplots.
 #'
@@ -115,7 +113,7 @@ plot_missing_bar <- function(exp, on = "sample", ...) {
 #' plot_int_boxplot(glyexp::toy_experiment, by = "group")
 #'
 #' @export
-plot_int_boxplot <- function(exp, by = NULL, ...) {
+plot_int_boxplot <- function(exp, by = NULL) {
   checkmate::assert_class(exp, "glyexp_experiment")
 
   mat <- exp$expr_mat
@@ -157,11 +155,11 @@ plot_int_boxplot <- function(exp, by = NULL, ...) {
 
   plot_data$sample <- factor(plot_data$sample, levels = sample_order)
 
-  plot <- ggplot2::ggplot(plot_data, ggplot2::aes(x = sample, y = log_intensity))
+  plot <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$sample, y = .data$log_intensity))
   if (!is.null(by_values)) {
-    plot <- plot + ggplot2::geom_boxplot(ggplot2::aes(fill = group), ...)
+    plot <- plot + ggplot2::geom_boxplot(ggplot2::aes(fill = .data$group))
   } else {
-    plot <- plot + ggplot2::geom_boxplot(...)
+    plot <- plot + ggplot2::geom_boxplot()
   }
 
   plot + ggplot2::labs(x = "Sample", y = "Log2 intensity")
@@ -176,7 +174,6 @@ plot_int_boxplot <- function(exp, by = NULL, ...) {
 #' @param by Grouping variable for samples. Can be a column name in `sample_info`
 #'   or a vector/factor with length equal to the number of samples. When provided,
 #'   samples are grouped along the x-axis and boxplots are colored by group.
-#' @param ... Other arguments passed to `ggplot2::geom_boxplot()`.
 #'
 #' @returns A ggplot object of RLE boxplots.
 #'
@@ -185,7 +182,7 @@ plot_int_boxplot <- function(exp, by = NULL, ...) {
 #' plot_rle(glyexp::toy_experiment, by = "group")
 #'
 #' @export
-plot_rle <- function(exp, by = NULL, ...) {
+plot_rle <- function(exp, by = NULL) {
   checkmate::assert_class(exp, "glyexp_experiment")
 
   mat <- exp$expr_mat
@@ -231,9 +228,9 @@ plot_rle <- function(exp, by = NULL, ...) {
 
   plot <- ggplot2::ggplot(plot_data, ggplot2::aes(x = sample, y = rle))
   if (!is.null(by_values)) {
-    plot <- plot + ggplot2::geom_boxplot(ggplot2::aes(fill = group), ...)
+    plot <- plot + ggplot2::geom_boxplot(ggplot2::aes(fill = .data$group))
   } else {
-    plot <- plot + ggplot2::geom_boxplot(...)
+    plot <- plot + ggplot2::geom_boxplot()
   }
 
   plot + ggplot2::labs(x = "Sample", y = "Relative log expression")

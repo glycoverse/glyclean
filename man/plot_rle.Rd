@@ -4,7 +4,7 @@
 \alias{plot_rle}
 \title{Plot Relative Log Expression (RLE) Boxplots}
 \usage{
-plot_rle(exp, by = NULL, ...)
+plot_rle(exp, by = NULL)
 }
 \arguments{
 \item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
@@ -12,8 +12,6 @@ plot_rle(exp, by = NULL, ...)
 \item{by}{Grouping variable for samples. Can be a column name in \code{sample_info}
 or a vector/factor with length equal to the number of samples. When provided,
 samples are grouped along the x-axis and boxplots are colored by group.}
-
-\item{...}{Other arguments passed to \code{ggplot2::geom_boxplot()}.}
 }
 \value{
 A ggplot object of RLE boxplots.

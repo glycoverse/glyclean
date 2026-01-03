@@ -4,15 +4,13 @@
 \alias{plot_missing_bar}
 \title{Plot Missing Value Proportions by Sample or Variable}
 \usage{
-plot_missing_bar(exp, on = "sample", ...)
+plot_missing_bar(exp, on = "sample")
 }
 \arguments{
 \item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{on}{Whether to plot missingness by \code{"sample(s)"} or \code{"variable(s)"}.
 Defaults to \code{"sample"}.}
-
-\item{...}{Other arguments passed to \code{ggplot2::geom_col()}.}
 }
 \value{
 A ggplot object of missing value proportions by item.
