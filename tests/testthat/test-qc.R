@@ -30,6 +30,12 @@ test_that("plot_missing_bar orders variables by missing proportion", {
   vdiffr::expect_doppelganger("plot_missing_bar_variables", plot_missing_bar(test_exp, on = "variables"))
 })
 
+test_that("plot_tic_bar orders samples by total intensity", {
+  test_exp <- simple_exp(3, 3)
+
+  vdiffr::expect_doppelganger("plot_tic_bar", plot_tic_bar(test_exp))
+})
+
 test_that("plot_int_boxplot works", {
   test_exp <- simple_exp(3, 3)
 

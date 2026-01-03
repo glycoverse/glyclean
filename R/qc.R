@@ -97,6 +97,43 @@ plot_missing_bar <- function(exp, on = "sample") {
     ggplot2::labs(x = x_label, y = "Missing proportion")
 }
 
+#' Plot Total Intensity by Sample
+#'
+#' Draw a bar plot showing total intensity (TIC) for each sample. Samples are
+#' ordered from high to low TIC from left to right.
+#'
+#' @param exp A [glyexp::experiment()] object.
+#'
+#' @returns A ggplot object of total intensity by sample.
+#'
+#' @examples
+#' plot_tic_bar(glyexp::toy_experiment)
+#'
+#' @export
+plot_tic_bar <- function(exp) {
+  checkmate::assert_class(exp, "glyexp_experiment")
+
+  mat <- exp$expr_mat
+  sample_names <- colnames(mat)
+  if (is.null(sample_names)) {
+    sample_names <- as.character(seq_len(ncol(mat)))
+  }
+
+  tic <- colSums(mat, na.rm = TRUE)
+  names(tic) <- sample_names
+
+  sample_order <- sample_names[order(tic, decreasing = TRUE)]
+
+  plot_data <- tibble::tibble(
+    sample = factor(sample_order, levels = sample_order),
+    tic = tic[sample_order]
+  )
+
+  ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$sample, y = .data$tic)) +
+    ggplot2::geom_col() +
+    ggplot2::labs(x = "Sample", y = "Total intensity")
+}
+
 #' Plot Log-Intensity Boxplots by Sample
 #'
 #' Draw boxplots of log2-transformed intensities for each sample.
