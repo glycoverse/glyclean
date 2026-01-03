@@ -82,3 +82,15 @@ test_that("plot_batch_pca rejects experiment without batch column", {
   test_exp <- simple_exp(4, 4)
   expect_error(plot_batch_pca(test_exp), "does not exist")
 })
+
+test_that("plot_rep_scatter draws replicate scatter plots", {
+  skip_if_not_installed("patchwork")
+  test_exp <- simple_exp(5, 6)
+  test_exp$sample_info$replicate <- rep(c("A", "B"), each = 3)
+
+  withr::local_seed(123)
+  vdiffr::expect_doppelganger(
+    "plot_rep_scatter",
+    plot_rep_scatter(test_exp, rep_col = "replicate", n_pairs = 2)
+  )
+})

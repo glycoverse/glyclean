@@ -384,3 +384,115 @@ plot_batch_pca <- function(exp, batch_col = "batch") {
   ) +
     ggplot2::labs(color = "Batch")
 }
+
+#' Plot Replicate Scatter Plots
+#'
+#' Randomly draw replicate sample pairs and plot log2 intensity scatter plots.
+#' The plot title shows sample names, and the subtitle reports the R2 value.
+#'
+#' @param exp A [glyexp::experiment()] object.
+#' @param rep_col Column name in `sample_info` used to define replicate groups.
+#'   Samples with the same value in this column are treated as replicates
+#'   (e.g. `c("A", "A", "A", "B", "B", "B")` indicates three replicates for
+#'   sample A and three for sample B).
+#' @param n_pairs Number of replicate pairs to draw at random.
+#'
+#' @returns A patchwork object containing replicate scatter plots.
+#'
+#' @examples
+#' exp <- glyexp::toy_experiment
+#' exp$sample_info$replicate <- rep(c("A", "B"), length.out = ncol(exp$expr_mat))
+#' plot_rep_scatter(exp, rep_col = "replicate", n_pairs = 4)
+#'
+#' @export
+plot_rep_scatter <- function(exp, rep_col, n_pairs = 9) {
+  checkmate::assert_class(exp, "glyexp_experiment")
+  checkmate::assert_string(rep_col)
+  checkmate::assert_int(n_pairs, lower = 1)
+  rlang::check_installed("patchwork", reason = "to use `plot_rep_scatter()`")
+
+  mat <- exp$expr_mat
+  if (ncol(mat) < 2 || nrow(mat) < 2) {
+    cli::cli_abort("Replicate scatter plots require at least two samples and two variables.")
+  }
+
+  sample_names <- colnames(mat)
+  if (is.null(sample_names)) {
+    sample_names <- as.character(seq_len(ncol(mat)))
+  }
+
+  rep_values <- .resolve_column_param(
+    rep_col,
+    sample_info = exp$sample_info,
+    param_name = "rep_col",
+    n_samples = ncol(mat),
+    allow_null = FALSE
+  )
+  if (anyNA(rep_values)) {
+    cli::cli_abort("The {.arg rep_col} column contains missing values.")
+  }
+
+  rep_levels <- if (is.factor(rep_values)) {
+    levels(droplevels(rep_values))
+  } else {
+    unique(as.character(rep_values))
+  }
+  rep_factor <- factor(as.character(rep_values), levels = rep_levels)
+  group_samples <- split(sample_names, rep_factor)
+
+  pair_list <- purrr::map(group_samples, function(samples) {
+    if (length(samples) < 2) {
+      return(list())
+    }
+    combn(samples, 2, simplify = FALSE)
+  })
+  pairs <- purrr::flatten(pair_list)
+  if (length(pairs) == 0) {
+    cli::cli_abort("No replicate pairs available from {.arg rep_col}.")
+  }
+
+  if (n_pairs > length(pairs)) {
+    cli::cli_alert_warning(
+      "Requested {n_pairs} pairs but only {length(pairs)} available; using all pairs."
+    )
+    n_pairs <- length(pairs)
+  }
+
+  selected_pairs <- pairs[sample.int(length(pairs), size = n_pairs)]
+
+  log_mat <- log2(mat)
+  log_mat[!is.finite(log_mat)] <- NA_real_
+  colnames(log_mat) <- sample_names
+
+  plots <- purrr::map(selected_pairs, function(pair) {
+    plot_data <- tibble::tibble(
+      x = log_mat[, pair[1]],
+      y = log_mat[, pair[2]]
+    )
+    plot_data <- dplyr::filter(plot_data, is.finite(.data$x), is.finite(.data$y))
+
+    if (nrow(plot_data) < 2) {
+      r2 <- NA_real_
+    } else {
+      r_val <- stats::cor(plot_data$x, plot_data$y, use = "complete.obs")
+      r2 <- r_val^2
+    }
+
+    subtitle <- if (is.na(r2)) {
+      "R2: NA"
+    } else {
+      sprintf("R2: %.3f", r2)
+    }
+
+    ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$x, y = .data$y)) +
+      ggplot2::geom_point(alpha = 0.7) +
+      ggplot2::labs(
+        x = paste0(pair[1], " log2 intensity"),
+        y = paste0(pair[2], " log2 intensity"),
+        title = paste(pair[1], "vs", pair[2]),
+        subtitle = subtitle
+      )
+  })
+
+  patchwork::wrap_plots(plots)
+}
