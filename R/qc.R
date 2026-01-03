@@ -36,6 +36,7 @@ plot_missing_heatmap <- function(exp, ...) {
     clustering_distance_cols = "binary",
     clustering_method = "complete",
     color = c("grey80", "steelblue"),
+    breaks = c(-0.5, 0.5, 1.5),
     legend_breaks = c(0, 1),
     legend_labels = c("Missing", "Present"),
     show_rownames = FALSE,

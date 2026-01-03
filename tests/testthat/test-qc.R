@@ -9,6 +9,11 @@ test_that("plot_missing_heatmap works", {
   vdiffr::expect_doppelganger("plot_missing_heatmap", plot_missing_heatmap(test_exp))
 })
 
+test_that("plot_missing_heatmap handles no missing values", {
+  test_exp <- simple_exp(3, 3)
+  vdiffr::expect_doppelganger("plot_missing_heatmap_no_missing", plot_missing_heatmap(test_exp))
+})
+
 test_that("plot_missing_bar orders samples by missing proportion", {
   test_exp <- simple_exp(3, 3)
   test_exp$expr_mat[1, 1] <- NA

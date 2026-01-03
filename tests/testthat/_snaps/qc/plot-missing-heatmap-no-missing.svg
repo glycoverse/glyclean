@@ -33,18 +33,16 @@
   </clipPath>
 </defs>
 <g clip-path='url(#cpNS4wMHw2NTguMjR8MTcuMzB8NzIuMzA=)'>
-<polyline points='331.62,72.30 331.62,46.11 549.37,46.11 549.37,72.30 ' style='stroke-width: 0.75;' />
-<polyline points='113.87,72.30 113.87,19.92 440.50,19.92 440.50,46.11 ' style='stroke-width: 0.75;' />
 </g>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MTcuMzB8NTc2LjAw)'>
 </g>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
 <rect x='5.00' y='72.30' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #4682B4;' />
-<rect x='5.00' y='232.79' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #CCCCCC;' />
-<rect x='5.00' y='393.28' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #CCCCCC;' />
+<rect x='5.00' y='232.79' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #4682B4;' />
+<rect x='5.00' y='393.28' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #4682B4;' />
 <rect x='222.75' y='72.30' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #4682B4;' />
 <rect x='222.75' y='232.79' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #4682B4;' />
-<rect x='222.75' y='393.28' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #CCCCCC;' />
+<rect x='222.75' y='393.28' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #4682B4;' />
 <rect x='440.50' y='72.30' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #4682B4;' />
 <rect x='440.50' y='232.79' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #4682B4;' />
 <rect x='440.50' y='393.28' width='217.75' height='160.49' style='stroke-width: 0.75; stroke: #999999; fill: #4682B4;' />
@@ -52,9 +50,9 @@
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MTcuMzB8NTc2LjAw)'>
 </g>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
-<text transform='translate(110.43,556.77) rotate(-270)' style='font-size: 10.00px; font-family: sans;' textLength='12.23px' lengthAdjust='spacingAndGlyphs'>S2</text>
+<text transform='translate(110.43,556.77) rotate(-270)' style='font-size: 10.00px; font-family: sans;' textLength='12.23px' lengthAdjust='spacingAndGlyphs'>S3</text>
 <text transform='translate(328.18,556.77) rotate(-270)' style='font-size: 10.00px; font-family: sans;' textLength='12.23px' lengthAdjust='spacingAndGlyphs'>S1</text>
-<text transform='translate(545.93,556.77) rotate(-270)' style='font-size: 10.00px; font-family: sans;' textLength='12.23px' lengthAdjust='spacingAndGlyphs'>S3</text>
+<text transform='translate(545.93,556.77) rotate(-270)' style='font-size: 10.00px; font-family: sans;' textLength='12.23px' lengthAdjust='spacingAndGlyphs'>S2</text>
 </g>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MTcuMzB8NTc2LjAw)'>
 </g>
@@ -67,6 +65,6 @@
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MTcuMzB8NTc2LjAw)'>
 </g>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
-<text x='0.00' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='132.10px' lengthAdjust='spacingAndGlyphs'>plot_missing_heatmap</text>
+<text x='0.00' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='206.22px' lengthAdjust='spacingAndGlyphs'>plot_missing_heatmap_no_missing</text>
 </g>
 </svg>
