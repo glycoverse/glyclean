@@ -19,6 +19,7 @@ Description:
 License: MIT + file LICENSE
 Suggests: 
     testthat (>= 3.0.0),
+    vdiffr,
     glyread (>= 0.6.2),
     glyrepr (>= 0.7.4),
     vsn,
@@ -54,7 +55,8 @@ Imports:
     tidyselect,
     withr,
     forcats,
-    stats
+    stats,
+    ggplot2
 Remotes: 
     glycoverse/glyexp@*release,
     glycoverse/glyread@*release

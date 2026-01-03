@@ -45,3 +45,41 @@ plot_missing_heatmap <- function(exp, ...) {
 
   ggplotify::as.ggplot(p)
 }
+
+#' Plot Missing Value Proportions by Sample
+#'
+#' Draw a bar plot of missing value proportions for each sample.
+#' Samples are ordered from low to high missing proportion.
+#'
+#' @param exp A [glyexp::experiment()] object.
+#' @param ... Other arguments passed to `ggplot2::geom_col()`.
+#'
+#' @returns A ggplot object of missing value proportions by sample.
+#'
+#' @examples
+#' plot_missing_bar(glyexp::toy_experiment)
+#'
+#' @export
+plot_missing_bar <- function(exp, ...) {
+  checkmate::assert_class(exp, "glyexp_experiment")
+
+  mat <- exp$expr_mat
+
+  sample_names <- colnames(mat)
+  if (is.null(sample_names)) {
+    sample_names <- as.character(seq_len(ncol(mat)))
+  }
+
+  missing_prop <- colMeans(is.na(mat))
+  names(missing_prop) <- sample_names
+  sample_order <- sample_names[order(missing_prop)]
+
+  plot_data <- tibble::tibble(
+    sample = factor(sample_order, levels = sample_order),
+    missing_prop = missing_prop[sample_order]
+  )
+
+  ggplot2::ggplot(plot_data, ggplot2::aes(x = sample, y = missing_prop)) +
+    ggplot2::geom_col(...) +
+    ggplot2::labs(x = "Sample", y = "Missing proportion")
+}
