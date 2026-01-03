@@ -494,6 +494,43 @@ This gives you complete control over grouping, even for custom groupings
 that aren’t stored in your experiment object. Perfect for complex
 experimental designs or external grouping criteria!
 
+## Quality Control (QC) 📊
+
+`glyclean` provides a comprehensive suite of quality control plotting
+functions to help you visualize and assess the quality of your data at
+various stages of the preprocessing pipeline.
+
+**Available QC plotting functions in `glyclean`:**
+
+| Function                                                                                            | Description                              | Best For                                                      |
+|-----------------------------------------------------------------------------------------------------|------------------------------------------|---------------------------------------------------------------|
+| [`plot_missing_heatmap()`](https://glycoverse.github.io/glyclean/reference/plot_missing_heatmap.md) | Binary heatmap of missing value patterns | Visualizing global missingness structure                      |
+| [`plot_missing_bar()`](https://glycoverse.github.io/glyclean/reference/plot_missing_bar.md)         | Bar plot of missing proportions          | Identifying samples/variables with high missingness           |
+| [`plot_tic_bar()`](https://glycoverse.github.io/glyclean/reference/plot_tic_bar.md)                 | Total intensity (TIC) bar plot           | Checking for systematic intensity differences between samples |
+| [`plot_rank_abundance()`](https://glycoverse.github.io/glyclean/reference/plot_rank_abundance.md)   | Protein rank abundance plot              | Assessing the dynamic range of detected proteins              |
+| [`plot_int_boxplot()`](https://glycoverse.github.io/glyclean/reference/plot_int_boxplot.md)         | Log2-intensity boxplots                  | Visualizing data distribution and normalization effects       |
+| [`plot_rle()`](https://glycoverse.github.io/glyclean/reference/plot_rle.md)                         | Relative Log Expression (RLE) boxplots   | Detecting sample-wise bias and batch effects                  |
+| [`plot_cv_dent()`](https://glycoverse.github.io/glyclean/reference/plot_cv_dent.md)                 | CV density plot                          | Assessing reproducibility and technical variation             |
+| [`plot_batch_pca()`](https://glycoverse.github.io/glyclean/reference/plot_batch_pca.md)             | PCA score plot by batch                  | Visualizing batch effects and sample clustering               |
+| [`plot_rep_scatter()`](https://glycoverse.github.io/glyclean/reference/plot_rep_scatter.md)         | Replicate scatter plots                  | Checking concordance between replicate samples                |
+
+These functions are designed to work seamlessly with
+[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+objects and provide consistent, high-quality visualizations using
+`ggplot2`.
+
+For example, you can use
+[`plot_missing_heatmap()`](https://glycoverse.github.io/glyclean/reference/plot_missing_heatmap.md)
+to visualize the missing values in your data before and after cleaning:
+
+``` r
+library(patchwork)
+
+plot_missing_heatmap(exp) + plot_missing_heatmap(clean_exp)
+```
+
+![](glyclean_files/figure-html/unnamed-chunk-17-1.png)
+
 ## What’s Next?
 
 With your clean data in hand, you’re ready to dive into the exciting

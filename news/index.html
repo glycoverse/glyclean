@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,37 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="glyclean-development-version">glyclean (development version)<a class="anchor" aria-label="anchor" href="#glyclean-development-version"></a></h2>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.10.0" id="glyclean-0100">glyclean 0.10.0<a class="anchor" aria-label="anchor" href="#glyclean-0100"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-10-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-10-0"></a></h3>
+<ul><li>Added a comprehensive suite of Quality Control (QC) plotting functions:
+<ul><li>
+<code><a href="../reference/plot_missing_heatmap.html">plot_missing_heatmap()</a></code>: Binary heatmap of missing value patterns.</li>
+<li>
+<code><a href="../reference/plot_missing_bar.html">plot_missing_bar()</a></code>: Bar plot of missing proportions by sample or variable.</li>
+<li>
+<code><a href="../reference/plot_tic_bar.html">plot_tic_bar()</a></code>: Total intensity (TIC) bar plot by sample.</li>
+<li>
+<code><a href="../reference/plot_rank_abundance.html">plot_rank_abundance()</a></code>: Protein rank abundance plot.</li>
+<li>
+<code><a href="../reference/plot_int_boxplot.html">plot_int_boxplot()</a></code>: Log2-intensity boxplots by sample, with optional grouping.</li>
+<li>
+<code><a href="../reference/plot_rle.html">plot_rle()</a></code>: Relative Log Expression (RLE) boxplots for detecting sample-wise bias.</li>
+<li>
+<code><a href="../reference/plot_cv_dent.html">plot_cv_dent()</a></code>: CV density plot, with optional stratified groups.</li>
+<li>
+<code><a href="../reference/plot_batch_pca.html">plot_batch_pca()</a></code>: PCA score plot colored by batch.</li>
+<li>
+<code><a href="../reference/plot_rep_scatter.html">plot_rep_scatter()</a></code>: Scatter plots of replicate sample pairs with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math> values.</li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-and-fixes-0-10-0">Minor improvements and fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-fixes-0-10-0"></a></h3>
+<ul><li>Add <code>pheatmap</code>, <code>ggplotify</code>, <code>factoextra</code>, and <code>patchwork</code> to <code>Suggests</code> to support enhanced QC visualizations.</li>
+<li>Document and provide examples for the new QC functions in the main vignette.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.1" id="glyclean-091">glyclean 0.9.1<a class="anchor" aria-label="anchor" href="#glyclean-091"></a></h2>

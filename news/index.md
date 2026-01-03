@@ -2,6 +2,39 @@
 
 ## glyclean (development version)
 
+## glyclean 0.10.0
+
+### New features
+
+- Added a comprehensive suite of Quality Control (QC) plotting
+  functions:
+  - [`plot_missing_heatmap()`](https://glycoverse.github.io/glyclean/reference/plot_missing_heatmap.md):
+    Binary heatmap of missing value patterns.
+  - [`plot_missing_bar()`](https://glycoverse.github.io/glyclean/reference/plot_missing_bar.md):
+    Bar plot of missing proportions by sample or variable.
+  - [`plot_tic_bar()`](https://glycoverse.github.io/glyclean/reference/plot_tic_bar.md):
+    Total intensity (TIC) bar plot by sample.
+  - [`plot_rank_abundance()`](https://glycoverse.github.io/glyclean/reference/plot_rank_abundance.md):
+    Protein rank abundance plot.
+  - [`plot_int_boxplot()`](https://glycoverse.github.io/glyclean/reference/plot_int_boxplot.md):
+    Log2-intensity boxplots by sample, with optional grouping.
+  - [`plot_rle()`](https://glycoverse.github.io/glyclean/reference/plot_rle.md):
+    Relative Log Expression (RLE) boxplots for detecting sample-wise
+    bias.
+  - [`plot_cv_dent()`](https://glycoverse.github.io/glyclean/reference/plot_cv_dent.md):
+    CV density plot, with optional stratified groups.
+  - [`plot_batch_pca()`](https://glycoverse.github.io/glyclean/reference/plot_batch_pca.md):
+    PCA score plot colored by batch.
+  - [`plot_rep_scatter()`](https://glycoverse.github.io/glyclean/reference/plot_rep_scatter.md):
+    Scatter plots of replicate sample pairs with $R^{2}$ values.
+
+### Minor improvements and fixes
+
+- Add `pheatmap`, `ggplotify`, `factoextra`, and `patchwork` to
+  `Suggests` to support enhanced QC visualizations.
+- Document and provide examples for the new QC functions in the main
+  vignette.
+
 ## glyclean 0.9.1
 
 ### Minor improvements and fixes
