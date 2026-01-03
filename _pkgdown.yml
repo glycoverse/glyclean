@@ -42,3 +42,4 @@ reference:
       - plot_rep_scatter
       - plot_rle
       - plot_tic_bar
+      - plot_rank_abundance

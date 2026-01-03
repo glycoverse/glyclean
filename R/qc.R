@@ -125,6 +125,65 @@ plot_tic_bar <- function(exp) {
     ggplot2::labs(x = "Sample", y = "Total intensity")
 }
 
+#' Plot Rank Abundance
+#'
+#' Draw a scatter plot of proteins ranked by mean log2 intensity.
+#' Proteins are ordered from high to low mean intensity along the x-axis.
+#'
+#' @param exp A [glyexp::experiment()] object.
+#'
+#' @returns A ggplot object of protein rank abundance.
+#'
+#' @examples
+#' plot_rank_abundance(glyexp::toy_experiment)
+#'
+#' @export
+plot_rank_abundance <- function(exp) {
+  checkmate::assert_class(exp, "glyexp_experiment")
+
+  mat <- exp$expr_mat
+  log_mat <- .log2_matrix(mat)
+  var_names <- .get_var_names(mat)
+
+  protein_names <- if ("protein" %in% colnames(exp$var_info)) {
+    protein <- exp$var_info$protein[match(var_names, exp$var_info$variable)]
+    missing_protein <- is.na(protein) | protein == ""
+    protein[missing_protein] <- var_names[missing_protein]
+    protein
+  } else {
+    var_names
+  }
+
+  mean_log2 <- rowMeans(log_mat, na.rm = TRUE)
+
+  plot_data <- tibble::tibble(
+    protein = protein_names,
+    mean_log2 = mean_log2
+  )
+  plot_data <- dplyr::filter(plot_data, is.finite(.data$mean_log2))
+  if (nrow(plot_data) == 0) {
+    cli::cli_abort("No finite log2 intensity values available for plotting.")
+  }
+
+  plot_data <- dplyr::group_by(plot_data, .data$protein)
+  plot_data <- dplyr::summarise(
+    plot_data,
+    mean_log2 = mean(.data$mean_log2, na.rm = TRUE),
+    .groups = "drop"
+  )
+  plot_data <- dplyr::arrange(plot_data, dplyr::desc(.data$mean_log2))
+  plot_data$protein <- factor(plot_data$protein, levels = plot_data$protein)
+
+  ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$protein, y = .data$mean_log2)) +
+    ggplot2::geom_point(alpha = 0.7) +
+    ggplot2::labs(x = "Protein", y = "Mean log2 intensity") +
+    ggplot2::theme_classic() +
+    ggplot2::theme(
+      axis.ticks.x = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_blank(),
+    )
+}
+
 #' Plot Log-Intensity Boxplots by Sample
 #'
 #' Draw boxplots of log2-transformed intensities for each sample.

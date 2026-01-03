@@ -36,6 +36,12 @@ test_that("plot_tic_bar orders samples by total intensity", {
   vdiffr::expect_doppelganger("plot_tic_bar", plot_tic_bar(test_exp))
 })
 
+test_that("plot_rank_abundance orders proteins by mean log2 intensity", {
+  test_exp <- simple_exp(3, 3)
+
+  vdiffr::expect_doppelganger("plot_rank_abundance", plot_rank_abundance(test_exp))
+})
+
 test_that("plot_int_boxplot works", {
   test_exp <- simple_exp(3, 3)
 
