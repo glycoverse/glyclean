@@ -96,3 +96,73 @@ plot_missing_bar <- function(exp, on = "sample", ...) {
     ggplot2::geom_col(...) +
     ggplot2::labs(x = x_label, y = "Missing proportion")
 }
+
+#' Plot Log-Intensity Boxplots by Sample
+#'
+#' Draw boxplots of log2-transformed intensities for each sample.
+#' Optionally color and group samples by a metadata variable.
+#'
+#' @param exp A [glyexp::experiment()] object.
+#' @param by Grouping variable for samples. Can be a column name in `sample_info`
+#'   or a vector/factor with length equal to the number of samples. When provided,
+#'   samples are grouped along the x-axis and boxplots are colored by group.
+#' @param ... Other arguments passed to `ggplot2::geom_boxplot()`.
+#'
+#' @returns A ggplot object of log-intensity boxplots.
+#'
+#' @examples
+#' plot_int_boxplot(glyexp::toy_experiment)
+#' plot_int_boxplot(glyexp::toy_experiment, by = "group")
+#'
+#' @export
+plot_int_boxplot <- function(exp, by = NULL, ...) {
+  checkmate::assert_class(exp, "glyexp_experiment")
+
+  mat <- exp$expr_mat
+  sample_names <- colnames(mat)
+  if (is.null(sample_names)) {
+    sample_names <- as.character(seq_len(ncol(mat)))
+  }
+
+  log_mat <- log2(mat)
+  log_mat[!is.finite(log_mat)] <- NA_real_
+  colnames(log_mat) <- sample_names
+
+  by_values <- .resolve_column_param(
+    by,
+    sample_info = exp$sample_info,
+    param_name = "by",
+    n_samples = ncol(mat),
+    allow_null = TRUE
+  )
+
+  sample_order <- sample_names
+  if (!is.null(by_values)) {
+    group_levels <- if (is.factor(by_values)) levels(by_values) else unique(as.character(by_values))
+    group_factor <- factor(as.character(by_values), levels = group_levels)
+    group_df <- tibble::tibble(sample = sample_names, group = group_factor)
+    sample_order <- sample_names[order(match(group_factor, group_levels))]
+  }
+
+  plot_data <- tibble::as_tibble(log_mat, .name_repair = "minimal")
+  plot_data <- tidyr::pivot_longer(
+    plot_data,
+    cols = dplyr::all_of(sample_names),
+    names_to = "sample",
+    values_to = "log_intensity"
+  )
+  if (!is.null(by_values)) {
+    plot_data <- dplyr::left_join(plot_data, group_df, by = "sample")
+  }
+
+  plot_data$sample <- factor(plot_data$sample, levels = sample_order)
+
+  plot <- ggplot2::ggplot(plot_data, ggplot2::aes(x = sample, y = log_intensity))
+  if (!is.null(by_values)) {
+    plot <- plot + ggplot2::geom_boxplot(ggplot2::aes(fill = group), ...)
+  } else {
+    plot <- plot + ggplot2::geom_boxplot(...)
+  }
+
+  plot + ggplot2::labs(x = "Sample", y = "Log2 intensity")
+}

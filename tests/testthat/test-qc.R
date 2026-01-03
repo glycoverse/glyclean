@@ -24,3 +24,19 @@ test_that("plot_missing_bar orders variables by missing proportion", {
 
   vdiffr::expect_doppelganger("plot_missing_bar_variables", plot_missing_bar(test_exp, on = "variables"))
 })
+
+test_that("plot_int_boxplot works", {
+  test_exp <- simple_exp(3, 3)
+
+  vdiffr::expect_doppelganger("plot_int_boxplot", plot_int_boxplot(test_exp))
+})
+
+test_that("plot_int_boxplot supports grouping", {
+  test_exp <- simple_exp(3, 3)
+  test_exp$sample_info$group <- c("A", "A", "B")
+
+  vdiffr::expect_doppelganger(
+    "plot_int_boxplot_by_group",
+    plot_int_boxplot(test_exp, by = "group")
+  )
+})
