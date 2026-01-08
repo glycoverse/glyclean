@@ -1,5 +1,10 @@
 # glyclean (development version)
 
+## Minor improvements and fixes
+
+- Fix a bug that the `qc_name` argument and `group_col` argument were ignored in `auto_clean()`.
+- The `qc_name` argument in `auto_xxx()` functions now can be NULL.
+
 # glyclean 0.10.0
 
 ## New features
