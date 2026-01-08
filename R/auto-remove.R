@@ -17,7 +17,7 @@
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
 #' @param qc_name The name of QC samples in the `group_col` column. Default is "QC".
-#'   Only used when `group_col` is not NULL.
+#'   Only used when `group_col` is not NULL. Can be NULL when no QC samples are available.
 #' @param info Internal parameter used by [auto_clean()].
 #'
 #' @returns A modified [glyexp::experiment()] object.
@@ -32,7 +32,7 @@ auto_remove <- function(exp, preset = "discovery", group_col = "group", qc_name 
   checkmate::assert_class(exp, "glyexp_experiment")
   checkmate::assert_choice(preset, c("simple", "discovery", "biomarker"))
   checkmate::assert_string(group_col, null.ok = TRUE)
-  checkmate::assert_string(qc_name)
+  checkmate::assert_string(qc_name, null.ok = TRUE)
 
   if (is.null(info)) {
     info <- inspect_experiment(exp, group_col = group_col, qc_name = qc_name)

@@ -10,7 +10,7 @@
 inspect_experiment <- function(exp, group_col = "group", qc_name = "QC") {
   checkmate::assert_class(exp, "glyexp_experiment")
   checkmate::assert_string(group_col, null.ok = TRUE)
-  checkmate::assert_string(qc_name)
+  checkmate::assert_string(qc_name, null.ok = TRUE)
 
   res <- list()
 
@@ -22,7 +22,9 @@ inspect_experiment <- function(exp, group_col = "group", qc_name = "QC") {
   }
 
   # has_qc: whether the experiment has QC samples
-  if (res$has_group && qc_name %in% exp$sample_info[[group_col]]) {
+  if (is.null(qc_name)) {
+    res$has_qc <- FALSE
+  } else if (res$has_group && qc_name %in% exp$sample_info[[group_col]]) {
     res$has_qc <- TRUE
   } else {
     res$has_qc <- FALSE

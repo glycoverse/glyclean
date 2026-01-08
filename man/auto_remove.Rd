@@ -22,7 +22,7 @@ Default "discovery" if group information is available, otherwise "simple".}
 Can be NULL when no group information is available.}
 
 \item{qc_name}{The name of QC samples in the \code{group_col} column. Default is "QC".
-Only used when \code{group_col} is not NULL.}
+Only used when \code{group_col} is not NULL. Can be NULL when no QC samples are available.}
 
 \item{info}{Internal parameter used by \code{\link[=auto_clean]{auto_clean()}}.}
 }

@@ -15,7 +15,7 @@
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
 #' @param qc_name The name of QC samples in the `group_col` column. Default is "QC".
-#'   Only used when `group_col` is not NULL.
+#'   Only used when `group_col` is not NULL. Can be NULL when no QC samples are available.
 #' @param to_try Normalization functions to try. A list. Default includes:
 #'   - [normalize_median()]: median normalization
 #'   - [normalize_median_abs()]: absolute median normalization
@@ -38,7 +38,7 @@ auto_normalize <- function(exp, group_col = "group", qc_name = "QC", to_try = NU
   # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")
   checkmate::assert_string(group_col, null.ok = TRUE)
-  checkmate::assert_string(qc_name)
+  checkmate::assert_string(qc_name, null.ok = TRUE)
   checkmate::assert_list(to_try, types = "function", null.ok = TRUE)
 
   # Default normalization methods to try

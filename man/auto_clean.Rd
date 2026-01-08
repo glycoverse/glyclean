@@ -28,7 +28,7 @@ Can be NULL when no group information is available.}
 Can be NULL when no batch information is available.}
 
 \item{qc_name}{The name of QC samples in the \code{group_col} column. Default is "QC".
-Only used when \code{group_col} is not NULL.}
+Only used when \code{group_col} is not NULL. Can be NULL when no QC samples are available.}
 
 \item{normalize_to_try}{Normalization functions to try. A list. Default includes:
 \itemize{

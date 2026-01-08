@@ -28,7 +28,7 @@
 #' @param batch_col The column name in sample_info for batches. Default is "batch".
 #'   Can be NULL when no batch information is available.
 #' @param qc_name The name of QC samples in the `group_col` column. Default is "QC".
-#'   Only used when `group_col` is not NULL.
+#'   Only used when `group_col` is not NULL. Can be NULL when no QC samples are available.
 #' @param normalize_to_try Normalization functions to try. A list. Default includes:
 #'   - [normalize_median()]: median normalization
 #'   - [normalize_median_abs()]: absolute median normalization
@@ -86,8 +86,9 @@ auto_clean <- function(
   batch_confounding_threshold = 0.4
 ) {
   checkmate::assert_class(exp, "glyexp_experiment")
-  checkmate::assert_string(group_col)
-  checkmate::assert_string(qc_name)
+  checkmate::assert_string(group_col, null.ok = TRUE)
+  checkmate::assert_string(batch_col, null.ok = TRUE)
+  checkmate::assert_string(qc_name, null.ok = TRUE)
   checkmate::assert_list(normalize_to_try, types = "function", null.ok = TRUE)
   checkmate::assert_list(impute_to_try, types = "function", null.ok = TRUE)
   checkmate::assert_choice(remove_preset, c("simple", "discovery", "biomarker"))
