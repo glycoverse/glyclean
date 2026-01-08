@@ -228,3 +228,68 @@ test_that("impute_min_prob works with matrix input and by parameter", {
   # Check that no NA values remain
   expect_equal(sum(is.na(result_mat)), 0)
 })
+
+test_that("impute_sample_min and impute_half_sample_min work with matrix input", {
+  test_mat <- matrix(c(1, NA, 3, 4, NA, 6), nrow = 2)
+  rownames(test_mat) <- paste0("V", 1:2)
+  colnames(test_mat) <- paste0("S", 1:3)
+
+  min_mat <- impute_sample_min(test_mat)
+  half_mat <- impute_half_sample_min(test_mat)
+
+  expect_true(is.matrix(min_mat))
+  expect_true(is.matrix(half_mat))
+  expect_equal(sum(is.na(min_mat)), 0)
+  expect_equal(sum(is.na(half_mat)), 0)
+
+  col_min <- apply(test_mat, 2, min, na.rm = TRUE)
+  expect_equal(min_mat[2, 1], unname(col_min[1]))
+  expect_equal(half_mat[2, 1], unname(col_min[1]) / 2)
+  expect_equal(half_mat[1, 3], unname(col_min[3]) / 2)
+})
+
+test_that("impute functions error on unsupported input", {
+  funcs <- list(
+    impute_zero,
+    impute_sample_min,
+    impute_half_sample_min,
+    impute_sw_knn,
+    impute_fw_knn,
+    impute_bpca,
+    impute_ppca,
+    impute_svd,
+    impute_min_prob,
+    impute_miss_forest
+  )
+
+  purrr::walk(funcs, function(fn) {
+    expect_error(fn(1), "glyexp_experiment|matrix")
+  })
+})
+
+test_that("impute methods requiring suggested packages run or error cleanly", {
+  test_mat <- matrix(runif(36, 1, 100), nrow = 6)
+  test_mat[1, 2] <- NA
+  rownames(test_mat) <- paste0("V", 1:6)
+  colnames(test_mat) <- paste0("S", 1:6)
+
+  cases <- list(
+    list(fn = impute_sw_knn, pkg = "impute", args = list(k = 2)),
+    list(fn = impute_fw_knn, pkg = "impute", args = list(k = 2)),
+    list(fn = impute_bpca, pkg = "pcaMethods", args = list()),
+    list(fn = impute_ppca, pkg = "pcaMethods", args = list()),
+    list(fn = impute_svd, pkg = "pcaMethods", args = list()),
+    list(fn = impute_min_prob, pkg = "imputeLCMD", args = list()),
+    list(fn = impute_miss_forest, pkg = "missForest", args = list(seed = 1))
+  )
+
+  purrr::walk(cases, function(case) {
+    if (rlang::is_installed(case$pkg)) {
+      result <- suppressWarnings(do.call(case$fn, c(list(test_mat), case$args)))
+      expect_true(is.matrix(result))
+      expect_equal(sum(is.na(result)), 0)
+    } else {
+      expect_error(do.call(case$fn, c(list(test_mat), case$args)), case$pkg)
+    }
+  })
+})

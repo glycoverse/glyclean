@@ -26,7 +26,8 @@ test_that("auto_clean works for glycoproteomics data with QC", {
   sample_info <- dplyr::bind_rows(
     test_exp$sample_info,
     tibble::tibble(sample = c("QC1", "QC2"), group = "QC")
-  )
+  ) |>
+  dplyr::mutate(group = factor(group, levels = c("A", "B", "QC")))
 
   test_exp <- glyexp::experiment(
     expr_mat,
@@ -56,7 +57,8 @@ test_that("auto_clean works with NULL qc_name", {
   sample_info <- dplyr::bind_rows(
     test_exp$sample_info,
     tibble::tibble(sample = c("QC1", "QC2"), group = "QC")
-  )
+  ) |>
+  dplyr::mutate(group = factor(group, levels = c("A", "B", "QC")))
 
   test_exp <- glyexp::experiment(
     expr_mat,

@@ -15,18 +15,18 @@ simple_exp <- function(n_var, n_samp) {
 complex_exp <- function() {
   sample_info <- tibble::tibble(
     sample = paste0("S", 1:6),
-    group = c("A", "A", "A", "B", "B", "B"),
+    group = factor(c("A", "A", "A", "B", "B", "B")),
   )
   var_info <- tibble::tribble(
     ~peptide, ~protein, ~gene, ~glycan_composition, ~glycan_structure, ~peptide_site, ~protein_site, ~charge, ~modifications,
-    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4, 24, 2, "",
-    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4, 24, 2, "",  # same as row 1
-    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 5, 25, 2, "",  # different site
-    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H)(H(H(H))))))", 4, 24, 2, "",  # different structure
-    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4, 24, 2, "6,Carbamidomethyl[C]",  # different modifications
-    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4, 24, 3, "",  # different charge
-    "AAANAAKAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4, 24, 2, "",  # different peptide
-    "AAANAAK", "PRO1", "GENE1", "H3N2", "(N(N(H(H(H)))))", 4, 24, 2, "",  # different glycan (both composition and structure)
+    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4L, 24L, 2L, "",
+    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4L, 24L, 2L, "",  # same as row 1
+    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 5L, 25L, 2L, "",  # different site
+    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H)(H(H(H))))))", 4L, 24L, 2L, "",  # different structure
+    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4L, 24L, 2L, "6,Carbamidomethyl[C]",  # different modifications
+    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4L, 24L, 3L, "",  # different charge
+    "AAANAAKAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4L, 24L, 2L, "",  # different peptide
+    "AAANAAK", "PRO1", "GENE1", "H3N2", "(N(N(H(H(H)))))", 4L, 24L, 2L, "",  # different glycan (both composition and structure)
   )
   var_info <- dplyr::mutate(
     var_info,

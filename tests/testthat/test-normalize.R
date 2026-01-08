@@ -391,3 +391,33 @@ test_that("normalize_median_quotient works with matrix input and by parameter", 
   # Check that all values are finite after normalization
   expect_true(all(is.finite(result_mat)))
 })
+
+test_that("normalize_vsn requires enough variables or the package", {
+  test_exp <- simple_exp(10, 10)
+
+  if (rlang::is_installed("vsn")) {
+    expect_error(normalize_vsn(test_exp), "at least 42")
+  } else {
+    expect_error(normalize_vsn(test_exp), "vsn")
+  }
+})
+
+test_that("normalize functions error on unsupported input", {
+  funcs <- list(
+    normalize_median,
+    normalize_median_abs,
+    normalize_total_area,
+    normalize_quantile,
+    normalize_loessf,
+    normalize_loesscyc,
+    normalize_vsn,
+    normalize_median_quotient,
+    normalize_rlr,
+    normalize_rlrma,
+    normalize_rlrmacyc
+  )
+
+  purrr::walk(funcs, function(fn) {
+    expect_error(fn(1), "glyexp_experiment|matrix")
+  })
+})
