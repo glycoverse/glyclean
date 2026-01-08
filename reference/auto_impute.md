@@ -39,7 +39,8 @@ auto_impute(
 - qc_name:
 
   The name of QC samples in the `group_col` column. Default is "QC".
-  Only used when `group_col` is not NULL.
+  Only used when `group_col` is not NULL. Can be NULL when no QC samples
+  are available.
 
 - to_try:
 
