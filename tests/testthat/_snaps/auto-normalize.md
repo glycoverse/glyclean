@@ -17,6 +17,14 @@
       * Method "normalize_rlrmacyc": Median CV = 0.0002218
       v Best method: "normalize_quantile" with Median CV = 0
 
+# auto_normalize handles NULL qc_name
+
+    Code
+      normed <- auto_normalize(exp, group_col = "group", qc_name = NULL)
+    Message
+      i No QC samples found. Using default normalization method based on experiment type.
+      i Experiment type is "others". Using `normalize_median()`.
+
 # auto_normalize works for glycomics without QC
 
     Code

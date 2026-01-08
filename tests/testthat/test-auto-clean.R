@@ -44,6 +44,36 @@ test_that("auto_clean works for glycoproteomics data with QC", {
   expect_false(any(is.na(result_exp$expr_mat)))
 })
 
+test_that("auto_clean works with NULL qc_name", {
+  set.seed(123)
+  test_exp <- complex_exp()
+
+  # Add QC samples
+  qc_mat <- matrix(rnorm(nrow(test_exp) * 2, mean = 10), ncol = 2)
+  colnames(qc_mat) <- c("QC1", "QC2")
+  expr_mat <- cbind(test_exp$expr_mat, qc_mat)
+
+  sample_info <- dplyr::bind_rows(
+    test_exp$sample_info,
+    tibble::tibble(sample = c("QC1", "QC2"), group = "QC")
+  )
+
+  test_exp <- glyexp::experiment(
+    expr_mat,
+    sample_info,
+    test_exp$var_info,
+    exp_type = "glycoproteomics",
+    glycan_type = "N",
+    check_col_types = FALSE
+  )
+
+  expect_snapshot(result_exp <- auto_clean(test_exp, qc_name = NULL))
+
+  expect_s3_class(result_exp, "glyexp_experiment")
+  expect_equal(glyexp::get_exp_type(result_exp), "glycoproteomics")
+  expect_false(any(is.na(result_exp$expr_mat)))
+})
+
 # Test main logic path for glycomics data
 test_that("auto_clean works for glycomics data", {
   # Create proper glycomics experiment

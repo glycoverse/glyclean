@@ -23,6 +23,28 @@ test_that("auto_remove works with simple preset", {
   expect_equal(nrow(res$expr_mat), 9)
 })
 
+test_that("auto_remove handles NULL qc_name", {
+  samples <- c(paste0("A", 1:4), paste0("B", 1:4), "QC1", "QC2")
+  groups <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
+
+  expr_mat <- matrix(rnorm(100), nrow = 10, ncol = 10)
+  colnames(expr_mat) <- samples
+  rownames(expr_mat) <- paste0("V", 1:10)
+
+  sample_info <- tibble::tibble(sample = samples, group = groups)
+  var_info <- tibble::tibble(variable = paste0("V", 1:10))
+
+  exp <- glyexp::experiment(expr_mat, sample_info, var_info)
+
+  # V1: 60% missing across all samples (including QC)
+  exp$expr_mat["V1", c("A1", "A2", "A3", "A4", "QC1", "QC2")] <- NA
+
+  expect_snapshot(res <- auto_remove(exp, preset = "simple", group_col = "group", qc_name = NULL))
+
+  expect_false("V1" %in% rownames(res$expr_mat))
+  expect_equal(nrow(res$expr_mat), 9)
+})
+
 test_that("auto_remove works with discovery preset", {
   samples <- c(paste0("A", 1:4), paste0("B", 1:4), "QC1", "QC2")
   groups <- c(rep("A", 4), rep("B", 4), rep("QC", 2))

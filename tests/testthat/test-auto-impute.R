@@ -19,6 +19,17 @@ test_that("auto_impute works with QC samples", {
   expect_false(any(is.na(imputed$expr_mat)))
 })
 
+test_that("auto_impute handles NULL qc_name", {
+  exp <- simple_exp(10, 10)
+  exp$expr_mat[1, 1] <- NA
+  exp$expr_mat[3, 5] <- NA
+  exp$sample_info$group <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
+
+  expect_snapshot(imputed <- auto_impute(exp, group_col = "group", qc_name = NULL))
+  expect_s3_class(imputed, "glyexp_experiment")
+  expect_false(any(is.na(imputed$expr_mat)))
+})
+
 test_that("auto_impute uses sample_min for small datasets without QC", {
   # Create a small experiment (<=30 samples)
   exp <- simple_exp(10, 20)

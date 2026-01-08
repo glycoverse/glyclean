@@ -17,6 +17,14 @@
       * Method "impute_miss_forest": Median CV = 0.07814
       v Best method: "impute_zero" with Median CV = 0.07814
 
+# auto_impute handles NULL qc_name
+
+    Code
+      imputed <- auto_impute(exp, group_col = "group", qc_name = NULL)
+    Message
+      i No QC samples found. Using default imputation method based on sample size.
+      i Sample size <= 30, using `impute_sample_min()`.
+
 # auto_impute uses sample_min for small datasets without QC
 
     Code

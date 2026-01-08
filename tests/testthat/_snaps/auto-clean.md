@@ -113,6 +113,47 @@
       i Batch column  not found in sample_info. Skipping batch correction.
       v Batch correction completed.
 
+# auto_clean works with NULL qc_name
+
+    Code
+      result_exp <- auto_clean(test_exp, qc_name = NULL)
+    Message
+      
+      -- Normalizing data --
+      
+      i No QC samples found. Using default normalization method based on experiment type.
+      i Experiment type is "glycoproteomics". Using `normalize_median()`.
+      v Normalization completed.
+      
+      -- Removing variables with too many missing values --
+      
+      i No QC samples found. Using all samples.
+      i Applying preset "discovery"...
+      i No variables removed.
+      v Variable removal completed.
+      
+      -- Imputing missing values --
+      
+      i No QC samples found. Using default imputation method based on sample size.
+      i Sample size <= 30, using `impute_sample_min()`.
+      v Imputation completed.
+      
+      -- Aggregating data --
+      
+      i Aggregating to "gfs" level
+      v Aggregation completed.
+      
+      -- Normalizing data again --
+      
+      i No QC samples found. Using default normalization method based on experiment type.
+      i Experiment type is "glycoproteomics". Using `normalize_median()`.
+      v Normalization completed.
+      
+      -- Correcting batch effects --
+      
+      i Batch column  not found in sample_info. Skipping batch correction.
+      v Batch correction completed.
+
 # auto_clean works for glycomics data
 
     Code

@@ -7,6 +7,15 @@
       i Applying preset "simple"...
       i Total removed: 1 (10%) variables.
 
+# auto_remove handles NULL qc_name
+
+    Code
+      res <- auto_remove(exp, preset = "simple", group_col = "group", qc_name = NULL)
+    Message
+      i No QC samples found. Using all samples.
+      i Applying preset "simple"...
+      i Total removed: 1 (10%) variables.
+
 # auto_remove works with discovery preset
 
     Code

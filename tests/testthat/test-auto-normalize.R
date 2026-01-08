@@ -15,6 +15,14 @@ test_that("auto_normalize works with QC samples", {
   expect_s3_class(normed, "glyexp_experiment")
 })
 
+test_that("auto_normalize handles NULL qc_name", {
+  exp <- simple_exp(10, 10)
+  exp$sample_info$group <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
+
+  expect_snapshot(normed <- auto_normalize(exp, group_col = "group", qc_name = NULL))
+  expect_s3_class(normed, "glyexp_experiment")
+})
+
 test_that("auto_normalize works for glycomics without QC", {
   exp <- simple_exp(10, 6)
   exp$meta_data$exp_type <- "glycomics"
