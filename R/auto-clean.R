@@ -112,7 +112,7 @@ auto_clean <- function(
     check_batch_confounding = check_batch_confounding,
     batch_confounding_threshold = batch_confounding_threshold
   )
-  info <- inspect_experiment(exp)
+  info <- inspect_experiment(exp, group_col = group_col, qc_name = qc_name)
   switch(
     glyexp::get_exp_type(exp),
     glycoproteomics = .auto_clean_glycoproteomics(exp, params, info),
