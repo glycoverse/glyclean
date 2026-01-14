@@ -10,29 +10,30 @@
 #' - "protein_site": The site on the protein sequence.
 #'
 #' @param exp A [glyexp::experiment()] object with "glycoproteomics" type.
-#' @param fasta Either a file path to a FASTA file or a named character vector
-#'   with protein IDs as names and sequences as value.
+#' @param fasta Either a file path to a FASTA file, a named character vector
+#'   with protein IDs as names and sequences as value, or `NULL` to fetch from UniProt.
 #' @param n_aa The number of amino acids to the left and right of the glycosylation site.
 #' For example, if `n_aa = 5`, the resulting sequence will contain 11 amino acids.
+#' @param taxid NCBI taxonomy ID for UniProt lookup. Default: `9606` (human).
 #'
 #' @returns A [glyexp::experiment()] object with the new "site_sequence" column.
 #' @export
 #' 
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
-add_site_seq <- function(exp, fasta, n_aa = 7) {
+add_site_seq <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   UseMethod("add_site_seq")
 }
 
 #' @rdname add_site_seq
 #' @export
-add_site_seq.glyexp_experiment <- function(exp, fasta, n_aa = 7) {
-  .add_site_seq_experiment(exp, fasta = fasta, n_aa = n_aa)
+add_site_seq.glyexp_experiment <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
+  .add_site_seq_experiment(exp, fasta = fasta, n_aa = n_aa, taxid = taxid)
 }
 
 #' @rdname add_site_seq
 #' @export
-add_site_seq.default <- function(exp, fasta, n_aa = 7) {
+add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   cli::cli_abort(c(
     "{.arg exp} must be a {.cls glyexp_experiment} object.",
     "x" = "Got {.cls {class(exp)}}."
