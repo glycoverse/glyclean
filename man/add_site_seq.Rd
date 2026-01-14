@@ -15,7 +15,8 @@ add_site_seq(exp, fasta, n_aa = 7)
 \arguments{
 \item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with "glycoproteomics" type.}
 
-\item{fasta}{A character string specifying the path to the FASTA file containing protein sequences.}
+\item{fasta}{Either a file path to a FASTA file or a named character vector
+with protein IDs as names and sequences as value.}
 
 \item{n_aa}{The number of amino acids to the left and right of the glycosylation site.
 For example, if \code{n_aa = 5}, the resulting sequence will contain 11 amino acids.}

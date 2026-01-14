@@ -10,7 +10,8 @@
 #' - "protein_site": The site on the protein sequence.
 #'
 #' @param exp A [glyexp::experiment()] object with "glycoproteomics" type.
-#' @param fasta A character string specifying the path to the FASTA file containing protein sequences.
+#' @param fasta Either a file path to a FASTA file or a named character vector
+#'   with protein IDs as names and sequences as value.
 #' @param n_aa The number of amino acids to the left and right of the glycosylation site.
 #' For example, if `n_aa = 5`, the resulting sequence will contain 11 amino acids.
 #'
