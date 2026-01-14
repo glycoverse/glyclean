@@ -115,7 +115,7 @@ glyclean_aggregate.glyexp_experiment <- function(exp, to_level = c("gf", "gp", "
   new_exp <- exp
   new_exp$expr_mat <- expr_mat
   new_exp$var_info <- var_info_df
-  glyexp::standardize_variable(new_exp)
+  suppressMessages(glyexp::standardize_variable(new_exp))
 }
 
 #' @rdname aggregate
