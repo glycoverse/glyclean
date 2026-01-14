@@ -161,3 +161,8 @@ test_that(".validate_protein_seqs normalizes sequences", {
   result <- .validate_protein_seqs(seqs)
   expect_equal(unname(result["P12345"]), "ABCXYZ")
 })
+
+test_that(".validate_protein_seqs errors on empty sequences", {
+  seqs <- c(P12345 = "ABC", P67890 = "")
+  expect_error(.validate_protein_seqs(seqs), "non-empty")
+})
