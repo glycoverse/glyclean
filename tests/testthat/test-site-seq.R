@@ -296,3 +296,42 @@ test_that("add_site_seq fetches from UniProt when fasta is NULL", {
   # Site 10 with n_aa=3: positions 7-13 = GHIJKLM
   expect_equal(result$var_info$site_sequence[1], "GHIJKLM")
 })
+
+test_that("add_site_seq uses custom taxid", {
+  skip_if_not_installed("mockr")
+
+  expr_mat <- matrix(c(1, 2), nrow = 1, ncol = 2)
+  colnames(expr_mat) <- c("S1", "S2")
+  rownames(expr_mat) <- c("V1")
+
+  sample_info <- tibble::tibble(sample = c("S1", "S2"))
+  var_info <- tibble::tibble(
+    variable = c("V1"),
+    protein = c("P12345"),
+    protein_site = c(10L),
+    glycan_composition = c("H5N2")
+  )
+
+  exp <- glyexp::experiment(
+    expr_mat, sample_info, var_info,
+    exp_type = "glycoproteomics",
+    glycan_type = "N",
+    coerce_col_types = FALSE,
+    check_col_types = FALSE
+  )
+
+  mock_seq <- "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  captured_taxid <- NULL
+
+  mockr::local_mock(
+    `.fetch_uniprot_sequences` = function(proteins, taxid = 9606) {
+      captured_taxid <<- taxid
+      stats::setNames(mock_seq, proteins)
+    }
+  )
+
+  suppressMessages(result <- add_site_seq(exp, fasta = NULL, n_aa = 3, taxid = 10090))
+
+  expect_equal(captured_taxid, 10090)
+  expect_true("site_sequence" %in% colnames(result$var_info))
+})
