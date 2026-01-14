@@ -6,20 +6,22 @@
 \alias{add_site_seq.default}
 \title{Add site-specific sequence information.}
 \usage{
-add_site_seq(exp, fasta, n_aa = 7)
+add_site_seq(exp, fasta = NULL, n_aa = 7, taxid = 9606)
 
-\method{add_site_seq}{glyexp_experiment}(exp, fasta, n_aa = 7)
+\method{add_site_seq}{glyexp_experiment}(exp, fasta = NULL, n_aa = 7, taxid = 9606)
 
-\method{add_site_seq}{default}(exp, fasta, n_aa = 7)
+\method{add_site_seq}{default}(exp, fasta = NULL, n_aa = 7, taxid = 9606)
 }
 \arguments{
 \item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with "glycoproteomics" type.}
 
-\item{fasta}{Either a file path to a FASTA file or a named character vector
-with protein IDs as names and sequences as value.}
+\item{fasta}{Either a file path to a FASTA file, a named character vector
+with protein IDs as names and sequences as value, or \code{NULL} to fetch from UniProt.}
 
 \item{n_aa}{The number of amino acids to the left and right of the glycosylation site.
 For example, if \code{n_aa = 5}, the resulting sequence will contain 11 amino acids.}
+
+\item{taxid}{NCBI taxonomy ID for UniProt lookup. Default: \code{9606} (human).}
 }
 \value{
 A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with the new "site_sequence" column.
