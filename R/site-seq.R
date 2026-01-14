@@ -165,6 +165,17 @@ add_site_seq.default <- function(exp, fasta, n_aa = 7) {
   protein_seqs
 }
 
+#' Validate and normalize a named character vector of protein sequences
+#' @keywords internal
+.validate_protein_seqs <- function(seqs) {
+  if (any(nchar(seqs) == 0)) {
+    cli::cli_abort("All protein sequences must be non-empty strings.")
+  }
+  purrr::map_chr(seqs, ~ .x %>%
+    stringr::str_to_upper() %>%
+    stringr::str_remove_all("\\s"))
+}
+
 # Helper function to extract site sequence
 .extract_site_sequence <- function(protein_id, site, protein_seqs, n_aa) {
   # Handle missing values
