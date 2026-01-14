@@ -55,6 +55,7 @@ Imports:
     tidyr,
     tibble,
     tidyselect,
+    UniProt.ws,
     withr,
     forcats,
     stats,
