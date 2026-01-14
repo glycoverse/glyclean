@@ -10,7 +10,7 @@ test_that("aggregating to glycopeptides works", {
 
 test_that("aggregating to glycoforms works", {
   exp <- real_exp()
-  res <- aggregate(exp, to_level = "gf")
+  res <- suppressWarnings(aggregate(exp, to_level = "gf"))
   expect_setequal(
     colnames(res$var_info),
     c("variable", "protein", "gene", "glycan_composition", "protein_site")
