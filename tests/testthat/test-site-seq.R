@@ -228,3 +228,31 @@ test_that("add_site_seq rejects unnamed character vector for fasta", {
     "fasta must be a file path or a named character vector"
   )
 })
+
+test_that("add_site_seq shows correct message for character vector input", {
+  expr_mat <- matrix(c(1, 2), nrow = 1, ncol = 2)
+  colnames(expr_mat) <- c("S1", "S2")
+  rownames(expr_mat) <- c("V1")
+
+  sample_info <- tibble::tibble(sample = c("S1", "S2"))
+  var_info <- tibble::tibble(
+    variable = c("V1"),
+    protein = c("P12345"),
+    protein_site = c(10L),
+    glycan_composition = c("H5N2")
+  )
+
+  exp <- glyexp::experiment(
+    expr_mat, sample_info, var_info,
+    exp_type = "glycoproteomics",
+    glycan_type = "N",
+    coerce_col_types = FALSE,
+    check_col_types = FALSE
+  )
+
+  fasta_vec <- c(P12345 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+  expect_message(
+    add_site_seq(exp, fasta_vec, n_aa = 3),
+    "Provided contains 1 protein sequences"
+  )
+})

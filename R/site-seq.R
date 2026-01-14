@@ -89,9 +89,12 @@ add_site_seq.default <- function(exp, fasta, n_aa = 7) {
     purrr::discard(identity) %>%
     names()
   
+  # Determine if input was file path or character vector
+  input_type <- if (is_file) "FASTA file" else "Provided"
+
   cli::cli_inform(c(
-    "i" = "FASTA file contains {length(protein_seqs)} protein sequences",
-    "i" = "Found {length(found_proteins)} / {length(unique_proteins)} proteins from experiment in FASTA file"
+    "i" = "{input_type} contains {length(protein_seqs)} protein sequences",
+    "i" = "Found {length(found_proteins)} / {length(unique_proteins)} proteins from experiment"
   ))
   
   if (length(missing_proteins) > 0) {
