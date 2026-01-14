@@ -71,13 +71,6 @@ add_site_seq.default <- function(exp, fasta, n_aa = 7) {
     cli::cli_abort("The {.field protein_site} column does not exist.")
   }
 
-  # Read FASTA file or use named character vector
-  if (checkmate::test_file_exists(fasta)) {
-    protein_seqs <- .read_fasta_file(fasta)
-  } else {
-    protein_seqs <- .validate_protein_seqs(fasta)
-  }
-  
   # Check protein matching and provide diagnostic information using purrr
   unique_proteins <- exp$var_info$protein %>%
     unique() %>%
