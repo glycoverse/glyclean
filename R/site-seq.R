@@ -52,7 +52,7 @@ add_site_seq.default <- function(exp, fasta, n_aa = 7) {
   is_file <- checkmate::test_file_exists(fasta)
   is_named_char <- is.character(fasta) && !is.null(names(fasta))
   if (!is_file && !is_named_char) {
-    cli::cli_abort("fasta must be a file path or a named character vector.")
+    cli::cli_abort("{.arg fasta} must be a file path or a named character vector.")
   }
   checkmate::assert_int(n_aa, lower = 1)
 
@@ -93,8 +93,8 @@ add_site_seq.default <- function(exp, fasta, n_aa = 7) {
   # Determine if input was file path or character vector
   input_type <- if (is_file) "FASTA file" else "Provided"
 
-  cli::cli_alert_info("{input_type} contains {length(protein_seqs)} protein sequences")
-  cli::cli_alert_info("Found {length(found_proteins)} / {length(unique_proteins)} proteins from experiment")
+  cli::cli_alert_info("{.val {input_type}} contains {.val {length(protein_seqs)}} protein sequences")
+  cli::cli_alert_info("Found {.val {length(found_proteins)}} / {.val {length(unique_proteins)}} proteins from experiment")
 
   if (length(missing_proteins) > 0) {
     # Format missing proteins display
@@ -106,9 +106,9 @@ add_site_seq.default <- function(exp, fasta, n_aa = 7) {
 
     # Format message based on number of missing proteins
     if (length(missing_proteins) <= 5) {
-      cli::cli_alert_warning("Missing proteins: {missing_display}")
+      cli::cli_alert_warning("Missing proteins: {.val {missing_display}}")
     } else {
-      cli::cli_alert_warning("Missing {length(missing_proteins)} proteins (showing first 5): {missing_display}")
+      cli::cli_alert_warning("Missing {.val {length(missing_proteins)}} proteins (showing first 5): {.val {missing_display}}")
     }
   }
   

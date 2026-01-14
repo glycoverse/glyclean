@@ -225,7 +225,7 @@ test_that("add_site_seq rejects unnamed character vector for fasta", {
   # Test with unnamed character vector
   expect_error(
     add_site_seq(exp, c("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
-    "fasta must be a file path or a named character vector"
+    "`fasta`"
   )
 })
 
@@ -253,6 +253,6 @@ test_that("add_site_seq shows correct message for character vector input", {
   fasta_vec <- c(P12345 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
   expect_message(
     add_site_seq(exp, fasta_vec, n_aa = 3),
-    "Provided contains 1 protein sequences"
+    '"Provided" contains 1 protein sequences'
   )
 })
