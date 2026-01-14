@@ -47,8 +47,14 @@ add_site_seq.default <- function(exp, fasta, n_aa = 7) {
       "x" = "Got {.val {glyexp::get_exp_type(exp)}}."
     ))
   }
-  checkmate::assert_string(fasta)
-  checkmate::assert_file_exists(fasta)
+  is_file <- checkmate::test_file_exists(fasta)
+  is_named_char <- is.character(fasta) && !is.null(names(fasta))
+
+  if (!is_file && !is_named_char) {
+    cli::cli_abort(
+      "fasta must be a file path or a named character vector."
+    )
+  }
   checkmate::assert_int(n_aa, lower = 1)
 
   # Check if required columns exist
@@ -59,9 +65,13 @@ add_site_seq.default <- function(exp, fasta, n_aa = 7) {
   if (!"protein_site" %in% colnames(exp$var_info)) {
     cli::cli_abort("The {.field protein_site} column does not exist.")
   }
-  
-  # Read FASTA file
-  protein_seqs <- .read_fasta_file(fasta)
+
+  # Read FASTA file or use named character vector
+  if (checkmate::test_file_exists(fasta)) {
+    protein_seqs <- .read_fasta_file(fasta)
+  } else {
+    protein_seqs <- .validate_protein_seqs(fasta)
+  }
   
   # Check protein matching and provide diagnostic information using purrr
   unique_proteins <- exp$var_info$protein %>%
