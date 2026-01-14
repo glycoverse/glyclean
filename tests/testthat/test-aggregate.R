@@ -1,6 +1,6 @@
 test_that("aggregating to glycopeptides works", {
   exp <- real_exp()
-  res <- aggregate(exp, to_level = "gp")
+  res <- aggregate(exp, to_level = "gp", standardize_variable = FALSE)
   expect_setequal(
     colnames(res$var_info),
     c("variable", "peptide", "protein", "gene", "glycan_composition",
@@ -10,7 +10,7 @@ test_that("aggregating to glycopeptides works", {
 
 test_that("aggregating to glycoforms works", {
   exp <- real_exp()
-  res <- suppressWarnings(aggregate(exp, to_level = "gf"))
+  res <- aggregate(exp, to_level = "gf", standardize_variable = FALSE)
   expect_setequal(
     colnames(res$var_info),
     c("variable", "protein", "gene", "glycan_composition", "protein_site")
@@ -19,7 +19,7 @@ test_that("aggregating to glycoforms works", {
 
 test_that("aggregating to glycopeptides (with structures) works", {
   exp <- real_exp()
-  res <- aggregate(exp, to_level = "gps")
+  res <- aggregate(exp, to_level = "gps", standardize_variable = FALSE)
   expect_setequal(
     colnames(res$var_info),
     c("variable", "peptide", "protein", "gene", "glycan_composition",
@@ -34,7 +34,7 @@ test_that("aggregating to glycoforms (with structures) works", {
   # That is, one glycoform (with structures) happens to have only one peptide and one peptide site
   # in our test dataset.
   exp <- real_exp()
-  res <- aggregate(exp, to_level = "gfs")
+  res <- aggregate(exp, to_level = "gfs", standardize_variable = FALSE)
   expect_setequal(
     colnames(res$var_info),
     c("variable", "protein", "gene", "glycan_composition", "glycan_structure",
@@ -44,8 +44,8 @@ test_that("aggregating to glycoforms (with structures) works", {
 
 test_that("aggregating from glycopeptides to glycoforms works", {
   exp <- real_exp()
-  exp <- aggregate(exp, to_level = "gp")
-  res <- aggregate(exp, to_level = "gf")
+  exp <- aggregate(exp, to_level = "gp", standardize_variable = FALSE)
+  res <- aggregate(exp, to_level = "gf", standardize_variable = FALSE)
   expect_setequal(
     colnames(res$var_info),
     c("variable", "protein", "gene", "glycan_composition", "protein_site")
@@ -54,15 +54,15 @@ test_that("aggregating from glycopeptides to glycoforms works", {
 
 test_that("aggregating from glycoforms to glycopeptides fails", {
   exp <- real_exp()
-  exp <- aggregate(exp, to_level = "gf")
-  expect_snapshot(aggregate(exp, to_level = "gp"), error = TRUE)
+  exp <- aggregate(exp, to_level = "gf", standardize_variable = FALSE)
+  expect_snapshot(aggregate(exp, to_level = "gp", standardize_variable = FALSE), error = TRUE)
 })
 
 
 test_that("aggregating from glycoforms with structure to glycoforms without structures works", {
   exp <- real_exp()
-  exp <- aggregate(exp, to_level = "gfs")
-  res <- aggregate(exp, to_level = "gf")
+  exp <- aggregate(exp, to_level = "gfs", standardize_variable = FALSE)
+  res <- aggregate(exp, to_level = "gf", standardize_variable = FALSE)
   expect_setequal(
     colnames(res$var_info),
     c("variable", "protein", "gene", "glycan_composition", "protein_site")
@@ -71,6 +71,6 @@ test_that("aggregating from glycoforms with structure to glycoforms without stru
 
 test_that("aggregating from glycoforms without structures to glycoforms with structures fails", {
   exp <- real_exp()
-  exp <- aggregate(exp, to_level = "gf")
-  expect_snapshot(aggregate(exp, to_level = "gfs"), error = TRUE)
+  exp <- aggregate(exp, to_level = "gf", standardize_variable = FALSE)
+  expect_snapshot(aggregate(exp, to_level = "gfs", standardize_variable = FALSE), error = TRUE)
 })

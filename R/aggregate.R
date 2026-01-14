@@ -38,21 +38,26 @@
 #'   "gfs" (glycoforms with structures),
 #'   or "gps" (glycopeptides with structures).
 #'   See Details for more information.
-#'
+#' @param standardize_variable Whether to call [glyexp::standardize_variable()]
+#'   after aggregation. Set to `FALSE` to skip network calls for faster testing.
+#'   Default is `TRUE`.
 #' @returns A modified [glyexp::experiment()] object with aggregated expression matrix and
 #'   updated variable information.
 #' @export
-aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
-  glyclean_aggregate(exp, to_level = to_level)
+aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps"),
+                      standardize_variable = TRUE) {
+  glyclean_aggregate(exp, to_level = to_level, standardize_variable = standardize_variable)
 }
 
-glyclean_aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
+glyclean_aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps"),
+                                standardize_variable = TRUE) {
   UseMethod("glyclean_aggregate")
 }
 
 #' @rdname aggregate
 #' @export
-glyclean_aggregate.glyexp_experiment <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
+glyclean_aggregate.glyexp_experiment <- function(exp, to_level = c("gf", "gp", "gfs", "gps"),
+                                                  standardize_variable = TRUE) {
   # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")
   if (glyexp::get_exp_type(exp) != "glycoproteomics") {
@@ -115,12 +120,17 @@ glyclean_aggregate.glyexp_experiment <- function(exp, to_level = c("gf", "gp", "
   new_exp <- exp
   new_exp$expr_mat <- expr_mat
   new_exp$var_info <- var_info_df
-  suppressMessages(glyexp::standardize_variable(new_exp))
+  if (standardize_variable) {
+    suppressMessages(glyexp::standardize_variable(new_exp))
+  } else {
+    new_exp
+  }
 }
 
 #' @rdname aggregate
 #' @export
-glyclean_aggregate.default <- function(exp, to_level = c("gf", "gp", "gfs", "gps")) {
+glyclean_aggregate.default <- function(exp, to_level = c("gf", "gp", "gfs", "gps"),
+                                       standardize_variable = TRUE) {
   cli::cli_abort(c(
     "{.arg exp} must be a {.cls glyexp_experiment} object.",
     "x" = "Got {.cls {class(exp)}}."

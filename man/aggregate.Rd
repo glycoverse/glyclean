@@ -6,11 +6,23 @@
 \alias{glyclean_aggregate.default}
 \title{Aggregate Data}
 \usage{
-aggregate(exp, to_level = c("gf", "gp", "gfs", "gps"))
+aggregate(
+  exp,
+  to_level = c("gf", "gp", "gfs", "gps"),
+  standardize_variable = TRUE
+)
 
-\method{glyclean_aggregate}{glyexp_experiment}(exp, to_level = c("gf", "gp", "gfs", "gps"))
+\method{glyclean_aggregate}{glyexp_experiment}(
+  exp,
+  to_level = c("gf", "gp", "gfs", "gps"),
+  standardize_variable = TRUE
+)
 
-\method{glyclean_aggregate}{default}(exp, to_level = c("gf", "gp", "gfs", "gps"))
+\method{glyclean_aggregate}{default}(
+  exp,
+  to_level = c("gf", "gp", "gfs", "gps"),
+  standardize_variable = TRUE
+)
 }
 \arguments{
 \item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with "glycoproteomics" type.}
@@ -20,6 +32,10 @@ one of: "gf" (glycoforms), "gp" (glycopeptides),
 "gfs" (glycoforms with structures),
 or "gps" (glycopeptides with structures).
 See Details for more information.}
+
+\item{standardize_variable}{Whether to call \code{\link[glyexp:standardize_variable]{glyexp::standardize_variable()}}
+after aggregation. Set to \code{FALSE} to skip network calls for faster testing.
+Default is \code{TRUE}.}
 }
 \value{
 A modified \code{\link[glyexp:experiment]{glyexp::experiment()}} object with aggregated expression matrix and

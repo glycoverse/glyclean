@@ -7,7 +7,7 @@ replace_cv <- function(x) {
 # Test main logic path for glycoproteomics data
 test_that("auto_clean works for glycoproteomics data", {
   test_exp <- complex_exp()
-  expect_snapshot(result_exp <- auto_clean(test_exp))
+  expect_snapshot(result_exp <- auto_clean(test_exp, standardize_variable = FALSE))
 
   expect_s3_class(result_exp, "glyexp_experiment")
   expect_equal(glyexp::get_exp_type(result_exp), "glycoproteomics")
@@ -38,7 +38,7 @@ test_that("auto_clean works for glycoproteomics data with QC", {
     check_col_types = FALSE
   )
 
-  expect_snapshot(result_exp <- auto_clean(test_exp), transform = replace_cv)
+  expect_snapshot(result_exp <- auto_clean(test_exp, standardize_variable = FALSE), transform = replace_cv)
 
   expect_s3_class(result_exp, "glyexp_experiment")
   expect_equal(glyexp::get_exp_type(result_exp), "glycoproteomics")
@@ -69,7 +69,7 @@ test_that("auto_clean works with NULL qc_name", {
     check_col_types = FALSE
   )
 
-  expect_snapshot(result_exp <- auto_clean(test_exp, qc_name = NULL))
+  expect_snapshot(result_exp <- auto_clean(test_exp, qc_name = NULL, standardize_variable = FALSE))
 
   expect_s3_class(result_exp, "glyexp_experiment")
   expect_equal(glyexp::get_exp_type(result_exp), "glycoproteomics")

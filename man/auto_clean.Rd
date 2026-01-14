@@ -14,7 +14,8 @@ auto_clean(
   remove_preset = "discovery",
   batch_prop_threshold = 0.3,
   check_batch_confounding = TRUE,
-  batch_confounding_threshold = 0.4
+  batch_confounding_threshold = 0.4,
+  standardize_variable = TRUE
 )
 }
 \arguments{
@@ -75,6 +76,10 @@ Default to TRUE.}
 
 \item{batch_confounding_threshold}{The threshold for Cramer's V to consider batch and group variables highly confounded.
 Only used when \code{check_batch_confounding} is TRUE. Default to 0.4.}
+
+\item{standardize_variable}{Whether to call \code{\link[glyexp:standardize_variable]{glyexp::standardize_variable()}}
+after aggregation. Set to \code{FALSE} to skip network calls for faster testing.
+Default is \code{TRUE}.}
 }
 \value{
 A modified \code{glyexp::experiment()} object.

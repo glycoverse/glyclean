@@ -5,6 +5,9 @@
 #' otherwise to "gf" (glycoforms with compositions) level.
 #'
 #' @param exp A [glyexp::experiment()] object with "glycoproteomics" type.
+#' @param standardize_variable Whether to call [glyexp::standardize_variable()]
+#'   after aggregation. Set to `FALSE` to skip network calls for faster testing.
+#'   Default is `TRUE`.
 #'
 #' @returns A modified [glyexp::experiment()] object with aggregated expression matrix and
 #'   updated variable information.
@@ -15,7 +18,7 @@
 #' auto_aggregate(exp)
 #'
 #' @export
-auto_aggregate <- function(exp) {
+auto_aggregate <- function(exp, standardize_variable = TRUE) {
   checkmate::assert_class(exp, "glyexp_experiment")
   if (glyexp::get_exp_type(exp) != "glycoproteomics") {
     cli::cli_abort(c(
@@ -25,9 +28,11 @@ auto_aggregate <- function(exp) {
   }
   if ("glycan_structure" %in% colnames(glyexp::get_var_info(exp))) {
     cli::cli_alert_info("Aggregating to {.val gfs} level")
-    glyclean_aggregate.glyexp_experiment(exp, to_level = "gfs")
+    glyclean_aggregate.glyexp_experiment(exp, to_level = "gfs",
+                                          standardize_variable = standardize_variable)
   } else {
     cli::cli_alert_info("Aggregating to {.val gf} level")
-    glyclean_aggregate.glyexp_experiment(exp, to_level = "gf")
+    glyclean_aggregate.glyexp_experiment(exp, to_level = "gf",
+                                          standardize_variable = standardize_variable)
   }
 }

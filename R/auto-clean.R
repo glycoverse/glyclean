@@ -63,6 +63,9 @@
 #'   Default to TRUE.
 #' @param batch_confounding_threshold The threshold for Cramer's V to consider batch and group variables highly confounded.
 #'   Only used when `check_batch_confounding` is TRUE. Default to 0.4.
+#' @param standardize_variable Whether to call [glyexp::standardize_variable()]
+#'   after aggregation. Set to `FALSE` to skip network calls for faster testing.
+#'   Default is `TRUE`.
 #'
 #' @return A modified `glyexp::experiment()` object.
 #'
@@ -83,7 +86,8 @@ auto_clean <- function(
   remove_preset = "discovery",
   batch_prop_threshold = 0.3,
   check_batch_confounding = TRUE,
-  batch_confounding_threshold = 0.4
+  batch_confounding_threshold = 0.4,
+  standardize_variable = TRUE
 ) {
   checkmate::assert_class(exp, "glyexp_experiment")
   checkmate::assert_string(group_col, null.ok = TRUE)
@@ -110,7 +114,8 @@ auto_clean <- function(
     remove_preset = remove_preset,
     batch_prop_threshold = batch_prop_threshold,
     check_batch_confounding = check_batch_confounding,
-    batch_confounding_threshold = batch_confounding_threshold
+    batch_confounding_threshold = batch_confounding_threshold,
+    standardize_variable = standardize_variable
   )
   info <- inspect_experiment(exp, group_col = group_col, qc_name = qc_name)
   switch(
@@ -131,7 +136,7 @@ auto_clean <- function(
   exp <- auto_impute(exp, params$group_col, params$qc_name, params$impute_to_try, info)
   cli::cli_alert_success("Imputation completed.")
   cli::cli_h2("Aggregating data")
-  exp <- auto_aggregate(exp)
+  exp <- auto_aggregate(exp, standardize_variable = params$standardize_variable)
   cli::cli_alert_success("Aggregation completed.")
   cli::cli_h2("Normalizing data again")
   exp <- auto_normalize(exp, params$group_col, params$qc_name, params$normalize_to_try, info)

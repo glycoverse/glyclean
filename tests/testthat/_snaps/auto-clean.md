@@ -1,7 +1,7 @@
 # auto_clean works for glycoproteomics data
 
     Code
-      result_exp <- auto_clean(test_exp)
+      result_exp <- auto_clean(test_exp, standardize_variable = FALSE)
     Message
       
       -- Normalizing data --
@@ -42,7 +42,7 @@
 # auto_clean works for glycoproteomics data with QC
 
     Code
-      result_exp <- auto_clean(test_exp)
+      result_exp <- auto_clean(test_exp, standardize_variable = FALSE)
     Message
       
       -- Normalizing data --
@@ -116,7 +116,7 @@
 # auto_clean works with NULL qc_name
 
     Code
-      result_exp <- auto_clean(test_exp, qc_name = NULL)
+      result_exp <- auto_clean(test_exp, qc_name = NULL, standardize_variable = FALSE)
     Message
       
       -- Normalizing data --

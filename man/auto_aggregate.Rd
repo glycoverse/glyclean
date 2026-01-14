@@ -4,10 +4,14 @@
 \alias{auto_aggregate}
 \title{Automatic Aggregation}
 \usage{
-auto_aggregate(exp)
+auto_aggregate(exp, standardize_variable = TRUE)
 }
 \arguments{
 \item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with "glycoproteomics" type.}
+
+\item{standardize_variable}{Whether to call \code{\link[glyexp:standardize_variable]{glyexp::standardize_variable()}}
+after aggregation. Set to \code{FALSE} to skip network calls for faster testing.
+Default is \code{TRUE}.}
 }
 \value{
 A modified \code{\link[glyexp:experiment]{glyexp::experiment()}} object with aggregated expression matrix and

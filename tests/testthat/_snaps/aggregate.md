@@ -1,7 +1,7 @@
 # aggregating from glycoforms to glycopeptides fails
 
     Code
-      aggregate(exp, to_level = "gp")
+      aggregate(exp, to_level = "gp", standardize_variable = FALSE)
     Condition
       Error in `glyclean_aggregate()`:
       ! All required columns must be present in `var_info`.
@@ -11,7 +11,7 @@
 # aggregating from glycoforms without structures to glycoforms with structures fails
 
     Code
-      aggregate(exp, to_level = "gfs")
+      aggregate(exp, to_level = "gfs", standardize_variable = FALSE)
     Condition
       Error in `glyclean_aggregate()`:
       ! All required columns must be present in `var_info`.
