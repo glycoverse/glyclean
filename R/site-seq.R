@@ -40,7 +40,7 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   ))
 }
 
-.add_site_seq_experiment <- function(exp, fasta, n_aa = 7) {
+.add_site_seq_experiment <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")
   if (glyexp::get_exp_type(exp) != "glycoproteomics") {
@@ -49,20 +49,29 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
       "x" = "Got {.val {glyexp::get_exp_type(exp)}}."
     ))
   }
-  # Validate fasta is either a file path or named character vector
-  is_file <- checkmate::test_file_exists(fasta)
-  is_named_char <- is.character(fasta) && !is.null(names(fasta))
-  if (!is_file && !is_named_char) {
-    cli::cli_abort("{.arg fasta} must be a file path or a named character vector.")
-  }
-  checkmate::assert_int(n_aa, lower = 1)
 
-  # Read FASTA file or use named character vector
-  if (is_file) {
-    protein_seqs <- .read_fasta_file(fasta)
+  # Handle fasta: NULL -> fetch from UniProt
+  if (is.null(fasta)) {
+    cli::cli_alert_info("Fetching protein sequences from UniProt (taxid: {taxid})")
+    unique_proteins <- exp$var_info$protein %>%
+      unique() %>%
+      purrr::discard(is.na)
+    protein_seqs <- .fetch_uniprot_sequences(unique_proteins, taxid)
   } else {
-    protein_seqs <- .validate_protein_seqs(fasta)
+    is_file <- checkmate::test_file_exists(fasta)
+    is_named_char <- is.character(fasta) && !is.null(names(fasta))
+    if (!is_file && !is_named_char) {
+      cli::cli_abort("{.arg fasta} must be a file path, a named character vector, or NULL.")
+    }
+
+    if (is_file) {
+      protein_seqs <- .read_fasta_file(fasta)
+    } else {
+      protein_seqs <- .validate_protein_seqs(fasta)
+    }
   }
+
+  checkmate::assert_int(n_aa, lower = 1)
 
   # Check if required columns exist
   if (!"protein" %in% colnames(exp$var_info)) {
@@ -91,8 +100,14 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
     purrr::discard(identity) %>%
     names()
   
-  # Determine if input was file path or character vector
-  input_type <- if (is_file) "FASTA file" else "Provided"
+  # Determine input type for messages
+  input_type <- if (is.null(fasta)) {
+    "UniProt"
+  } else if (is_file) {
+    "FASTA file"
+  } else {
+    "Provided"
+  }
 
   cli::cli_alert_info("{.val {input_type}} contains {.val {length(protein_seqs)}} protein sequences")
   cli::cli_alert_info("Found {.val {length(found_proteins)}} / {.val {length(unique_proteins)}} proteins from experiment")
@@ -223,4 +238,36 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   
   # Collapse into single string
   stringr::str_c(site_seq, collapse = "")
+}
+
+#' Fetch protein sequences from UniProt in batches
+#' @keywords internal
+.fetch_uniprot_sequences <- function(proteins, taxid = 9606, batch_size = 50) {
+  if (length(proteins) == 0) {
+    return(character(0))
+  }
+
+  # Calculate safe batch size based on estimated query length
+  # Each protein ID is ~6 chars, plus " OR " (4 chars) = ~10 chars per protein
+  # Leave room for query prefix (~30 chars) and URL overhead
+  safe_batch_size <- batch_size
+
+  n <- length(proteins)
+  batches <- split(proteins, ceiling(seq_along(proteins) / safe_batch_size))
+
+  cli::cli_alert_info("Fetching {n} proteins in {length(batches)} batch(es)...")
+
+  results <- purrr::map(batches, function(batch_proteins) {
+    query_str <- paste(batch_proteins, collapse = " OR ")
+    full_query <- paste0("organism_id:", taxid, " AND (", query_str, ")")
+
+    result <- UniProt.ws::queryUniProt(
+      query = full_query,
+      fields = c("accession", "sequence")
+    )
+
+    stats::setNames(result$Sequence, result$Entry)
+  })
+
+  seqs <- unlist(results, recursive = FALSE, use.names = TRUE)
 }
