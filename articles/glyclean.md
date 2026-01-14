@@ -59,18 +59,18 @@ Let’s peek under the hood and see what we’re working with:
 ``` r
 get_var_info(exp)
 #> # A tibble: 4,262 × 8
-#>    variable peptide   peptide_site protein protein_site gene  glycan_composition
-#>    <chr>    <chr>            <int> <chr>          <int> <chr> <comp>            
-#>  1 GP1      JKTQGK               1 P08185           176 SERP… Hex(5)HexNAc(4)Ne…
-#>  2 GP2      HSHNJJSS…            5 P04196           344 HRG   Hex(5)HexNAc(4)Ne…
-#>  3 GP3      HSHNJJSS…            5 P04196           344 HRG   Hex(5)HexNAc(4)   
-#>  4 GP4      HSHNJJSS…            5 P04196           344 HRG   Hex(5)HexNAc(4)Ne…
-#>  5 GP5      HJSTGCLR             2 P10909           291 CLU   Hex(6)HexNAc(5)   
-#>  6 GP6      HSHNJJSS…            5 P04196           344 HRG   Hex(5)HexNAc(4)Ne…
-#>  7 GP7      HSHNJJSS…            6 P04196           345 HRG   Hex(5)HexNAc(4)   
-#>  8 GP8      HSHNJJSS…            5 P04196           344 HRG   Hex(5)HexNAc(4)dH…
-#>  9 GP9      HSHNJJSS…            5 P04196           344 HRG   Hex(4)HexNAc(3)   
-#> 10 GP10     HSHNJJSS…            5 P04196           344 HRG   Hex(4)HexNAc(4)Ne…
+#>    variable   peptide peptide_site protein protein_site gene  glycan_composition
+#>    <chr>      <chr>          <int> <chr>          <int> <chr> <comp>            
+#>  1 P08185-N1… NKTQGK             1 P08185           176 SERP… Hex(5)HexNAc(4)Ne…
+#>  2 P04196-N3… HSHNNN…            5 P04196           344 HRG   Hex(5)HexNAc(4)Ne…
+#>  3 P04196-N3… HSHNNN…            5 P04196           344 HRG   Hex(5)HexNAc(4)   
+#>  4 P04196-N3… HSHNNN…            5 P04196           344 HRG   Hex(5)HexNAc(4)Ne…
+#>  5 P10909-N2… HNSTGC…            2 P10909           291 CLU   Hex(6)HexNAc(5)   
+#>  6 P04196-N3… HSHNNN…            5 P04196           344 HRG   Hex(5)HexNAc(4)Ne…
+#>  7 P04196-N3… HSHNNN…            6 P04196           345 HRG   Hex(5)HexNAc(4)   
+#>  8 P04196-N3… HSHNNN…            5 P04196           344 HRG   Hex(5)HexNAc(4)dH…
+#>  9 P04196-N3… HSHNNN…            5 P04196           344 HRG   Hex(4)HexNAc(3)   
+#> 10 P04196-N3… HSHNNN…            5 P04196           344 HRG   Hex(4)HexNAc(4)Ne…
 #> # ℹ 4,252 more rows
 #> # ℹ 1 more variable: glycan_structure <struct>
 ```
@@ -389,8 +389,12 @@ p_values <- detect_batch_effect(aggregated_exp2)
 #> ℹ Detecting batch effects using ANOVA for 2738 variables...
 #> ✔ Batch effect detection completed. 19 out of 2738 variables show significant batch effects (p < 0.05).
 p_values[1:5]
-#>        V1        V2        V3        V4        V5 
-#> 0.6998998 0.3951691 0.4852698 0.3329619 0.4907154
+#> P08185-N176-Hex(5)HexNAc(4)NeuAc(2) P04196-N344-Hex(5)HexNAc(4)NeuAc(1) 
+#>                           0.6998998                           0.3951691 
+#>         P04196-N344-Hex(5)HexNAc(4)         P10909-N291-Hex(6)HexNAc(5) 
+#>                           0.4852698                           0.3329619 
+#> P04196-N344-Hex(5)HexNAc(4)NeuAc(2) 
+#>                           0.4907154
 ```
 
 Here we do not have batch effects, but we will correct it anyway for

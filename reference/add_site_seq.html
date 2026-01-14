@@ -21,7 +21,7 @@ This function requires the following columns in the variable information tibble:
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,13 +56,13 @@ If the head and tail amino acids of the peptide sequence are insufficient, fill 
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">add_site_seq</span><span class="op">(</span><span class="va">exp</span>, <span class="va">fasta</span>, n_aa <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">add_site_seq</span><span class="op">(</span><span class="va">exp</span>, fasta <span class="op">=</span> <span class="cn">NULL</span>, n_aa <span class="op">=</span> <span class="fl">7</span>, taxid <span class="op">=</span> <span class="fl">9606</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'glyexp_experiment'</span></span>
-<span><span class="fu">add_site_seq</span><span class="op">(</span><span class="va">exp</span>, <span class="va">fasta</span>, n_aa <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
+<span><span class="fu">add_site_seq</span><span class="op">(</span><span class="va">exp</span>, fasta <span class="op">=</span> <span class="cn">NULL</span>, n_aa <span class="op">=</span> <span class="fl">7</span>, taxid <span class="op">=</span> <span class="fl">9606</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Default S3 method</span></span>
-<span><span class="fu">add_site_seq</span><span class="op">(</span><span class="va">exp</span>, <span class="va">fasta</span>, n_aa <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">add_site_seq</span><span class="op">(</span><span class="va">exp</span>, fasta <span class="op">=</span> <span class="cn">NULL</span>, n_aa <span class="op">=</span> <span class="fl">7</span>, taxid <span class="op">=</span> <span class="fl">9606</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -74,12 +74,17 @@ If the head and tail amino acids of the peptide sequence are insufficient, fill 
 
 
 <dt id="arg-fasta">fasta<a class="anchor" aria-label="anchor" href="#arg-fasta"></a></dt>
-<dd><p>A character string specifying the path to the FASTA file containing protein sequences.</p></dd>
+<dd><p>Either a file path to a FASTA file, a named character vector
+with protein IDs as names and sequences as value, or <code>NULL</code> to fetch from UniProt.</p></dd>
 
 
 <dt id="arg-n-aa">n_aa<a class="anchor" aria-label="anchor" href="#arg-n-aa"></a></dt>
 <dd><p>The number of amino acids to the left and right of the glycosylation site.
 For example, if <code>n_aa = 5</code>, the resulting sequence will contain 11 amino acids.</p></dd>
+
+
+<dt id="arg-taxid">taxid<a class="anchor" aria-label="anchor" href="#arg-taxid"></a></dt>
+<dd><p>NCBI taxonomy ID for UniProt lookup. Default: <code>9606</code> (human).</p></dd>
 
 </dl></div>
     <div class="section level2">

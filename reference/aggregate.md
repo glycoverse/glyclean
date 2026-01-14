@@ -46,13 +46,25 @@ removed for "gf" level, as one "glycoform" can contain multiple
 ## Usage
 
 ``` r
-aggregate(exp, to_level = c("gf", "gp", "gfs", "gps"))
+aggregate(
+  exp,
+  to_level = c("gf", "gp", "gfs", "gps"),
+  standardize_variable = TRUE
+)
 
 # S3 method for class 'glyexp_experiment'
-glyclean_aggregate(exp, to_level = c("gf", "gp", "gfs", "gps"))
+glyclean_aggregate(
+  exp,
+  to_level = c("gf", "gp", "gfs", "gps"),
+  standardize_variable = TRUE
+)
 
 # Default S3 method
-glyclean_aggregate(exp, to_level = c("gf", "gp", "gfs", "gps"))
+glyclean_aggregate(
+  exp,
+  to_level = c("gf", "gp", "gfs", "gps"),
+  standardize_variable = TRUE
+)
 ```
 
 ## Arguments
@@ -68,6 +80,13 @@ glyclean_aggregate(exp, to_level = c("gf", "gp", "gfs", "gps"))
   The aggregation level, one of: "gf" (glycoforms), "gp"
   (glycopeptides), "gfs" (glycoforms with structures), or "gps"
   (glycopeptides with structures). See Details for more information.
+
+- standardize_variable:
+
+  Whether to call
+  [`glyexp::standardize_variable()`](https://glycoverse.github.io/glyexp/reference/standardize_variable.html)
+  after aggregation. Set to `FALSE` to skip network calls for faster
+  testing. Default is `TRUE`.
 
 ## Value
 

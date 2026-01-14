@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -107,18 +107,18 @@ proper <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.h
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/get_var_info.html" class="external-link">get_var_info</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4,262 × 8</span></span></span>
-<span><span class="co">#&gt;    variable peptide   peptide_site protein protein_site gene  glycan_composition</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;comp&gt;</span>            </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> GP1      JKTQGK               1 P08185           176 SERP… <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> GP2      HSHNJJSS…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> GP3      HSHNJJSS…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> GP4      HSHNJJSS…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> GP5      HJSTGCLR             2 P10909           291 CLU   <span style="color: #000000;">Hex</span>(6)<span style="color: #000000;">HexNAc</span>(5)   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> GP6      HSHNJJSS…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> GP7      HSHNJJSS…            6 P04196           345 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> GP8      HSHNJJSS…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">dH</span>…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> GP9      HSHNJJSS…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(4)<span style="color: #000000;">HexNAc</span>(3)   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> GP10     HSHNJJSS…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(4)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
+<span><span class="co">#&gt;    variable   peptide peptide_site protein protein_site gene  glycan_composition</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;comp&gt;</span>            </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> P08185-N1… NKTQGK             1 P08185           176 SERP… <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> P04196-N3… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> P04196-N3… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> P04196-N3… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> P10909-N2… HNSTGC…            2 P10909           291 CLU   <span style="color: #000000;">Hex</span>(6)<span style="color: #000000;">HexNAc</span>(5)   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> P04196-N3… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> P04196-N3… HSHNNN…            6 P04196           345 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> P04196-N3… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">dH</span>…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> P04196-N3… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(4)<span style="color: #000000;">HexNAc</span>(3)   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> P04196-N3… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(4)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4,252 more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: glycan_structure &lt;struct&gt;</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -560,8 +560,12 @@ correction can work wonders!</p>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Detecting batch effects using ANOVA for 2738 variables...</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Batch effect detection completed. 19 out of 2738 variables show significant batch effects (p &lt; 0.05).</span></span>
 <span><span class="va">p_values</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span>
-<span><span class="co">#&gt;        V1        V2        V3        V4        V5 </span></span>
-<span><span class="co">#&gt; 0.6998998 0.3951691 0.4852698 0.3329619 0.4907154</span></span></code></pre></div>
+<span><span class="co">#&gt; P08185-N176-Hex(5)HexNAc(4)NeuAc(2) P04196-N344-Hex(5)HexNAc(4)NeuAc(1) </span></span>
+<span><span class="co">#&gt;                           0.6998998                           0.3951691 </span></span>
+<span><span class="co">#&gt;         P04196-N344-Hex(5)HexNAc(4)         P10909-N291-Hex(6)HexNAc(5) </span></span>
+<span><span class="co">#&gt;                           0.4852698                           0.3329619 </span></span>
+<span><span class="co">#&gt; P04196-N344-Hex(5)HexNAc(4)NeuAc(2) </span></span>
+<span><span class="co">#&gt;                           0.4907154</span></span></code></pre></div>
 <p>Here we do not have batch effects, but we will correct it anyway for
 demonstration.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">

@@ -24,7 +24,9 @@
 <url><loc>https://glycoverse.github.io/glyclean/reference/dot-apply_by_groups.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/dot-dispatch_and_apply_by_group.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/dot-dispatch_on_input.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/dot-fetch_uniprot_sequences.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/dot-resolve_column_param.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/dot-validate_protein_seqs.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/glyclean-package.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/impute_bpca.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/impute_fw_knn.html</loc></url>

@@ -15,13 +15,13 @@ tibble:
 ## Usage
 
 ``` r
-add_site_seq(exp, fasta, n_aa = 7)
+add_site_seq(exp, fasta = NULL, n_aa = 7, taxid = 9606)
 
 # S3 method for class 'glyexp_experiment'
-add_site_seq(exp, fasta, n_aa = 7)
+add_site_seq(exp, fasta = NULL, n_aa = 7, taxid = 9606)
 
 # Default S3 method
-add_site_seq(exp, fasta, n_aa = 7)
+add_site_seq(exp, fasta = NULL, n_aa = 7, taxid = 9606)
 ```
 
 ## Arguments
@@ -34,14 +34,19 @@ add_site_seq(exp, fasta, n_aa = 7)
 
 - fasta:
 
-  A character string specifying the path to the FASTA file containing
-  protein sequences.
+  Either a file path to a FASTA file, a named character vector with
+  protein IDs as names and sequences as value, or `NULL` to fetch from
+  UniProt.
 
 - n_aa:
 
   The number of amino acids to the left and right of the glycosylation
   site. For example, if `n_aa = 5`, the resulting sequence will contain
   11 amino acids.
+
+- taxid:
+
+  NCBI taxonomy ID for UniProt lookup. Default: `9606` (human).
 
 ## Value
 

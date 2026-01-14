@@ -72,5 +72,5 @@ auto_remove(exp)
 #> ── Glycoproteomics Experiment ──────────────────────────────────────────────────
 #> ℹ Expression matrix: 12 samples, 4238 variables
 #> ℹ Sample information fields: group <fct>
-#> ℹ Variable information fields: peptide <chr>, peptide_site <int>, protein <chr>, protein_site <int>, gene <chr>, glycan_composition <glyrpr_c>, glycan_structure <glyrpr_s>
+#> ℹ Variable information fields: peptide <chr>, peptide_site <int>, protein <chr>, protein_site <int>, gene <chr>, glycan_composition <comp>, glycan_structure <struct>
 ```

@@ -45,7 +45,8 @@ auto_clean(
   remove_preset = "discovery",
   batch_prop_threshold = 0.3,
   check_batch_confounding = TRUE,
-  batch_confounding_threshold = 0.4
+  batch_confounding_threshold = 0.4,
+  standardize_variable = TRUE
 )
 ```
 
@@ -169,6 +170,13 @@ auto_clean(
   highly confounded. Only used when `check_batch_confounding` is TRUE.
   Default to 0.4.
 
+- standardize_variable:
+
+  Whether to call
+  [`glyexp::standardize_variable()`](https://glycoverse.github.io/glyexp/reference/standardize_variable.html)
+  after aggregation. Set to `FALSE` to skip network calls for faster
+  testing. Default is `TRUE`.
+
 ## Value
 
 A modified
@@ -228,5 +236,5 @@ auto_clean(exp)
 #> ── Glycoproteomics Experiment ──────────────────────────────────────────────────
 #> ℹ Expression matrix: 12 samples, 3979 variables
 #> ℹ Sample information fields: group <fct>
-#> ℹ Variable information fields: protein <chr>, glycan_composition <glyrpr_c>, glycan_structure <glyrpr_s>, protein_site <int>, gene <chr>
+#> ℹ Variable information fields: protein <chr>, glycan_composition <comp>, glycan_structure <struct>, protein_site <int>, gene <chr>
 ```
