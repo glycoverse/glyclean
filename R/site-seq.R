@@ -240,6 +240,50 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   stringr::str_c(site_seq, collapse = "")
 }
 
+#' Parse UniProt search results into a named sequence vector
+#'
+#' @param result A data.frame returned by [UniProt.ws::queryUniProt()].
+#' @return A named character vector of protein sequences.
+#' @keywords internal
+#' @noRd
+.uniprot_result_to_seqs <- function(result) {
+  checkmate::assert_data_frame(result)
+
+  seq_col <- names(result)[stringr::str_to_lower(names(result)) == "sequence"]
+  if (length(seq_col) == 0) {
+    cli::cli_abort("UniProt response is missing the {.field Sequence} column.")
+  }
+  seq_col <- seq_col[[1]]
+
+  acc_candidates <- c("Entry", "Accession", "Primary", "Primary Accession")
+  acc_col <- acc_candidates[acc_candidates %in% names(result)][1]
+  if (is.na(acc_col)) {
+    lower_names <- stringr::str_to_lower(names(result))
+    acc_col <- names(result)[lower_names %in% c("entry", "accession", "primary", "primary accession")][1]
+  }
+  if (is.na(acc_col)) {
+    cli::cli_abort("UniProt response is missing an accession column.")
+  }
+
+  accessions <- stringr::str_trim(as.character(result[[acc_col]]))
+  seqs <- as.character(result[[seq_col]])
+
+  seqs <- stats::setNames(seqs, accessions)
+  seqs <- seqs[!is.na(names(seqs)) & nzchar(names(seqs))]
+  seqs
+}
+
+#' Query UniProt with a thin wrapper for easier mocking in tests
+#'
+#' @param query A UniProt query string.
+#' @param fields A character vector of requested fields.
+#' @return A data.frame returned by [UniProt.ws::queryUniProt()].
+#' @keywords internal
+#' @noRd
+.query_uniprot <- function(query, fields) {
+  UniProt.ws::queryUniProt(query = query, fields = fields)
+}
+
 #' Fetch protein sequences from UniProt in batches
 #' @keywords internal
 .fetch_uniprot_sequences <- function(proteins, taxid = 9606, batch_size = 50) {
@@ -258,16 +302,17 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   cli::cli_alert_info("Fetching {n} proteins in {length(batches)} batch(es)...")
 
   results <- purrr::map(batches, function(batch_proteins) {
-    query_str <- paste(batch_proteins, collapse = " OR ")
+    query_terms <- stringr::str_c("accession:", batch_proteins)
+    query_str <- stringr::str_c(query_terms, collapse = " OR ")
     full_query <- paste0("organism_id:", taxid, " AND (", query_str, ")")
 
-    result <- UniProt.ws::queryUniProt(
+    result <- .query_uniprot(
       query = full_query,
       fields = c("accession", "sequence")
     )
 
-    stats::setNames(result$Sequence, result$Entry)
+    .uniprot_result_to_seqs(result)
   })
 
-  seqs <- unlist(results, recursive = FALSE, use.names = TRUE)
+  seqs <- unlist(unname(results), recursive = FALSE, use.names = TRUE)
 }

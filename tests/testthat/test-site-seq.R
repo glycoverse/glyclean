@@ -335,3 +335,51 @@ test_that("add_site_seq uses custom taxid", {
   expect_equal(captured_taxid, 10090)
   expect_true("site_sequence" %in% colnames(result$var_info))
 })
+
+test_that(".fetch_uniprot_sequences merges batches without prefixing names", {
+  skip_if_not_installed("mockr")
+
+  mockr::local_mock(
+    `.query_uniprot` = function(query, fields = c("accession", "sequence"), ...) {
+      protein <- stringr::str_match(query, "accession:([A-Z0-9]+)")[, 2]
+      data.frame(
+        Entry = protein,
+        Sequence = stringr::str_c("SEQ_", protein),
+        stringsAsFactors = FALSE
+      )
+    },
+    .env = rlang::ns_env("glyclean")
+  )
+
+  suppressMessages(seqs <- .fetch_uniprot_sequences(c("P1", "P2"), batch_size = 1))
+
+  expect_equal(names(seqs), c("P1", "P2"))
+  expect_equal(unname(seqs), c("SEQ_P1", "SEQ_P2"))
+})
+
+test_that(".uniprot_result_to_seqs uses Entry column", {
+  result <- data.frame(
+    Entry = c("P12345", "Q67890"),
+    Sequence = c("AAA", "BBB"),
+    stringsAsFactors = FALSE
+  )
+
+  seqs <- .uniprot_result_to_seqs(result)
+  expect_equal(seqs, c(P12345 = "AAA", Q67890 = "BBB"))
+})
+
+test_that(".uniprot_result_to_seqs falls back to Accession column", {
+  result <- data.frame(
+    Accession = c("P12345"),
+    Sequence = c("AAA"),
+    stringsAsFactors = FALSE
+  )
+
+  seqs <- .uniprot_result_to_seqs(result)
+  expect_equal(seqs, c(P12345 = "AAA"))
+})
+
+test_that(".uniprot_result_to_seqs errors when Sequence column is missing", {
+  result <- data.frame(Entry = c("P12345"), stringsAsFactors = FALSE)
+  expect_error(.uniprot_result_to_seqs(result), "Sequence")
+})
