@@ -1,4 +1,9 @@
-# glyclean (development version)
+# glyclean 0.11.0
+
+## New features
+
+- Added automatic UniProt sequence fetching when FASTA is NULL in `add_site_seq()`.
+- `aggregate()` now calls `glyexp::standardize_variable()` after aggregation to ensure meaningful variable names.
 
 # glyclean 0.10.1
 
