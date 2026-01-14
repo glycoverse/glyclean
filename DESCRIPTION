@@ -17,7 +17,7 @@ Description:
     glycoverse ecosystem. Works seamlessly with 'glyexp::experiment()' objects 
     to ensure data consistency and interoperability.
 License: MIT + file LICENSE
-Suggests: 
+Suggests:
     testthat (>= 3.0.0),
     vdiffr,
     glyread (>= 0.6.2),
@@ -34,7 +34,8 @@ Suggests:
     pheatmap,
     ggplotify,
     factoextra,
-    patchwork
+    patchwork,
+    mockr
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

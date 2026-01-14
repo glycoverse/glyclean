@@ -256,3 +256,43 @@ test_that("add_site_seq shows correct message for character vector input", {
     '"Provided" contains 1 protein sequences'
   )
 })
+
+test_that("add_site_seq fetches from UniProt when fasta is NULL", {
+  skip_if_not_installed("mockr")
+
+  # Create a simple experiment
+  expr_mat <- matrix(c(1, 2), nrow = 1, ncol = 2)
+  colnames(expr_mat) <- c("S1", "S2")
+  rownames(expr_mat) <- c("V1")
+
+  sample_info <- tibble::tibble(sample = c("S1", "S2"))
+  var_info <- tibble::tibble(
+    variable = c("V1"),
+    protein = c("P12345"),
+    protein_site = c(10L),
+    glycan_composition = c("H5N2")
+  )
+
+  exp <- glyexp::experiment(
+    expr_mat, sample_info, var_info,
+    exp_type = "glycoproteomics",
+    glycan_type = "N",
+    coerce_col_types = FALSE,
+    check_col_types = FALSE
+  )
+
+  # Mock .fetch_uniprot_sequences to return a test sequence
+  mock_seq <- "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  mockr::local_mock(
+    `.fetch_uniprot_sequences` = function(proteins, taxid = 9606, batch_size = 50) {
+      stats::setNames(mock_seq, proteins)
+    }
+  )
+
+  # Test with fasta = NULL (should fetch from UniProt)
+  suppressMessages(result <- add_site_seq(exp, fasta = NULL, n_aa = 3))
+
+  expect_true("site_sequence" %in% colnames(result$var_info))
+  # Site 10 with n_aa=3: positions 7-13 = GHIJKLM
+  expect_equal(result$var_info$site_sequence[1], "GHIJKLM")
+})
