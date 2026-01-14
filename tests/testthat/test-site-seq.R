@@ -284,7 +284,7 @@ test_that("add_site_seq fetches from UniProt when fasta is NULL", {
   # Mock .fetch_uniprot_sequences to return a test sequence
   mock_seq <- "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   mockr::local_mock(
-    `.fetch_uniprot_sequences` = function(proteins, taxid = 9606, batch_size = 50) {
+    `.fetch_uniprot_sequences` = function(proteins, taxid = 9606) {
       stats::setNames(mock_seq, proteins)
     }
   )
