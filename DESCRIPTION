@@ -44,7 +44,7 @@ Imports:
     checkmate,
     cli,
     dplyr,
-    glyexp (>= 0.10.0),
+    glyexp (>= 0.12.1),
     limma,
     magrittr,
     matrixStats,
