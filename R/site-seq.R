@@ -93,11 +93,9 @@ add_site_seq.default <- function(exp, fasta, n_aa = 7) {
   # Determine if input was file path or character vector
   input_type <- if (is_file) "FASTA file" else "Provided"
 
-  cli::cli_inform(c(
-    "i" = "{input_type} contains {length(protein_seqs)} protein sequences",
-    "i" = "Found {length(found_proteins)} / {length(unique_proteins)} proteins from experiment"
-  ))
-  
+  cli::cli_alert_info("{input_type} contains {length(protein_seqs)} protein sequences")
+  cli::cli_alert_info("Found {length(found_proteins)} / {length(unique_proteins)} proteins from experiment")
+
   if (length(missing_proteins) > 0) {
     # Format missing proteins display
     missing_display <- if (length(missing_proteins) <= 5) {
@@ -105,15 +103,13 @@ add_site_seq.default <- function(exp, fasta, n_aa = 7) {
     } else {
       stringr::str_c(c(missing_proteins[1:5], "..."), collapse = ", ")
     }
-    
+
     # Format message based on number of missing proteins
-    message_text <- if (length(missing_proteins) <= 5) {
-      glue::glue("Missing proteins: {missing_display}")
+    if (length(missing_proteins) <= 5) {
+      cli::cli_alert_warning("Missing proteins: {missing_display}")
     } else {
-      glue::glue("Missing {length(missing_proteins)} proteins (showing first 5): {missing_display}")
+      cli::cli_alert_warning("Missing {length(missing_proteins)} proteins (showing first 5): {missing_display}")
     }
-    
-    cli::cli_inform(c("!" = message_text))
   }
   
   # Extract site sequences
