@@ -107,9 +107,9 @@ add_site_seq.default <- function(exp, fasta, n_aa = 7) {
     
     # Format message based on number of missing proteins
     message_text <- if (length(missing_proteins) <= 5) {
-      "Missing proteins: {missing_display}"
+      glue::glue("Missing proteins: {missing_display}")
     } else {
-      "Missing {length(missing_proteins)} proteins (showing first 5): {missing_display}"
+      glue::glue("Missing {length(missing_proteins)} proteins (showing first 5): {missing_display}")
     }
     
     cli::cli_inform(c("!" = message_text))
