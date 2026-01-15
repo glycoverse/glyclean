@@ -1,6 +1,19 @@
 # Changelog
 
-## glyclean (development version)
+## glyclean 0.12.0
+
+### New features
+
+- Add `method` parameter to
+  [`correct_batch_effect()`](https://glycoverse.github.io/glyclean/reference/correct_batch_effect.md)
+  supporting limma method for batch correction.
+
+### Minor improvements and bug fixes
+
+- Fix method handling in
+  [`correct_batch_effect()`](https://glycoverse.github.io/glyclean/reference/correct_batch_effect.md)
+  for glyexp_experiment method.
+- Fix long example line to avoid Rd line width note.
 
 ## glyclean 0.11.0
 
