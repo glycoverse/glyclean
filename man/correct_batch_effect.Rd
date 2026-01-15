@@ -12,7 +12,8 @@ correct_batch_effect(
   batch = "batch",
   group = NULL,
   check_confounding = TRUE,
-  confounding_threshold = 0.4
+  confounding_threshold = 0.4,
+  method = c("combat", "limma")
 )
 
 \method{correct_batch_effect}{glyexp_experiment}(
@@ -20,7 +21,8 @@ correct_batch_effect(
   batch = "batch",
   group = NULL,
   check_confounding = TRUE,
-  confounding_threshold = 0.4
+  confounding_threshold = 0.4,
+  method = c("combat", "limma")
 )
 
 \method{correct_batch_effect}{matrix}(
@@ -28,7 +30,8 @@ correct_batch_effect(
   batch = "batch",
   group = NULL,
   check_confounding = TRUE,
-  confounding_threshold = 0.4
+  confounding_threshold = 0.4,
+  method = c("combat", "limma")
 )
 
 \method{correct_batch_effect}{default}(
@@ -36,7 +39,8 @@ correct_batch_effect(
   batch = "batch",
   group = NULL,
   check_confounding = TRUE,
-  confounding_threshold = 0.4
+  confounding_threshold = 0.4,
+  method = c("combat", "limma")
 )
 }
 \arguments{
@@ -49,7 +53,7 @@ Default to "batch" for experiment input.}
 
 \item{group}{Either a factor/character vector specifying group assignments for each sample,
 or a string specifying the column name in sample_info (for experiment input only).
-If provided, it will be used as a covariate in the ComBat model.
+If provided, it will be used as a covariate in the batch correction model.
 This is useful when you have an unbalanced design.
 Default to NULL.}
 
@@ -58,6 +62,9 @@ Default to TRUE.}
 
 \item{confounding_threshold}{The threshold for Cramer's V to consider batch and group variables highly confounded.
 Only used when \code{check_confounding} is TRUE. Default to 0.4.}
+
+\item{method}{The batch correction method to use. Either "combat" (default, uses
+sva::ComBat) or "limma" (uses limma::removeBatchEffect). Default to "combat".}
 }
 \value{
 For \code{glyexp_experiment} input, returns a modified \code{glyexp_experiment} object.
@@ -65,12 +72,13 @@ For matrix input, returns a batch-corrected matrix.
 }
 \description{
 Correct batch effects in glycoproteomics/glycomics data using ComBat algorithm
-from the sva package.
+from the sva package or removeBatchEffect from the limma package.
 }
 \details{
-This function performs batch effect correction using the ComBat algorithm.
-It requires batch information provided via the \code{batch} parameter.
-If no batch information is available, the function will return the original data unchanged.
+This function performs batch effect correction using either the ComBat algorithm
+or the limma removeBatchEffect function. It requires batch information provided
+via the \code{batch} parameter. If no batch information is available, the function
+will return the original data unchanged.
 
 If group information is provided via \code{group},
 the function will check for confounding between batch and group variables.
@@ -94,5 +102,8 @@ mat <- matrix(abs(rnorm(200)), nrow = 20, ncol = 10)
 batch_factor <- factor(rep(c("A", "B"), each = 5))
 group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
 corrected_mat <- correct_batch_effect(mat, batch = batch_factor, group = group_factor)
+
+# Using limma method
+corrected_mat <- correct_batch_effect(mat, batch = batch_factor, group = group_factor, method = "limma")
 
 }
