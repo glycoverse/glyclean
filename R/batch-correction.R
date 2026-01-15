@@ -360,7 +360,9 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
   all(batch_counts >= 2)
 }
 
-.apply_batch_correction <- function(expr_mat, batch, group = NULL, check_confounding = TRUE, confounding_threshold = 0.4) {
+.apply_batch_correction <- function(expr_mat, batch, group = NULL, check_confounding = TRUE, confounding_threshold = 0.4, method = c("combat", "limma")) {
+  method <- match.arg(method)
+
   # Check if there are at least 2 batches
   if (length(unique(batch)) < 2) {
     cli::cli_warn("Less than 2 batches found. Batch correction requires at least 2 batches. Returning original data unchanged.")
@@ -377,8 +379,8 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
     return(expr_mat)
   }
 
-  # Check sufficient samples per batch
-  if (!.has_enough_samples_per_batch(batch)) {
+  # Check sufficient samples per batch (only for ComBat)
+  if (method == "combat" && !.has_enough_samples_per_batch(batch)) {
     cli::cli_warn(c(
       "Some batches have fewer than 2 samples.",
       "i" = "ComBat requires at least 2 samples per batch.",
@@ -387,8 +389,8 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
     return(expr_mat)
   }
 
-  # Perform batch correction using ComBat
-  log_expr_mat <- log2(expr_mat + 1)
+  # Log transform
+  log_expr_mat <- log2(expr_mat + 1e-6)
 
   # Create model matrix
   if (!is.null(group)) {
@@ -397,35 +399,48 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
     mod <- NULL
   }
 
-  # Apply ComBat correction with error handling and suppressed output
-  corrected_log_expr_mat <- tryCatch({
-    # Suppress ComBat's verbose output completely
-    withr::with_output_sink(
-      nullfile(),
-      sva::ComBat(
-        dat = log_expr_mat,
-        batch = batch,
-        mod = mod,
-        par.prior = TRUE,
-        prior.plots = FALSE
+  # Apply batch correction based on method
+  if (method == "combat") {
+    corrected_log_expr_mat <- tryCatch({
+      withr::with_output_sink(
+        nullfile(),
+        sva::ComBat(
+          dat = log_expr_mat,
+          batch = batch,
+          mod = mod,
+          par.prior = TRUE,
+          prior.plots = FALSE
+        )
       )
-    )
-  }, error = function(e) {
-    cli::cli_warn(c(
-      "ComBat failed to correct batch effects.",
-      "i" = "Error: {e$message}",
-      "i" = "Returning original data unchanged."
-    ))
-    return(expr_mat)
-  })
+    }, error = function(e) {
+      cli::cli_warn(c(
+        "ComBat failed to correct batch effects.",
+        "i" = "Error: {e$message}",
+        "i" = "Returning original data unchanged."
+      ))
+      return(NULL)
+    })
+  } else {
+    # limma method
+    corrected_log_expr_mat <- tryCatch({
+      limma::removeBatchEffect(log_expr_mat, batch = batch, covariates = mod)
+    }, error = function(e) {
+      cli::cli_warn(c(
+        "limma removeBatchEffect failed to correct batch effects.",
+        "i" = "Error: {e$message}",
+        "i" = "Returning original data unchanged."
+      ))
+      return(NULL)
+    })
+  }
 
-  # Check if ComBat succeeded
+  # Check if correction succeeded
   if (is.null(corrected_log_expr_mat)) {
     return(expr_mat)
   }
 
   # Convert back from log space
-  2^corrected_log_expr_mat - 1
+  2^corrected_log_expr_mat - 1e-6
 }
 
 .perform_batch_effect_detection <- function(expr_mat, batch, group = NULL) {
