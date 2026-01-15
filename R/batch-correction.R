@@ -76,6 +76,7 @@ correct_batch_effect.glyexp_experiment <- function(
   confounding_threshold = 0.4,
   method = c("combat", "limma")
 ) {
+  method <- match.arg(method)
   # For experiment input, extract batch and group from sample_info
   batch_group_info <- .extract_batch_group_from_experiment(x, batch, group, require_batch = TRUE)
   if (is.null(batch_group_info)) {
@@ -89,7 +90,8 @@ correct_batch_effect.glyexp_experiment <- function(
     batch_group_info$batch,
     batch_group_info$group,
     check_confounding = check_confounding,
-    confounding_threshold = confounding_threshold
+    confounding_threshold = confounding_threshold,
+    method = method
   )
 
   # Return original if correction failed
