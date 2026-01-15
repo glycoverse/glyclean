@@ -113,12 +113,15 @@ correct_batch_effect.matrix <- function(
   batch = "batch",
   group = NULL,
   check_confounding = TRUE,
-  confounding_threshold = 0.4
+  confounding_threshold = 0.4,
+  method = c("combat", "limma")
 ) {
+  method <- match.arg(method)
   .correct_batch_effect_matrix(
     x, batch = batch, group = group,
     check_confounding = check_confounding,
-    confounding_threshold = confounding_threshold
+    confounding_threshold = confounding_threshold,
+    method = method
   )
 }
 
@@ -129,14 +132,17 @@ correct_batch_effect.default <- function(
   batch = "batch",
   group = NULL,
   check_confounding = TRUE,
-  confounding_threshold = 0.4) {
+  confounding_threshold = 0.4,
+  method = c("combat", "limma")
+) {
+  method <- match.arg(method)
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
     "x" = "Got {.cls {class(x)}}."
   ))
 }
 
-.correct_batch_effect_matrix <- function(x, batch, group, check_confounding, confounding_threshold) {
+.correct_batch_effect_matrix <- function(x, batch, group, check_confounding, confounding_threshold, method) {
   # Validate and prepare batch/group vectors
   batch_group_info <- .validate_and_prepare_batch_group(x, batch, group)
   if (is.null(batch_group_info)) {
@@ -149,7 +155,8 @@ correct_batch_effect.default <- function(
     batch_group_info$batch,
     batch_group_info$group,
     check_confounding = check_confounding,
-    confounding_threshold = confounding_threshold
+    confounding_threshold = confounding_threshold,
+    method = method
   )
 
   # Return corrected matrix or original if correction failed
