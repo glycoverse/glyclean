@@ -1,7 +1,8 @@
 # Correct Batch Effect
 
 Correct batch effects in glycoproteomics/glycomics data using ComBat
-algorithm from the sva package.
+algorithm from the sva package or removeBatchEffect from the limma
+package.
 
 ## Usage
 
@@ -11,7 +12,8 @@ correct_batch_effect(
   batch = "batch",
   group = NULL,
   check_confounding = TRUE,
-  confounding_threshold = 0.4
+  confounding_threshold = 0.4,
+  method = c("combat", "limma")
 )
 
 # S3 method for class 'glyexp_experiment'
@@ -20,7 +22,8 @@ correct_batch_effect(
   batch = "batch",
   group = NULL,
   check_confounding = TRUE,
-  confounding_threshold = 0.4
+  confounding_threshold = 0.4,
+  method = c("combat", "limma")
 )
 
 # S3 method for class 'matrix'
@@ -29,7 +32,8 @@ correct_batch_effect(
   batch = "batch",
   group = NULL,
   check_confounding = TRUE,
-  confounding_threshold = 0.4
+  confounding_threshold = 0.4,
+  method = c("combat", "limma")
 )
 
 # Default S3 method
@@ -38,7 +42,8 @@ correct_batch_effect(
   batch = "batch",
   group = NULL,
   check_confounding = TRUE,
-  confounding_threshold = 0.4
+  confounding_threshold = 0.4,
+  method = c("combat", "limma")
 )
 ```
 
@@ -60,8 +65,8 @@ correct_batch_effect(
   Either a factor/character vector specifying group assignments for each
   sample, or a string specifying the column name in sample_info (for
   experiment input only). If provided, it will be used as a covariate in
-  the ComBat model. This is useful when you have an unbalanced design.
-  Default to NULL.
+  the batch correction model. This is useful when you have an unbalanced
+  design. Default to NULL.
 
 - check_confounding:
 
@@ -74,6 +79,12 @@ correct_batch_effect(
   highly confounded. Only used when `check_confounding` is TRUE. Default
   to 0.4.
 
+- method:
+
+  The batch correction method to use. Either "combat" (default, uses
+  sva::ComBat) or "limma" (uses limma::removeBatchEffect). Default to
+  "combat".
+
 ## Value
 
 For `glyexp_experiment` input, returns a modified `glyexp_experiment`
@@ -81,10 +92,10 @@ object. For matrix input, returns a batch-corrected matrix.
 
 ## Details
 
-This function performs batch effect correction using the ComBat
-algorithm. It requires batch information provided via the `batch`
-parameter. If no batch information is available, the function will
-return the original data unchanged.
+This function performs batch effect correction using either the ComBat
+algorithm or the limma removeBatchEffect function. It requires batch
+information provided via the `batch` parameter. If no batch information
+is available, the function will return the original data unchanged.
 
 If group information is provided via `group`, the function will check
 for confounding between batch and group variables. If batch and group
@@ -122,4 +133,11 @@ corrected_mat <- correct_batch_effect(mat, batch = batch_factor, group = group_f
 #> Fitting L/S model and finding priors
 #> Finding parametric adjustments
 #> Adjusting the Data
+
+# Using limma method
+corrected_mat <- correct_batch_effect(
+  mat, batch = batch_factor, group = group_factor, method = "limma"
+)
+#> design matrix of interest not specified. Assuming a one-group experiment.
+#> Coefficients not estimable: (Intercept) 
 ```
