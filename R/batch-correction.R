@@ -58,9 +58,11 @@ correct_batch_effect <- function(
   batch = "batch",
   group = NULL,
   check_confounding = TRUE,
-  confounding_threshold = 0.4
+  confounding_threshold = 0.4,
+  method = c("combat", "limma")
 ) {
   rlang::check_installed("sva", reason = "to use `correct_batch_effect()`")
+  method <- match.arg(method)
   UseMethod("correct_batch_effect")
 }
 
@@ -71,7 +73,8 @@ correct_batch_effect.glyexp_experiment <- function(
   batch = "batch",
   group = NULL,
   check_confounding = TRUE,
-  confounding_threshold = 0.4
+  confounding_threshold = 0.4,
+  method = c("combat", "limma")
 ) {
   # For experiment input, extract batch and group from sample_info
   batch_group_info <- .extract_batch_group_from_experiment(x, batch, group, require_batch = TRUE)
