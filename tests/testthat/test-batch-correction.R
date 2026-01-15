@@ -966,7 +966,7 @@ test_that("correct_batch_effect works with limma method", {
   )
 
   # Should work without error
-  suppressMessages(result <- correct_batch_effect(exp, method = "limma"))
+  suppressWarnings(suppressMessages(result <- correct_batch_effect(exp, method = "limma")))
 
   expect_s3_class(result, "glyexp_experiment")
   expect_equal(dim(result$expr_mat), dim(exp$expr_mat))
@@ -986,7 +986,7 @@ test_that("correct_batch_effect works with limma method and matrix input", {
   batch_factor <- factor(rep(c("A", "B"), each = 5))
   group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
 
-  suppressMessages(result_mat <- correct_batch_effect(test_mat, batch = batch_factor, group = group_factor, method = "limma"))
+  suppressWarnings(suppressMessages(result_mat <- correct_batch_effect(test_mat, batch = batch_factor, group = group_factor, method = "limma")))
 
   expect_true(is.matrix(result_mat))
   expect_equal(dim(result_mat), dim(test_mat))
