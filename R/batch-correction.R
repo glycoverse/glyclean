@@ -431,7 +431,7 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
   } else {
     # limma method
     corrected_log_expr_mat <- tryCatch({
-      limma::removeBatchEffect(log_expr_mat, batch = batch, covariates = mod)
+      suppressWarnings(limma::removeBatchEffect(log_expr_mat, batch = batch, covariates = mod))
     }, error = function(e) {
       cli::cli_warn(c(
         "limma removeBatchEffect failed to correct batch effects.",
