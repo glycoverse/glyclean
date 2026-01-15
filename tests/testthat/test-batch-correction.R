@@ -938,10 +938,72 @@ test_that("batch correction error handling for invalid inputs", {
   expect_error(detect_batch_effect("invalid_input"))
   expect_error(correct_batch_effect(123))
   expect_error(detect_batch_effect(123))
-  
+
   # Test with list input
   expect_error(correct_batch_effect(list(a = 1, b = 2)))
   expect_error(detect_batch_effect(list(a = 1, b = 2)))
+})
+
+# Tests for limma method
+test_that("correct_batch_effect works with limma method", {
+  set.seed(123)
+
+  sample_info <- tibble::tibble(
+    sample = paste0("S", 1:12),
+    batch = rep(c("A", "B", "C"), each = 4),
+    group = rep(c("Ctrl", "Treat"), 6)
+  )
+  var_info <- tibble::tibble(variable = paste0("V", 1:10))
+  expr_mat <- matrix(rnorm(120, mean = 10, sd = 2), nrow = 10, ncol = 12)
+  colnames(expr_mat) <- sample_info$sample
+  rownames(expr_mat) <- var_info$variable
+
+  exp <- glyexp::experiment(
+    expr_mat,
+    sample_info = sample_info,
+    var_info = var_info,
+    exp_type = "others"
+  )
+
+  # Should work without error
+  suppressMessages(result <- correct_batch_effect(exp, method = "limma"))
+
+  expect_s3_class(result, "glyexp_experiment")
+  expect_equal(dim(result$expr_mat), dim(exp$expr_mat))
+  expect_equal(colnames(result$expr_mat), colnames(exp$expr_mat))
+  expect_equal(rownames(result$expr_mat), rownames(exp$expr_mat))
+  # Result should be different from original since batch correction was applied
+  expect_false(identical(result$expr_mat, exp$expr_mat))
+})
+
+test_that("correct_batch_effect works with limma method and matrix input", {
+  set.seed(456)
+
+  test_mat <- matrix(rnorm(60, mean = 10, sd = 2), nrow = 6, ncol = 10)
+  rownames(test_mat) <- paste0("V", 1:6)
+  colnames(test_mat) <- paste0("S", 1:10)
+
+  batch_factor <- factor(rep(c("A", "B"), each = 5))
+  group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
+
+  suppressMessages(result_mat <- correct_batch_effect(test_mat, batch = batch_factor, group = group_factor, method = "limma"))
+
+  expect_true(is.matrix(result_mat))
+  expect_equal(dim(result_mat), dim(test_mat))
+  expect_equal(rownames(result_mat), rownames(test_mat))
+  expect_equal(colnames(result_mat), colnames(test_mat))
+  expect_true(all(is.finite(result_mat)))
+})
+
+test_that("correct_batch_effect validates method parameter", {
+  exp <- glyexp::toy_experiment
+  exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
+
+  # Should error with invalid method
+  expect_error(
+    correct_batch_effect(exp, method = "invalid"),
+    "arg.*should be one of"
+  )
 })
 
  
