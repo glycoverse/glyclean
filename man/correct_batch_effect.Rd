@@ -104,6 +104,8 @@ group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
 corrected_mat <- correct_batch_effect(mat, batch = batch_factor, group = group_factor)
 
 # Using limma method
-corrected_mat <- correct_batch_effect(mat, batch = batch_factor, group = group_factor, method = "limma")
+corrected_mat <- correct_batch_effect(
+  mat, batch = batch_factor, group = group_factor, method = "limma"
+)
 
 }
