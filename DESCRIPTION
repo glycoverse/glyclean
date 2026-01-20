@@ -20,8 +20,8 @@ License: MIT + file LICENSE
 Suggests:
     testthat (>= 3.0.0),
     vdiffr,
-    glyread (>= 0.6.2),
-    glyrepr (>= 0.7.4),
+    glyread (>= 0.8.4.9000),
+    glyrepr (>= 0.9.0.9000),
     vsn,
     impute,
     imputeLCMD,
@@ -45,7 +45,7 @@ Imports:
     checkmate,
     cli,
     dplyr,
-    glyexp (>= 0.12.1),
+    glyexp (>= 0.12.3.9000),
     limma,
     magrittr,
     matrixStats,
@@ -62,8 +62,9 @@ Imports:
     stats,
     ggplot2
 Remotes: 
-    glycoverse/glyexp@*release,
-    glycoverse/glyread@*release
+    glycoverse/glyexp,
+    glycoverse/glyread,
+    glycoverse/glyrepr
 Depends: 
     R (>= 4.1)
 VignetteBuilder: knitr
