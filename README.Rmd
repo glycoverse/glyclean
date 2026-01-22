@@ -28,7 +28,13 @@ so you can focus on the fun part: downstream analysis!
 
 ## Installation
 
-You can install the latest release of glyclean from [GitHub](https://github.com/) with:
+You can install the latest release of glyclean from [r-universe](https://glycoverse.r-universe.dev/glyclean):
+
+```r
+install.packages('glyclean', repos = c('https://glycoverse.r-universe.dev', 'https://cloud.r-project.org'))
+```
+
+Or from [GitHub](https://github.com/glycoverse/glyclean):
 
 ``` r
 # install.packages("remotes")
