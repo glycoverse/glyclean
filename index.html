@@ -92,49 +92,9 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glycoverse.github.io/glyexp/" class="external-link">glyexp</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glycoverse.github.io/glyclean/">glyclean</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'glyclean'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     aggregate</span></span>
 <span></span>
 <span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="va">real_experiment</span></span>
-<span><span class="va">clean_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/auto_clean.html">auto_clean</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Normalizing data ──</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ No QC samples found. Using default normalization method based on experiment type.</span></span>
-<span><span class="co">#&gt; ℹ Experiment type is "glycoproteomics". Using `normalize_median()`.</span></span>
-<span><span class="co">#&gt; ✔ Normalization completed.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Removing variables with too many missing values ──</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ No QC samples found. Using all samples.</span></span>
-<span><span class="co">#&gt; ℹ Applying preset "discovery"...</span></span>
-<span><span class="co">#&gt; ℹ Total removed: 24 (0.56%) variables.</span></span>
-<span><span class="co">#&gt; ✔ Variable removal completed.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Imputing missing values ──</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ No QC samples found. Using default imputation method based on sample size.</span></span>
-<span><span class="co">#&gt; ℹ Sample size &lt;= 30, using `impute_sample_min()`.</span></span>
-<span><span class="co">#&gt; ✔ Imputation completed.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Aggregating data ──</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ Aggregating to "gfs" level</span></span>
-<span><span class="co">#&gt; ✔ Aggregation completed.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Normalizing data again ──</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ No QC samples found. Using default normalization method based on experiment type.</span></span>
-<span><span class="co">#&gt; ℹ Experiment type is "glycoproteomics". Using `normalize_median()`.</span></span>
-<span><span class="co">#&gt; ✔ Normalization completed.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Correcting batch effects ──</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ Batch column  not found in sample_info. Skipping batch correction.</span></span>
-<span><span class="co">#&gt; ✔ Batch correction completed.</span></span></code></pre></div>
+<span><span class="va">clean_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/auto_clean.html">auto_clean</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span></code></pre></div>
 <p>Yes, that’s it! Calling the magical <code><a href="reference/auto_clean.html">auto_clean()</a></code> function will automatically perform the following steps, in the most suitable way for your data:</p>
 <ul>
 <li>Normalization</li>
@@ -181,6 +141,7 @@
 <ul class="list-unstyled">
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 <li><a href="https://CRAN.R-project.org/package=glyclean" class="external-link"><img src="https://www.r-pkg.org/badges/version/glyclean" alt="CRAN status"></a></li>
+<li><a href="https://glycoverse.r-universe.dev/glyclean" class="external-link"><img src="https://glycoverse.r-universe.dev/glyclean/badges/version" alt="R-universe version"></a></li>
 <li><a href="https://github.com/glycoverse/glyclean/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/glycoverse/glyclean/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://app.codecov.io/gh/glycoverse/glyclean" class="external-link"><img src="https://codecov.io/gh/glycoverse/glyclean/graph/badge.svg" alt="Codecov test coverage"></a></li>
 </ul>
