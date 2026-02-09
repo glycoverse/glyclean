@@ -1,6 +1,10 @@
 # Changelog
 
-## glyclean (development version)
+## glyclean 0.12.1
+
+### Minor improvements and bug fixes
+
+- Update dependency strategy to use the r-universe repository.
 
 ## glyclean 0.12.0
 
