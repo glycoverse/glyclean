@@ -61,9 +61,6 @@ Imports:
     forcats,
     stats,
     ggplot2
-Remotes: 
-    glycoverse/glyexp@*release,
-    glycoverse/glyread@*release
 Depends: 
     R (>= 4.1)
 VignetteBuilder: knitr
