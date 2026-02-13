@@ -22,6 +22,17 @@ on the fun part: downstream analysis!
 
 ## Installation
 
+### Install glycoverse
+
+We recommend installing the meta-package
+[glycoverse](https://github.com/glycoverse/glycoverse), which includes
+this package and other core glycoverse packages.
+
+### Install glyclean alone
+
+If you don’t want to install all glycoverse packages, you can only
+install glyclean.
+
 You can install the latest release of glyclean from
 [r-universe](https://glycoverse.r-universe.dev/glyclean)
 (**recommended**):
@@ -43,6 +54,11 @@ Or install the development version (NOT recommended):
 ``` r
 pak::pkg_install("glycoverse/glyclean")
 ```
+
+**Note:** Tips and troubleshooting for the meta-package
+[glycoverse](https://github.com/glycoverse/glycoverse) are also
+applicable here: [Installation of
+glycoverse](https://github.com/glycoverse/glycoverse#installation).
 
 ## Documentation
 
