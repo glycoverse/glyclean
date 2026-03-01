@@ -1,6 +1,10 @@
 url: https://glycoverse.github.io/glyclean/
 template:
   bootstrap: 5
+
+development:
+  mode: auto
+
 reference:
   - title: Automactic Processing
     contents:
