@@ -21,6 +21,17 @@
 #' - [auto_normalize()]
 #' - [auto_correct_batch_effect()]
 #'
+#' @details
+#' # QC samples
+#'
+#' If you have quality control (QC) samples,
+#' label them as "QC" as the "group" in the sample information table.
+#' You can also use set `qc_name` to other names.
+#'
+#' When QC samples exist, [auto_normalize()] and [auto_impute()] will compare various
+#' normalization or imputation methods,
+#' and select the one that stablize QC samples the most.
+#'
 #' @param exp A [glyexp::experiment()] containing glycoproteomics or
 #'   glycomics data.
 #' @param group_col The column name in sample_info for groups. Default is "group".
