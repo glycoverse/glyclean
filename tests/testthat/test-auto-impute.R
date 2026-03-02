@@ -11,7 +11,9 @@ test_that("auto_impute works with QC samples", {
   exp$sample_info$group <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
 
   # Verify it runs and picks a method
-  expect_snapshot(imputed <- auto_impute(exp, group_col = "group", qc_name = "QC"))
+  expect_snapshot(
+    imputed <- auto_impute(exp, group_col = "group", qc_name = "QC")
+  )
   expect_s3_class(imputed, "glyexp_experiment")
 
   # Verify no missing values after imputation
@@ -25,7 +27,9 @@ test_that("auto_impute handles NULL qc_name", {
   exp$expr_mat[3, 5] <- NA
   exp$sample_info$group <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
 
-  expect_snapshot(imputed <- auto_impute(exp, group_col = "group", qc_name = NULL))
+  expect_snapshot(
+    imputed <- auto_impute(exp, group_col = "group", qc_name = NULL)
+  )
   expect_s3_class(imputed, "glyexp_experiment")
   expect_false(any(is.na(imputed$expr_mat)))
 })

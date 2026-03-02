@@ -45,7 +45,9 @@ auto_correct_batch_effect <- function(
 
   # Check if batch column exists
   if (is.null(batch_col) || !batch_col %in% colnames(exp$sample_info)) {
-    cli::cli_alert_info("Batch column {.field {batch_col}} not found in sample_info. Skipping batch correction.")
+    cli::cli_alert_info(
+      "Batch column {.field {batch_col}} not found in sample_info. Skipping batch correction."
+    )
     return(exp)
   }
 
@@ -57,14 +59,20 @@ auto_correct_batch_effect <- function(
 
   # Detect batch effects
   # We suppress messages from detect_batch_effect as we will report the summary ourselves
-  p_values <- suppressMessages(detect_batch_effect(exp, batch = batch_col, group = actual_group_col))
+  p_values <- suppressMessages(detect_batch_effect(
+    exp,
+    batch = batch_col,
+    group = actual_group_col
+  ))
 
   # Calculate proportion of significant variables (p < 0.05)
   significant_vars <- sum(p_values < 0.05, na.rm = TRUE)
   total_vars <- sum(!is.na(p_values))
 
   if (total_vars == 0) {
-    cli::cli_alert_warning("No valid p-values from batch effect detection. Skipping correction.")
+    cli::cli_alert_warning(
+      "No valid p-values from batch effect detection. Skipping correction."
+    )
     return(exp)
   }
 
@@ -76,7 +84,9 @@ auto_correct_batch_effect <- function(
 
   # Decide whether to correct
   if (prop_significant > prop_threshold) {
-    cli::cli_alert_info("Batch effects detected in {.val {prop_pct}} of variables (threshold: {.val {threshold_pct}}). Performing batch correction.")
+    cli::cli_alert_info(
+      "Batch effects detected in {.val {prop_pct}} of variables (threshold: {.val {threshold_pct}}). Performing batch correction."
+    )
 
     # Perform correction
     exp <- correct_batch_effect(
@@ -89,7 +99,9 @@ auto_correct_batch_effect <- function(
 
     cli::cli_alert_success("Batch correction completed.")
   } else {
-    cli::cli_alert_info("Batch effects detected in {.val {prop_pct}} of variables (<= {.val {threshold_pct}}). Skipping batch correction.")
+    cli::cli_alert_info(
+      "Batch effects detected in {.val {prop_pct}} of variables (<= {.val {threshold_pct}}). Skipping batch correction."
+    )
   }
 
   exp

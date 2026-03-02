@@ -17,7 +17,9 @@ test_that("add_site_seq works correctly", {
   )
 
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info,
+    expr_mat,
+    sample_info,
+    var_info,
     exp_type = "glycoproteomics",
     glycan_type = "N",
     coerce_col_types = FALSE,
@@ -69,7 +71,9 @@ test_that("add_site_seq handles missing proteins gracefully", {
   )
 
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info,
+    expr_mat,
+    sample_info,
+    var_info,
     exp_type = "glycoproteomics",
     glycan_type = "N",
     coerce_col_types = FALSE,
@@ -107,12 +111,14 @@ test_that("add_site_seq handles out-of-range sites gracefully", {
   var_info <- tibble::tibble(
     variable = c("V1"),
     protein = c("P12345"),
-    protein_site = c(100L),  # Out of range
+    protein_site = c(100L), # Out of range
     glycan_composition = c("H5N2")
   )
 
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info,
+    expr_mat,
+    sample_info,
+    var_info,
     exp_type = "glycoproteomics",
     glycan_type = "N",
     coerce_col_types = FALSE,
@@ -122,7 +128,7 @@ test_that("add_site_seq handles out-of-range sites gracefully", {
   # Create a temporary FASTA file using withr
   fasta_content <- c(
     ">sp|P12345|TEST1_HUMAN Test protein 1",
-    "ABCDEFGHIJ"  # Only 10 amino acids
+    "ABCDEFGHIJ" # Only 10 amino acids
   )
 
   withr::with_tempfile("temp_fasta", fileext = ".fasta", {
@@ -186,7 +192,9 @@ test_that("add_site_seq accepts named character vector for fasta", {
   )
 
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info,
+    expr_mat,
+    sample_info,
+    var_info,
     exp_type = "glycoproteomics",
     glycan_type = "N",
     coerce_col_types = FALSE,
@@ -215,7 +223,9 @@ test_that("add_site_seq rejects unnamed character vector for fasta", {
   )
 
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info,
+    expr_mat,
+    sample_info,
+    var_info,
     exp_type = "glycoproteomics",
     glycan_type = "N",
     coerce_col_types = FALSE,
@@ -243,7 +253,9 @@ test_that("add_site_seq shows correct message for character vector input", {
   )
 
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info,
+    expr_mat,
+    sample_info,
+    var_info,
     exp_type = "glycoproteomics",
     glycan_type = "N",
     coerce_col_types = FALSE,
@@ -274,7 +286,9 @@ test_that("add_site_seq fetches from UniProt when fasta is NULL", {
   )
 
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info,
+    expr_mat,
+    sample_info,
+    var_info,
     exp_type = "glycoproteomics",
     glycan_type = "N",
     coerce_col_types = FALSE,
@@ -313,7 +327,9 @@ test_that("add_site_seq uses custom taxid", {
   )
 
   exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info,
+    expr_mat,
+    sample_info,
+    var_info,
     exp_type = "glycoproteomics",
     glycan_type = "N",
     coerce_col_types = FALSE,
@@ -330,7 +346,9 @@ test_that("add_site_seq uses custom taxid", {
     }
   )
 
-  suppressMessages(result <- add_site_seq(exp, fasta = NULL, n_aa = 3, taxid = 10090))
+  suppressMessages(
+    result <- add_site_seq(exp, fasta = NULL, n_aa = 3, taxid = 10090)
+  )
 
   expect_equal(captured_taxid, 10090)
   expect_true("site_sequence" %in% colnames(result$var_info))
@@ -340,7 +358,11 @@ test_that(".fetch_uniprot_sequences merges batches without prefixing names", {
   skip_if_not_installed("mockr")
 
   mockr::local_mock(
-    `.query_uniprot` = function(query, fields = c("accession", "sequence"), ...) {
+    `.query_uniprot` = function(
+      query,
+      fields = c("accession", "sequence"),
+      ...
+    ) {
       protein <- stringr::str_match(query, "accession:([A-Z0-9]+)")[, 2]
       data.frame(
         Entry = protein,
@@ -351,7 +373,9 @@ test_that(".fetch_uniprot_sequences merges batches without prefixing names", {
     .env = rlang::ns_env("glyclean")
   )
 
-  suppressMessages(seqs <- .fetch_uniprot_sequences(c("P1", "P2"), batch_size = 1))
+  suppressMessages(
+    seqs <- .fetch_uniprot_sequences(c("P1", "P2"), batch_size = 1)
+  )
 
   expect_equal(names(seqs), c("P1", "P2"))
   expect_equal(unname(seqs), c("SEQ_P1", "SEQ_P2"))

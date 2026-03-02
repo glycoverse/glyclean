@@ -110,7 +110,12 @@ auto_clean <- function(
   checkmate::assert_number(batch_prop_threshold, lower = 0, upper = 1)
   checkmate::assert_flag(check_batch_confounding)
   checkmate::assert_number(batch_confounding_threshold, lower = 0, upper = 1)
-  if (!checkmate::test_choice(glyexp::get_exp_type(exp), c("glycoproteomics", "glycomics"))) {
+  if (
+    !checkmate::test_choice(
+      glyexp::get_exp_type(exp),
+      c("glycoproteomics", "glycomics")
+    )
+  ) {
     cli::cli_abort(c(
       "The experiment type must be {.val glycoproteomics} or {.val glycomics}.",
       "x" = "Got {.val {glyexp::get_exp_type(exp)}}."
@@ -138,19 +143,43 @@ auto_clean <- function(
 
 .auto_clean_glycoproteomics <- function(exp, params, info) {
   cli::cli_h2("Normalizing data")
-  exp <- auto_normalize(exp, params$group_col, params$qc_name, params$normalize_to_try, info)
+  exp <- auto_normalize(
+    exp,
+    params$group_col,
+    params$qc_name,
+    params$normalize_to_try,
+    info
+  )
   cli::cli_alert_success("Normalization completed.")
   cli::cli_h2("Removing variables with too many missing values")
-  exp <- auto_remove(exp, params$remove_preset, params$group_col, params$qc_name, info)
+  exp <- auto_remove(
+    exp,
+    params$remove_preset,
+    params$group_col,
+    params$qc_name,
+    info
+  )
   cli::cli_alert_success("Variable removal completed.")
   cli::cli_h2("Imputing missing values")
-  exp <- auto_impute(exp, params$group_col, params$qc_name, params$impute_to_try, info)
+  exp <- auto_impute(
+    exp,
+    params$group_col,
+    params$qc_name,
+    params$impute_to_try,
+    info
+  )
   cli::cli_alert_success("Imputation completed.")
   cli::cli_h2("Aggregating data")
   exp <- auto_aggregate(exp, standardize_variable = params$standardize_variable)
   cli::cli_alert_success("Aggregation completed.")
   cli::cli_h2("Normalizing data again")
-  exp <- auto_normalize(exp, params$group_col, params$qc_name, params$normalize_to_try, info)
+  exp <- auto_normalize(
+    exp,
+    params$group_col,
+    params$qc_name,
+    params$normalize_to_try,
+    info
+  )
   cli::cli_alert_success("Normalization completed.")
   cli::cli_h2("Correcting batch effects")
   exp <- auto_correct_batch_effect(
@@ -168,16 +197,34 @@ auto_clean <- function(
 
 .auto_clean_glycomics <- function(exp, params, info) {
   cli::cli_h2("Removing variables with too many missing values")
-  exp <- auto_remove(exp, params$remove_preset, params$group_col, params$qc_name, info)
+  exp <- auto_remove(
+    exp,
+    params$remove_preset,
+    params$group_col,
+    params$qc_name,
+    info
+  )
   cli::cli_alert_success("Variable removal completed.")
   cli::cli_h2("Normalizing data")
-  exp <- auto_normalize(exp, params$group_col, params$qc_name, params$normalize_to_try, info)
+  exp <- auto_normalize(
+    exp,
+    params$group_col,
+    params$qc_name,
+    params$normalize_to_try,
+    info
+  )
   cli::cli_alert_success("Normalization completed.")
   cli::cli_h2("Normalizing data (Total Area)")
   exp <- normalize_total_area(exp)
   cli::cli_alert_success("Total area normalization completed.")
   cli::cli_h2("Imputing missing values")
-  exp <- auto_impute(exp, params$group_col, params$qc_name, params$impute_to_try, info)
+  exp <- auto_impute(
+    exp,
+    params$group_col,
+    params$qc_name,
+    params$impute_to_try,
+    info
+  )
   cli::cli_alert_success("Imputation completed.")
   cli::cli_h2("Correcting batch effects")
   exp <- auto_correct_batch_effect(

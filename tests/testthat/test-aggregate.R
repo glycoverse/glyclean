@@ -3,8 +3,15 @@ test_that("aggregating to glycopeptides works", {
   res <- aggregate(exp, to_level = "gp", standardize_variable = FALSE)
   expect_setequal(
     colnames(res$var_info),
-    c("variable", "peptide", "protein", "gene", "glycan_composition",
-      "peptide_site", "protein_site")
+    c(
+      "variable",
+      "peptide",
+      "protein",
+      "gene",
+      "glycan_composition",
+      "peptide_site",
+      "protein_site"
+    )
   )
 })
 
@@ -22,8 +29,16 @@ test_that("aggregating to glycopeptides (with structures) works", {
   res <- aggregate(exp, to_level = "gps", standardize_variable = FALSE)
   expect_setequal(
     colnames(res$var_info),
-    c("variable", "peptide", "protein", "gene", "glycan_composition",
-      "glycan_structure", "peptide_site", "protein_site")
+    c(
+      "variable",
+      "peptide",
+      "protein",
+      "gene",
+      "glycan_composition",
+      "glycan_structure",
+      "peptide_site",
+      "protein_site"
+    )
   )
 })
 
@@ -37,8 +52,14 @@ test_that("aggregating to glycoforms (with structures) works", {
   res <- aggregate(exp, to_level = "gfs", standardize_variable = FALSE)
   expect_setequal(
     colnames(res$var_info),
-    c("variable", "protein", "gene", "glycan_composition", "glycan_structure",
-      "protein_site")
+    c(
+      "variable",
+      "protein",
+      "gene",
+      "glycan_composition",
+      "glycan_structure",
+      "protein_site"
+    )
   )
 })
 
@@ -55,7 +76,10 @@ test_that("aggregating from glycopeptides to glycoforms works", {
 test_that("aggregating from glycoforms to glycopeptides fails", {
   exp <- real_exp()
   exp <- aggregate(exp, to_level = "gf", standardize_variable = FALSE)
-  expect_snapshot(aggregate(exp, to_level = "gp", standardize_variable = FALSE), error = TRUE)
+  expect_snapshot(
+    aggregate(exp, to_level = "gp", standardize_variable = FALSE),
+    error = TRUE
+  )
 })
 
 
@@ -72,5 +96,8 @@ test_that("aggregating from glycoforms with structure to glycoforms without stru
 test_that("aggregating from glycoforms without structures to glycoforms with structures fails", {
   exp <- real_exp()
   exp <- aggregate(exp, to_level = "gf", standardize_variable = FALSE)
-  expect_snapshot(aggregate(exp, to_level = "gfs", standardize_variable = FALSE), error = TRUE)
+  expect_snapshot(
+    aggregate(exp, to_level = "gfs", standardize_variable = FALSE),
+    error = TRUE
+  )
 })

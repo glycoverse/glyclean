@@ -400,14 +400,31 @@ impute_miss_forest <- function(x, by = NULL, seed = 123, ...) {
 
 #' @rdname impute_miss_forest
 #' @export
-impute_miss_forest.glyexp_experiment <- function(x, by = NULL, seed = 123, ...) {
-  .dispatch_and_apply_by_group(x, .impute_miss_forest, by = by, seed = seed, ...)
+impute_miss_forest.glyexp_experiment <- function(
+  x,
+  by = NULL,
+  seed = 123,
+  ...
+) {
+  .dispatch_and_apply_by_group(
+    x,
+    .impute_miss_forest,
+    by = by,
+    seed = seed,
+    ...
+  )
 }
 
 #' @rdname impute_miss_forest
 #' @export
 impute_miss_forest.matrix <- function(x, by = NULL, seed = 123, ...) {
-  .dispatch_and_apply_by_group(x, .impute_miss_forest, by = by, seed = seed, ...)
+  .dispatch_and_apply_by_group(
+    x,
+    .impute_miss_forest,
+    by = by,
+    seed = seed,
+    ...
+  )
 }
 
 #' @rdname impute_miss_forest
@@ -447,7 +464,7 @@ impute_miss_forest.default <- function(x, by = NULL, seed = 123, ...) {
   rlang::check_installed("impute", reason = "to use `impute_sw_knn()`")
   normed <- log2(mat)
   normed <- impute::impute.knn(normed, k = k, ...)$data
-  2 ^ normed
+  2^normed
 }
 
 
@@ -455,7 +472,7 @@ impute_miss_forest.default <- function(x, by = NULL, seed = 123, ...) {
   rlang::check_installed("impute", reason = "to use `impute_fw_knn()`")
   normed <- log2(mat)
   normed <- t(impute::impute.knn(t(normed), k = k, ...)$data)
-  2 ^ normed
+  2^normed
 }
 
 
@@ -483,7 +500,7 @@ impute_miss_forest.default <- function(x, by = NULL, seed = 123, ...) {
     tempfile(),
     pcaMethods::pca(normed, nPcs = 5, method = method, ...)@completeObs
   )
-  2 ^ normed
+  2^normed
 }
 
 
@@ -495,7 +512,7 @@ impute_miss_forest.default <- function(x, by = NULL, seed = 123, ...) {
     tempfile(),
     imputeLCMD::impute.MinProb(normed, ...)
   )
-  2 ^ normed
+  2^normed
 }
 
 

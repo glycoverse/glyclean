@@ -28,7 +28,13 @@
 #' auto_remove(exp)
 #'
 #' @export
-auto_remove <- function(exp, preset = "discovery", group_col = "group", qc_name = "QC", info = NULL) {
+auto_remove <- function(
+  exp,
+  preset = "discovery",
+  group_col = "group",
+  qc_name = "QC",
+  info = NULL
+) {
   checkmate::assert_class(exp, "glyexp_experiment")
   checkmate::assert_choice(preset, c("simple", "discovery", "biomarker"))
   checkmate::assert_string(group_col, null.ok = TRUE)
@@ -42,7 +48,9 @@ auto_remove <- function(exp, preset = "discovery", group_col = "group", qc_name 
   all_samples <- exp$sample_info$sample
   if (info$has_qc) {
     samples_to_use <- setdiff(all_samples, info$qc_samples)
-    cli::cli_alert_info("QC samples found. Excluding {.val {length(info$qc_samples)}} QC samples from removal process.")
+    cli::cli_alert_info(
+      "QC samples found. Excluding {.val {length(info$qc_samples)}} QC samples from removal process."
+    )
   } else {
     samples_to_use <- all_samples
     cli::cli_alert_info("No QC samples found. Using all samples.")
@@ -55,11 +63,17 @@ auto_remove <- function(exp, preset = "discovery", group_col = "group", qc_name 
   # Create a subset experiment for calculation
   exp_sub <- exp
   exp_sub$expr_mat <- exp$expr_mat[, samples_to_use, drop = FALSE]
-  exp_sub$sample_info <- exp$sample_info[exp$sample_info$sample %in% samples_to_use, , drop = FALSE]
+  exp_sub$sample_info <- exp$sample_info[
+    exp$sample_info$sample %in% samples_to_use,
+    ,
+    drop = FALSE
+  ]
 
   # Drop unused levels in group column if present to avoid empty groups in removal functions
   if (info$has_group && is.factor(exp_sub$sample_info[[group_col]])) {
-    exp_sub$sample_info[[group_col]] <- droplevels(exp_sub$sample_info[[group_col]])
+    exp_sub$sample_info[[group_col]] <- droplevels(exp_sub$sample_info[[
+      group_col
+    ]])
   }
 
   # Determine group column to use
@@ -71,10 +85,22 @@ auto_remove <- function(exp, preset = "discovery", group_col = "group", qc_name 
     exp_sub <- suppressMessages(remove_rare(exp_sub, prop = 0.5, min_n = 1))
   } else if (preset == "discovery") {
     exp_sub <- suppressMessages(remove_rare(exp_sub, prop = 0.8, min_n = 1))
-    exp_sub <- suppressMessages(remove_rare(exp_sub, prop = 0.5, by = use_group_col, strict = FALSE, min_n = 1))
+    exp_sub <- suppressMessages(remove_rare(
+      exp_sub,
+      prop = 0.5,
+      by = use_group_col,
+      strict = FALSE,
+      min_n = 1
+    ))
   } else if (preset == "biomarker") {
     exp_sub <- suppressMessages(remove_rare(exp_sub, prop = 0.4, min_n = 1))
-    exp_sub <- suppressMessages(remove_rare(exp_sub, prop = 0.6, by = use_group_col, strict = TRUE, min_n = 1))
+    exp_sub <- suppressMessages(remove_rare(
+      exp_sub,
+      prop = 0.6,
+      by = use_group_col,
+      strict = TRUE,
+      min_n = 1
+    ))
   }
 
   # Apply removal to original experiment
@@ -88,7 +114,9 @@ auto_remove <- function(exp, preset = "discovery", group_col = "group", qc_name 
     exp$var_info <- exp$var_info |> dplyr::filter(.data$variable %in% kept_vars)
 
     prop_removed <- round(n_removed / n_before * 100, 2)
-    cli::cli_alert_info("Total removed: {.val {n_removed}} ({.val {prop_removed}}%) variables.")
+    cli::cli_alert_info(
+      "Total removed: {.val {n_removed}} ({.val {prop_removed}}%) variables."
+    )
   } else {
     cli::cli_alert_info("No variables removed.")
   }

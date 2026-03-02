@@ -35,7 +35,13 @@
 #' library(glyexp)
 #' exp_imputed <- auto_impute(real_experiment)
 #' @export
-auto_impute <- function(exp, group_col = "group", qc_name = "QC", to_try = NULL, info = NULL) {
+auto_impute <- function(
+  exp,
+  group_col = "group",
+  qc_name = "QC",
+  to_try = NULL,
+  info = NULL
+) {
   # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")
   checkmate::assert_string(group_col, null.ok = TRUE)
@@ -71,7 +77,9 @@ auto_impute <- function(exp, group_col = "group", qc_name = "QC", to_try = NULL,
 }
 
 .auto_impute_with_qc <- function(exp, to_try, info) {
-  cli::cli_alert_info("QC samples found. Choosing the best imputation method based on QC samples.")
+  cli::cli_alert_info(
+    "QC samples found. Choosing the best imputation method based on QC samples."
+  )
 
   best_method <- NULL
   best_cv <- Inf
@@ -85,34 +93,47 @@ auto_impute <- function(exp, group_col = "group", qc_name = "QC", to_try = NULL,
     method <- to_try[[method_name]]
 
     # Try imputation
-    tryCatch({
-      suppressWarnings(imputed_exp <- method(exp))
-      imputed_mat <- imputed_exp$expr_mat[, info$qc_samples, drop = FALSE]
-      cv <- .calc_median_cv(imputed_mat)
+    tryCatch(
+      {
+        suppressWarnings(imputed_exp <- method(exp))
+        imputed_mat <- imputed_exp$expr_mat[, info$qc_samples, drop = FALSE]
+        cv <- .calc_median_cv(imputed_mat)
 
-      cli::cli_ul("Method {.val {method_name}}: Median CV = {.val {signif(cv, 4)}}")
+        cli::cli_ul(
+          "Method {.val {method_name}}: Median CV = {.val {signif(cv, 4)}}"
+        )
 
-      if (cv < best_cv) {
-        best_cv <- cv
-        best_method <- method_name
-        best_exp <- imputed_exp
+        if (cv < best_cv) {
+          best_cv <- cv
+          best_method <- method_name
+          best_exp <- imputed_exp
+        }
+      },
+      error = function(e) {
+        cli::cli_alert_warning(
+          "Method {.val {method_name}} failed: {e$message}"
+        )
       }
-    }, error = function(e) {
-      cli::cli_alert_warning("Method {.val {method_name}} failed: {e$message}")
-    })
+    )
   }
 
   if (!is.null(best_exp)) {
-    cli::cli_alert_success("Best method: {.val {best_method}} with Median CV = {.val {signif(best_cv, 4)}}")
+    cli::cli_alert_success(
+      "Best method: {.val {best_method}} with Median CV = {.val {signif(best_cv, 4)}}"
+    )
     best_exp
   } else {
-    cli::cli_alert_warning("All imputation methods failed. Returning original experiment.")
+    cli::cli_alert_warning(
+      "All imputation methods failed. Returning original experiment."
+    )
     exp
   }
 }
 
 .auto_impute_default <- function(exp) {
-  cli::cli_alert_info("No QC samples found. Using default imputation method based on sample size.")
+  cli::cli_alert_info(
+    "No QC samples found. Using default imputation method based on sample size."
+  )
 
   n_samples <- ncol(exp)
 

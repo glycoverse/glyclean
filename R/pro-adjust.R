@@ -21,7 +21,7 @@
 #' Use linear regression to remove the protein expression from the glycopeptide expression.
 #' Both glycopeptide and protein expression values are log2-transformed (with +1 to avoid log(0))
 #' before fitting the linear model: log2(GP+1) ~ log2(PRO+1).
-#' The residuals represent the glycosylation-specific signal and are converted back to the 
+#' The residuals represent the glycosylation-specific signal and are converted back to the
 #' original scale using 2^residuals, ensuring all adjusted values are positive.
 #'
 #' In both methods, only glycoproteins identified in both `exp` and `pro_expr_mat` will be retained.
@@ -29,12 +29,12 @@
 #' @param exp A [glyexp::experiment()] object with "glycoproteomics" type.
 #' @param pro_expr_mat A matrix of protein expression.
 #'  Columns are samples, rows are uniprot protein accessions.
-#' @param method The method to use for protein adjustment. 
+#' @param method The method to use for protein adjustment.
 #'  Either "ratio" or "reg". Default is "ratio".
 #'
 #' @return A [glyexp::experiment()] object with adjusted protein expression.
 #' @export
-#' 
+#'
 #' @importFrom rlang .data
 adjust_protein <- function(exp, pro_expr_mat, method = c("ratio", "reg")) {
   UseMethod("adjust_protein")
@@ -42,20 +42,32 @@ adjust_protein <- function(exp, pro_expr_mat, method = c("ratio", "reg")) {
 
 #' @rdname adjust_protein
 #' @export
-adjust_protein.glyexp_experiment <- function(exp, pro_expr_mat, method = c("ratio", "reg")) {
+adjust_protein.glyexp_experiment <- function(
+  exp,
+  pro_expr_mat,
+  method = c("ratio", "reg")
+) {
   .adjust_protein_experiment(exp, pro_expr_mat = pro_expr_mat, method = method)
 }
 
 #' @rdname adjust_protein
 #' @export
-adjust_protein.default <- function(exp, pro_expr_mat, method = c("ratio", "reg")) {
+adjust_protein.default <- function(
+  exp,
+  pro_expr_mat,
+  method = c("ratio", "reg")
+) {
   cli::cli_abort(c(
     "{.arg exp} must be a {.cls glyexp_experiment} object.",
     "x" = "Got {.cls {class(exp)}}."
   ))
 }
 
-.adjust_protein_experiment <- function(exp, pro_expr_mat, method = c("ratio", "reg")) {
+.adjust_protein_experiment <- function(
+  exp,
+  pro_expr_mat,
+  method = c("ratio", "reg")
+) {
   # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")
   if (glyexp::get_exp_type(exp) != "glycoproteomics") {
@@ -93,7 +105,9 @@ adjust_protein.default <- function(exp, pro_expr_mat, method = c("ratio", "reg")
 
   n_dropped <- original_n_vars - nrow(new_exp$var_info)
   if (n_dropped > 0) {
-    cli::cli_alert_info("Dropped {n_dropped} glycopeptides because they are not present in the protein expression matrix.")
+    cli::cli_alert_info(
+      "Dropped {n_dropped} glycopeptides because they are not present in the protein expression matrix."
+    )
   }
 
   new_exp
@@ -102,7 +116,7 @@ adjust_protein.default <- function(exp, pro_expr_mat, method = c("ratio", "reg")
 .adjust_protein_ratio <- function(exp, pro_expr_mat) {
   # Get the glycopeptide expression matrix
   gp_expr_mat <- exp$expr_mat
-  
+
   # Ensure sample order consistency
   common_samples <- intersect(colnames(gp_expr_mat), colnames(pro_expr_mat))
   if (length(common_samples) == 0) {
@@ -111,11 +125,11 @@ adjust_protein.default <- function(exp, pro_expr_mat, method = c("ratio", "reg")
       "i" = "Please check if the sample names are correct."
     ))
   }
-  
+
   # Subset and reorder to match samples
   gp_expr_mat <- gp_expr_mat[, common_samples, drop = FALSE]
   pro_expr_mat <- pro_expr_mat[, common_samples, drop = FALSE]
-  
+
   # Apply ratio method for each glycopeptide using purrr
   adjusted_rows <- purrr::imap(seq_len(nrow(gp_expr_mat)), function(i, idx) {
     var_name <- rownames(gp_expr_mat)[i]
@@ -123,29 +137,32 @@ adjust_protein.default <- function(exp, pro_expr_mat, method = c("ratio", "reg")
     gp_values <- gp_expr_mat[i, ]
     pro_values <- pro_expr_mat[protein, ]
     ratio_values <- gp_values / pro_values
-    scaling_factor <- stats::median(gp_values, na.rm = TRUE) / stats::median(pro_values, na.rm = TRUE)
+    scaling_factor <- stats::median(gp_values, na.rm = TRUE) /
+      stats::median(pro_values, na.rm = TRUE)
     ratio_values / scaling_factor
   })
-  
+
   # Reconstruct the matrix
   adjusted_expr_mat <- do.call(rbind, adjusted_rows)
   rownames(adjusted_expr_mat) <- rownames(gp_expr_mat)
   colnames(adjusted_expr_mat) <- colnames(gp_expr_mat)
-  
+
   # Update the expression matrix in the experiment object
   new_exp <- exp
   new_exp$expr_mat <- adjusted_expr_mat
-  
+
   # Update sample_info to keep only common samples
-  new_exp$sample_info <- exp$sample_info[exp$sample_info$sample %in% common_samples, ]
-  
+  new_exp$sample_info <- exp$sample_info[
+    exp$sample_info$sample %in% common_samples,
+  ]
+
   new_exp
 }
 
 .adjust_protein_reg <- function(exp, pro_expr_mat) {
   # Get the glycopeptide expression matrix
   gp_expr_mat <- exp$expr_mat
-  
+
   # Ensure sample order consistency
   common_samples <- intersect(colnames(gp_expr_mat), colnames(pro_expr_mat))
   if (length(common_samples) == 0) {
@@ -154,73 +171,82 @@ adjust_protein.default <- function(exp, pro_expr_mat, method = c("ratio", "reg")
       "i" = "Please check if the sample names are correct."
     ))
   }
-  
+
   # Subset and reorder to match samples
   gp_expr_mat <- gp_expr_mat[, common_samples, drop = FALSE]
   pro_expr_mat <- pro_expr_mat[, common_samples, drop = FALSE]
-  
+
   # Apply regression method for each glycopeptide using purrr
   adjusted_rows <- purrr::imap(seq_len(nrow(gp_expr_mat)), function(i, idx) {
     var_name <- rownames(gp_expr_mat)[i]
     protein <- exp$var_info$protein[exp$var_info$variable == var_name]
-    
+
     gp_values <- gp_expr_mat[i, ]
     pro_values <- pro_expr_mat[protein, ]
-    
+
     # Remove samples with NA values for both GP and PRO
     valid_samples <- !is.na(gp_values) & !is.na(pro_values)
-    
+
     if (sum(valid_samples) < 3) {
       # Not enough valid samples for regression, keep original values
-      cli::cli_warn("Variable {.field {var_name}} has fewer than 3 valid samples. Keeping original values.")
+      cli::cli_warn(
+        "Variable {.field {var_name}} has fewer than 3 valid samples. Keeping original values."
+      )
       return(gp_values)
     }
-    
+
     # Log2 transform values before regression (add 1 to avoid log(0))
     log_gp_values <- log2(gp_values[valid_samples] + 1)
     log_pro_values <- log2(pro_values[valid_samples] + 1)
-    
+
     # Fit linear regression: log2(GP) ~ log2(PRO)
     model_data <- data.frame(
       log_gp = log_gp_values,
       log_pro = log_pro_values
     )
-    
-    fit <- tryCatch({
-      stats::lm(log_gp ~ log_pro, data = model_data)
-    }, error = function(e) {
-      cli::cli_warn("Regression failed for variable {.field {var_name}}. Keeping original values.")
-      return(NULL)
-    })
-    
+
+    fit <- tryCatch(
+      {
+        stats::lm(log_gp ~ log_pro, data = model_data)
+      },
+      error = function(e) {
+        cli::cli_warn(
+          "Regression failed for variable {.field {var_name}}. Keeping original values."
+        )
+        return(NULL)
+      }
+    )
+
     if (!is.null(fit)) {
       # Use residuals as adjusted values for valid samples
       # Residuals represent the glycosylation-specific signal in log2 space
       # Convert back to original scale using 2^residuals (always positive)
       residuals <- stats::residuals(fit)
-      
+
       # Create adjusted values vector
       adjusted_values <- gp_values
       adjusted_values[valid_samples] <- 2^residuals
       adjusted_values[!valid_samples] <- NA
-      
+
       return(adjusted_values)
     } else {
       return(gp_values)
     }
   })
-  
+
   # Reconstruct the matrix
   adjusted_expr_mat <- do.call(rbind, adjusted_rows)
   rownames(adjusted_expr_mat) <- rownames(gp_expr_mat)
   colnames(adjusted_expr_mat) <- colnames(gp_expr_mat)
-  
+
   # Update the expression matrix in the experiment object
   new_exp <- exp
   new_exp$expr_mat <- adjusted_expr_mat
-  
+
   # Update sample_info to keep only common samples
-  new_exp$sample_info <- exp$sample_info[exp$sample_info$sample %in% common_samples, ]
-  
+  new_exp$sample_info <- exp$sample_info[
+    exp$sample_info$sample %in% common_samples,
+  ]
+
   new_exp
 }

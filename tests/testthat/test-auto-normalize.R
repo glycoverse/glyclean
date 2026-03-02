@@ -11,7 +11,9 @@ test_that("auto_normalize works with QC samples", {
   # But we can just check if it runs and returns a valid experiment.
 
   # Let's just verify it runs and picks a method
-  expect_snapshot(normed <- auto_normalize(exp, group_col = "group", qc_name = "QC"))
+  expect_snapshot(
+    normed <- auto_normalize(exp, group_col = "group", qc_name = "QC")
+  )
   expect_s3_class(normed, "glyexp_experiment")
 })
 
@@ -19,7 +21,9 @@ test_that("auto_normalize handles NULL qc_name", {
   exp <- simple_exp(10, 10)
   exp$sample_info$group <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
 
-  expect_snapshot(normed <- auto_normalize(exp, group_col = "group", qc_name = NULL))
+  expect_snapshot(
+    normed <- auto_normalize(exp, group_col = "group", qc_name = NULL)
+  )
   expect_s3_class(normed, "glyexp_experiment")
 })
 

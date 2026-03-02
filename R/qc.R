@@ -86,7 +86,10 @@ plot_missing_bar <- function(exp, on = "sample") {
     missing_prop = missing_prop[item_order]
   )
 
-  ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$item, y = .data$missing_prop)) +
+  ggplot2::ggplot(
+    plot_data,
+    ggplot2::aes(x = .data$item, y = .data$missing_prop)
+  ) +
     ggplot2::geom_col() +
     ggplot2::labs(x = x_label, y = "Missing proportion")
 }
@@ -174,7 +177,10 @@ plot_rank_abundance <- function(exp) {
   plot_data <- dplyr::arrange(plot_data, dplyr::desc(.data$mean_log2))
   plot_data$protein <- factor(plot_data$protein, levels = plot_data$protein)
 
-  ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$protein, y = .data$mean_log2)) +
+  ggplot2::ggplot(
+    plot_data,
+    ggplot2::aes(x = .data$protein, y = .data$mean_log2)
+  ) +
     ggplot2::geom_point(alpha = 0.7) +
     ggplot2::labs(x = "Protein", y = "Mean log2 intensity") +
     ggplot2::theme_classic() +
@@ -351,7 +357,8 @@ plot_cv_dent <- function(exp, by = NULL) {
   if (is.null(by_values)) {
     plot <- plot + ggplot2::geom_density()
   } else {
-    plot <- plot + ggplot2::geom_density(ggplot2::aes(fill = .data$group), alpha = 0.4)
+    plot <- plot +
+      ggplot2::geom_density(ggplot2::aes(fill = .data$group), alpha = 0.4)
   }
 
   plot <- plot + ggplot2::labs(x = "CV", y = "Density")
@@ -408,20 +415,26 @@ plot_batch_pca <- function(exp, batch_col = "batch") {
   log_mat[!is.finite(log_mat)] <- NA_real_
   complete_rows <- stats::complete.cases(log_mat)
   if (!any(complete_rows)) {
-    cli::cli_abort("No complete variables available for PCA after removing missing values.")
+    cli::cli_abort(
+      "No complete variables available for PCA after removing missing values."
+    )
   }
   log_mat <- log_mat[complete_rows, , drop = FALSE]
 
   row_sds <- matrixStats::rowSds(log_mat)
   log_mat <- log_mat[row_sds > 0, , drop = FALSE]
   if (nrow(log_mat) < 2) {
-    cli::cli_abort("PCA requires at least two variables with non-zero variance.")
+    cli::cli_abort(
+      "PCA requires at least two variables with non-zero variance."
+    )
   }
 
   pca_mat <- t(log_mat)
   rownames(pca_mat) <- sample_names
   if (min(dim(pca_mat)) < 2) {
-    cli::cli_abort("PCA requires at least two samples and two variables after filtering.")
+    cli::cli_abort(
+      "PCA requires at least two samples and two variables after filtering."
+    )
   }
 
   pca <- stats::prcomp(pca_mat, center = TRUE, scale. = TRUE)
@@ -462,7 +475,9 @@ plot_rep_scatter <- function(exp, rep_col, n_pairs = 9) {
 
   mat <- exp$expr_mat
   if (ncol(mat) < 2 || nrow(mat) < 2) {
-    cli::cli_abort("Replicate scatter plots require at least two samples and two variables.")
+    cli::cli_abort(
+      "Replicate scatter plots require at least two samples and two variables."
+    )
   }
 
   sample_names <- .get_sample_names(mat)
@@ -513,7 +528,11 @@ plot_rep_scatter <- function(exp, rep_col, n_pairs = 9) {
       x = log_mat[, pair[1]],
       y = log_mat[, pair[2]]
     )
-    plot_data <- dplyr::filter(plot_data, is.finite(.data$x), is.finite(.data$y))
+    plot_data <- dplyr::filter(
+      plot_data,
+      is.finite(.data$x),
+      is.finite(.data$y)
+    )
 
     if (nrow(plot_data) < 2) {
       r2 <- NA_real_
@@ -571,7 +590,11 @@ plot_rep_scatter <- function(exp, rep_col, n_pairs = 9) {
     return(list(group_df = NULL, sample_order = sample_names))
   }
 
-  group_levels <- if (is.factor(by_values)) levels(by_values) else unique(as.character(by_values))
+  group_levels <- if (is.factor(by_values)) {
+    levels(by_values)
+  } else {
+    unique(as.character(by_values))
+  }
   group_factor <- factor(as.character(by_values), levels = group_levels)
   group_df <- tibble::tibble(sample = sample_names, group = group_factor)
   sample_order <- sample_names[order(match(group_factor, group_levels))]
@@ -579,7 +602,12 @@ plot_rep_scatter <- function(exp, rep_col, n_pairs = 9) {
   list(group_df = group_df, sample_order = sample_order)
 }
 
-.prepare_sample_boxplot_data <- function(value_mat, sample_names, by_values, value_name) {
+.prepare_sample_boxplot_data <- function(
+  value_mat,
+  sample_names,
+  by_values,
+  value_name
+) {
   grouping <- .prepare_sample_grouping(sample_names, by_values)
   plot_data <- tibble::as_tibble(value_mat, .name_repair = "minimal")
   plot_data <- tidyr::pivot_longer(
