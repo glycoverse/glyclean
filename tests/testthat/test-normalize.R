@@ -424,6 +424,7 @@ test_that("normalize functions error on unsupported input", {
 })
 
 test_that("normalize_clr works with experiment input", {
+  skip_if_not_installed("compositions")
   test_exp <- simple_exp(5, 5)
   # Make sure no zeros
   test_exp$expr_mat <- test_exp$expr_mat + 10
@@ -443,6 +444,7 @@ test_that("normalize_clr works with experiment input", {
 })
 
 test_that("normalize_clr works with matrix input", {
+  skip_if_not_installed("compositions")
   test_mat <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9), nrow = 3, ncol = 3) + 10
   rownames(test_mat) <- paste0("V", 1:3)
   colnames(test_mat) <- paste0("S", 1:3)
@@ -462,6 +464,7 @@ test_that("normalize_clr works with matrix input", {
 })
 
 test_that("normalize_clr errors on zeros", {
+  skip_if_not_installed("compositions")
   test_exp <- simple_exp(3, 3)
   # Introduce a zero in the matrix
   test_exp$expr_mat[1, 1] <- 0
@@ -469,6 +472,7 @@ test_that("normalize_clr errors on zeros", {
 })
 
 test_that("normalize_clr errors on NA values", {
+  skip_if_not_installed("compositions")
   test_exp <- simple_exp(3, 3)
   test_exp$expr_mat <- test_exp$expr_mat + 10
   test_exp$expr_mat[1, 1] <- NA
@@ -476,11 +480,13 @@ test_that("normalize_clr errors on NA values", {
 })
 
 test_that("normalize_clr errors on unsupported input", {
+  skip_if_not_installed("compositions")
   expect_error(normalize_clr(1), "glyexp_experiment|matrix")
   expect_error(normalize_clr("string"), "glyexp_experiment|matrix")
 })
 
 test_that("normalize_alr works with experiment input", {
+  skip_if_not_installed("compositions")
   test_exp <- simple_exp(5, 5)
   # Make sure no zeros
   test_exp$expr_mat <- test_exp$expr_mat + 10
@@ -498,6 +504,7 @@ test_that("normalize_alr works with experiment input", {
 })
 
 test_that("normalize_alr works with matrix input", {
+  skip_if_not_installed("compositions")
   test_mat <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9), nrow = 3, ncol = 3) + 10
   rownames(test_mat) <- paste0("V", 1:3)
   colnames(test_mat) <- paste0("S", 1:3)
@@ -515,6 +522,7 @@ test_that("normalize_alr works with matrix input", {
 })
 
 test_that("normalize_alr errors on zeros", {
+  skip_if_not_installed("compositions")
   test_exp <- simple_exp(3, 3)
   # Introduce a zero in the matrix
   test_exp$expr_mat[1, 1] <- 0
@@ -522,6 +530,7 @@ test_that("normalize_alr errors on zeros", {
 })
 
 test_that("normalize_alr errors on NA values", {
+  skip_if_not_installed("compositions")
   test_exp <- simple_exp(3, 3)
   test_exp$expr_mat <- test_exp$expr_mat + 10
   test_exp$expr_mat[1, 1] <- NA
@@ -529,6 +538,7 @@ test_that("normalize_alr errors on NA values", {
 })
 
 test_that("normalize_alr errors on unsupported input", {
+  skip_if_not_installed("compositions")
   expect_error(normalize_alr(1), "glyexp_experiment|matrix")
   expect_error(normalize_alr("string"), "glyexp_experiment|matrix")
 })

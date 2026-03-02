@@ -21,8 +21,13 @@ If a matrix, rows should be variables and columns should be samples.}
 }
 \value{
 Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
-returns a \code{glyexp_experiment} with ALR-transformed expression matrix.
+returns a \code{glyexp_experiment} with an ALR-transformed expression matrix.
 If \code{x} is a matrix, returns an ALR-transformed matrix.
+In both cases, the returned matrix has the same number of rows (variables) as
+the input: the automatically selected reference variable is retained as a row
+of zeros after transformation, and all other variables contain log-ratios
+relative to this reference. The reference variable is the geometric-median
+variable described above, and its row position/name is preserved.
 Note that the resulting values are on the log scale and can be negative.
 }
 \description{

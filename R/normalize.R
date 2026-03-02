@@ -577,8 +577,13 @@ normalize_clr.default <- function(x) {
 #'   If a matrix, rows should be variables and columns should be samples.
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
-#'   returns a `glyexp_experiment` with ALR-transformed expression matrix.
+#'   returns a `glyexp_experiment` with an ALR-transformed expression matrix.
 #'   If `x` is a matrix, returns an ALR-transformed matrix.
+#'   In both cases, the returned matrix has the same number of rows (variables) as
+#'   the input: the automatically selected reference variable is retained as a row
+#'   of zeros after transformation, and all other variables contain log-ratios
+#'   relative to this reference. The reference variable is the geometric-median
+#'   variable described above, and its row position/name is preserved.
 #'   Note that the resulting values are on the log scale and can be negative.
 #' @export
 normalize_alr <- function(x) {
@@ -765,12 +770,12 @@ normalize_alr.default <- function(x) {
 .normalize_clr_mat <- function(mat) {
   rlang::check_installed("compositions", reason = "to use `normalize_clr()`")
 
-  # Check for zeros
-  if (any(mat == 0, na.rm = TRUE)) {
+  # Check for non-positive values (zeros and negatives)
+  if (any(mat <= 0, na.rm = TRUE)) {
     cli::cli_abort(c(
-      "All values must be positive for CLR transformation.",
-      "x" = "Found {.val {sum(mat == 0, na.rm = TRUE)}} zero(s) in the data.",
-      "i" = "Remove or impute zeros before applying CLR transformation."
+      "All values must be strictly positive for CLR transformation.",
+      "x" = "Found {.val {sum(mat <= 0, na.rm = TRUE)}} non-positive value(s) (<= 0) in the data.",
+      "i" = "Remove or impute zeros and negative values before applying CLR transformation."
     ))
   }
 
@@ -804,12 +809,12 @@ normalize_alr.default <- function(x) {
 .normalize_alr_mat <- function(mat) {
   rlang::check_installed("compositions", reason = "to use `normalize_alr()`")
 
-  # Check for zeros
-  if (any(mat == 0, na.rm = TRUE)) {
+  # Check for non-positive values (zeros and negatives)
+  if (any(mat <= 0, na.rm = TRUE)) {
     cli::cli_abort(c(
-      "All values must be positive for ALR transformation.",
-      "x" = "Found {.val {sum(mat == 0, na.rm = TRUE)}} zero(s) in the data.",
-      "i" = "Remove or impute zeros before applying ALR transformation."
+      "All values must be strictly positive for ALR transformation.",
+      "x" = "Found {.val {sum(mat <= 0, na.rm = TRUE)}} non-positive value(s) (<= 0) in the data.",
+      "i" = "Remove or impute zeros and negative values before applying ALR transformation."
     ))
   }
 
@@ -859,18 +864,22 @@ normalize_alr.default <- function(x) {
 #' @return The index of the geometric median variable.
 #' @keywords internal
 .select_geometric_median <- function(mat) {
-  n_vars <- nrow(mat)
-
   # Calculate log of the matrix for log-ratio calculations
   log_mat <- log(mat)
 
-  # For each variable, calculate sum of squared distances to all others
-  distances <- sapply(seq_len(n_vars), function(i) {
-    # Log-ratio of all variables to variable i
-    log_ratios <- log_mat - log_mat[i, ]
-    # Sum of squared distances
-    sum(rowSums(log_ratios^2, na.rm = TRUE))
-  })
+  # Approximate the geometric median by selecting the variable whose
+  # log-profile is closest (in squared Euclidean distance) to the
+  # global log-space center across variables. This avoids the
+  # O(n_vars^2 * n_samples) pairwise scan and runs in O(n_vars * n_samples).
+
+  # Global center in log space (per-sample mean across variables)
+  center <- colMeans(log_mat)
+
+  # Center each variable around the global center
+  centered <- sweep(log_mat, 2, center, "-")
+
+  # Squared Euclidean distance of each variable to the center
+  distances <- rowSums(centered^2, na.rm = TRUE)
 
   # Return the index with minimum distance
   which.min(distances)
