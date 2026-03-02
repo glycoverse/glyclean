@@ -24,6 +24,10 @@
 
 ## Normalization
 
+- [`normalize_alr()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_alr.md)
+  : Additive Log-Ratio Normalization
+- [`normalize_clr()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_clr.md)
+  : Centered Log-Ratio Normalization
 - [`normalize_loesscyc()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_loesscyc.md)
   : LoessCyc Normalization
 - [`normalize_loessf()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_loessf.md)
