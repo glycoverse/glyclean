@@ -479,3 +479,56 @@ test_that("normalize_clr errors on unsupported input", {
   expect_error(normalize_clr(1), "glyexp_experiment|matrix")
   expect_error(normalize_clr("string"), "glyexp_experiment|matrix")
 })
+
+test_that("normalize_alr works with experiment input", {
+  test_exp <- simple_exp(5, 5)
+  # Make sure no zeros
+  test_exp$expr_mat <- test_exp$expr_mat + 10
+  original_exp <- test_exp
+  result_exp <- normalize_alr(test_exp)
+
+  # Check that the function returns the correct structure
+  expect_s3_class(result_exp, "glyexp_experiment")
+  expect_equal(dim(result_exp$expr_mat), dim(original_exp$expr_mat))
+  expect_equal(rownames(result_exp$expr_mat), rownames(original_exp$expr_mat))
+  expect_equal(colnames(result_exp$expr_mat), colnames(original_exp$expr_mat))
+
+  # Check that values are finite after ALR transformation
+  expect_true(all(is.finite(result_exp$expr_mat)))
+})
+
+test_that("normalize_alr works with matrix input", {
+  test_mat <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9), nrow = 3, ncol = 3) + 10
+  rownames(test_mat) <- paste0("V", 1:3)
+  colnames(test_mat) <- paste0("S", 1:3)
+
+  result_mat <- normalize_alr(test_mat)
+
+  # Check that the function returns a matrix
+  expect_true(is.matrix(result_mat))
+  expect_equal(dim(result_mat), dim(test_mat))
+  expect_equal(rownames(result_mat), rownames(test_mat))
+  expect_equal(colnames(result_mat), colnames(test_mat))
+
+  # Check that values are finite
+  expect_true(all(is.finite(result_mat)))
+})
+
+test_that("normalize_alr errors on zeros", {
+  test_exp <- simple_exp(3, 3)
+  # Introduce a zero in the matrix
+  test_exp$expr_mat[1, 1] <- 0
+  expect_error(normalize_alr(test_exp), "zero|positive")
+})
+
+test_that("normalize_alr errors on NA values", {
+  test_exp <- simple_exp(3, 3)
+  test_exp$expr_mat <- test_exp$expr_mat + 10
+  test_exp$expr_mat[1, 1] <- NA
+  expect_error(normalize_alr(test_exp), "NA|missing")
+})
+
+test_that("normalize_alr errors on unsupported input", {
+  expect_error(normalize_alr(1), "glyexp_experiment|matrix")
+  expect_error(normalize_alr("string"), "glyexp_experiment|matrix")
+})

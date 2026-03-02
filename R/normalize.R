@@ -554,6 +554,59 @@ normalize_clr.default <- function(x) {
 }
 
 
+#' Additive Log-Ratio Normalization
+#'
+#' This function performs Additive Log-Ratio (ALR) transformation on compositional data.
+#' ALR transforms each component by taking the logarithm of the ratio of the component
+#' to a reference component. This is useful for analyzing compositional data where
+#' the relative proportions are of interest.
+#'
+#' The formula is: `alr(x)_i = log(x_i / x_ref)` where `x_ref` is the reference component.
+#'
+#' @details
+#' This function requires all values to be strictly positive (no zeros or NA values).
+#' Users must handle zeros and missing values before calling this function.
+#'
+#' The reference variable is automatically selected as the geometric median
+#' (the variable with the smallest sum of log-ratio distances to all other variables),
+#' which provides the most stable reference.
+#'
+#' This function is a wrapper around [compositions::alr()].
+#'
+#' @param x Either a `glyexp_experiment` object or a matrix.
+#'   If a matrix, rows should be variables and columns should be samples.
+#'
+#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
+#'   returns a `glyexp_experiment` with ALR-transformed expression matrix.
+#'   If `x` is a matrix, returns an ALR-transformed matrix.
+#'   Note that the resulting values are on the log scale and can be negative.
+#' @export
+normalize_alr <- function(x) {
+  UseMethod("normalize_alr")
+}
+
+#' @rdname normalize_alr
+#' @export
+normalize_alr.glyexp_experiment <- function(x) {
+  .dispatch_on_input(x, .normalize_alr_exp, .normalize_alr_mat)
+}
+
+#' @rdname normalize_alr
+#' @export
+normalize_alr.matrix <- function(x) {
+  .normalize_alr_mat(x)
+}
+
+#' @rdname normalize_alr
+#' @export
+normalize_alr.default <- function(x) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
+}
+
+
 # ---------- Implementation ----------
 .normalize_median <- function(mat) {
   normed <- limma::normalizeMedianValues(mat)
@@ -745,4 +798,80 @@ normalize_clr.default <- function(x) {
 .normalize_clr_exp <- function(exp) {
   exp$expr_mat <- .normalize_clr_mat(exp$expr_mat)
   exp
+}
+
+
+.normalize_alr_mat <- function(mat) {
+  rlang::check_installed("compositions", reason = "to use `normalize_alr()`")
+
+  # Check for zeros
+  if (any(mat == 0, na.rm = TRUE)) {
+    cli::cli_abort(c(
+      "All values must be positive for ALR transformation.",
+      "x" = "Found {.val {sum(mat == 0, na.rm = TRUE)}} zero(s) in the data.",
+      "i" = "Remove or impute zeros before applying ALR transformation."
+    ))
+  }
+
+  # Check for NA values
+  if (any(is.na(mat))) {
+    cli::cli_abort(c(
+      "Missing values are not allowed for ALR transformation.",
+      "x" = "Found {.val {sum(is.na(mat))}} missing value(s) in the data.",
+      "i" = "Impute missing values before applying ALR transformation."
+    ))
+  }
+
+  # Select geometric median as reference
+  ref_idx <- .select_geometric_median(mat)
+
+  # compositions::alr expects rows = samples, columns = variables (compositions)
+  # Our matrix is: rows = variables, columns = samples
+  # So we transpose, apply ALR, then transpose back
+  mat_t <- t(mat)
+  alr_result <- compositions::alr(mat_t, ivar = ref_idx)
+  result <- t(alr_result)
+
+  # ALR drops the reference variable, but we want to preserve dimensions
+  # Add the reference variable back as zeros (log(x_ref/x_ref) = 0)
+  full_result <- mat * 0 # Create matrix of same dimensions filled with 0
+  # Copy ALR results to appropriate rows (excluding reference)
+  non_ref_idx <- setdiff(seq_len(nrow(mat)), ref_idx)
+  full_result[non_ref_idx, ] <- result
+
+  colnames(full_result) <- colnames(mat)
+  rownames(full_result) <- rownames(mat)
+  full_result
+}
+
+.normalize_alr_exp <- function(exp) {
+  exp$expr_mat <- .normalize_alr_mat(exp$expr_mat)
+  exp
+}
+
+#' Select geometric median as reference for ALR
+#'
+#' The geometric median is the variable (row) that has the smallest
+#' sum of squared log-ratio distances to all other variables.
+#' This provides the most stable reference for ALR transformation.
+#'
+#' @param mat A matrix with variables as rows and samples as columns.
+#' @return The index of the geometric median variable.
+#' @keywords internal
+.select_geometric_median <- function(mat) {
+  n_vars <- nrow(mat)
+
+  # Calculate log of the matrix for log-ratio calculations
+  log_mat <- log(mat)
+
+  # For each variable, calculate sum of squared distances to all others
+  distances <- sapply(seq_len(n_vars), function(i) {
+    # Log-ratio of all variables to variable i
+    log_ratios <- log_mat - log_mat[i, ]
+    # Sum of squared distances
+    sum(rowSums(log_ratios^2, na.rm = TRUE))
+  })
+
+  # Return the index with minimum distance
+  which.min(distances)
 }
