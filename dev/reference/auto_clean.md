@@ -183,6 +183,19 @@ A modified
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
 object.
 
+## QC samples
+
+If you have quality control (QC) samples, label them as "QC" as the
+"group" in the sample information table. You can also use set `qc_name`
+to other names.
+
+When QC samples exist,
+[`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
+and
+[`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
+will compare various normalization or imputation methods, and select the
+one that stablize QC samples the most.
+
 ## See also
 
 [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md),
