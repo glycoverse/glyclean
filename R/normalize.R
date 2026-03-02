@@ -504,11 +504,63 @@ normalize_rlrmacyc.default <- function(x, n_iter = 3, by = NULL) {
 }
 
 
+#' Centered Log-Ratio Normalization
+#'
+#' This function performs Centered Log-Ratio (CLR) transformation on compositional data.
+#' CLR transforms each component by taking the logarithm of the ratio of the component
+#' to the geometric mean of all components. This is useful for analyzing compositional
+#' data where the relative proportions are of interest rather than absolute values.
+#'
+#' The formula is: `clr(x)_i = log(x_i / g(x))` where `g(x)` is the geometric mean
+#' of all components in the sample.
+#'
+#' @details
+#' This function requires all values to be strictly positive (no zeros or NA values).
+#' Users must handle zeros and missing values before calling this function.
+#'
+#' This function is a wrapper around [compositions::clr()].
+#'
+#' @param x Either a `glyexp_experiment` object or a matrix.
+#'   If a matrix, rows should be variables and columns should be samples.
+#'
+#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
+#'   returns a `glyexp_experiment` with CLR-transformed expression matrix.
+#'   If `x` is a matrix, returns a CLR-transformed matrix.
+#'   Note that the resulting values are on the log scale and can be negative.
+#' @export
+normalize_clr <- function(x) {
+  UseMethod("normalize_clr")
+}
+
+#' @rdname normalize_clr
+#' @export
+normalize_clr.glyexp_experiment <- function(x) {
+  .dispatch_on_input(x, .normalize_clr_exp, .normalize_clr_mat)
+}
+
+#' @rdname normalize_clr
+#' @export
+normalize_clr.matrix <- function(x) {
+  .normalize_clr_mat(x)
+}
+
+#' @rdname normalize_clr
+#' @export
+normalize_clr.default <- function(x) {
+  cli::cli_abort(c(
+    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
+    "x" = "Got {.cls {class(x)}}."
+  ))
+}
+
+
 # ---------- Implementation ----------
 .normalize_median <- function(mat) {
   normed <- limma::normalizeMedianValues(mat)
   if (any(colMeans(is.nan(normed)) == 1)) {
-    cli::cli_warn("Some samples have median values of {.val 0}, producing all NaNs after normalization.")
+    cli::cli_warn(
+      "Some samples have median values of {.val 0}, producing all NaNs after normalization."
+    )
   }
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
@@ -543,7 +595,7 @@ normalize_rlrmacyc.default <- function(x, n_iter = 3, by = NULL) {
   normed <- limma::normalizeCyclicLoess(log_mat, method = "fast", ...)
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
-  2 ^ normed
+  2^normed
 }
 
 
@@ -552,14 +604,16 @@ normalize_rlrmacyc.default <- function(x, n_iter = 3, by = NULL) {
   normed <- limma::normalizeCyclicLoess(log_mat, method = "pairs", ...)
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
-  2 ^ normed
+  2^normed
 }
 
 
 .normalize_vsn <- function(mat, ...) {
   rlang::check_installed("vsn", reason = "to use `normalize_vsn()`")
   if (nrow(mat) < 42) {
-    rlang::abort("The number of variables should be at least 42 for `normalize_vsn()`")
+    rlang::abort(
+      "The number of variables should be at least 42 for `normalize_vsn()`"
+    )
   }
   suppressMessages(normed <- limma::normalizeVSN(mat, ...))
   colnames(normed) <- colnames(mat)
@@ -600,7 +654,7 @@ normalize_rlrmacyc.default <- function(x, n_iter = 3, by = NULL) {
   }
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
-  2 ^ normed
+  2^normed
 }
 
 
@@ -610,14 +664,18 @@ normalize_rlrmacyc.default <- function(x, n_iter = 3, by = NULL) {
   ref_sample <- matrixStats::rowMedians(normed, na.rm = TRUE, useNames = TRUE)
   for (i in seq_len(ncol(normed))) {
     sample <- normed[, i]
-    m <- sample - ref_sample  # MA transformation
-    lr_fit <- suppressWarnings(MASS::rlm(m ~ ref_sample, na.action = stats::na.exclude, maxit = 50))
+    m <- sample - ref_sample # MA transformation
+    lr_fit <- suppressWarnings(MASS::rlm(
+      m ~ ref_sample,
+      na.action = stats::na.exclude,
+      maxit = 50
+    ))
     fit_values <- stats::predict(lr_fit)
     normed[, i] <- m - fit_values
   }
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
-  2 ^ normed
+  2^normed
 }
 
 
@@ -634,7 +692,11 @@ normalize_rlrmacyc.default <- function(x, n_iter = 3, by = NULL) {
         sample2 <- normed[, j]
         m <- sample1 - sample2
         a <- (sample1 + sample2) / 2
-        fit <- suppressWarnings(MASS::rlm(m ~ a, na.action = stats::na.exclude, maxit = 50))
+        fit <- suppressWarnings(MASS::rlm(
+          m ~ a,
+          na.action = stats::na.exclude,
+          maxit = 50
+        ))
         fit_values <- stats::predict(fit)
         normed[, i] <- sample1 - fit_values / 2
         normed[, j] <- sample2 + fit_values / 2
@@ -643,5 +705,44 @@ normalize_rlrmacyc.default <- function(x, n_iter = 3, by = NULL) {
   }
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
-  2 ^ normed
+  2^normed
+}
+
+
+.normalize_clr_mat <- function(mat) {
+  rlang::check_installed("compositions", reason = "to use `normalize_clr()`")
+
+  # Check for zeros
+  if (any(mat == 0, na.rm = TRUE)) {
+    cli::cli_abort(c(
+      "All values must be positive for CLR transformation.",
+      "x" = "Found {.val {sum(mat == 0, na.rm = TRUE)}} zero(s) in the data.",
+      "i" = "Remove or impute zeros before applying CLR transformation."
+    ))
+  }
+
+  # Check for NA values
+  if (any(is.na(mat))) {
+    cli::cli_abort(c(
+      "Missing values are not allowed for CLR transformation.",
+      "x" = "Found {.val {sum(is.na(mat))}} missing value(s) in the data.",
+      "i" = "Impute missing values before applying CLR transformation."
+    ))
+  }
+
+  # compositions::clr expects rows = samples, columns = variables (compositions)
+  # Our matrix is: rows = variables, columns = samples
+  # So we transpose, apply CLR, then transpose back
+  mat_t <- t(mat)
+  clr_result <- compositions::clr(mat_t)
+  result <- t(clr_result)
+
+  colnames(result) <- colnames(mat)
+  rownames(result) <- rownames(mat)
+  result
+}
+
+.normalize_clr_exp <- function(exp) {
+  exp$expr_mat <- .normalize_clr_mat(exp$expr_mat)
+  exp
 }
