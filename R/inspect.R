@@ -32,7 +32,9 @@ inspect_experiment <- function(exp, group_col = "group", qc_name = "QC") {
 
   # qc_samples: sample names of QC samples, NULL if no QC samples
   if (res$has_qc) {
-    res$qc_samples <- exp$sample_info[["sample"]][exp$sample_info[[group_col]] == qc_name]
+    res$qc_samples <- exp$sample_info[["sample"]][
+      exp$sample_info[[group_col]] == qc_name
+    ]
   } else {
     res$qc_samples <- NULL
   }

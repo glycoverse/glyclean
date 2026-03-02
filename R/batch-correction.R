@@ -86,9 +86,16 @@ correct_batch_effect.glyexp_experiment <- function(
 ) {
   method <- match.arg(method)
   # For experiment input, extract batch and group from sample_info
-  batch_group_info <- .extract_batch_group_from_experiment(x, batch, group, require_batch = TRUE)
+  batch_group_info <- .extract_batch_group_from_experiment(
+    x,
+    batch,
+    group,
+    require_batch = TRUE
+  )
   if (is.null(batch_group_info)) {
-    cli::cli_alert_info("No batch information found in column '{batch}' of sample_info. Returning original experiment unchanged.")
+    cli::cli_alert_info(
+      "No batch information found in column '{batch}' of sample_info. Returning original experiment unchanged."
+    )
     return(x)
   }
 
@@ -126,7 +133,9 @@ correct_batch_effect.matrix <- function(
 ) {
   method <- match.arg(method)
   .correct_batch_effect_matrix(
-    x, batch = batch, group = group,
+    x,
+    batch = batch,
+    group = group,
     check_confounding = check_confounding,
     confounding_threshold = confounding_threshold,
     method = method
@@ -150,7 +159,14 @@ correct_batch_effect.default <- function(
   ))
 }
 
-.correct_batch_effect_matrix <- function(x, batch, group, check_confounding, confounding_threshold, method) {
+.correct_batch_effect_matrix <- function(
+  x,
+  batch,
+  group,
+  check_confounding,
+  confounding_threshold,
+  method
+) {
   # Validate and prepare batch/group vectors
   batch_group_info <- .validate_and_prepare_batch_group(x, batch, group)
   if (is.null(batch_group_info)) {
@@ -211,9 +227,18 @@ detect_batch_effect <- function(x, batch = "batch", group = NULL) {
 
 #' @rdname detect_batch_effect
 #' @export
-detect_batch_effect.glyexp_experiment <- function(x, batch = "batch", group = NULL) {
+detect_batch_effect.glyexp_experiment <- function(
+  x,
+  batch = "batch",
+  group = NULL
+) {
   # For experiment input, extract batch and group from sample_info
-  batch_group_info <- .extract_batch_group_from_experiment(x, batch, group, require_batch = TRUE)
+  batch_group_info <- .extract_batch_group_from_experiment(
+    x,
+    batch,
+    group,
+    require_batch = TRUE
+  )
   if (is.null(batch_group_info)) {
     return(rep(1, nrow(x$expr_mat)))
   }
@@ -230,7 +255,12 @@ detect_batch_effect.glyexp_experiment <- function(x, batch = "batch", group = NU
 #' @export
 detect_batch_effect.matrix <- function(x, batch = "batch", group = NULL) {
   # Validate and prepare batch/group vectors
-  batch_group_info <- .validate_and_prepare_batch_group(x, batch, group, require_batch = TRUE)
+  batch_group_info <- .validate_and_prepare_batch_group(
+    x,
+    batch,
+    group,
+    require_batch = TRUE
+  )
   if (is.null(batch_group_info)) {
     return(rep(1, nrow(x)))
   }
@@ -254,7 +284,12 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
 
 # Helper functions for common business logic
 
-.extract_batch_group_from_experiment <- function(x, batch, group, require_batch = FALSE) {
+.extract_batch_group_from_experiment <- function(
+  x,
+  batch,
+  group,
+  require_batch = FALSE
+) {
   # Validate experiment input
   checkmate::assert_class(x, "glyexp_experiment")
 
@@ -264,18 +299,18 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
     # For string input, check if column exists first when not required
     if (batch %in% colnames(x$sample_info)) {
       batch_values <- .resolve_column_param(
-        batch, 
-        sample_info = x$sample_info, 
-        param_name = "batch", 
+        batch,
+        sample_info = x$sample_info,
+        param_name = "batch",
         n_samples = ncol(x$expr_mat),
         allow_null = FALSE
       )
     } else if (require_batch) {
       # If batch is required but column doesn't exist, let resolve_column_param handle the error
       batch_values <- .resolve_column_param(
-        batch, 
-        sample_info = x$sample_info, 
-        param_name = "batch", 
+        batch,
+        sample_info = x$sample_info,
+        param_name = "batch",
         n_samples = ncol(x$expr_mat),
         allow_null = FALSE
       )
@@ -286,9 +321,9 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
   } else if (!is.null(batch)) {
     # Direct factor/vector input
     batch_values <- .resolve_column_param(
-      batch, 
-      sample_info = x$sample_info, 
-      param_name = "batch", 
+      batch,
+      sample_info = x$sample_info,
+      param_name = "batch",
       n_samples = ncol(x$expr_mat),
       allow_null = FALSE
     )
@@ -300,9 +335,9 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
 
   # Resolve group parameter
   group_values <- .resolve_column_param(
-    group, 
-    sample_info = x$sample_info, 
-    param_name = "group", 
+    group,
+    sample_info = x$sample_info,
+    param_name = "group",
     n_samples = ncol(x$expr_mat),
     allow_null = TRUE
   )
@@ -319,16 +354,25 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
   return(list(batch = batch_values, group = group_values))
 }
 
-.validate_and_prepare_batch_group <- function(x, batch, group = NULL, require_batch = FALSE) {
+.validate_and_prepare_batch_group <- function(
+  x,
+  batch,
+  group = NULL,
+  require_batch = FALSE
+) {
   # Validate matrix input
   checkmate::assert_matrix(x)
 
   # Check for invalid string inputs for matrix
   if (is.character(batch) && length(batch) == 1) {
-    cli::cli_abort("Column name '{batch}' provided for {.arg batch}, but no sample_info available for matrix input. Please provide a factor or vector instead.")
+    cli::cli_abort(
+      "Column name '{batch}' provided for {.arg batch}, but no sample_info available for matrix input. Please provide a factor or vector instead."
+    )
   }
   if (is.character(group) && length(group) == 1) {
-    cli::cli_abort("Column name '{group}' provided for {.arg group}, but no sample_info available for matrix input. Please provide a factor or vector instead.")
+    cli::cli_abort(
+      "Column name '{group}' provided for {.arg group}, but no sample_info available for matrix input. Please provide a factor or vector instead."
+    )
   }
 
   checkmate::assert_vector(batch, len = ncol(x))
@@ -345,7 +389,9 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
   # Check if there are at least 2 batches
   if (length(unique(batch)) < 2) {
     if (require_batch) {
-      cli::cli_warn("Less than 2 batches found. Cannot perform batch effect detection.")
+      cli::cli_warn(
+        "Less than 2 batches found. Cannot perform batch effect detection."
+      )
     }
     return(NULL)
   }
@@ -359,7 +405,9 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
 }
 
 .cramers_v <- function(conf_table) {
-  statistic <- as.numeric(suppressWarnings(stats::chisq.test(conf_table))$statistic)
+  statistic <- as.numeric(
+    suppressWarnings(stats::chisq.test(conf_table))$statistic
+  )
   sqrt((statistic / sum(conf_table)) / min(dim(conf_table) - 1))
 }
 
@@ -368,17 +416,30 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
   all(batch_counts >= 2)
 }
 
-.apply_batch_correction <- function(expr_mat, batch, group = NULL, check_confounding = TRUE, confounding_threshold = 0.4, method = c("combat", "limma")) {
+.apply_batch_correction <- function(
+  expr_mat,
+  batch,
+  group = NULL,
+  check_confounding = TRUE,
+  confounding_threshold = 0.4,
+  method = c("combat", "limma")
+) {
   method <- match.arg(method)
 
   # Check if there are at least 2 batches
   if (length(unique(batch)) < 2) {
-    cli::cli_warn("Less than 2 batches found. Batch correction requires at least 2 batches. Returning original data unchanged.")
+    cli::cli_warn(
+      "Less than 2 batches found. Batch correction requires at least 2 batches. Returning original data unchanged."
+    )
     return(expr_mat)
   }
 
   # Check for confounding
-  if (check_confounding && !is.null(group) && .check_batch_group_confounding(batch, group, confounding_threshold)) {
+  if (
+    check_confounding &&
+      !is.null(group) &&
+      .check_batch_group_confounding(batch, group, confounding_threshold)
+  ) {
     cli::cli_warn(c(
       "Batch and group variables are highly confounded.",
       "i" = "Batch effect correction may not be appropriate.",
@@ -402,44 +463,54 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
 
   # Create model matrix
   if (!is.null(group)) {
-    mod <- stats::model.matrix(~ group)
+    mod <- stats::model.matrix(~group)
   } else {
     mod <- NULL
   }
 
   # Apply batch correction based on method
   if (method == "combat") {
-    corrected_log_expr_mat <- tryCatch({
-      withr::with_output_sink(
-        nullfile(),
-        sva::ComBat(
-          dat = log_expr_mat,
-          batch = batch,
-          mod = mod,
-          par.prior = TRUE,
-          prior.plots = FALSE
+    corrected_log_expr_mat <- tryCatch(
+      {
+        withr::with_output_sink(
+          nullfile(),
+          sva::ComBat(
+            dat = log_expr_mat,
+            batch = batch,
+            mod = mod,
+            par.prior = TRUE,
+            prior.plots = FALSE
+          )
         )
-      )
-    }, error = function(e) {
-      cli::cli_warn(c(
-        "ComBat failed to correct batch effects.",
-        "i" = "Error: {e$message}",
-        "i" = "Returning original data unchanged."
-      ))
-      return(NULL)
-    })
+      },
+      error = function(e) {
+        cli::cli_warn(c(
+          "ComBat failed to correct batch effects.",
+          "i" = "Error: {e$message}",
+          "i" = "Returning original data unchanged."
+        ))
+        return(NULL)
+      }
+    )
   } else {
     # limma method
-    corrected_log_expr_mat <- tryCatch({
-      suppressWarnings(limma::removeBatchEffect(log_expr_mat, batch = batch, covariates = mod))
-    }, error = function(e) {
-      cli::cli_warn(c(
-        "limma removeBatchEffect failed to correct batch effects.",
-        "i" = "Error: {e$message}",
-        "i" = "Returning original data unchanged."
-      ))
-      return(NULL)
-    })
+    corrected_log_expr_mat <- tryCatch(
+      {
+        suppressWarnings(limma::removeBatchEffect(
+          log_expr_mat,
+          batch = batch,
+          covariates = mod
+        ))
+      },
+      error = function(e) {
+        cli::cli_warn(c(
+          "limma removeBatchEffect failed to correct batch effects.",
+          "i" = "Error: {e$message}",
+          "i" = "Returning original data unchanged."
+        ))
+        return(NULL)
+      }
+    )
   }
 
   # Check if correction succeeded
@@ -454,7 +525,9 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
 .perform_batch_effect_detection <- function(expr_mat, batch, group = NULL) {
   # Check if there are at least 2 batches
   if (length(unique(batch)) < 2) {
-    cli::cli_warn("Less than 2 batches found. Cannot perform batch effect detection.")
+    cli::cli_warn(
+      "Less than 2 batches found. Cannot perform batch effect detection."
+    )
     return(rep(1, nrow(expr_mat)))
   }
 
@@ -482,20 +555,25 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
     }
 
     # Perform ANOVA with error handling
-    tryCatch({
-      fit <- stats::aov(formula, data = df)
-      anova_result <- stats::anova(fit)
-      # Extract p-value for batch effect (first row)
-      p_value <- anova_result$`Pr(>F)`[1]
-      return(p_value)
-    }, error = function(e) {
-      # Return NA_real_ if ANOVA fails
-      return(NA_real_)
-    })
+    tryCatch(
+      {
+        fit <- stats::aov(formula, data = df)
+        anova_result <- stats::anova(fit)
+        # Extract p-value for batch effect (first row)
+        p_value <- anova_result$`Pr(>F)`[1]
+        return(p_value)
+      },
+      error = function(e) {
+        # Return NA_real_ if ANOVA fails
+        return(NA_real_)
+      }
+    )
   }
 
   # Apply ANOVA to each variable using purrr
-  cli::cli_alert_info("Detecting batch effects using ANOVA for {n_variables} variables...")
+  cli::cli_alert_info(
+    "Detecting batch effects using ANOVA for {n_variables} variables..."
+  )
 
   p_values <- purrr::map_dbl(1:n_variables, ~ perform_anova(expr_mat[.x, ]))
 

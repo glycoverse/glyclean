@@ -44,20 +44,33 @@
 #' @returns A modified [glyexp::experiment()] object with aggregated expression matrix and
 #'   updated variable information.
 #' @export
-aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps"),
-                      standardize_variable = TRUE) {
-  glyclean_aggregate(exp, to_level = to_level, standardize_variable = standardize_variable)
+aggregate <- function(
+  exp,
+  to_level = c("gf", "gp", "gfs", "gps"),
+  standardize_variable = TRUE
+) {
+  glyclean_aggregate(
+    exp,
+    to_level = to_level,
+    standardize_variable = standardize_variable
+  )
 }
 
-glyclean_aggregate <- function(exp, to_level = c("gf", "gp", "gfs", "gps"),
-                                standardize_variable = TRUE) {
+glyclean_aggregate <- function(
+  exp,
+  to_level = c("gf", "gp", "gfs", "gps"),
+  standardize_variable = TRUE
+) {
   UseMethod("glyclean_aggregate")
 }
 
 #' @rdname aggregate
 #' @export
-glyclean_aggregate.glyexp_experiment <- function(exp, to_level = c("gf", "gp", "gfs", "gps"),
-                                                  standardize_variable = TRUE) {
+glyclean_aggregate.glyexp_experiment <- function(
+  exp,
+  to_level = c("gf", "gp", "gfs", "gps"),
+  standardize_variable = TRUE
+) {
   # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")
   if (glyexp::get_exp_type(exp) != "glycoproteomics") {
@@ -72,9 +85,27 @@ glyclean_aggregate.glyexp_experiment <- function(exp, to_level = c("gf", "gp", "
   var_info_cols <- switch(
     to_level,
     gf = c("protein", "glycan_composition", "protein_site"),
-    gp = c("peptide", "protein", "glycan_composition", "peptide_site", "protein_site"),
-    gfs = c("protein", "glycan_composition", "glycan_structure", "protein_site"),
-    gps = c("peptide", "protein", "glycan_composition", "glycan_structure", "peptide_site", "protein_site")
+    gp = c(
+      "peptide",
+      "protein",
+      "glycan_composition",
+      "peptide_site",
+      "protein_site"
+    ),
+    gfs = c(
+      "protein",
+      "glycan_composition",
+      "glycan_structure",
+      "protein_site"
+    ),
+    gps = c(
+      "peptide",
+      "protein",
+      "glycan_composition",
+      "glycan_structure",
+      "peptide_site",
+      "protein_site"
+    )
   )
   var_info <- exp$var_info
   missing_cols <- setdiff(var_info_cols, colnames(var_info))
@@ -129,8 +160,11 @@ glyclean_aggregate.glyexp_experiment <- function(exp, to_level = c("gf", "gp", "
 
 #' @rdname aggregate
 #' @export
-glyclean_aggregate.default <- function(exp, to_level = c("gf", "gp", "gfs", "gps"),
-                                       standardize_variable = TRUE) {
+glyclean_aggregate.default <- function(
+  exp,
+  to_level = c("gf", "gp", "gfs", "gps"),
+  standardize_variable = TRUE
+) {
   cli::cli_abort(c(
     "{.arg exp} must be a {.cls glyexp_experiment} object.",
     "x" = "Got {.cls {class(exp)}}."

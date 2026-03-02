@@ -28,11 +28,17 @@ auto_aggregate <- function(exp, standardize_variable = TRUE) {
   }
   if ("glycan_structure" %in% colnames(glyexp::get_var_info(exp))) {
     cli::cli_alert_info("Aggregating to {.val gfs} level")
-    glyclean_aggregate.glyexp_experiment(exp, to_level = "gfs",
-                                          standardize_variable = standardize_variable)
+    glyclean_aggregate.glyexp_experiment(
+      exp,
+      to_level = "gfs",
+      standardize_variable = standardize_variable
+    )
   } else {
     cli::cli_alert_info("Aggregating to {.val gf} level")
-    glyclean_aggregate.glyexp_experiment(exp, to_level = "gf",
-                                          standardize_variable = standardize_variable)
+    glyclean_aggregate.glyexp_experiment(
+      exp,
+      to_level = "gf",
+      standardize_variable = standardize_variable
+    )
   }
 }

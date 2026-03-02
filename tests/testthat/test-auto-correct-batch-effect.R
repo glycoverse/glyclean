@@ -30,7 +30,9 @@ test_that("auto_correct_batch_effect performs correction when threshold exceeded
 
   # Expect correction with default threshold (0.3)
   # Should see cli output about performing correction
-  expect_snapshot(result <- auto_correct_batch_effect(exp, prop_threshold = 0.3))
+  expect_snapshot(
+    result <- auto_correct_batch_effect(exp, prop_threshold = 0.3)
+  )
 
   # Result should be different (corrected)
   expect_false(identical(result$expr_mat, exp$expr_mat))
@@ -57,7 +59,11 @@ test_that("auto_correct_batch_effect skips correction when below threshold", {
   )
   var_info <- tibble::tibble(variable = paste0("V", 1:n_vars))
 
-  expr_mat <- matrix(rnorm(n_vars * n_samples, mean = 10, sd = 1), nrow = n_vars, ncol = n_samples)
+  expr_mat <- matrix(
+    rnorm(n_vars * n_samples, mean = 10, sd = 1),
+    nrow = n_vars,
+    ncol = n_samples
+  )
   rownames(expr_mat) <- var_info$variable
   colnames(expr_mat) <- sample_info$sample
 
@@ -69,7 +75,9 @@ test_that("auto_correct_batch_effect skips correction when below threshold", {
   )
 
   # Expect NO correction
-  expect_snapshot(result <- auto_correct_batch_effect(exp, prop_threshold = 0.3))
+  expect_snapshot(
+    result <- auto_correct_batch_effect(exp, prop_threshold = 0.3)
+  )
 
   # Result should be identical to original
   expect_identical(result$expr_mat, exp$expr_mat)
@@ -113,11 +121,18 @@ test_that("auto_correct_batch_effect uses group information", {
   # We just want to ensure it runs without error when group is provided
   # and that it's actually using the group column (detected by not erroring on a valid column)
 
-  expect_snapshot(auto_correct_batch_effect(exp, group_col = "group", prop_threshold = 0))
+  expect_snapshot(auto_correct_batch_effect(
+    exp,
+    group_col = "group",
+    prop_threshold = 0
+  ))
 })
 
 test_that("auto_correct_batch_effect validation", {
-  expect_error(auto_correct_batch_effect("invalid"), "Must inherit from class 'glyexp_experiment'")
+  expect_error(
+    auto_correct_batch_effect("invalid"),
+    "Must inherit from class 'glyexp_experiment'"
+  )
 
   exp <- glyexp::toy_experiment
   expect_error(auto_correct_batch_effect(exp, prop_threshold = 1.5), "not <= 1")

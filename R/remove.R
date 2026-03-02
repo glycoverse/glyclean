@@ -57,13 +57,27 @@
 #' @return For `glyexp_experiment` input, returns a modified `glyexp_experiment` object.
 #'   For matrix input, returns a filtered matrix.
 #' @export
-remove_rare <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
+remove_rare <- function(
+  x,
+  prop = NULL,
+  n = NULL,
+  by = NULL,
+  strict = FALSE,
+  min_n = NULL
+) {
   UseMethod("remove_rare")
 }
 
 #' @rdname remove_rare
 #' @export
-remove_rare.glyexp_experiment <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
+remove_rare.glyexp_experiment <- function(
+  x,
+  prop = NULL,
+  n = NULL,
+  by = NULL,
+  strict = FALSE,
+  min_n = NULL
+) {
   .filter_exp(
     x,
     by,
@@ -77,9 +91,18 @@ remove_rare.glyexp_experiment <- function(x, prop = NULL, n = NULL, by = NULL, s
 
 #' @rdname remove_rare
 #' @export
-remove_rare.matrix <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
+remove_rare.matrix <- function(
+  x,
+  prop = NULL,
+  n = NULL,
+  by = NULL,
+  strict = FALSE,
+  min_n = NULL
+) {
   if (!is.null(by) && is.character(by) && length(by) == 1) {
-    cli::cli_abort("For matrix input, {.arg by} must be a vector, not a column name.")
+    cli::cli_abort(
+      "For matrix input, {.arg by} must be a vector, not a column name."
+    )
   }
 
   by_values <- .resolve_column_param(
@@ -102,14 +125,28 @@ remove_rare.matrix <- function(x, prop = NULL, n = NULL, by = NULL, strict = FAL
 
 #' @rdname remove_rare
 #' @export
-remove_rare.default <- function(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL) {
+remove_rare.default <- function(
+  x,
+  prop = NULL,
+  n = NULL,
+  by = NULL,
+  strict = FALSE,
+  min_n = NULL
+) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
     "x" = "Got {.cls {class(x)}}."
   ))
 }
 
-.filter_matrix_rare <- function(x, by = NULL, strict = FALSE, prop = NULL, n = NULL, min_n = NULL) {
+.filter_matrix_rare <- function(
+  x,
+  by = NULL,
+  strict = FALSE,
+  prop = NULL,
+  n = NULL,
+  min_n = NULL
+) {
   checkmate::assert_flag(strict)
 
   # Validate and standardize parameters
@@ -123,13 +160,28 @@ remove_rare.default <- function(x, prop = NULL, n = NULL, by = NULL, strict = FA
 
   # Filter variables based on missing values
   if (is.null(by)) {
-    vars_to_remove <- .filter_rare_global(x, params$prop, params$n, min_n_values$global)
+    vars_to_remove <- .filter_rare_global(
+      x,
+      params$prop,
+      params$n,
+      min_n_values$global
+    )
   } else {
-    vars_to_remove <- .filter_rare_by_group(x, by, params$prop, params$n, min_n_values, strict)
+    vars_to_remove <- .filter_rare_by_group(
+      x,
+      by,
+      params$prop,
+      params$n,
+      min_n_values,
+      strict
+    )
   }
 
   # Inform filtering result
-  .inform_filter_result(n_before = nrow(x), n_after = nrow(x) - sum(vars_to_remove))
+  .inform_filter_result(
+    n_before = nrow(x),
+    n_after = nrow(x) - sum(vars_to_remove)
+  )
 
   # Apply filtering
   x[!vars_to_remove, , drop = FALSE]
@@ -187,7 +239,13 @@ remove_rare.default <- function(x, prop = NULL, n = NULL, by = NULL, strict = FA
   if (is.null(by_values)) {
     # Global validation
     if (min_n_values$global > n_samples) {
-      rlang::abort(paste0("min_n (", min_n_values$global, ") cannot be greater than the number of samples (", n_samples, ")."))
+      rlang::abort(paste0(
+        "min_n (",
+        min_n_values$global,
+        ") cannot be greater than the number of samples (",
+        n_samples,
+        ")."
+      ))
     }
   } else {
     # Group-wise validation
@@ -198,14 +256,28 @@ remove_rare.default <- function(x, prop = NULL, n = NULL, by = NULL, strict = FA
       # Using group-specific min_n
       for (i in seq_along(groups)) {
         if (min_n_values$by_group[i] > group_sizes[i]) {
-          rlang::abort(paste0("min_n (", min_n_values$by_group[i], ") cannot be greater than the number of samples in group ", names(groups)[i], " (", group_sizes[i], ")."))
+          rlang::abort(paste0(
+            "min_n (",
+            min_n_values$by_group[i],
+            ") cannot be greater than the number of samples in group ",
+            names(groups)[i],
+            " (",
+            group_sizes[i],
+            ")."
+          ))
         }
       }
     } else {
       # Using global min_n for all groups
       if (any(min_n_values$global > group_sizes)) {
         problematic_groups <- names(groups)[min_n_values$global > group_sizes]
-        rlang::abort(paste0("min_n (", min_n_values$global, ") cannot be greater than the number of samples in group(s): ", paste(problematic_groups, collapse = ", "), "."))
+        rlang::abort(paste0(
+          "min_n (",
+          min_n_values$global,
+          ") cannot be greater than the number of samples in group(s): ",
+          paste(problematic_groups, collapse = ", "),
+          "."
+        ))
       }
     }
   }
@@ -226,7 +298,14 @@ remove_rare.default <- function(x, prop = NULL, n = NULL, by = NULL, strict = FA
   vars_to_remove
 }
 
-.filter_rare_by_group <- function(expr_mat, by_values, prop, n, min_n_values, strict) {
+.filter_rare_by_group <- function(
+  expr_mat,
+  by_values,
+  prop,
+  n,
+  min_n_values,
+  strict
+) {
   groups <- split(seq_len(ncol(expr_mat)), by_values)
 
   group_results <- lapply(names(groups), function(group_name) {
@@ -291,26 +370,46 @@ remove_low_var <- function(x, var_cutoff = 0, by = NULL, strict = FALSE) {
 
 #' @rdname remove_low_var
 #' @export
-remove_low_var.glyexp_experiment <- function(x, var_cutoff = 0, by = NULL, strict = FALSE) {
+remove_low_var.glyexp_experiment <- function(
+  x,
+  var_cutoff = 0,
+  by = NULL,
+  strict = FALSE
+) {
   .filter_exp(x, by, strict, .filter_matrix_low_var, var_cutoff = var_cutoff)
 }
 
 #' @rdname remove_low_var
 #' @export
-remove_low_var.matrix <- function(x, var_cutoff = 0, by = NULL, strict = FALSE) {
+remove_low_var.matrix <- function(
+  x,
+  var_cutoff = 0,
+  by = NULL,
+  strict = FALSE
+) {
   .filter_matrix_low_var(x, by = by, strict = strict, var_cutoff = var_cutoff)
 }
 
 #' @rdname remove_low_var
 #' @export
-remove_low_var.default <- function(x, var_cutoff = 0, by = NULL, strict = FALSE) {
+remove_low_var.default <- function(
+  x,
+  var_cutoff = 0,
+  by = NULL,
+  strict = FALSE
+) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
     "x" = "Got {.cls {class(x)}}."
   ))
 }
 
-.filter_matrix_low_var <- function(x, by = NULL, strict = FALSE, var_cutoff = 0) {
+.filter_matrix_low_var <- function(
+  x,
+  by = NULL,
+  strict = FALSE,
+  var_cutoff = 0
+) {
   checkmate::assert_number(var_cutoff, lower = 0)
   checkmate::assert_flag(strict)
 
@@ -363,7 +462,12 @@ remove_low_cv <- function(x, cv_cutoff = 0, by = NULL, strict = FALSE) {
 
 #' @rdname remove_low_cv
 #' @export
-remove_low_cv.glyexp_experiment <- function(x, cv_cutoff = 0, by = NULL, strict = FALSE) {
+remove_low_cv.glyexp_experiment <- function(
+  x,
+  cv_cutoff = 0,
+  by = NULL,
+  strict = FALSE
+) {
   .filter_exp(x, by, strict, .filter_matrix_low_cv, cv_cutoff = cv_cutoff)
 }
 
@@ -494,26 +598,46 @@ remove_low_expr <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
 
 #' @rdname remove_low_expr
 #' @export
-remove_low_expr.glyexp_experiment <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
+remove_low_expr.glyexp_experiment <- function(
+  x,
+  percentile = 0.05,
+  by = NULL,
+  strict = FALSE
+) {
   .filter_exp(x, by, strict, .filter_matrix_low_expr, percentile = percentile)
 }
 
 #' @rdname remove_low_expr
 #' @export
-remove_low_expr.matrix <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
+remove_low_expr.matrix <- function(
+  x,
+  percentile = 0.05,
+  by = NULL,
+  strict = FALSE
+) {
   .filter_matrix_low_expr(x, percentile, by, strict)
 }
 
 #' @rdname remove_low_expr
 #' @export
-remove_low_expr.default <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
+remove_low_expr.default <- function(
+  x,
+  percentile = 0.05,
+  by = NULL,
+  strict = FALSE
+) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
     "x" = "Got {.cls {class(x)}}."
   ))
 }
 
-.filter_matrix_low_expr <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
+.filter_matrix_low_expr <- function(
+  x,
+  percentile = 0.05,
+  by = NULL,
+  strict = FALSE
+) {
   checkmate::assert_number(percentile, lower = 0, upper = 1)
 
   if (is.null(by)) {
@@ -529,7 +653,12 @@ remove_low_expr.default <- function(x, percentile = 0.05, by = NULL, strict = FA
 
 .filter_matrix_low_expr_global <- function(x, percentile) {
   median_expr <- .summarize_vars_mat(x, .median)
-  thr <- stats::quantile(median_expr, probs = percentile, na.rm = TRUE, names = FALSE)
+  thr <- stats::quantile(
+    median_expr,
+    probs = percentile,
+    na.rm = TRUE,
+    names = FALSE
+  )
   # There might be NA in thr, so regard them as FALSE
   vars_to_remove <- if (is.na(thr)) {
     rep(FALSE, length(median_expr))
@@ -544,7 +673,13 @@ remove_low_expr.default <- function(x, percentile = 0.05, by = NULL, strict = FA
 .filter_matrix_low_expr_grouped <- function(x, percentile, by, strict) {
   median_expr_mat <- .summarize_vars_mat(x, .median, by)
   # thr is a vector of length n_groups, quantile of each group
-  thr <- apply(median_expr_mat, 2, stats::quantile, probs = percentile, na.rm = TRUE)
+  thr <- apply(
+    median_expr_mat,
+    2,
+    stats::quantile,
+    probs = percentile,
+    na.rm = TRUE
+  )
   # cond is a TRUE/FALSE matrix with nrow x n_groups
   cond <- sweep(median_expr_mat, 2, thr, FUN = function(a, b) a <= b)
   # Handle NA, do not remove the variable
@@ -641,6 +776,8 @@ remove_low_expr.default <- function(x, percentile = 0.05, by = NULL, strict = FA
   n_remove <- n_before - n_after
   if (n_remove > 0) {
     prop_remove <- round((n_remove / n_before) * 100, 2)
-    cli::cli_alert_info("Removed {.val {n_remove}} of {.val {n_before}} ({.val {prop_remove}}%) variables.")
+    cli::cli_alert_info(
+      "Removed {.val {n_remove}} of {.val {n_before}} ({.val {prop_remove}}%) variables."
+    )
   }
 }

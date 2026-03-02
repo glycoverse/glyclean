@@ -1,13 +1,19 @@
 replace_cv <- function(x) {
   x <- stringr::str_replace_all(x, "CV = \\d+\\.\\d+", "CV = CV_VALUE")
-  x <- stringr::str_replace_all(x, 'Best method: ".*?"', 'Best method: "BEST_METHOD"')
+  x <- stringr::str_replace_all(
+    x,
+    'Best method: ".*?"',
+    'Best method: "BEST_METHOD"'
+  )
   x
 }
 
 # Test main logic path for glycoproteomics data
 test_that("auto_clean works for glycoproteomics data", {
   test_exp <- complex_exp()
-  expect_snapshot(result_exp <- auto_clean(test_exp, standardize_variable = FALSE))
+  expect_snapshot(
+    result_exp <- auto_clean(test_exp, standardize_variable = FALSE)
+  )
 
   expect_s3_class(result_exp, "glyexp_experiment")
   expect_equal(glyexp::get_exp_type(result_exp), "glycoproteomics")
@@ -27,7 +33,7 @@ test_that("auto_clean works for glycoproteomics data with QC", {
     test_exp$sample_info,
     tibble::tibble(sample = c("QC1", "QC2"), group = "QC")
   ) |>
-  dplyr::mutate(group = factor(group, levels = c("A", "B", "QC")))
+    dplyr::mutate(group = factor(group, levels = c("A", "B", "QC")))
 
   test_exp <- glyexp::experiment(
     expr_mat,
@@ -38,7 +44,10 @@ test_that("auto_clean works for glycoproteomics data with QC", {
     check_col_types = FALSE
   )
 
-  expect_snapshot(result_exp <- auto_clean(test_exp, standardize_variable = FALSE), transform = replace_cv)
+  expect_snapshot(
+    result_exp <- auto_clean(test_exp, standardize_variable = FALSE),
+    transform = replace_cv
+  )
 
   expect_s3_class(result_exp, "glyexp_experiment")
   expect_equal(glyexp::get_exp_type(result_exp), "glycoproteomics")
@@ -58,7 +67,7 @@ test_that("auto_clean works with NULL qc_name", {
     test_exp$sample_info,
     tibble::tibble(sample = c("QC1", "QC2"), group = "QC")
   ) |>
-  dplyr::mutate(group = factor(group, levels = c("A", "B", "QC")))
+    dplyr::mutate(group = factor(group, levels = c("A", "B", "QC")))
 
   test_exp <- glyexp::experiment(
     expr_mat,
@@ -69,7 +78,13 @@ test_that("auto_clean works with NULL qc_name", {
     check_col_types = FALSE
   )
 
-  expect_snapshot(result_exp <- auto_clean(test_exp, qc_name = NULL, standardize_variable = FALSE))
+  expect_snapshot(
+    result_exp <- auto_clean(
+      test_exp,
+      qc_name = NULL,
+      standardize_variable = FALSE
+    )
+  )
 
   expect_s3_class(result_exp, "glyexp_experiment")
   expect_equal(glyexp::get_exp_type(result_exp), "glycoproteomics")
@@ -89,7 +104,9 @@ test_that("auto_clean works for glycomics data", {
   rownames(expr_mat) <- var_info$variable
 
   test_exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info,
+    expr_mat,
+    sample_info,
+    var_info,
     exp_type = "glycomics",
     glycan_type = "N"
   )
@@ -117,7 +134,9 @@ test_that("auto_clean works for glycomics data with QC", {
   rownames(expr_mat) <- var_info$variable
 
   test_exp <- glyexp::experiment(
-    expr_mat, sample_info, var_info,
+    expr_mat,
+    sample_info,
+    var_info,
     exp_type = "glycomics",
     glycan_type = "N"
   )

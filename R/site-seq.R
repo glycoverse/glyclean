@@ -18,7 +18,7 @@
 #'
 #' @returns A [glyexp::experiment()] object with the new "site_sequence" column.
 #' @export
-#' 
+#'
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
 add_site_seq <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
@@ -27,7 +27,12 @@ add_site_seq <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
 
 #' @rdname add_site_seq
 #' @export
-add_site_seq.glyexp_experiment <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
+add_site_seq.glyexp_experiment <- function(
+  exp,
+  fasta = NULL,
+  n_aa = 7,
+  taxid = 9606
+) {
   .add_site_seq_experiment(exp, fasta = fasta, n_aa = n_aa, taxid = taxid)
 }
 
@@ -40,7 +45,12 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   ))
 }
 
-.add_site_seq_experiment <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
+.add_site_seq_experiment <- function(
+  exp,
+  fasta = NULL,
+  n_aa = 7,
+  taxid = 9606
+) {
   # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")
   if (glyexp::get_exp_type(exp) != "glycoproteomics") {
@@ -52,7 +62,9 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
 
   # Handle fasta: NULL -> fetch from UniProt
   if (is.null(fasta)) {
-    cli::cli_alert_info("Fetching protein sequences from UniProt (taxid: {taxid})")
+    cli::cli_alert_info(
+      "Fetching protein sequences from UniProt (taxid: {taxid})"
+    )
     unique_proteins <- exp$var_info$protein %>%
       unique() %>%
       purrr::discard(is.na)
@@ -61,7 +73,9 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
     is_file <- checkmate::test_file_exists(fasta)
     is_named_char <- is.character(fasta) && !is.null(names(fasta))
     if (!is_file && !is_named_char) {
-      cli::cli_abort("{.arg fasta} must be a file path, a named character vector, or NULL.")
+      cli::cli_abort(
+        "{.arg fasta} must be a file path, a named character vector, or NULL."
+      )
     }
 
     if (is_file) {
@@ -86,20 +100,20 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   unique_proteins <- exp$var_info$protein %>%
     unique() %>%
     purrr::discard(is.na)
-  
+
   # Split proteins into found and missing using purrr
   protein_status <- unique_proteins %>%
     purrr::set_names() %>%
     purrr::map_lgl(~ .x %in% names(protein_seqs))
-  
+
   found_proteins <- protein_status %>%
     purrr::keep(identity) %>%
     names()
-  
+
   missing_proteins <- protein_status %>%
     purrr::discard(identity) %>%
     names()
-  
+
   # Determine input type for messages
   input_type <- if (is.null(fasta)) {
     "UniProt"
@@ -109,8 +123,12 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
     "Provided"
   }
 
-  cli::cli_alert_info("{.val {input_type}} contains {.val {length(protein_seqs)}} protein sequences")
-  cli::cli_alert_info("Found {.val {length(found_proteins)}} / {.val {length(unique_proteins)}} proteins from experiment")
+  cli::cli_alert_info(
+    "{.val {input_type}} contains {.val {length(protein_seqs)}} protein sequences"
+  )
+  cli::cli_alert_info(
+    "Found {.val {length(found_proteins)}} / {.val {length(unique_proteins)}} proteins from experiment"
+  )
 
   if (length(missing_proteins) > 0) {
     # Format missing proteins display
@@ -124,19 +142,22 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
     if (length(missing_proteins) <= 5) {
       cli::cli_alert_warning("Missing proteins: {.val {missing_display}}")
     } else {
-      cli::cli_alert_warning("Missing {.val {length(missing_proteins)}} proteins (showing first 5): {.val {missing_display}}")
+      cli::cli_alert_warning(
+        "Missing {.val {length(missing_proteins)}} proteins (showing first 5): {.val {missing_display}}"
+      )
     }
   }
-  
+
   # Extract site sequences
   var_info <- exp$var_info %>%
     dplyr::mutate(
       site_sequence = purrr::map2_chr(
-        .data$protein, .data$protein_site,
+        .data$protein,
+        .data$protein_site,
         ~ .extract_site_sequence(.x, .y, protein_seqs, n_aa)
       )
     )
-  
+
   # Update experiment
   new_exp <- exp
   new_exp$var_info <- var_info
@@ -147,45 +168,50 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
 .read_fasta_file <- function(fasta_path) {
   # Use seqinr to read FASTA file
   fasta_seqs <- seqinr::read.fasta(fasta_path, seqtype = "AA", as.string = TRUE)
-  
+
   if (length(fasta_seqs) == 0) {
     cli::cli_abort("No FASTA sequences found in file {.file {fasta_path}}")
   }
-  
+
   # Extract sequences and convert to character strings using purrr
-  protein_seqs <- purrr::map_chr(fasta_seqs, ~ {
-    # seqinr::read.fasta with as.string = TRUE returns character vectors
-    # Convert to uppercase and remove any spaces using stringr
-    .x %>%
-      stringr::str_to_upper() %>%
-      stringr::str_remove_all("\\s")
-  })
-  
+  protein_seqs <- purrr::map_chr(
+    fasta_seqs,
+    ~ {
+      # seqinr::read.fasta with as.string = TRUE returns character vectors
+      # Convert to uppercase and remove any spaces using stringr
+      .x %>%
+        stringr::str_to_upper() %>%
+        stringr::str_remove_all("\\s")
+    }
+  )
+
   # Extract protein IDs from names using stringr
   fasta_names <- names(fasta_seqs)
-  
+
   # Try to extract UniProt accession from header using stringr
   # Handle different formats: >P12345, >sp|P12345|NAME, etc.
   extracted_ids <- fasta_names %>%
     stringr::str_extract("[A-Z0-9]{6,10}")
-  
+
   # If no UniProt-style IDs found, use full name; otherwise use extracted IDs
   protein_ids <- if (all(is.na(extracted_ids))) {
     fasta_names
   } else {
     extracted_ids
   }
-  
+
   # Create named vector
   names(protein_seqs) <- protein_ids
-  
+
   # Remove any sequences with missing IDs
   protein_seqs <- protein_seqs[!is.na(names(protein_seqs))]
-  
+
   if (length(protein_seqs) == 0) {
-    cli::cli_abort("No valid protein sequences found in FASTA file {.file {fasta_path}}")
+    cli::cli_abort(
+      "No valid protein sequences found in FASTA file {.file {fasta_path}}"
+    )
   }
-  
+
   protein_seqs
 }
 
@@ -195,9 +221,12 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   if (any(nchar(seqs) == 0)) {
     cli::cli_abort("All protein sequences must be non-empty strings.")
   }
-  purrr::map_chr(seqs, ~ .x %>%
-    stringr::str_to_upper() %>%
-    stringr::str_remove_all("\\s"))
+  purrr::map_chr(
+    seqs,
+    ~ .x %>%
+      stringr::str_to_upper() %>%
+      stringr::str_remove_all("\\s")
+  )
 }
 
 # Helper function to extract site sequence
@@ -206,27 +235,27 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   if (is.na(protein_id) || is.na(site)) {
     return(NA_character_)
   }
-  
+
   # Get protein sequence
   if (!protein_id %in% names(protein_seqs)) {
     return(NA_character_)
   }
-  
+
   protein_seq <- protein_seqs[[protein_id]]
   seq_length <- nchar(protein_seq)
-  
+
   # Check if site is within sequence
   if (site < 1 || site > seq_length) {
     return(NA_character_)
   }
-  
+
   # Calculate start and end positions
   start_pos <- site - n_aa
   end_pos <- site + n_aa
-  
+
   # Create position vector for the sequence window
   positions <- start_pos:end_pos
-  
+
   # Extract amino acids using purrr::map_chr and stringr
   site_seq <- purrr::map_chr(positions, function(pos) {
     if (pos < 1 || pos > seq_length) {
@@ -235,7 +264,7 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
       stringr::str_sub(protein_seq, pos, pos)
     }
   })
-  
+
   # Collapse into single string
   stringr::str_c(site_seq, collapse = "")
 }
@@ -259,7 +288,9 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   acc_col <- acc_candidates[acc_candidates %in% names(result)][1]
   if (is.na(acc_col)) {
     lower_names <- stringr::str_to_lower(names(result))
-    acc_col <- names(result)[lower_names %in% c("entry", "accession", "primary", "primary accession")][1]
+    acc_col <- names(result)[
+      lower_names %in% c("entry", "accession", "primary", "primary accession")
+    ][1]
   }
   if (is.na(acc_col)) {
     cli::cli_abort("UniProt response is missing an accession column.")

@@ -18,15 +18,15 @@ complex_exp <- function() {
     group = factor(c("A", "A", "A", "B", "B", "B")),
   )
   var_info <- tibble::tribble(
-    ~peptide, ~protein, ~gene, ~glycan_composition, ~glycan_structure, ~peptide_site, ~protein_site, ~charge, ~modifications,
-    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4L, 24L, 2L, "",
-    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4L, 24L, 2L, "",  # same as row 1
-    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 5L, 25L, 2L, "",  # different site
-    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H)(H(H(H))))))", 4L, 24L, 2L, "",  # different structure
-    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4L, 24L, 2L, "6,Carbamidomethyl[C]",  # different modifications
-    "AAANAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4L, 24L, 3L, "",  # different charge
-    "AAANAAKAAK", "PRO1", "GENE1", "H5N2", "(N(N(H(H(H))(H(H)))))", 4L, 24L, 2L, "",  # different peptide
-    "AAANAAK", "PRO1", "GENE1", "H3N2", "(N(N(H(H(H)))))", 4L, 24L, 2L, "",  # different glycan (both composition and structure)
+    ~peptide     , ~protein , ~gene   , ~glycan_composition , ~glycan_structure       , ~peptide_site , ~protein_site , ~charge , ~modifications         ,
+    "AAANAAK"    , "PRO1"   , "GENE1" , "H5N2"              , "(N(N(H(H(H))(H(H)))))" , 4L            , 24L           , 2L      , ""                     ,
+    "AAANAAK"    , "PRO1"   , "GENE1" , "H5N2"              , "(N(N(H(H(H))(H(H)))))" , 4L            , 24L           , 2L      , ""                     , # same as row 1
+    "AAANAAK"    , "PRO1"   , "GENE1" , "H5N2"              , "(N(N(H(H(H))(H(H)))))" , 5L            , 25L           , 2L      , ""                     , # different site
+    "AAANAAK"    , "PRO1"   , "GENE1" , "H5N2"              , "(N(N(H(H)(H(H(H))))))" , 4L            , 24L           , 2L      , ""                     , # different structure
+    "AAANAAK"    , "PRO1"   , "GENE1" , "H5N2"              , "(N(N(H(H(H))(H(H)))))" , 4L            , 24L           , 2L      , "6,Carbamidomethyl[C]" , # different modifications
+    "AAANAAK"    , "PRO1"   , "GENE1" , "H5N2"              , "(N(N(H(H(H))(H(H)))))" , 4L            , 24L           , 3L      , ""                     , # different charge
+    "AAANAAKAAK" , "PRO1"   , "GENE1" , "H5N2"              , "(N(N(H(H(H))(H(H)))))" , 4L            , 24L           , 2L      , ""                     , # different peptide
+    "AAANAAK"    , "PRO1"   , "GENE1" , "H3N2"              , "(N(N(H(H(H)))))"       , 4L            , 24L           , 2L      , ""                     , # different glycan (both composition and structure)
   )
   var_info <- dplyr::mutate(
     var_info,
@@ -35,7 +35,7 @@ complex_exp <- function() {
   )
   nrow <- nrow(var_info)
   ncol <- nrow(sample_info)
-  exp_mat <- matrix(1.0: (nrow * ncol), nrow = nrow, ncol = ncol)
+  exp_mat <- matrix(1.0:(nrow * ncol), nrow = nrow, ncol = ncol)
   colnames(exp_mat) <- sample_info$sample
   rownames(exp_mat) <- var_info$variable
   glyexp::experiment(
