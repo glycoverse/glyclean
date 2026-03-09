@@ -47,7 +47,7 @@ auto_correct_batch_effect()
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.12.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -192,6 +192,15 @@ Default is <code>TRUE</code>.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A modified <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="qc-samples">QC samples<a class="anchor" aria-label="anchor" href="#qc-samples"></a></h2>
+    <p>If you have quality control (QC) samples,
+label them as "QC" as the "group" in the sample information table.
+You can also use set <code>qc_name</code> to other names.</p>
+<p>When QC samples exist, <code><a href="auto_normalize.html">auto_normalize()</a></code> and <code><a href="auto_impute.html">auto_impute()</a></code> will compare various
+normalization or imputation methods,
+and select the one that stablize QC samples the most.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

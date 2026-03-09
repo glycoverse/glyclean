@@ -1,6 +1,21 @@
 # Changelog
 
-## glyclean (development version)
+## glyclean 0.12.2
+
+### New features
+
+- Add
+  [`normalize_clr()`](https://glycoverse.github.io/glyclean/reference/normalize_clr.md)
+  for Centered Log-Ratio (CLR) normalization.
+- Add
+  [`normalize_alr()`](https://glycoverse.github.io/glyclean/reference/normalize_alr.md)
+  for Additive Log-Ratio (ALR) normalization.
+
+### Minor improvements and bug fixes
+
+- Update documentation of
+  [`auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.md)
+  for QC-related behaviors.
 
 ## glyclean 0.12.1
 
