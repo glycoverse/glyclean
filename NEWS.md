@@ -1,4 +1,13 @@
-# glyclean (development version)
+# glyclean 0.12.2
+
+## New features
+
+- Add `normalize_clr()` for Centered Log-Ratio (CLR) normalization.
+- Add `normalize_alr()` for Additive Log-Ratio (ALR) normalization.
+
+## Minor improvements and bug fixes
+
+- Update documentation of `auto_clean()` for QC-related behaviors.
 
 # glyclean 0.12.1
 
