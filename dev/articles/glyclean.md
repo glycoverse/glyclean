@@ -389,12 +389,12 @@ p_values <- detect_batch_effect(aggregated_exp2)
 #> ℹ Detecting batch effects using ANOVA for 2738 variables...
 #> ✔ Batch effect detection completed. 19 out of 2738 variables show significant batch effects (p < 0.05).
 p_values[1:5]
-#> P08185-N176-Hex(5)HexNAc(4)NeuAc(2) P04196-N344-Hex(5)HexNAc(4)NeuAc(1) 
-#>                           0.6998998                           0.3951691 
-#>         P04196-N344-Hex(5)HexNAc(4)         P10909-N291-Hex(6)HexNAc(5) 
-#>                           0.4852698                           0.3329619 
-#> P04196-N344-Hex(5)HexNAc(4)NeuAc(2) 
-#>                           0.4907154
+#> P08185-176-Hex(5)HexNAc(4)NeuAc(2) P04196-344-Hex(5)HexNAc(4)NeuAc(1) 
+#>                          0.6998998                          0.3951691 
+#>         P04196-344-Hex(5)HexNAc(4)         P10909-291-Hex(6)HexNAc(5) 
+#>                          0.4852698                          0.3329619 
+#> P04196-344-Hex(5)HexNAc(4)NeuAc(2) 
+#>                          0.4907154
 ```
 
 Here we do not have batch effects, but we will correct it anyway for
