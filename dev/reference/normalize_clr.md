@@ -50,9 +50,9 @@ normalize_clr(x, by = NULL, gamma = 0.1, group_scales = NULL)
 
 Returns the same type as the input. If `x` is a `glyexp_experiment`,
 returns a `glyexp_experiment` with CLR-transformed expression matrix. If
-`x` is a matrix, returns a CLR-transformed matrix. Note that the
-resulting values are on the `log2` scale and can be negative or infinite
-when zeros are present in the input.
+`x` is a matrix, returns a CLR-transformed matrix. The returned values
+are back-transformed to the original ratio space, corresponding to
+`x / g(x)`. Zeros in the input therefore remain zeros in the output.
 
 ## Details
 

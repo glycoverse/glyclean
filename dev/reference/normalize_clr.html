@@ -94,8 +94,9 @@ with one scale per group.</p></dd>
     <p>Returns the same type as the input. If <code>x</code> is a <code>glyexp_experiment</code>,
 returns a <code>glyexp_experiment</code> with CLR-transformed expression matrix.
 If <code>x</code> is a matrix, returns a CLR-transformed matrix.
-Note that the resulting values are on the <code>log2</code> scale and can be negative
-or infinite when zeros are present in the input.</p>
+The returned values are back-transformed to the original ratio space,
+corresponding to <code>x / g(x)</code>. Zeros in the input therefore remain zeros in
+the output.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
