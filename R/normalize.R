@@ -566,13 +566,23 @@ normalize_clr.glyexp_experiment <- function(
 
 #' @rdname normalize_clr
 #' @export
-normalize_clr.matrix <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
+normalize_clr.matrix <- function(
+  x,
+  by = NULL,
+  gamma = 0.1,
+  group_scales = NULL
+) {
   .normalize_clr_mat(x, by = by, gamma = gamma, group_scales = group_scales)
 }
 
 #' @rdname normalize_clr
 #' @export
-normalize_clr.default <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
+normalize_clr.default <- function(
+  x,
+  by = NULL,
+  gamma = 0.1,
+  group_scales = NULL
+) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
     "x" = "Got {.cls {class(x)}}."
@@ -641,13 +651,23 @@ normalize_alr.glyexp_experiment <- function(
 
 #' @rdname normalize_alr
 #' @export
-normalize_alr.matrix <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
+normalize_alr.matrix <- function(
+  x,
+  by = NULL,
+  gamma = 0.1,
+  group_scales = NULL
+) {
   .normalize_alr_mat(x, by = by, gamma = gamma, group_scales = group_scales)
 }
 
 #' @rdname normalize_alr
 #' @export
-normalize_alr.default <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
+normalize_alr.default <- function(
+  x,
+  by = NULL,
+  gamma = 0.1,
+  group_scales = NULL
+) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
     "x" = "Got {.cls {class(x)}}."
@@ -949,7 +969,12 @@ normalize_alr.default <- function(x, by = NULL, gamma = 0.1, group_scales = NULL
 #' @return A CLR-transformed matrix.
 #' @keywords internal
 #' @noRd
-.normalize_clr_mat <- function(mat, by = NULL, gamma = 0.1, group_scales = NULL) {
+.normalize_clr_mat <- function(
+  mat,
+  by = NULL,
+  gamma = 0.1,
+  group_scales = NULL
+) {
   .validate_coda_input(mat, "CLR")
   checkmate::assert_number(gamma, lower = 0, finite = TRUE)
 
@@ -968,7 +993,11 @@ normalize_alr.default <- function(x, by = NULL, gamma = 0.1, group_scales = NULL
   log_mat <- log2(mat)
   centers <- purrr::map_dbl(
     seq_len(ncol(log_mat)),
-    ~ .draw_clr_center(log_mat[, .x], scale_shift = scale_shifts[.x], gamma = gamma)
+    ~ .draw_clr_center(
+      log_mat[, .x],
+      scale_shift = scale_shifts[.x],
+      gamma = gamma
+    )
   )
 
   result <- sweep(log_mat, 2, centers, "-")
@@ -987,7 +1016,12 @@ normalize_alr.default <- function(x, by = NULL, gamma = 0.1, group_scales = NULL
 #' @return A modified `glyexp_experiment`.
 #' @keywords internal
 #' @noRd
-.normalize_clr_exp <- function(exp, by = NULL, gamma = 0.1, group_scales = NULL) {
+.normalize_clr_exp <- function(
+  exp,
+  by = NULL,
+  gamma = 0.1,
+  group_scales = NULL
+) {
   by_values <- .resolve_column_param(
     by,
     sample_info = exp$sample_info,
@@ -1155,7 +1189,12 @@ normalize_alr.default <- function(x, by = NULL, gamma = 0.1, group_scales = NULL
 #' @return A matrix transformed by ALR or CLR fallback.
 #' @keywords internal
 #' @noRd
-.normalize_alr_mat <- function(mat, by = NULL, gamma = 0.1, group_scales = NULL) {
+.normalize_alr_mat <- function(
+  mat,
+  by = NULL,
+  gamma = 0.1,
+  group_scales = NULL
+) {
   .validate_coda_input(mat, "ALR")
   checkmate::assert_number(gamma, lower = 0, finite = TRUE)
 
@@ -1172,7 +1211,12 @@ normalize_alr.default <- function(x, by = NULL, gamma = 0.1, group_scales = NULL
     cli::cli_warn(
       "ALR requires at least two glycans with positive values in every sample; falling back to CLR."
     )
-    return(.normalize_clr_mat(mat, by = by_values, gamma = gamma, group_scales = group_scales))
+    return(.normalize_clr_mat(
+      mat,
+      by = by_values,
+      gamma = gamma,
+      group_scales = group_scales
+    ))
   }
 
   if (ref_stats$procrustes < 0.9 || ref_stats$variance > 0.1) {
@@ -1180,7 +1224,12 @@ normalize_alr.default <- function(x, by = NULL, gamma = 0.1, group_scales = NULL
       "Best ALR reference {.val {ref_stats$reference}} did not meet the paper thresholds; falling back to CLR.",
       "i" = "Procrustes correlation = {.val {signif(ref_stats$procrustes, 4)}}, between-group variance = {.val {signif(ref_stats$variance, 4)}}."
     ))
-    return(.normalize_clr_mat(mat, by = by_values, gamma = gamma, group_scales = group_scales))
+    return(.normalize_clr_mat(
+      mat,
+      by = by_values,
+      gamma = gamma,
+      group_scales = group_scales
+    ))
   }
 
   .apply_alr_reference(mat, ref_stats$ref_idx)
@@ -1196,7 +1245,12 @@ normalize_alr.default <- function(x, by = NULL, gamma = 0.1, group_scales = NULL
 #' @return A modified `glyexp_experiment`.
 #' @keywords internal
 #' @noRd
-.normalize_alr_exp <- function(exp, by = NULL, gamma = 0.1, group_scales = NULL) {
+.normalize_alr_exp <- function(
+  exp,
+  by = NULL,
+  gamma = 0.1,
+  group_scales = NULL
+) {
   by_values <- .resolve_column_param(
     by,
     sample_info = exp$sample_info,
@@ -1217,7 +1271,10 @@ normalize_alr.default <- function(x, by = NULL, gamma = 0.1, group_scales = NULL
     keep_idx <- original_rows %in% rownames(transformed)
     exp$var_info <- exp$var_info[keep_idx, , drop = FALSE]
     exp$meta_data$coda_transform <- "alr"
-    exp$meta_data$coda_reference <- setdiff(original_rows, rownames(transformed))
+    exp$meta_data$coda_reference <- setdiff(
+      original_rows,
+      rownames(transformed)
+    )
   } else {
     exp$meta_data$coda_transform <- "clr"
     exp$meta_data$coda_reference <- NULL

@@ -32,13 +32,16 @@ test_that("auto_normalize works for glycomics without QC", {
   exp$meta_data$exp_type <- "glycomics"
   exp$meta_data$glycan_type <- "N" # Required if not others
 
-  # Manual application
-  manual <- exp |>
-    normalize_median_quotient() |>
-    normalize_total_area()
+  manual <- withr::with_seed(
+    1,
+    exp |>
+      normalize_total_area() |>
+      normalize_clr()
+  )
 
-  # Auto application
-  expect_snapshot(auto <- auto_normalize(exp, group_col = NULL))
+  expect_snapshot(
+    auto <- withr::with_seed(1, auto_normalize(exp, group_col = NULL))
+  )
 
   expect_equal(auto$expr_mat, manual$expr_mat)
 })

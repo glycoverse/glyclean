@@ -149,7 +149,9 @@ auto_normalize <- function(
   }
 
   if (exp_type == "glycomics") {
-    cli::cli_alert_info("Experiment type is {.val glycomics} with {.val nrow(exp)} glycans.")
+    cli::cli_alert_info(
+      "Experiment type is {.val glycomics} with {.val nrow(exp)} glycans."
+    )
     exp <- normalize_total_area(exp)
     if (nrow(exp) > 50) {
       cli::cli_alert_info("ALR transformation will be used.")

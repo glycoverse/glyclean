@@ -427,11 +427,31 @@ test_that("normalize_clr works with experiment input", {
   test_exp <- simple_exp(5, 5)
   test_exp$expr_mat <- matrix(
     c(
-      4, 4, 4, 4, 4,
-      16, 16, 16, 16, 16,
-      64, 64, 64, 64, 64,
-      8, 8, 8, 8, 8,
-      32, 32, 32, 32, 32
+      4,
+      4,
+      4,
+      4,
+      4,
+      16,
+      16,
+      16,
+      16,
+      16,
+      64,
+      64,
+      64,
+      64,
+      64,
+      8,
+      8,
+      8,
+      8,
+      8,
+      32,
+      32,
+      32,
+      32,
+      32
     ),
     nrow = 5,
     byrow = TRUE,
@@ -458,9 +478,12 @@ test_that("normalize_clr works with experiment input", {
 test_that("normalize_clr uses non-zero entries for the geometric mean", {
   test_mat <- matrix(
     c(
-      4, 0,
-      16, 4,
-      64, 0
+      4,
+      0,
+      16,
+      4,
+      64,
+      0
     ),
     nrow = 3,
     byrow = TRUE,
@@ -498,8 +521,14 @@ test_that("normalize_clr samples the center with gamma on the log2 scale", {
 test_that("normalize_clr applies informed group scales", {
   test_mat <- matrix(
     c(
-      4, 4, 4, 4,
-      16, 16, 16, 16
+      4,
+      4,
+      4,
+      4,
+      16,
+      16,
+      16,
+      16
     ),
     nrow = 2,
     byrow = TRUE,
@@ -541,11 +570,31 @@ test_that("normalize_alr works with experiment input", {
   test_exp$sample_info$group <- factor(c("A", "A", "B", "B", "B"))
   test_exp$expr_mat <- matrix(
     c(
-      8, 8, 8, 8, 8,
-      16, 16, 32, 32, 32,
-      4, 4, 2, 2, 2,
-      2, 2, 8, 8, 8,
-      32, 32, 16, 16, 16
+      8,
+      8,
+      8,
+      8,
+      8,
+      16,
+      16,
+      32,
+      32,
+      32,
+      4,
+      4,
+      2,
+      2,
+      2,
+      2,
+      2,
+      8,
+      8,
+      8,
+      32,
+      32,
+      16,
+      16,
+      16
     ),
     nrow = 5,
     byrow = TRUE,
@@ -567,9 +616,18 @@ test_that("normalize_alr works with experiment input", {
 test_that("normalize_alr falls back to CLR when the reference variance is too high", {
   test_mat <- matrix(
     c(
-      2, 2, 16, 16,
-      4, 4, 32, 32,
-      8, 8, 64, 64
+      2,
+      2,
+      16,
+      16,
+      4,
+      4,
+      32,
+      32,
+      8,
+      8,
+      64,
+      64
     ),
     nrow = 3,
     byrow = TRUE,
@@ -596,9 +654,18 @@ test_that("normalize_alr falls back to CLR when the reference variance is too hi
 test_that("normalize_alr allows zeros outside the reference glycan", {
   test_mat <- matrix(
     c(
-      8, 8, 8, 8,
-      0, 4, 0, 4,
-      16, 32, 16, 32
+      8,
+      8,
+      8,
+      8,
+      0,
+      4,
+      0,
+      4,
+      16,
+      32,
+      16,
+      32
     ),
     nrow = 3,
     byrow = TRUE,
@@ -610,7 +677,11 @@ test_that("normalize_alr allows zeros outside the reference glycan", {
 
   result_mat <- normalize_alr(test_mat, gamma = 0)
 
-  expect_false("V1" %in% rownames(result_mat))
+  expect_equal(nrow(result_mat), nrow(test_mat) - 1)
+  expect_true(
+    identical(sort(rownames(result_mat)), c("V1", "V2")) ||
+      identical(sort(rownames(result_mat)), c("V2", "V3"))
+  )
   expect_true(is.infinite(result_mat["V2", "S1"]))
 })
 

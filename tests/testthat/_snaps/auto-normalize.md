@@ -28,10 +28,11 @@
 # auto_normalize works for glycomics without QC
 
     Code
-      auto <- auto_normalize(exp, group_col = NULL)
+      auto <- withr::with_seed(1, auto_normalize(exp, group_col = NULL))
     Message
       i No QC samples found. Using default normalization method based on experiment type.
-      i Experiment type is "glycomics". Using `normalize_median_quotient()` + `normalize_total_area()`.
+      i Experiment type is "glycomics" with "nrow(exp)" glycans.
+      i CLR transformation will be used.
 
 # auto_normalize works for glycoproteomics without QC
 

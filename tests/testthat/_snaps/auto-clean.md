@@ -170,7 +170,8 @@
       -- Normalizing data --
       
       i No QC samples found. Using default normalization method based on experiment type.
-      i Experiment type is "glycomics". Using `normalize_median_quotient()` + `normalize_total_area()`.
+      i Experiment type is "glycomics" with "nrow(exp)" glycans.
+      i CLR transformation will be used.
       v Normalization completed.
       
       -- Normalizing data (Total Area) --
