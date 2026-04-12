@@ -205,18 +205,6 @@ auto_clean <- function(
     info
   )
   cli::cli_alert_success("Variable removal completed.")
-  cli::cli_h2("Normalizing data")
-  exp <- auto_normalize(
-    exp,
-    params$group_col,
-    params$qc_name,
-    params$normalize_to_try,
-    info
-  )
-  cli::cli_alert_success("Normalization completed.")
-  cli::cli_h2("Normalizing data (Total Area)")
-  exp <- normalize_total_area(exp)
-  cli::cli_alert_success("Total area normalization completed.")
   cli::cli_h2("Imputing missing values")
   exp <- auto_impute(
     exp,
@@ -226,6 +214,15 @@ auto_clean <- function(
     info
   )
   cli::cli_alert_success("Imputation completed.")
+  cli::cli_h2("Normalizing data")
+  exp <- auto_normalize(
+    exp,
+    params$group_col,
+    params$qc_name,
+    params$normalize_to_try,
+    info
+  )
+  cli::cli_alert_success("Normalization completed.")
   cli::cli_h2("Correcting batch effects")
   exp <- auto_correct_batch_effect(
     exp,
