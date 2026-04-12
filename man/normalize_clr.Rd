@@ -7,36 +7,53 @@
 \alias{normalize_clr.default}
 \title{Centered Log-Ratio Normalization}
 \usage{
-normalize_clr(x)
+normalize_clr(x, by = NULL, gamma = 0.1, group_scales = NULL)
 
-\method{normalize_clr}{glyexp_experiment}(x)
+\method{normalize_clr}{glyexp_experiment}(x, by = NULL, gamma = 0.1, group_scales = NULL)
 
-\method{normalize_clr}{matrix}(x)
+\method{normalize_clr}{matrix}(x, by = NULL, gamma = 0.1, group_scales = NULL)
 
-\method{normalize_clr}{default}(x)
+\method{normalize_clr}{default}(x, by = NULL, gamma = 0.1, group_scales = NULL)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.
 If a matrix, rows should be variables and columns should be samples.}
+
+\item{by}{Either a column name in \code{sample_info} (for \code{glyexp_experiment}
+input) or a factor/vector with one value per sample. Used only when
+\code{group_scales} is supplied.}
+
+\item{gamma}{Standard deviation of the scale-uncertainty model on the \code{log2}
+scale. Default is \code{0.1}. Set to \code{0} for deterministic CLR.}
+
+\item{group_scales}{Optional known group-level scale differences. For binary
+comparisons, this can be a single positive ratio for the second group
+relative to the first. For multi-group data, provide a named positive vector
+with one scale per group.}
 }
 \value{
 Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
 returns a \code{glyexp_experiment} with CLR-transformed expression matrix.
 If \code{x} is a matrix, returns a CLR-transformed matrix.
-Note that the resulting values are on the log scale and can be negative.
+Note that the resulting values are on the \code{log2} scale and can be negative
+or infinite when zeros are present in the input.
 }
 \description{
-This function performs Centered Log-Ratio (CLR) transformation on compositional data.
-CLR transforms each component by taking the logarithm of the ratio of the component
-to the geometric mean of all components. This is useful for analyzing compositional
-data where the relative proportions are of interest rather than absolute values.
+This function implements the CLR preprocessing strategy described in DOI: 10.1038/s41467-025-56249-3.
+Each sample is transformed on the \code{log2} scale and centered
+by the geometric mean of its non-zero components. Zeros are therefore allowed
+in the input and remain \code{-Inf} after transformation, while negative values are
+rejected.
 }
 \details{
-The formula is: \verb{clr(x)_i = log(x_i / g(x))} where \code{g(x)} is the geometric mean
-of all components in the sample.
+The default implementation includes a scale-uncertainty model with
+\code{gamma = 0.1}, matching the paper. For each sample, the \code{log2} geometric-mean
+center is drawn from \code{N(mu, gamma^2)}, where \code{mu} is the \code{log2} geometric mean
+of the non-zero components. Setting \code{gamma = 0} disables the stochastic part
+and yields a deterministic transform.
 
-This function requires all values to be strictly positive (no zeros or NA values).
-Users must handle zeros and missing values before calling this function.
-
-This function is a wrapper around \code{\link[compositions:clr]{compositions::clr()}}.
+If known group-level scale differences are available, they can be supplied via
+\code{group_scales} together with \code{by}. In that case, the group-specific scale shift
+is added back on the \code{log2} scale, following the informed-scale model described
+in DOI: 10.1038/s41467-025-56249-3.
 }

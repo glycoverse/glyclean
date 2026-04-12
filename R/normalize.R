@@ -506,47 +506,73 @@ normalize_rlrmacyc.default <- function(x, n_iter = 3, by = NULL) {
 
 #' Centered Log-Ratio Normalization
 #'
-#' This function performs Centered Log-Ratio (CLR) transformation on compositional data.
-#' CLR transforms each component by taking the logarithm of the ratio of the component
-#' to the geometric mean of all components. This is useful for analyzing compositional
-#' data where the relative proportions are of interest rather than absolute values.
-#'
-#' The formula is: `clr(x)_i = log(x_i / g(x))` where `g(x)` is the geometric mean
-#' of all components in the sample.
+#' This function implements the CLR preprocessing strategy described in DOI: 10.1038/s41467-025-56249-3.
+#' Each sample is transformed on the `log2` scale and centered
+#' by the geometric mean of its non-zero components. Zeros are therefore allowed
+#' in the input and remain `-Inf` after transformation, while negative values are
+#' rejected.
 #'
 #' @details
-#' This function requires all values to be strictly positive (no zeros or NA values).
-#' Users must handle zeros and missing values before calling this function.
+#' The default implementation includes a scale-uncertainty model with
+#' `gamma = 0.1`, matching the paper. For each sample, the `log2` geometric-mean
+#' center is drawn from `N(mu, gamma^2)`, where `mu` is the `log2` geometric mean
+#' of the non-zero components. Setting `gamma = 0` disables the stochastic part
+#' and yields a deterministic transform.
 #'
-#' This function is a wrapper around [compositions::clr()].
+#' If known group-level scale differences are available, they can be supplied via
+#' `group_scales` together with `by`. In that case, the group-specific scale shift
+#' is added back on the `log2` scale, following the informed-scale model described
+#' in DOI: 10.1038/s41467-025-56249-3.
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
+#' @param by Either a column name in `sample_info` (for `glyexp_experiment`
+#'   input) or a factor/vector with one value per sample. Used only when
+#'   `group_scales` is supplied.
+#' @param gamma Standard deviation of the scale-uncertainty model on the `log2`
+#'   scale. Default is `0.1`. Set to `0` for deterministic CLR.
+#' @param group_scales Optional known group-level scale differences. For binary
+#'   comparisons, this can be a single positive ratio for the second group
+#'   relative to the first. For multi-group data, provide a named positive vector
+#'   with one scale per group.
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
 #'   returns a `glyexp_experiment` with CLR-transformed expression matrix.
 #'   If `x` is a matrix, returns a CLR-transformed matrix.
-#'   Note that the resulting values are on the log scale and can be negative.
+#'   Note that the resulting values are on the `log2` scale and can be negative
+#'   or infinite when zeros are present in the input.
 #' @export
-normalize_clr <- function(x) {
+normalize_clr <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
   UseMethod("normalize_clr")
 }
 
 #' @rdname normalize_clr
 #' @export
-normalize_clr.glyexp_experiment <- function(x) {
-  .dispatch_on_input(x, .normalize_clr_exp, .normalize_clr_mat)
+normalize_clr.glyexp_experiment <- function(
+  x,
+  by = NULL,
+  gamma = 0.1,
+  group_scales = NULL
+) {
+  .dispatch_on_input(
+    x,
+    .normalize_clr_exp,
+    .normalize_clr_mat,
+    by = by,
+    gamma = gamma,
+    group_scales = group_scales
+  )
 }
 
 #' @rdname normalize_clr
 #' @export
-normalize_clr.matrix <- function(x) {
-  .normalize_clr_mat(x)
+normalize_clr.matrix <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
+  .normalize_clr_mat(x, by = by, gamma = gamma, group_scales = group_scales)
 }
 
 #' @rdname normalize_clr
 #' @export
-normalize_clr.default <- function(x) {
+normalize_clr.default <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
     "x" = "Got {.cls {class(x)}}."
@@ -556,55 +582,72 @@ normalize_clr.default <- function(x) {
 
 #' Additive Log-Ratio Normalization
 #'
-#' This function performs Additive Log-Ratio (ALR) transformation on compositional data.
-#' ALR transforms each component by taking the logarithm of the ratio of the component
-#' to a reference component. This is useful for analyzing compositional data where
-#' the relative proportions are of interest.
-#'
-#' The formula is: `alr(x)_i = log(x_i / x_ref)` where `x_ref` is the reference component.
+#' This function implements the ALR preprocessing strategy described in DOI: 10.1038/s41467-025-56249-3.
+#' The data are transformed on the `log2` scale relative to an
+#' automatically selected reference glycan, which is removed from the output.
 #'
 #' @details
-#' This function requires all values to be strictly positive (no zeros or NA values).
-#' Users must handle zeros and missing values before calling this function.
+#' Candidate reference glycans are ranked using the product of their Procrustes
+#' correlation to the corresponding CLR geometry and the inverse of their
+#' between-group variance. If the best candidate has Procrustes correlation below
+#' `0.9` or between-group variance above `0.1`, ALR is abandoned and CLR is
+#' returned instead, matching the fallback rule described in DOI: 10.1038/s41467-025-56249-3.
 #'
-#' The reference variable is automatically selected as the geometric median
-#' (the variable with the smallest sum of log-ratio distances to all other variables),
-#' which provides the most stable reference.
-#'
-#' This function is a wrapper around [compositions::alr()].
+#' The reference search only considers glycans that are strictly positive in all
+#' samples, because the reference must remain finite on the `log2` scale.
+#' Non-reference glycans may still contain zeros; those entries become infinite
+#' after transformation.
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
+#' @param by Either a column name in `sample_info` (for `glyexp_experiment`
+#'   input) or a factor/vector with one value per sample. Used for reference
+#'   ranking and for CLR fallback.
+#' @param gamma Standard deviation of the CLR scale-uncertainty model used when
+#'   ALR falls back to CLR. Default is `0.1`.
+#' @param group_scales Optional known group-level scale differences passed
+#'   through to CLR fallback. See [normalize_clr()].
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
 #'   returns a `glyexp_experiment` with an ALR-transformed expression matrix.
 #'   If `x` is a matrix, returns an ALR-transformed matrix.
-#'   In both cases, the returned matrix has the same number of rows (variables) as
-#'   the input: the automatically selected reference variable is retained as a row
-#'   of zeros after transformation, and all other variables contain log-ratios
-#'   relative to this reference. The reference variable is the geometric-median
-#'   variable described above, and its row position/name is preserved.
-#'   Note that the resulting values are on the log scale and can be negative.
+#'   When ALR succeeds, the reference glycan is excluded from the result and the
+#'   output therefore has one fewer row than the input. When ALR falls back to
+#'   CLR, the returned object keeps the original dimensions.
+#'   Note that the resulting values are on the `log2` scale and can be negative
+#'   or infinite when zeros are present in non-reference glycans.
 #' @export
-normalize_alr <- function(x) {
+normalize_alr <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
   UseMethod("normalize_alr")
 }
 
 #' @rdname normalize_alr
 #' @export
-normalize_alr.glyexp_experiment <- function(x) {
-  .dispatch_on_input(x, .normalize_alr_exp, .normalize_alr_mat)
+normalize_alr.glyexp_experiment <- function(
+  x,
+  by = NULL,
+  gamma = 0.1,
+  group_scales = NULL
+) {
+  .dispatch_on_input(
+    x,
+    .normalize_alr_exp,
+    .normalize_alr_mat,
+    by = by,
+    gamma = gamma,
+    group_scales = group_scales
+  )
 }
 
 #' @rdname normalize_alr
 #' @export
-normalize_alr.matrix <- function(x) {
-  .normalize_alr_mat(x)
+normalize_alr.matrix <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
+  .normalize_alr_mat(x, by = by, gamma = gamma, group_scales = group_scales)
 }
 
 #' @rdname normalize_alr
 #' @export
-normalize_alr.default <- function(x) {
+normalize_alr.default <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
     "x" = "Got {.cls {class(x)}}."
@@ -767,120 +810,419 @@ normalize_alr.default <- function(x) {
 }
 
 
-.normalize_clr_mat <- function(mat) {
-  rlang::check_installed("compositions", reason = "to use `normalize_clr()`")
+#' Validate compositional inputs used by CLR and ALR
+#'
+#' @param mat A matrix with variables as rows and samples as columns.
+#' @param method Name of the calling method for error messages.
+#'
+#' @return Invisibly returns `TRUE`.
+#' @keywords internal
+#' @noRd
+.validate_coda_input <- function(mat, method) {
+  checkmate::assert_matrix(mat, mode = "numeric")
 
-  # Check for non-positive values (zeros and negatives)
-  if (any(mat <= 0, na.rm = TRUE)) {
-    cli::cli_abort(c(
-      "All values must be strictly positive for CLR transformation.",
-      "x" = "Found {.val {sum(mat <= 0, na.rm = TRUE)}} non-positive value(s) (<= 0) in the data.",
-      "i" = "Remove or impute zeros and negative values before applying CLR transformation."
-    ))
-  }
-
-  # Check for NA values
   if (any(is.na(mat))) {
     cli::cli_abort(c(
-      "Missing values are not allowed for CLR transformation.",
+      "Missing values are not allowed for {.val {method}} transformation.",
       "x" = "Found {.val {sum(is.na(mat))}} missing value(s) in the data.",
-      "i" = "Impute missing values before applying CLR transformation."
+      "i" = "Impute missing values before applying {.val {method}} transformation."
     ))
   }
 
-  # compositions::clr expects rows = samples, columns = variables (compositions)
-  # Our matrix is: rows = variables, columns = samples
-  # So we transpose, apply CLR, then transpose back
-  mat_t <- t(mat)
-  clr_result <- compositions::clr(mat_t)
-  result <- t(clr_result)
+  if (any(mat < 0, na.rm = TRUE)) {
+    cli::cli_abort(c(
+      "Negative values are not allowed for {.val {method}} transformation.",
+      "x" = "Found {.val {sum(mat < 0, na.rm = TRUE)}} negative value(s) in the data.",
+      "i" = "Only zero and positive abundances are valid for compositional log-ratio transformations."
+    ))
+  }
 
+  invisible(TRUE)
+}
+
+#' Resolve group-level scale shifts to per-sample `log2` offsets
+#'
+#' @param by_values Optional grouping vector with one value per sample.
+#' @param group_scales Optional positive ratio(s) describing group scales.
+#'
+#' @return A numeric vector with one `log2` shift per sample.
+#' @keywords internal
+#' @noRd
+.resolve_scale_shifts <- function(by_values, group_scales) {
+  if (is.null(group_scales)) {
+    if (is.null(by_values)) {
+      return(numeric())
+    }
+
+    return(rep(0, length(by_values)))
+  }
+
+  if (is.null(by_values)) {
+    cli::cli_abort(
+      "The {.arg by} parameter must be supplied when {.arg group_scales} is used."
+    )
+  }
+
+  checkmate::assert_numeric(group_scales, lower = 0, any.missing = FALSE)
+
+  groups <- as.character(by_values)
+  if (any(is.na(groups))) {
+    cli::cli_abort(
+      "Grouping values cannot contain missing values when {.arg group_scales} is used."
+    )
+  }
+
+  unique_groups <- unique(groups)
+
+  if (length(group_scales) == 1) {
+    if (length(unique_groups) != 2) {
+      cli::cli_abort(
+        "A single {.arg group_scales} ratio can only be used when exactly two groups are present."
+      )
+    }
+
+    scale_map <- c(1, as.numeric(group_scales))
+    names(scale_map) <- unique_groups
+  } else {
+    if (is.null(names(group_scales))) {
+      if (length(group_scales) != length(unique_groups)) {
+        cli::cli_abort(
+          "Unnamed {.arg group_scales} must have the same length as the number of groups."
+        )
+      }
+
+      scale_map <- as.numeric(group_scales)
+      names(scale_map) <- unique_groups
+    } else {
+      missing_groups <- setdiff(unique_groups, names(group_scales))
+      if (length(missing_groups) > 0) {
+        cli::cli_abort(c(
+          "Every group must have a known scale.",
+          "x" = "Missing scale(s) for group(s): {.val {missing_groups}}."
+        ))
+      }
+
+      scale_map <- group_scales[unique_groups]
+    }
+  }
+
+  if (any(scale_map <= 0, na.rm = TRUE)) {
+    cli::cli_abort("All {.arg group_scales} values must be strictly positive.")
+  }
+
+  as.numeric(log2(unname(scale_map[groups])))
+}
+
+#' Draw or return the CLR center for one sample
+#'
+#' @param log_values A numeric vector on the `log2` scale.
+#' @param scale_shift A scalar `log2` shift for the sample.
+#' @param gamma Standard deviation of the uncertainty model.
+#'
+#' @return A scalar CLR center.
+#' @keywords internal
+#' @noRd
+.draw_clr_center <- function(log_values, scale_shift = 0, gamma = 0.1) {
+  positives <- is.finite(log_values)
+  if (!any(positives)) {
+    cli::cli_abort(
+      "Each sample must contain at least one positive value for CLR transformation."
+    )
+  }
+
+  center <- mean(log_values[positives]) - scale_shift
+
+  if (gamma > 0) {
+    return(stats::rnorm(1, mean = center, sd = gamma))
+  }
+
+  center
+}
+
+#' Center a matrix with the paper-specific CLR transform
+#'
+#' @param mat A matrix with variables as rows and samples as columns.
+#' @param by Optional grouping vector with one value per sample.
+#' @param gamma Standard deviation of the scale-uncertainty model.
+#' @param group_scales Optional known group-level scales.
+#'
+#' @return A CLR-transformed matrix.
+#' @keywords internal
+#' @noRd
+.normalize_clr_mat <- function(mat, by = NULL, gamma = 0.1, group_scales = NULL) {
+  .validate_coda_input(mat, "CLR")
+  checkmate::assert_number(gamma, lower = 0, finite = TRUE)
+
+  by_values <- .resolve_column_param(
+    by,
+    sample_info = NULL,
+    param_name = "by",
+    n_samples = ncol(mat),
+    allow_null = TRUE
+  )
+  scale_shifts <- .resolve_scale_shifts(by_values, group_scales)
+  if (length(scale_shifts) == 0) {
+    scale_shifts <- rep(0, ncol(mat))
+  }
+
+  log_mat <- log2(mat)
+  centers <- purrr::map_dbl(
+    seq_len(ncol(log_mat)),
+    ~ .draw_clr_center(log_mat[, .x], scale_shift = scale_shifts[.x], gamma = gamma)
+  )
+
+  result <- sweep(log_mat, 2, centers, "-")
   colnames(result) <- colnames(mat)
   rownames(result) <- rownames(mat)
   result
 }
 
-.normalize_clr_exp <- function(exp) {
-  exp$expr_mat <- .normalize_clr_mat(exp$expr_mat)
-  exp
-}
-
-
-.normalize_alr_mat <- function(mat) {
-  rlang::check_installed("compositions", reason = "to use `normalize_alr()`")
-
-  # Check for non-positive values (zeros and negatives)
-  if (any(mat <= 0, na.rm = TRUE)) {
-    cli::cli_abort(c(
-      "All values must be strictly positive for ALR transformation.",
-      "x" = "Found {.val {sum(mat <= 0, na.rm = TRUE)}} non-positive value(s) (<= 0) in the data.",
-      "i" = "Remove or impute zeros and negative values before applying ALR transformation."
-    ))
-  }
-
-  # Check for NA values
-  if (any(is.na(mat))) {
-    cli::cli_abort(c(
-      "Missing values are not allowed for ALR transformation.",
-      "x" = "Found {.val {sum(is.na(mat))}} missing value(s) in the data.",
-      "i" = "Impute missing values before applying ALR transformation."
-    ))
-  }
-
-  # Select geometric median as reference
-  ref_idx <- .select_geometric_median(mat)
-
-  # compositions::alr expects rows = samples, columns = variables (compositions)
-  # Our matrix is: rows = variables, columns = samples
-  # So we transpose, apply ALR, then transpose back
-  mat_t <- t(mat)
-  alr_result <- compositions::alr(mat_t, ivar = ref_idx)
-  result <- t(alr_result)
-
-  # ALR drops the reference variable, but we want to preserve dimensions
-  # Add the reference variable back as zeros (log(x_ref/x_ref) = 0)
-  full_result <- mat * 0 # Create matrix of same dimensions filled with 0
-  # Copy ALR results to appropriate rows (excluding reference)
-  non_ref_idx <- setdiff(seq_len(nrow(mat)), ref_idx)
-  full_result[non_ref_idx, ] <- result
-
-  colnames(full_result) <- colnames(mat)
-  rownames(full_result) <- rownames(mat)
-  full_result
-}
-
-.normalize_alr_exp <- function(exp) {
-  exp$expr_mat <- .normalize_alr_mat(exp$expr_mat)
-  exp
-}
-
-#' Select geometric median as reference for ALR
+#' Apply paper-specific CLR to an experiment object
 #'
-#' The geometric median is the variable (row) that has the smallest
-#' sum of squared log-ratio distances to all other variables.
-#' This provides the most stable reference for ALR transformation.
+#' @param exp A `glyexp_experiment`.
+#' @param by Grouping specification.
+#' @param gamma Standard deviation of the scale-uncertainty model.
+#' @param group_scales Optional known group-level scales.
+#'
+#' @return A modified `glyexp_experiment`.
+#' @keywords internal
+#' @noRd
+.normalize_clr_exp <- function(exp, by = NULL, gamma = 0.1, group_scales = NULL) {
+  by_values <- .resolve_column_param(
+    by,
+    sample_info = exp$sample_info,
+    param_name = "by",
+    n_samples = ncol(exp$expr_mat),
+    allow_null = TRUE
+  )
+
+  exp$expr_mat <- .normalize_clr_mat(
+    exp$expr_mat,
+    by = by_values,
+    gamma = gamma,
+    group_scales = group_scales
+  )
+  exp$meta_data$coda_transform <- "clr"
+  exp$meta_data$coda_reference <- NULL
+  exp
+}
+
+#' Compute between-group variance for a candidate ALR reference
+#'
+#' @param values A positive numeric vector with one value per sample.
+#' @param by_values Optional grouping vector with one value per sample.
+#'
+#' @return A non-negative scalar variance.
+#' @keywords internal
+#' @noRd
+.between_group_variance <- function(values, by_values = NULL) {
+  log_values <- log2(values)
+
+  if (is.null(by_values)) {
+    return(0)
+  }
+
+  groups <- as.character(by_values)
+  group_means <- purrr::map_dbl(
+    unique(groups),
+    ~ mean(log_values[groups == .x], na.rm = TRUE)
+  )
+
+  if (length(group_means) < 2) {
+    return(0)
+  }
+
+  stats::var(group_means)
+}
+
+#' Perform ALR with a fixed reference glycan
 #'
 #' @param mat A matrix with variables as rows and samples as columns.
-#' @return The index of the geometric median variable.
+#' @param ref_idx Integer index of the reference glycan.
+#'
+#' @return An ALR-transformed matrix without the reference row.
 #' @keywords internal
-.select_geometric_median <- function(mat) {
-  # Calculate log of the matrix for log-ratio calculations
-  log_mat <- log(mat)
+#' @noRd
+.apply_alr_reference <- function(mat, ref_idx) {
+  ref_log <- log2(mat[ref_idx, , drop = TRUE])
+  log_mat <- log2(mat)
+  result <- sweep(log_mat, 2, ref_log, "-")
+  keep_idx <- setdiff(seq_len(nrow(mat)), ref_idx)
+  result <- result[keep_idx, , drop = FALSE]
+  colnames(result) <- colnames(mat)
+  rownames(result) <- rownames(mat)[keep_idx]
+  result
+}
 
-  # Approximate the geometric median by selecting the variable whose
-  # log-profile is closest (in squared Euclidean distance) to the
-  # global log-space center across variables. This avoids the
-  # O(n_vars^2 * n_samples) pairwise scan and runs in O(n_vars * n_samples).
+#' Reduce a sample configuration to a comparable rank
+#'
+#' @param config A numeric matrix with samples as rows.
+#' @param k Number of dimensions to keep.
+#'
+#' @return A reduced configuration matrix.
+#' @keywords internal
+#' @noRd
+.reduce_configuration <- function(config, k) {
+  centered <- scale(config, center = TRUE, scale = FALSE)
+  svd_fit <- svd(centered)
+  k <- min(k, length(svd_fit$d))
 
-  # Global center in log space (per-sample mean across variables)
-  center <- colMeans(log_mat)
+  if (k < 1) {
+    return(matrix(0, nrow = nrow(config), ncol = 1))
+  }
 
-  # Center each variable around the global center
-  centered <- sweep(log_mat, 2, center, "-")
+  svd_fit$u[, seq_len(k), drop = FALSE] %*%
+    diag(svd_fit$d[seq_len(k)], nrow = k)
+}
 
-  # Squared Euclidean distance of each variable to the center
-  distances <- rowSums(centered^2, na.rm = TRUE)
+#' Compute Procrustes correlation between CLR and ALR sample geometries
+#'
+#' @param clr_mat A CLR-transformed matrix with variables as rows.
+#' @param alr_mat An ALR-transformed matrix with variables as rows.
+#'
+#' @return A scalar Procrustes correlation in `[0, 1]`.
+#' @keywords internal
+#' @noRd
+.procrustes_correlation <- function(clr_mat, alr_mat) {
+  clr_config <- t(clr_mat)
+  alr_config <- t(alr_mat)
 
-  # Return the index with minimum distance
-  which.min(distances)
+  k <- min(
+    qr(scale(clr_config, center = TRUE, scale = FALSE))$rank,
+    qr(scale(alr_config, center = TRUE, scale = FALSE))$rank
+  )
+
+  if (k < 1) {
+    return(0)
+  }
+
+  clr_reduced <- .reduce_configuration(clr_config, k)
+  alr_reduced <- .reduce_configuration(alr_config, k)
+
+  clr_scaled <- clr_reduced / sqrt(sum(clr_reduced^2))
+  alr_scaled <- alr_reduced / sqrt(sum(alr_reduced^2))
+
+  sum(svd(t(clr_scaled) %*% alr_scaled)$d)
+}
+
+#' Select the best ALR reference glycan from fully positive glycans
+#'
+#' @param mat A matrix with variables as rows and samples as columns.
+#' @param by_values Optional grouping vector with one value per sample.
+#'
+#' @return A list describing the best reference candidate.
+#' @keywords internal
+#' @noRd
+.select_alr_reference <- function(mat, by_values = NULL) {
+  candidate_idx <- which(rowSums(mat <= 0, na.rm = TRUE) == 0)
+
+  if (length(candidate_idx) < 2) {
+    return(NULL)
+  }
+
+  scoring_mat <- mat[candidate_idx, , drop = FALSE]
+  clr_mat <- .normalize_clr_mat(scoring_mat, gamma = 0)
+  eps <- sqrt(.Machine$double.eps)
+
+  stats_list <- purrr::map(
+    seq_len(nrow(scoring_mat)),
+    function(idx) {
+      alr_mat <- .apply_alr_reference(scoring_mat, idx)
+      proc_corr <- .procrustes_correlation(clr_mat, alr_mat)
+      ref_var <- .between_group_variance(scoring_mat[idx, ], by_values)
+
+      list(
+        ref_idx = candidate_idx[idx],
+        reference = rownames(mat)[candidate_idx[idx]],
+        procrustes = proc_corr,
+        variance = ref_var,
+        score = proc_corr / (ref_var + eps)
+      )
+    }
+  )
+
+  scores <- purrr::map_dbl(stats_list, "score")
+  stats_list[[which.max(scores)]]
+}
+
+#' Apply paper-specific ALR with CLR fallback
+#'
+#' @param mat A matrix with variables as rows and samples as columns.
+#' @param by Optional grouping vector with one value per sample.
+#' @param gamma Standard deviation of the CLR uncertainty model used in fallback.
+#' @param group_scales Optional known group-level scales used in fallback.
+#'
+#' @return A matrix transformed by ALR or CLR fallback.
+#' @keywords internal
+#' @noRd
+.normalize_alr_mat <- function(mat, by = NULL, gamma = 0.1, group_scales = NULL) {
+  .validate_coda_input(mat, "ALR")
+  checkmate::assert_number(gamma, lower = 0, finite = TRUE)
+
+  by_values <- .resolve_column_param(
+    by,
+    sample_info = NULL,
+    param_name = "by",
+    n_samples = ncol(mat),
+    allow_null = TRUE
+  )
+
+  ref_stats <- .select_alr_reference(mat, by_values = by_values)
+  if (is.null(ref_stats)) {
+    cli::cli_warn(
+      "ALR requires at least two glycans with positive values in every sample; falling back to CLR."
+    )
+    return(.normalize_clr_mat(mat, by = by_values, gamma = gamma, group_scales = group_scales))
+  }
+
+  if (ref_stats$procrustes < 0.9 || ref_stats$variance > 0.1) {
+    cli::cli_warn(c(
+      "Best ALR reference {.val {ref_stats$reference}} did not meet the paper thresholds; falling back to CLR.",
+      "i" = "Procrustes correlation = {.val {signif(ref_stats$procrustes, 4)}}, between-group variance = {.val {signif(ref_stats$variance, 4)}}."
+    ))
+    return(.normalize_clr_mat(mat, by = by_values, gamma = gamma, group_scales = group_scales))
+  }
+
+  .apply_alr_reference(mat, ref_stats$ref_idx)
+}
+
+#' Apply paper-specific ALR to an experiment object
+#'
+#' @param exp A `glyexp_experiment`.
+#' @param by Grouping specification.
+#' @param gamma Standard deviation of the CLR uncertainty model used in fallback.
+#' @param group_scales Optional known group-level scales used in fallback.
+#'
+#' @return A modified `glyexp_experiment`.
+#' @keywords internal
+#' @noRd
+.normalize_alr_exp <- function(exp, by = NULL, gamma = 0.1, group_scales = NULL) {
+  by_values <- .resolve_column_param(
+    by,
+    sample_info = exp$sample_info,
+    param_name = "by",
+    n_samples = ncol(exp$expr_mat),
+    allow_null = TRUE
+  )
+
+  original_rows <- rownames(exp$expr_mat)
+  transformed <- .normalize_alr_mat(
+    exp$expr_mat,
+    by = by_values,
+    gamma = gamma,
+    group_scales = group_scales
+  )
+
+  if (nrow(transformed) < nrow(exp$expr_mat)) {
+    keep_idx <- original_rows %in% rownames(transformed)
+    exp$var_info <- exp$var_info[keep_idx, , drop = FALSE]
+    exp$meta_data$coda_transform <- "alr"
+    exp$meta_data$coda_reference <- setdiff(original_rows, rownames(transformed))
+  } else {
+    exp$meta_data$coda_transform <- "clr"
+    exp$meta_data$coda_reference <- NULL
+  }
+
+  exp$expr_mat <- transformed
+  exp
 }

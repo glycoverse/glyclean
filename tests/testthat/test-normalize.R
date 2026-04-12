@@ -424,12 +424,24 @@ test_that("normalize functions error on unsupported input", {
 })
 
 test_that("normalize_clr works with experiment input", {
-  skip_if_not_installed("compositions")
   test_exp <- simple_exp(5, 5)
-  # Make sure no zeros
-  test_exp$expr_mat <- test_exp$expr_mat + 10
+  test_exp$expr_mat <- matrix(
+    c(
+      4, 4, 4, 4, 4,
+      16, 16, 16, 16, 16,
+      64, 64, 64, 64, 64,
+      8, 8, 8, 8, 8,
+      32, 32, 32, 32, 32
+    ),
+    nrow = 5,
+    byrow = TRUE,
+    dimnames = list(
+      rownames(test_exp$expr_mat),
+      colnames(test_exp$expr_mat)
+    )
+  )
   original_exp <- test_exp
-  result_exp <- normalize_clr(test_exp)
+  result_exp <- normalize_clr(test_exp, gamma = 0)
 
   # Check that the function returns the correct structure
   expect_s3_class(result_exp, "glyexp_experiment")
@@ -437,108 +449,184 @@ test_that("normalize_clr works with experiment input", {
   expect_equal(rownames(result_exp$expr_mat), rownames(original_exp$expr_mat))
   expect_equal(colnames(result_exp$expr_mat), colnames(original_exp$expr_mat))
 
-  # Check that CLR was applied - columns should sum to 0 (approximately)
-  # CLR transforms each sample (column) to have mean 0
-  col_sums <- colSums(result_exp$expr_mat)
-  expect_true(all(abs(col_sums) < 1e-10))
+  expect_equal(
+    unname(result_exp$expr_mat[, 1]),
+    c(-2, 0, 2, -1, 1)
+  )
 })
 
-test_that("normalize_clr works with matrix input", {
-  skip_if_not_installed("compositions")
-  test_mat <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9), nrow = 3, ncol = 3) + 10
-  rownames(test_mat) <- paste0("V", 1:3)
-  colnames(test_mat) <- paste0("S", 1:3)
+test_that("normalize_clr uses non-zero entries for the geometric mean", {
+  test_mat <- matrix(
+    c(
+      4, 0,
+      16, 4,
+      64, 0
+    ),
+    nrow = 3,
+    byrow = TRUE,
+    dimnames = list(
+      paste0("V", 1:3),
+      paste0("S", 1:2)
+    )
+  )
 
-  result_mat <- normalize_clr(test_mat)
+  result_mat <- normalize_clr(test_mat, gamma = 0)
 
-  # Check that the function returns a matrix
   expect_true(is.matrix(result_mat))
   expect_equal(dim(result_mat), dim(test_mat))
   expect_equal(rownames(result_mat), rownames(test_mat))
   expect_equal(colnames(result_mat), colnames(test_mat))
-
-  # Check that CLR was applied - columns should sum to 0 (approximately)
-  # CLR transforms each sample (column) to have mean 0
-  col_sums <- colSums(result_mat)
-  expect_true(all(abs(col_sums) < 1e-10))
+  expect_equal(unname(result_mat[, "S1"]), c(-2, 0, 2))
+  expect_true(is.infinite(result_mat["V1", "S2"]))
+  expect_equal(unname(result_mat["V2", "S2"]), 0)
+  expect_true(is.infinite(result_mat["V3", "S2"]))
 })
 
-test_that("normalize_clr errors on zeros", {
-  skip_if_not_installed("compositions")
-  test_exp <- simple_exp(3, 3)
-  # Introduce a zero in the matrix
-  test_exp$expr_mat[1, 1] <- 0
-  expect_error(normalize_clr(test_exp), "zero|positive")
+test_that("normalize_clr samples the center with gamma on the log2 scale", {
+  test_mat <- matrix(
+    c(4, 16),
+    nrow = 2,
+    dimnames = list(c("V1", "V2"), "S1")
+  )
+
+  expected_center <- withr::with_seed(1, stats::rnorm(1, mean = 3, sd = 0.1))
+  result_mat <- withr::with_seed(1, normalize_clr(test_mat, gamma = 0.1))
+
+  expect_equal(unname(result_mat[, 1]), c(2, 4) - expected_center)
 })
 
-test_that("normalize_clr errors on NA values", {
-  skip_if_not_installed("compositions")
+test_that("normalize_clr applies informed group scales", {
+  test_mat <- matrix(
+    c(
+      4, 4, 4, 4,
+      16, 16, 16, 16
+    ),
+    nrow = 2,
+    byrow = TRUE,
+    dimnames = list(
+      c("V1", "V2"),
+      paste0("S", 1:4)
+    )
+  )
+  groups <- factor(c("A", "A", "B", "B"))
+
+  result_mat <- normalize_clr(
+    test_mat,
+    by = groups,
+    group_scales = c(A = 1, B = 0.5),
+    gamma = 0
+  )
+
+  expect_equal(unname(result_mat[, "S1"]), c(-1, 1))
+  expect_equal(unname(result_mat[, "S3"]), c(-2, 0))
+})
+
+test_that("normalize_clr errors on missing values and negative entries", {
   test_exp <- simple_exp(3, 3)
-  test_exp$expr_mat <- test_exp$expr_mat + 10
   test_exp$expr_mat[1, 1] <- NA
-  expect_error(normalize_clr(test_exp), "NA|missing")
+  expect_error(normalize_clr(test_exp, gamma = 0), "missing")
+
+  test_exp <- simple_exp(3, 3)
+  test_exp$expr_mat[1, 1] <- -1
+  expect_error(normalize_clr(test_exp, gamma = 0), "negative|positive")
 })
 
 test_that("normalize_clr errors on unsupported input", {
-  skip_if_not_installed("compositions")
   expect_error(normalize_clr(1), "glyexp_experiment|matrix")
   expect_error(normalize_clr("string"), "glyexp_experiment|matrix")
 })
 
 test_that("normalize_alr works with experiment input", {
-  skip_if_not_installed("compositions")
   test_exp <- simple_exp(5, 5)
-  # Make sure no zeros
-  test_exp$expr_mat <- test_exp$expr_mat + 10
-  original_exp <- test_exp
-  result_exp <- normalize_alr(test_exp)
+  test_exp$sample_info$group <- factor(c("A", "A", "B", "B", "B"))
+  test_exp$expr_mat <- matrix(
+    c(
+      8, 8, 8, 8, 8,
+      16, 16, 32, 32, 32,
+      4, 4, 2, 2, 2,
+      2, 2, 8, 8, 8,
+      32, 32, 16, 16, 16
+    ),
+    nrow = 5,
+    byrow = TRUE,
+    dimnames = list(
+      rownames(test_exp$expr_mat),
+      colnames(test_exp$expr_mat)
+    )
+  )
 
-  # Check that the function returns the correct structure
+  result_exp <- normalize_alr(test_exp, by = "group", gamma = 0)
+
   expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(dim(result_exp$expr_mat), dim(original_exp$expr_mat))
-  expect_equal(rownames(result_exp$expr_mat), rownames(original_exp$expr_mat))
-  expect_equal(colnames(result_exp$expr_mat), colnames(original_exp$expr_mat))
-
-  # Check that values are finite after ALR transformation
+  expect_equal(nrow(result_exp$expr_mat), nrow(test_exp$expr_mat) - 1)
+  expect_false("V1" %in% rownames(result_exp$expr_mat))
+  expect_false("V1" %in% result_exp$var_info$variable)
   expect_true(all(is.finite(result_exp$expr_mat)))
 })
 
-test_that("normalize_alr works with matrix input", {
-  skip_if_not_installed("compositions")
-  test_mat <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9), nrow = 3, ncol = 3) + 10
-  rownames(test_mat) <- paste0("V", 1:3)
-  colnames(test_mat) <- paste0("S", 1:3)
+test_that("normalize_alr falls back to CLR when the reference variance is too high", {
+  test_mat <- matrix(
+    c(
+      2, 2, 16, 16,
+      4, 4, 32, 32,
+      8, 8, 64, 64
+    ),
+    nrow = 3,
+    byrow = TRUE,
+    dimnames = list(
+      paste0("V", 1:3),
+      paste0("S", 1:4)
+    )
+  )
+  groups <- factor(c("A", "A", "B", "B"))
 
-  result_mat <- normalize_alr(test_mat)
+  expect_warning(
+    result_mat <- normalize_alr(test_mat, by = groups, gamma = 0),
+    "CLR"
+  )
 
-  # Check that the function returns a matrix
   expect_true(is.matrix(result_mat))
   expect_equal(dim(result_mat), dim(test_mat))
-  expect_equal(rownames(result_mat), rownames(test_mat))
-  expect_equal(colnames(result_mat), colnames(test_mat))
-
-  # Check that values are finite
-  expect_true(all(is.finite(result_mat)))
+  expect_equal(
+    result_mat,
+    normalize_clr(test_mat, by = groups, gamma = 0)
+  )
 })
 
-test_that("normalize_alr errors on zeros", {
-  skip_if_not_installed("compositions")
-  test_exp <- simple_exp(3, 3)
-  # Introduce a zero in the matrix
-  test_exp$expr_mat[1, 1] <- 0
-  expect_error(normalize_alr(test_exp), "zero|positive")
+test_that("normalize_alr allows zeros outside the reference glycan", {
+  test_mat <- matrix(
+    c(
+      8, 8, 8, 8,
+      0, 4, 0, 4,
+      16, 32, 16, 32
+    ),
+    nrow = 3,
+    byrow = TRUE,
+    dimnames = list(
+      c("V1", "V2", "V3"),
+      paste0("S", 1:4)
+    )
+  )
+
+  result_mat <- normalize_alr(test_mat, gamma = 0)
+
+  expect_false("V1" %in% rownames(result_mat))
+  expect_true(is.infinite(result_mat["V2", "S1"]))
 })
 
 test_that("normalize_alr errors on NA values", {
-  skip_if_not_installed("compositions")
   test_exp <- simple_exp(3, 3)
-  test_exp$expr_mat <- test_exp$expr_mat + 10
   test_exp$expr_mat[1, 1] <- NA
-  expect_error(normalize_alr(test_exp), "NA|missing")
+  expect_error(normalize_alr(test_exp, gamma = 0), "NA|missing")
+})
+
+test_that("normalize_alr errors on negative values", {
+  test_exp <- simple_exp(3, 3)
+  test_exp$expr_mat[1, 1] <- -1
+  expect_error(normalize_alr(test_exp, gamma = 0), "negative|positive")
 })
 
 test_that("normalize_alr errors on unsupported input", {
-  skip_if_not_installed("compositions")
   expect_error(normalize_alr(1), "glyexp_experiment|matrix")
   expect_error(normalize_alr("string"), "glyexp_experiment|matrix")
 })

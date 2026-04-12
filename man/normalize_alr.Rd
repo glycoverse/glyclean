@@ -7,44 +7,52 @@
 \alias{normalize_alr.default}
 \title{Additive Log-Ratio Normalization}
 \usage{
-normalize_alr(x)
+normalize_alr(x, by = NULL, gamma = 0.1, group_scales = NULL)
 
-\method{normalize_alr}{glyexp_experiment}(x)
+\method{normalize_alr}{glyexp_experiment}(x, by = NULL, gamma = 0.1, group_scales = NULL)
 
-\method{normalize_alr}{matrix}(x)
+\method{normalize_alr}{matrix}(x, by = NULL, gamma = 0.1, group_scales = NULL)
 
-\method{normalize_alr}{default}(x)
+\method{normalize_alr}{default}(x, by = NULL, gamma = 0.1, group_scales = NULL)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.
 If a matrix, rows should be variables and columns should be samples.}
+
+\item{by}{Either a column name in \code{sample_info} (for \code{glyexp_experiment}
+input) or a factor/vector with one value per sample. Used for reference
+ranking and for CLR fallback.}
+
+\item{gamma}{Standard deviation of the CLR scale-uncertainty model used when
+ALR falls back to CLR. Default is \code{0.1}.}
+
+\item{group_scales}{Optional known group-level scale differences passed
+through to CLR fallback. See \code{\link[=normalize_clr]{normalize_clr()}}.}
 }
 \value{
 Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
 returns a \code{glyexp_experiment} with an ALR-transformed expression matrix.
 If \code{x} is a matrix, returns an ALR-transformed matrix.
-In both cases, the returned matrix has the same number of rows (variables) as
-the input: the automatically selected reference variable is retained as a row
-of zeros after transformation, and all other variables contain log-ratios
-relative to this reference. The reference variable is the geometric-median
-variable described above, and its row position/name is preserved.
-Note that the resulting values are on the log scale and can be negative.
+When ALR succeeds, the reference glycan is excluded from the result and the
+output therefore has one fewer row than the input. When ALR falls back to
+CLR, the returned object keeps the original dimensions.
+Note that the resulting values are on the \code{log2} scale and can be negative
+or infinite when zeros are present in non-reference glycans.
 }
 \description{
-This function performs Additive Log-Ratio (ALR) transformation on compositional data.
-ALR transforms each component by taking the logarithm of the ratio of the component
-to a reference component. This is useful for analyzing compositional data where
-the relative proportions are of interest.
+This function implements the ALR preprocessing strategy described in DOI: 10.1038/s41467-025-56249-3.
+The data are transformed on the \code{log2} scale relative to an
+automatically selected reference glycan, which is removed from the output.
 }
 \details{
-The formula is: \verb{alr(x)_i = log(x_i / x_ref)} where \code{x_ref} is the reference component.
+Candidate reference glycans are ranked using the product of their Procrustes
+correlation to the corresponding CLR geometry and the inverse of their
+between-group variance. If the best candidate has Procrustes correlation below
+\code{0.9} or between-group variance above \code{0.1}, ALR is abandoned and CLR is
+returned instead, matching the fallback rule described in DOI: 10.1038/s41467-025-56249-3.
 
-This function requires all values to be strictly positive (no zeros or NA values).
-Users must handle zeros and missing values before calling this function.
-
-The reference variable is automatically selected as the geometric median
-(the variable with the smallest sum of log-ratio distances to all other variables),
-which provides the most stable reference.
-
-This function is a wrapper around \code{\link[compositions:alr]{compositions::alr()}}.
+The reference search only considers glycans that are strictly positive in all
+samples, because the reference must remain finite on the \code{log2} scale.
+Non-reference glycans may still contain zeros; those entries become infinite
+after transformation.
 }
