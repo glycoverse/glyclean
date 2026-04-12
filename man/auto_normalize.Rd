@@ -21,15 +21,15 @@ Can be NULL when no group information is available.}
 \item{qc_name}{The name of QC samples in the \code{group_col} column. Default is "QC".
 Only used when \code{group_col} is not NULL. Can be NULL when no QC samples are available.}
 
-\item{to_try}{Normalization functions to try. A list. Default includes:
+\item{to_try}{Normalization functions to try when QC samples are present. A list. Default includes:
 \itemize{
 \item \code{\link[=normalize_median]{normalize_median()}}: median normalization
 \item \code{\link[=normalize_median_abs]{normalize_median_abs()}}: absolute median normalization
-\item \code{\link[=normalize_total_area]{normalize_total_area()}}: total area mormalization
+\item \code{\link[=normalize_total_area]{normalize_total_area()}}: total area normalization
 \item \code{\link[=normalize_quantile]{normalize_quantile()}}: quantile normalization
 \item \code{\link[=normalize_loessf]{normalize_loessf()}}: LoessF normalization
 \item \code{\link[=normalize_loesscyc]{normalize_loesscyc()}}: LoessCyc normalization
-\item \code{\link[=normalize_median_quotient]{normalize_median_quotient()}}: median quitient normalization
+\item \code{\link[=normalize_median_quotient]{normalize_median_quotient()}}: median quotient normalization
 \item \code{\link[=normalize_rlr]{normalize_rlr()}}: Robust Linear Regression normalization
 \item \code{\link[=normalize_rlrma]{normalize_rlrma()}}: Robust Linear Regression with Median Adjustment normalization
 \item \code{\link[=normalize_rlrmacyc]{normalize_rlrmacyc()}}: Robust Linear Regression with Median Adjustment and Cyclic normalization
@@ -45,12 +45,18 @@ This function automatically selects and applies the most suitable normalization 
 If Quality Control (QC) samples are present, the method that best stabilizes them
 (i.e., yields the lowest median coefficient of variation) is chosen.
 Otherwise, it defaults to median normalization for glycoproteomics data,
-and a combination of median quotient and total area normalization for glycomics data.
+and total area normalization followed by CLR (for ≤50 glycans) or ALR (for >50 glycans) for glycomics data.
 }
 \details{
-By default, all normalization methods except for VSN are included for benchmarking.
-VSN is excluded because it compresses fold change estimate significantly
-thus not suitable for regular omics context.
+When QC samples are available, the function benchmarks all normalization methods in \code{to_try}
+and selects the one with the lowest median coefficient of variation (CV) among QC samples.
+Methods that fail are skipped with a warning.
+
+When no QC samples are available, the function uses a default strategy based on experiment type:
+\itemize{
+\item Glycomics: total area normalization followed by CLR or ALR transformation
+\item Other types (e.g., glycoproteomics): median normalization
+}
 }
 \examples{
 library(glyexp)
