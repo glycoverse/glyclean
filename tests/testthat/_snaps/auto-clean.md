@@ -167,22 +167,18 @@
       i No variables removed.
       v Variable removal completed.
       
+      -- Imputing missing values --
+      
+      i No QC samples found. Using default imputation method based on sample size.
+      i Sample size <= 30, using `impute_sample_min()`.
+      v Imputation completed.
+      
       -- Normalizing data --
       
       i No QC samples found. Using default normalization method based on experiment type.
       i Experiment type is "glycomics" with "nrow(exp)" glycans.
       i CLR transformation will be used.
       v Normalization completed.
-      
-      -- Normalizing data (Total Area) --
-      
-      v Total area normalization completed.
-      
-      -- Imputing missing values --
-      
-      i No QC samples found. Using default imputation method based on sample size.
-      i Sample size <= 30, using `impute_sample_min()`.
-      v Imputation completed.
       
       -- Correcting batch effects --
       
@@ -202,27 +198,6 @@
       i No variables removed.
       v Variable removal completed.
       
-      -- Normalizing data --
-      
-      i QC samples found. Choosing the best normalization method based on QC samples.
-      * Raw data: Median CV = CV_VALUE
-      * Method "normalize_median": Median CV = CV_VALUE
-      * Method "normalize_median_abs": Median CV = CV_VALUE
-      * Method "normalize_total_area": Median CV = CV_VALUE
-      * Method "normalize_quantile": Median CV = CV_VALUE
-      * Method "normalize_median_quotient": Median CV = CV_VALUE
-      * Method "normalize_loessf": Median CV = CV_VALUE
-      * Method "normalize_loesscyc": Median CV = CV_VALUE
-      * Method "normalize_rlr": Median CV = CV_VALUE
-      * Method "normalize_rlrma": Median CV = CV_VALUE
-      * Method "normalize_rlrmacyc": Median CV = CV_VALUE
-      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
-      v Normalization completed.
-      
-      -- Normalizing data (Total Area) --
-      
-      v Total area normalization completed.
-      
       -- Imputing missing values --
       
       i QC samples found. Choosing the best imputation method based on QC samples.
@@ -239,6 +214,23 @@
       * Method "impute_miss_forest": Median CV = CV_VALUE
       v Best method: "BEST_METHOD" with Median CV = CV_VALUE
       v Imputation completed.
+      
+      -- Normalizing data --
+      
+      i QC samples found. Choosing the best normalization method based on QC samples.
+      * Raw data: Median CV = CV_VALUE
+      * Method "normalize_median": Median CV = CV_VALUE
+      * Method "normalize_median_abs": Median CV = CV_VALUE
+      * Method "normalize_total_area": Median CV = CV_VALUE
+      * Method "normalize_quantile": Median CV = CV_VALUE
+      * Method "normalize_median_quotient": Median CV = CV_VALUE
+      * Method "normalize_loessf": Median CV = CV_VALUE
+      * Method "normalize_loesscyc": Median CV = CV_VALUE
+      * Method "normalize_rlr": Median CV = CV_VALUE
+      * Method "normalize_rlrma": Median CV = CV_VALUE
+      * Method "normalize_rlrmacyc": Median CV = CV_VALUE
+      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
+      v Normalization completed.
       
       -- Correcting batch effects --
       

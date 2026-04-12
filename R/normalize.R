@@ -539,8 +539,9 @@ normalize_rlrmacyc.default <- function(x, n_iter = 3, by = NULL) {
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
 #'   returns a `glyexp_experiment` with CLR-transformed expression matrix.
 #'   If `x` is a matrix, returns a CLR-transformed matrix.
-#'   Note that the resulting values are on the `log2` scale and can be negative
-#'   or infinite when zeros are present in the input.
+#'   The returned values are back-transformed to the original ratio space,
+#'   corresponding to `x / g(x)`. Zeros in the input therefore remain zeros in
+#'   the output.
 #' @export
 normalize_clr <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
   UseMethod("normalize_clr")
@@ -623,9 +624,10 @@ normalize_clr.default <- function(
 #'   If `x` is a matrix, returns an ALR-transformed matrix.
 #'   When ALR succeeds, the reference glycan is excluded from the result and the
 #'   output therefore has one fewer row than the input. When ALR falls back to
-#'   CLR, the returned object keeps the original dimensions.
-#'   Note that the resulting values are on the `log2` scale and can be negative
-#'   or infinite when zeros are present in non-reference glycans.
+#'   CLR, the returned object keeps the original dimensions. The returned values
+#'   are back-transformed to the original ratio space, corresponding to
+#'   `x / x_ref`. Zeros in non-reference glycans therefore remain zeros in the
+#'   output.
 #' @export
 normalize_alr <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
   UseMethod("normalize_alr")
@@ -966,7 +968,7 @@ normalize_alr.default <- function(
 #' @param gamma Standard deviation of the scale-uncertainty model.
 #' @param group_scales Optional known group-level scales.
 #'
-#' @return A CLR-transformed matrix.
+#' @return A CLR-transformed matrix in the original ratio space.
 #' @keywords internal
 #' @noRd
 .normalize_clr_mat <- function(
@@ -1000,7 +1002,7 @@ normalize_alr.default <- function(
     )
   )
 
-  result <- sweep(log_mat, 2, centers, "-")
+  result <- 2^sweep(log_mat, 2, centers, "-")
   colnames(result) <- colnames(mat)
   rownames(result) <- rownames(mat)
   result
@@ -1074,13 +1076,14 @@ normalize_alr.default <- function(
 #' @param mat A matrix with variables as rows and samples as columns.
 #' @param ref_idx Integer index of the reference glycan.
 #'
-#' @return An ALR-transformed matrix without the reference row.
+#' @return An ALR-transformed matrix without the reference row, in the original
+#'   ratio space.
 #' @keywords internal
 #' @noRd
 .apply_alr_reference <- function(mat, ref_idx) {
   ref_log <- log2(mat[ref_idx, , drop = TRUE])
   log_mat <- log2(mat)
-  result <- sweep(log_mat, 2, ref_log, "-")
+  result <- 2^sweep(log_mat, 2, ref_log, "-")
   keep_idx <- setdiff(seq_len(nrow(mat)), ref_idx)
   result <- result[keep_idx, , drop = FALSE]
   colnames(result) <- colnames(mat)

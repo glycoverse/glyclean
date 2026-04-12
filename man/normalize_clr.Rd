@@ -35,8 +35,9 @@ with one scale per group.}
 Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
 returns a \code{glyexp_experiment} with CLR-transformed expression matrix.
 If \code{x} is a matrix, returns a CLR-transformed matrix.
-Note that the resulting values are on the \code{log2} scale and can be negative
-or infinite when zeros are present in the input.
+The returned values are back-transformed to the original ratio space,
+corresponding to \code{x / g(x)}. Zeros in the input therefore remain zeros in
+the output.
 }
 \description{
 This function implements the CLR preprocessing strategy described in DOI: 10.1038/s41467-025-56249-3.

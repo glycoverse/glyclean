@@ -471,7 +471,7 @@ test_that("normalize_clr works with experiment input", {
 
   expect_equal(
     unname(result_exp$expr_mat[, 1]),
-    c(-2, 0, 2, -1, 1)
+    c(0.25, 1, 4, 0.5, 2)
   )
 })
 
@@ -499,10 +499,10 @@ test_that("normalize_clr uses non-zero entries for the geometric mean", {
   expect_equal(dim(result_mat), dim(test_mat))
   expect_equal(rownames(result_mat), rownames(test_mat))
   expect_equal(colnames(result_mat), colnames(test_mat))
-  expect_equal(unname(result_mat[, "S1"]), c(-2, 0, 2))
-  expect_true(is.infinite(result_mat["V1", "S2"]))
-  expect_equal(unname(result_mat["V2", "S2"]), 0)
-  expect_true(is.infinite(result_mat["V3", "S2"]))
+  expect_equal(unname(result_mat[, "S1"]), c(0.25, 1, 4))
+  expect_equal(unname(result_mat["V1", "S2"]), 0)
+  expect_equal(unname(result_mat["V2", "S2"]), 1)
+  expect_equal(unname(result_mat["V3", "S2"]), 0)
 })
 
 test_that("normalize_clr samples the center with gamma on the log2 scale", {
@@ -515,7 +515,7 @@ test_that("normalize_clr samples the center with gamma on the log2 scale", {
   expected_center <- withr::with_seed(1, stats::rnorm(1, mean = 3, sd = 0.1))
   result_mat <- withr::with_seed(1, normalize_clr(test_mat, gamma = 0.1))
 
-  expect_equal(unname(result_mat[, 1]), c(2, 4) - expected_center)
+  expect_equal(unname(result_mat[, 1]), 2^(c(2, 4) - expected_center))
 })
 
 test_that("normalize_clr applies informed group scales", {
@@ -546,8 +546,8 @@ test_that("normalize_clr applies informed group scales", {
     gamma = 0
   )
 
-  expect_equal(unname(result_mat[, "S1"]), c(-1, 1))
-  expect_equal(unname(result_mat[, "S3"]), c(-2, 0))
+  expect_equal(unname(result_mat[, "S1"]), c(0.5, 2))
+  expect_equal(unname(result_mat[, "S3"]), c(0.25, 1))
 })
 
 test_that("normalize_clr errors on missing values and negative entries", {
@@ -611,6 +611,7 @@ test_that("normalize_alr works with experiment input", {
   expect_false("V1" %in% rownames(result_exp$expr_mat))
   expect_false("V1" %in% result_exp$var_info$variable)
   expect_true(all(is.finite(result_exp$expr_mat)))
+  expect_equal(unname(result_exp$expr_mat["V2", 1]), 2)
 })
 
 test_that("normalize_alr falls back to CLR when the reference variance is too high", {
@@ -682,7 +683,7 @@ test_that("normalize_alr allows zeros outside the reference glycan", {
     identical(sort(rownames(result_mat)), c("V1", "V2")) ||
       identical(sort(rownames(result_mat)), c("V2", "V3"))
   )
-  expect_true(is.infinite(result_mat["V2", "S1"]))
+  expect_equal(unname(result_mat["V2", "S1"]), 0)
 })
 
 test_that("normalize_alr errors on NA values", {

@@ -35,9 +35,10 @@ returns a \code{glyexp_experiment} with an ALR-transformed expression matrix.
 If \code{x} is a matrix, returns an ALR-transformed matrix.
 When ALR succeeds, the reference glycan is excluded from the result and the
 output therefore has one fewer row than the input. When ALR falls back to
-CLR, the returned object keeps the original dimensions.
-Note that the resulting values are on the \code{log2} scale and can be negative
-or infinite when zeros are present in non-reference glycans.
+CLR, the returned object keeps the original dimensions. The returned values
+are back-transformed to the original ratio space, corresponding to
+\code{x / x_ref}. Zeros in non-reference glycans therefore remain zeros in the
+output.
 }
 \description{
 This function implements the ALR preprocessing strategy described in DOI: 10.1038/s41467-025-56249-3.
