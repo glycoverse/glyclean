@@ -200,11 +200,23 @@ calls the following functions in sequence:
   Automatically correct the batch effects
 
 These functions automatically choose the best method for the given
-dataset. For example, if a “group” column exists and there are QC
-samples,
+dataset.
+
+**How
 [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
-will try all normalization methods and choose the one that best
-stabilizes the QC samples.
+works:**
+
+- **When QC samples are available**: All normalization methods are
+  benchmarked, and the one with the lowest median coefficient of
+  variation (CV) among QC samples is selected.
+
+- **For glycomics data without QC samples**: Total area normalization is
+  applied first, followed by CLR transformation (for ≤50 glycans) or ALR
+  transformation (for \>50 glycans), following the best practices from
+  DOI: 10.1038/s41467-025-56249-3.
+
+- **For glycoproteomics data without QC samples**: Median normalization
+  is used as the default.
 
 You can make a custom pipeline by calling these functions in different
 orders:
@@ -247,7 +259,7 @@ bringing all intensities to a comparable scale.
 |-------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------|---------------------------------------|
 | [`normalize_median()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_median.md)                   | Median-based normalization                                           | General use, robust to outliers       |
 | [`normalize_median_abs()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_median_abs.md)           | Median absolute deviation                                            | When you need extra robustness        |
-| [`normalize_median_quotient()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_median_quotient.md) | Median quotient method                                               | Compositional data                    |
+| [`normalize_median_quotient()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_median_quotient.md) | Median quotient method                                               | Glycomics data (compositional)        |
 | [`normalize_quantile()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_quantile.md)               | Quantile normalization                                               | When you want identical distributions |
 | [`normalize_total_area()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_total_area.md)           | Total area normalization                                             | Relative abundance data               |
 | [`normalize_rlr()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_rlr.md)                         | Robust linear regression                                             | Complex batch designs                 |
@@ -256,6 +268,8 @@ bringing all intensities to a comparable scale.
 | [`normalize_loessf()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_loessf.md)                   | LOESS with feature smoothing                                         | Non-linear trends                     |
 | [`normalize_loesscyc()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_loesscyc.md)               | LOESS with cyclic smoothing                                          | Cyclic data                           |
 | [`normalize_vsn()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_vsn.md)                         | Variance stabilizing normalization                                   | Heteroscedastic data                  |
+| [`normalize_clr()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_clr.md)                         | Centered Log-Ratio transformation                                    | Glycomics data (compositional)        |
+| [`normalize_alr()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_alr.md)                         | Additive Log-Ratio transformation                                    | Glycomics data (compositional)        |
 
 **Pro Tips:**
 
@@ -273,6 +287,33 @@ bringing all intensities to a comparable scale.
 custom_groups <- c("A", "A", "B", "B", "C", "C", "A", "A", "B", "B", "C", "C")
 normalized_exp <- normalize_median(exp, by = custom_groups)
 ```
+
+**Compositional Data: CLR, ALR, and Median Quotient Normalization**
+
+For glycomics data (where intensities represent relative abundances of
+glycans), standard normalization methods may not be appropriate.
+Instead, compositional data analysis techniques are recommended:
+
+- **[`normalize_median_quotient()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_median_quotient.md)**:
+  Median quotient normalization. A robust method specifically designed
+  for compositional data, dividing each sample by its median quotient
+  relative to a reference sample.
+
+- **[`normalize_clr()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_clr.md)**:
+  Centered Log-Ratio transformation. Each sample is log2-transformed and
+  centered by the geometric mean of its non-zero components. This method
+  handles zeros gracefully (they remain -Inf) and includes a
+  scale-uncertainty model.
+
+- **[`normalize_alr()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_alr.md)**:
+  Additive Log-Ratio transformation. The data are log2-transformed
+  relative to an automatically selected reference glycan. The reference
+  is chosen based on Procrustes correlation to CLR geometry and minimal
+  between-group variance. If no suitable reference is found, ALR falls
+  back to CLR.
+
+The CLR and ALR methods align with the best practices described in DOI:
+10.1038/s41467-025-56249-3 for glycomics data preprocessing.
 
 Here we do the median normalization manually:
 
