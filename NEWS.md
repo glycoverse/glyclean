@@ -1,4 +1,4 @@
-# glyclean (development version)
+# glyclean 0.13.0
 
 ## New features
 
