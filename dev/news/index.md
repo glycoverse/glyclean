@@ -2,6 +2,8 @@
 
 ## glyclean (development version)
 
+## glyclean 0.13.0
+
 ### New features
 
 - [`normalize_clr()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_clr.md)
