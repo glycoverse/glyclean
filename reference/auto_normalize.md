@@ -4,9 +4,9 @@ This function automatically selects and applies the most suitable
 normalization method for the given dataset. If Quality Control (QC)
 samples are present, the method that best stabilizes them (i.e., yields
 the lowest median coefficient of variation) is chosen. Otherwise, it
-defaults to median normalization for glycoproteomics data, and a
-combination of median quotient and total area normalization for
-glycomics data.
+defaults to median normalization for glycoproteomics data, and total
+area normalization followed by CLR (for ≤50 glycans) or ALR (for \>50
+glycans) for glycomics data.
 
 ## Usage
 
@@ -40,7 +40,8 @@ auto_normalize(
 
 - to_try:
 
-  Normalization functions to try. A list. Default includes:
+  Normalization functions to try when QC samples are present. A list.
+  Default includes:
 
   - [`normalize_median()`](https://glycoverse.github.io/glyclean/reference/normalize_median.md):
     median normalization
@@ -49,7 +50,7 @@ auto_normalize(
     absolute median normalization
 
   - [`normalize_total_area()`](https://glycoverse.github.io/glyclean/reference/normalize_total_area.md):
-    total area mormalization
+    total area normalization
 
   - [`normalize_quantile()`](https://glycoverse.github.io/glyclean/reference/normalize_quantile.md):
     quantile normalization
@@ -61,7 +62,7 @@ auto_normalize(
     LoessCyc normalization
 
   - [`normalize_median_quotient()`](https://glycoverse.github.io/glyclean/reference/normalize_median_quotient.md):
-    median quitient normalization
+    median quotient normalization
 
   - [`normalize_rlr()`](https://glycoverse.github.io/glyclean/reference/normalize_rlr.md):
     Robust Linear Regression normalization
@@ -84,9 +85,18 @@ The normalized experiment.
 
 ## Details
 
-By default, all normalization methods except for VSN are included for
-benchmarking. VSN is excluded because it compresses fold change estimate
-significantly thus not suitable for regular omics context.
+When QC samples are available, the function benchmarks all normalization
+methods in `to_try` and selects the one with the lowest median
+coefficient of variation (CV) among QC samples. Methods that fail are
+skipped with a warning.
+
+When no QC samples are available, the function uses a default strategy
+based on experiment type:
+
+- Glycomics: total area normalization followed by CLR or ALR
+  transformation
+
+- Other types (e.g., glycoproteomics): median normalization
 
 ## Examples
 

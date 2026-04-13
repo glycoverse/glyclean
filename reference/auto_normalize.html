@@ -3,11 +3,11 @@
 If Quality Control (QC) samples are present, the method that best stabilizes them
 (i.e., yields the lowest median coefficient of variation) is chosen.
 Otherwise, it defaults to median normalization for glycoproteomics data,
-and a combination of median quotient and total area normalization for glycomics data."><meta property="og:description" content="This function automatically selects and applies the most suitable normalization method for the given dataset.
+and total area normalization followed by CLR (for ≤50 glycans) or ALR (for &amp;gt;50 glycans) for glycomics data."><meta property="og:description" content="This function automatically selects and applies the most suitable normalization method for the given dataset.
 If Quality Control (QC) samples are present, the method that best stabilizes them
 (i.e., yields the lowest median coefficient of variation) is chosen.
 Otherwise, it defaults to median normalization for glycoproteomics data,
-and a combination of median quotient and total area normalization for glycomics data."><meta property="og:image" content="https://glycoverse.github.io/glyclean/logo.png"></head><body>
+and total area normalization followed by CLR (for ≤50 glycans) or ALR (for &amp;gt;50 glycans) for glycomics data."><meta property="og:image" content="https://glycoverse.github.io/glyclean/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -15,7 +15,7 @@ and a combination of median quotient and total area normalization for glycomics 
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.12.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.13.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,7 +45,7 @@ and a combination of median quotient and total area normalization for glycomics 
 If Quality Control (QC) samples are present, the method that best stabilizes them
 (i.e., yields the lowest median coefficient of variation) is chosen.
 Otherwise, it defaults to median normalization for glycoproteomics data,
-and a combination of median quotient and total area normalization for glycomics data.</p>
+and total area normalization followed by CLR (for ≤50 glycans) or ALR (for &gt;50 glycans) for glycomics data.</p>
     </div>
 
     <div class="section level2">
@@ -78,13 +78,13 @@ Only used when <code>group_col</code> is not NULL. Can be NULL when no QC sample
 
 
 <dt id="arg-to-try">to_try<a class="anchor" aria-label="anchor" href="#arg-to-try"></a></dt>
-<dd><p>Normalization functions to try. A list. Default includes:</p><ul><li><p><code><a href="normalize_median.html">normalize_median()</a></code>: median normalization</p></li>
+<dd><p>Normalization functions to try when QC samples are present. A list. Default includes:</p><ul><li><p><code><a href="normalize_median.html">normalize_median()</a></code>: median normalization</p></li>
 <li><p><code><a href="normalize_median_abs.html">normalize_median_abs()</a></code>: absolute median normalization</p></li>
-<li><p><code><a href="normalize_total_area.html">normalize_total_area()</a></code>: total area mormalization</p></li>
+<li><p><code><a href="normalize_total_area.html">normalize_total_area()</a></code>: total area normalization</p></li>
 <li><p><code><a href="normalize_quantile.html">normalize_quantile()</a></code>: quantile normalization</p></li>
 <li><p><code><a href="normalize_loessf.html">normalize_loessf()</a></code>: LoessF normalization</p></li>
 <li><p><code><a href="normalize_loesscyc.html">normalize_loesscyc()</a></code>: LoessCyc normalization</p></li>
-<li><p><code><a href="normalize_median_quotient.html">normalize_median_quotient()</a></code>: median quitient normalization</p></li>
+<li><p><code><a href="normalize_median_quotient.html">normalize_median_quotient()</a></code>: median quotient normalization</p></li>
 <li><p><code><a href="normalize_rlr.html">normalize_rlr()</a></code>: Robust Linear Regression normalization</p></li>
 <li><p><code><a href="normalize_rlrma.html">normalize_rlrma()</a></code>: Robust Linear Regression with Median Adjustment normalization</p></li>
 <li><p><code><a href="normalize_rlrmacyc.html">normalize_rlrmacyc()</a></code>: Robust Linear Regression with Median Adjustment and Cyclic normalization</p></li>
@@ -101,10 +101,12 @@ Only used when <code>group_col</code> is not NULL. Can be NULL when no QC sample
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>By default, all normalization methods except for VSN are included for benchmarking.
-VSN is excluded because it compresses fold change estimate significantly
-thus not suitable for regular omics context.</p>
-    </div>
+    <p>When QC samples are available, the function benchmarks all normalization methods in <code>to_try</code>
+and selects the one with the lowest median coefficient of variation (CV) among QC samples.
+Methods that fail are skipped with a warning.</p>
+<p>When no QC samples are available, the function uses a default strategy based on experiment type:</p><ul><li><p>Glycomics: total area normalization followed by CLR or ALR transformation</p></li>
+<li><p>Other types (e.g., glycoproteomics): median normalization</p></li>
+</ul></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
