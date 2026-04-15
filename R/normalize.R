@@ -506,42 +506,40 @@ normalize_rlrmacyc.default <- function(x, n_iter = 3, by = NULL) {
 
 #' Centered Log-Ratio Normalization
 #'
-#' This function implements the CLR preprocessing strategy described in DOI: 10.1038/s41467-025-56249-3.
-#' Each sample is transformed on the `log2` scale and centered
-#' by the geometric mean of its non-zero components. Zeros are therefore allowed
-#' in the input and remain `-Inf` after transformation, while negative values are
-#' rejected.
+#' This function implements a glycoWork-compatible CLR preprocessing strategy.
+#' Internally, the data are transformed on the `log2` scale following
+#' `glycowork::clr_transformation()`, then back-transformed to the original
+#' ratio space before returning the result.
 #'
 #' @details
-#' The default implementation includes a scale-uncertainty model with
-#' `gamma = 0.1`, matching the paper. For each sample, the `log2` geometric-mean
-#' center is drawn from `N(mu, gamma^2)`, where `mu` is the `log2` geometric mean
-#' of the non-zero components. Setting `gamma = 0` disables the stochastic part
-#' and yields a deterministic transform.
+#' The stochastic branch follows `glycowork`: when `gamma > 0`, CLR noise is
+#' sampled per feature-sample entry rather than once per sample. Without
+#' informed scales, this corresponds to jittering around the sample-specific
+#' `log2` geometric mean of the non-zero components and then returning to ratio
+#' space.
 #'
-#' If known group-level scale differences are available, they can be supplied via
-#' `group_scales` together with `by`. In that case, the group-specific scale shift
-#' is added back on the `log2` scale, following the informed-scale model described
-#' in DOI: 10.1038/s41467-025-56249-3.
+#' The `group_scales` argument is interpreted in the same way as
+#' `glycowork`'s `custom_scale`. For exactly two groups, provide the total-signal
+#' ratio of the second group relative to the first, either directly as a scalar
+#' or implicitly through two per-group scales. For multi-group data, provide one
+#' positive scale per group; these scales are used only in the stochastic branch.
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
 #' @param by Either a column name in `sample_info` (for `glyexp_experiment`
-#'   input) or a factor/vector with one value per sample. Used only when
-#'   `group_scales` is supplied.
+#'   input) or a factor/vector with one value per sample.
 #' @param gamma Standard deviation of the scale-uncertainty model on the `log2`
 #'   scale. Default is `0.1`. Set to `0` for deterministic CLR.
-#' @param group_scales Optional known group-level scale differences. For binary
-#'   comparisons, this can be a single positive ratio for the second group
-#'   relative to the first. For multi-group data, provide a named positive vector
-#'   with one scale per group.
+#' @param group_scales Optional informed group scales. For binary comparisons,
+#'   this can be a single positive ratio for the second group relative to the
+#'   first, or two positive scales from which that ratio is derived. For
+#'   multi-group data, provide a positive vector with one scale per group.
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
 #'   returns a `glyexp_experiment` with CLR-transformed expression matrix.
 #'   If `x` is a matrix, returns a CLR-transformed matrix.
-#'   The returned values are back-transformed to the original ratio space,
-#'   corresponding to `x / g(x)`. Zeros in the input therefore remain zeros in
-#'   the output.
+#'   The returned values are back-transformed to the original ratio space.
+#'   Zeros in the input therefore remain zeros in the output.
 #' @export
 normalize_clr <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
   UseMethod("normalize_clr")
@@ -593,31 +591,36 @@ normalize_clr.default <- function(
 
 #' Additive Log-Ratio Normalization
 #'
-#' This function implements the ALR preprocessing strategy described in DOI: 10.1038/s41467-025-56249-3.
-#' The data are transformed on the `log2` scale relative to an
-#' automatically selected reference glycan, which is removed from the output.
+#' This function implements a glycoWork-compatible ALR preprocessing strategy.
+#' Internally, the data are transformed relative to an automatically selected
+#' reference glycan using glycoWork-style ALR logic, then back-transformed to
+#' the original ratio space before returning the result.
 #'
 #' @details
 #' Candidate reference glycans are ranked using the product of their Procrustes
 #' correlation to the corresponding CLR geometry and the inverse of their
-#' between-group variance. If the best candidate has Procrustes correlation below
-#' `0.9` or between-group variance above `0.1`, ALR is abandoned and CLR is
-#' returned instead, matching the fallback rule described in DOI: 10.1038/s41467-025-56249-3.
+#' between-group variance, using the same fallback thresholds as `glycowork`.
+#' If the best candidate has Procrustes correlation below `0.9` or
+#' between-group variance above `0.1`, ALR is abandoned and CLR is returned.
 #'
 #' The reference search only considers glycans that are strictly positive in all
 #' samples, because the reference must remain finite on the `log2` scale.
-#' Non-reference glycans may still contain zeros; those entries become infinite
-#' after transformation.
+#' Non-reference glycans may still contain zeros; those entries remain zero in
+#' the returned ratio-space output.
+#'
+#' When `gamma > 0`, successful ALR transformations also include glycoWork-style
+#' uncertainty on the reference scale rather than reserving `gamma` only for
+#' CLR fallback.
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
 #' @param by Either a column name in `sample_info` (for `glyexp_experiment`
 #'   input) or a factor/vector with one value per sample. Used for reference
-#'   ranking and for CLR fallback.
-#' @param gamma Standard deviation of the CLR scale-uncertainty model used when
-#'   ALR falls back to CLR. Default is `0.1`.
-#' @param group_scales Optional known group-level scale differences passed
-#'   through to CLR fallback. See [normalize_clr()].
+#'   ranking and group-aware ALR/CLR behavior.
+#' @param gamma Standard deviation of the glycoWork-style uncertainty model.
+#'   Default is `0.1`.
+#' @param group_scales Optional informed group scales passed through to the
+#'   glycoWork-style ALR/CLR logic. See [normalize_clr()].
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
 #'   returns a `glyexp_experiment` with an ALR-transformed expression matrix.
@@ -626,8 +629,7 @@ normalize_clr.default <- function(
 #'   output therefore has one fewer row than the input. When ALR falls back to
 #'   CLR, the returned object keeps the original dimensions. The returned values
 #'   are back-transformed to the original ratio space, corresponding to
-#'   `x / x_ref`. Zeros in non-reference glycans therefore remain zeros in the
-#'   output.
+#'   `x / x_ref`.
 #' @export
 normalize_alr <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
   UseMethod("normalize_alr")
@@ -862,30 +864,67 @@ normalize_alr.default <- function(
   invisible(TRUE)
 }
 
-#' Resolve group-level scale shifts to per-sample `log2` offsets
+#' Resolve glycoWork-style group assignments from `by`
 #'
 #' @param by_values Optional grouping vector with one value per sample.
-#' @param group_scales Optional positive ratio(s) describing group scales.
+#' @param n_samples Number of samples.
 #'
-#' @return A numeric vector with one `log2` shift per sample.
+#' @return A list with sample indices for `group1` and `group2`, plus labels.
 #' @keywords internal
 #' @noRd
-.resolve_scale_shifts <- function(by_values, group_scales) {
-  if (is.null(group_scales)) {
-    if (is.null(by_values)) {
-      return(numeric())
-    }
-
-    return(rep(0, length(by_values)))
+.resolve_coda_groups <- function(by_values, n_samples) {
+  if (is.null(by_values)) {
+    return(list(
+      group1_idx = seq_len(n_samples),
+      group2_idx = integer(),
+      labels = rep(NA_character_, n_samples),
+      unique_groups = character()
+    ))
   }
+
+  labels <- as.character(by_values)
+  if (any(is.na(labels))) {
+    cli::cli_abort("Grouping values cannot contain missing values.")
+  }
+
+  unique_groups <- unique(labels)
+  if (length(unique_groups) == 2) {
+    return(list(
+      group1_idx = which(labels == unique_groups[1]),
+      group2_idx = which(labels == unique_groups[2]),
+      labels = labels,
+      unique_groups = unique_groups
+    ))
+  }
+
+  list(
+    group1_idx = seq_len(n_samples),
+    group2_idx = integer(),
+    labels = labels,
+    unique_groups = unique_groups
+  )
+}
+
+#' Resolve `group_scales` to glycoWork-style custom scale inputs
+#'
+#' @param by_values Optional grouping vector with one value per sample.
+#' @param group_scales Optional positive ratio(s) or per-group scales.
+#'
+#' @return A list describing the custom scale mode.
+#' @keywords internal
+#' @noRd
+.resolve_custom_scale <- function(by_values, group_scales) {
+  if (is.null(group_scales)) {
+    return(list(type = "none", value = NULL))
+  }
+
+  checkmate::assert_numeric(group_scales, lower = 0, any.missing = FALSE)
 
   if (is.null(by_values)) {
     cli::cli_abort(
       "The {.arg by} parameter must be supplied when {.arg group_scales} is used."
     )
   }
-
-  checkmate::assert_numeric(group_scales, lower = 0, any.missing = FALSE)
 
   groups <- as.character(by_values)
   if (any(is.na(groups))) {
@@ -895,24 +934,17 @@ normalize_alr.default <- function(
   }
 
   unique_groups <- unique(groups)
-
-  if (length(group_scales) == 1) {
-    if (length(unique_groups) != 2) {
-      cli::cli_abort(
-        "A single {.arg group_scales} ratio can only be used when exactly two groups are present."
-      )
+  if (length(unique_groups) == 2) {
+    if (length(group_scales) == 1) {
+      return(list(type = "numeric", value = as.numeric(group_scales)))
     }
 
-    scale_map <- c(1, as.numeric(group_scales))
-    names(scale_map) <- unique_groups
-  } else {
     if (is.null(names(group_scales))) {
-      if (length(group_scales) != length(unique_groups)) {
+      if (length(group_scales) != 2) {
         cli::cli_abort(
-          "Unnamed {.arg group_scales} must have the same length as the number of groups."
+          "Unnamed {.arg group_scales} must have length 2 for two-group data."
         )
       }
-
       scale_map <- as.numeric(group_scales)
       names(scale_map) <- unique_groups
     } else {
@@ -923,42 +955,154 @@ normalize_alr.default <- function(
           "x" = "Missing scale(s) for group(s): {.val {missing_groups}}."
         ))
       }
-
-      scale_map <- group_scales[unique_groups]
+      scale_map <- as.numeric(group_scales[unique_groups])
+      names(scale_map) <- unique_groups
     }
+
+    return(list(
+      type = "numeric",
+      value = unname(scale_map[unique_groups[2]] / scale_map[unique_groups[1]])
+    ))
   }
 
-  if (any(scale_map <= 0, na.rm = TRUE)) {
-    cli::cli_abort("All {.arg group_scales} values must be strictly positive.")
+  if (is.null(names(group_scales))) {
+    if (length(group_scales) != length(unique_groups)) {
+      cli::cli_abort(
+        "Unnamed {.arg group_scales} must have the same length as the number of groups."
+      )
+    }
+    scale_map <- as.numeric(group_scales)
+    names(scale_map) <- unique_groups
+  } else {
+    missing_groups <- setdiff(unique_groups, names(group_scales))
+    if (length(missing_groups) > 0) {
+      cli::cli_abort(c(
+        "Every group must have a known scale.",
+        "x" = "Missing scale(s) for group(s): {.val {missing_groups}}."
+      ))
+    }
+    scale_map <- as.numeric(group_scales[unique_groups])
+    names(scale_map) <- unique_groups
   }
 
-  as.numeric(log2(unname(scale_map[groups])))
+  list(type = "dict", value = scale_map)
 }
 
-#' Draw or return the CLR center for one sample
+#' Compute column-wise geometric means, omitting zeros
 #'
-#' @param log_values A numeric vector on the `log2` scale.
-#' @param scale_shift A scalar `log2` shift for the sample.
-#' @param gamma Standard deviation of the uncertainty model.
+#' @param mat A numeric matrix.
 #'
-#' @return A scalar CLR center.
+#' @return A numeric vector of column geometric means.
 #' @keywords internal
 #' @noRd
-.draw_clr_center <- function(log_values, scale_shift = 0, gamma = 0.1) {
-  positives <- is.finite(log_values)
-  if (!any(positives)) {
-    cli::cli_abort(
-      "Each sample must contain at least one positive value for CLR transformation."
-    )
+.column_geometric_mean <- function(mat) {
+  apply(mat, 2, function(values) {
+    positive_values <- values[values > 0]
+    if (length(positive_values) == 0) {
+      return(NaN)
+    }
+
+    exp(mean(log(positive_values)))
+  })
+}
+
+#' Sample a matrix of normal deviates using a matrix of means
+#'
+#' @param mean_mat Matrix of means.
+#' @param sd Standard deviation.
+#'
+#' @return Numeric matrix with the same shape as `mean_mat`.
+#' @keywords internal
+#' @noRd
+.rnorm_matrix <- function(mean_mat, sd) {
+  matrix(
+    stats::rnorm(length(mean_mat), mean = c(mean_mat), sd = sd),
+    nrow = nrow(mean_mat),
+    ncol = ncol(mean_mat)
+  )
+}
+
+#' Internal glycoWork-compatible CLR on the `log2` scale
+#'
+#' @param mat A matrix with variables as rows and samples as columns.
+#' @param by_values Optional grouping vector with one value per sample.
+#' @param gamma Standard deviation of the uncertainty model.
+#' @param group_scales Optional known group-level scales.
+#'
+#' @return A CLR-transformed matrix on the `log2` scale.
+#' @keywords internal
+#' @noRd
+.glycowork_clr_log <- function(mat, by_values = NULL, gamma = 0.1, group_scales = NULL) {
+  groups <- .resolve_coda_groups(by_values, ncol(mat))
+  custom_scale <- .resolve_custom_scale(by_values, group_scales)
+  geometric_mean <- .column_geometric_mean(mat)
+  log_mat <- log2(mat)
+  clr_adjusted <- matrix(0, nrow = nrow(mat), ncol = ncol(mat))
+
+  if (gamma > 0 && custom_scale$type != "dict") {
+    group1_idx <- groups$group1_idx
+    group2_idx <- if (length(groups$group2_idx) > 0) groups$group2_idx else group1_idx
+    geometric_mean <- -log2(geometric_mean)
+
+    if (length(groups$group2_idx) > 0) {
+      if (custom_scale$type == "numeric") {
+        group1_noise <- .rnorm_matrix(
+          matrix(0, nrow = nrow(mat), ncol = length(group1_idx)),
+          gamma
+        )
+        clr_adjusted[, group1_idx] <- log_mat[, group1_idx, drop = FALSE] + group1_noise
+
+        group2_means <- matrix(
+          log2(custom_scale$value),
+          nrow = nrow(mat),
+          ncol = length(group2_idx)
+        )
+        group2_noise <- .rnorm_matrix(group2_means, gamma)
+      } else {
+        clr_adjusted[, group1_idx] <- sweep(
+          log_mat[, group1_idx, drop = FALSE],
+          2,
+          geometric_mean[group1_idx],
+          "+"
+        )
+
+        group2_means <- matrix(
+          geometric_mean[group2_idx],
+          nrow = nrow(mat),
+          ncol = length(group2_idx),
+          byrow = TRUE
+        )
+        group2_noise <- .rnorm_matrix(group2_means, gamma)
+      }
+
+      clr_adjusted[, group2_idx] <- log_mat[, group2_idx, drop = FALSE] + group2_noise
+    } else {
+      group_means <- matrix(
+        geometric_mean[group1_idx],
+        nrow = nrow(mat),
+        ncol = length(group1_idx),
+        byrow = TRUE
+      )
+      clr_adjusted[, group1_idx] <- log_mat[, group1_idx, drop = FALSE] +
+        .rnorm_matrix(group_means, gamma)
+    }
+  } else if (custom_scale$type == "dict" && length(groups$group2_idx) == 0) {
+    gamma <- max(gamma, 0.1)
+    for (idx in seq_len(ncol(mat))) {
+      scale_factor <- custom_scale$value[[groups$labels[idx]]]
+      clr_adjusted[, idx] <- log_mat[, idx] + stats::rnorm(
+        nrow(mat),
+        mean = log2(scale_factor),
+        sd = gamma
+      )
+    }
+  } else {
+    clr_adjusted <- sweep(log_mat, 2, log2(geometric_mean), "-")
   }
 
-  center <- mean(log_values[positives]) - scale_shift
-
-  if (gamma > 0) {
-    return(stats::rnorm(1, mean = center, sd = gamma))
-  }
-
-  center
+  colnames(clr_adjusted) <- colnames(mat)
+  rownames(clr_adjusted) <- rownames(mat)
+  clr_adjusted
 }
 
 #' Center a matrix with the paper-specific CLR transform
@@ -987,22 +1131,12 @@ normalize_alr.default <- function(
     n_samples = ncol(mat),
     allow_null = TRUE
   )
-  scale_shifts <- .resolve_scale_shifts(by_values, group_scales)
-  if (length(scale_shifts) == 0) {
-    scale_shifts <- rep(0, ncol(mat))
-  }
-
-  log_mat <- log2(mat)
-  centers <- purrr::map_dbl(
-    seq_len(ncol(log_mat)),
-    ~ .draw_clr_center(
-      log_mat[, .x],
-      scale_shift = scale_shifts[.x],
-      gamma = gamma
-    )
+  result <- 2^.glycowork_clr_log(
+    mat,
+    by_values = by_values,
+    gamma = gamma,
+    group_scales = group_scales
   )
-
-  result <- 2^sweep(log_mat, 2, centers, "-")
   colnames(result) <- colnames(mat)
   rownames(result) <- rownames(mat)
   result
@@ -1053,22 +1187,15 @@ normalize_alr.default <- function(
 #' @noRd
 .between_group_variance <- function(values, by_values = NULL) {
   log_values <- log2(values)
+  groups <- .resolve_coda_groups(by_values, length(values))
 
-  if (is.null(by_values)) {
-    return(0)
+  if (length(groups$group2_idx) > 0) {
+    var_group1 <- stats::var(log_values[groups$group1_idx])
+    var_group2 <- stats::var(log_values[groups$group2_idx])
+    return(abs(var_group1 - var_group2))
   }
 
-  groups <- as.character(by_values)
-  group_means <- purrr::map_dbl(
-    unique(groups),
-    ~ mean(log_values[groups == .x], na.rm = TRUE)
-  )
-
-  if (length(group_means) < 2) {
-    return(0)
-  }
-
-  stats::var(group_means)
+  abs(stats::var(log_values[groups$group1_idx]))
 }
 
 #' Perform ALR with a fixed reference glycan
@@ -1080,10 +1207,65 @@ normalize_alr.default <- function(
 #'   ratio space.
 #' @keywords internal
 #' @noRd
-.apply_alr_reference <- function(mat, ref_idx) {
-  ref_log <- log2(mat[ref_idx, , drop = TRUE])
+.apply_alr_reference <- function(
+  mat,
+  ref_idx,
+  by_values = NULL,
+  gamma = 0.1,
+  group_scales = NULL
+) {
+  groups <- .resolve_coda_groups(by_values, ncol(mat))
+  custom_scale <- .resolve_custom_scale(by_values, group_scales)
   log_mat <- log2(mat)
-  result <- 2^sweep(log_mat, 2, ref_log, "-")
+  ref_log <- log_mat[ref_idx, , drop = TRUE]
+  result <- matrix(0, nrow = nrow(mat), ncol = ncol(mat))
+  group1_idx <- groups$group1_idx
+  group2_idx <- if (length(groups$group2_idx) > 0) groups$group2_idx else group1_idx
+
+  if (custom_scale$type != "dict") {
+    if (custom_scale$type == "numeric") {
+      group1_noise <- stats::rnorm(length(group1_idx), mean = log2(1), sd = gamma)
+      result[, group1_idx] <- sweep(
+        log_mat[, group1_idx, drop = FALSE],
+        2,
+        ref_log[group1_idx] - group1_noise,
+        "-"
+      )
+    } else {
+      result[, group1_idx] <- sweep(
+        log_mat[, group1_idx, drop = FALSE],
+        2,
+        ref_log[group1_idx],
+        "-"
+      )
+    }
+
+    scale_adjustment <- if (custom_scale$type == "numeric") {
+      log2(custom_scale$value)
+    } else {
+      0
+    }
+    group2_noise <- stats::rnorm(length(group2_idx), mean = scale_adjustment, sd = gamma)
+    result[, group2_idx] <- sweep(
+      log_mat[, group2_idx, drop = FALSE],
+      2,
+      ref_log[group2_idx] - group2_noise,
+      "-"
+    )
+  } else {
+    gamma <- max(gamma, 0.1)
+    for (idx in seq_len(ncol(mat))) {
+      scale_factor <- custom_scale$value[[groups$labels[idx]]]
+      reference_adjusted <- ref_log[idx] - stats::rnorm(
+        1,
+        mean = log2(scale_factor),
+        sd = gamma
+      )
+      result[, idx] <- log_mat[, idx] - reference_adjusted
+    }
+  }
+
+  result <- 2^result
   keep_idx <- setdiff(seq_len(nrow(mat)), ref_idx)
   result <- result[keep_idx, , drop = FALSE]
   colnames(result) <- colnames(mat)
@@ -1158,13 +1340,17 @@ normalize_alr.default <- function(
   }
 
   scoring_mat <- mat[candidate_idx, , drop = FALSE]
-  clr_mat <- .normalize_clr_mat(scoring_mat, gamma = 0)
-  eps <- sqrt(.Machine$double.eps)
+  clr_mat <- .glycowork_clr_log(scoring_mat, by_values = by_values, gamma = 0.01)
 
   stats_list <- purrr::map(
     seq_len(nrow(scoring_mat)),
     function(idx) {
-      alr_mat <- .apply_alr_reference(scoring_mat, idx)
+      alr_mat <- log2(.apply_alr_reference(
+        scoring_mat,
+        idx,
+        by_values = by_values,
+        gamma = 0.01
+      ))
       proc_corr <- .procrustes_correlation(clr_mat, alr_mat)
       ref_var <- .between_group_variance(scoring_mat[idx, ], by_values)
 
@@ -1173,7 +1359,7 @@ normalize_alr.default <- function(
         reference = rownames(mat)[candidate_idx[idx]],
         procrustes = proc_corr,
         variance = ref_var,
-        score = proc_corr / (ref_var + eps)
+        score = proc_corr / ref_var
       )
     }
   )
@@ -1235,7 +1421,13 @@ normalize_alr.default <- function(
     ))
   }
 
-  .apply_alr_reference(mat, ref_stats$ref_idx)
+  .apply_alr_reference(
+    mat,
+    ref_stats$ref_idx,
+    by_values = by_values,
+    gamma = gamma,
+    group_scales = group_scales
+  )
 }
 
 #' Apply paper-specific ALR to an experiment object

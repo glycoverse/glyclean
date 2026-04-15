@@ -21,13 +21,13 @@ If a matrix, rows should be variables and columns should be samples.}
 
 \item{by}{Either a column name in \code{sample_info} (for \code{glyexp_experiment}
 input) or a factor/vector with one value per sample. Used for reference
-ranking and for CLR fallback.}
+ranking and group-aware ALR/CLR behavior.}
 
-\item{gamma}{Standard deviation of the CLR scale-uncertainty model used when
-ALR falls back to CLR. Default is \code{0.1}.}
+\item{gamma}{Standard deviation of the glycoWork-style uncertainty model.
+Default is \code{0.1}.}
 
-\item{group_scales}{Optional known group-level scale differences passed
-through to CLR fallback. See \code{\link[=normalize_clr]{normalize_clr()}}.}
+\item{group_scales}{Optional informed group scales passed through to the
+glycoWork-style ALR/CLR logic. See \code{\link[=normalize_clr]{normalize_clr()}}.}
 }
 \value{
 Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
@@ -37,23 +37,27 @@ When ALR succeeds, the reference glycan is excluded from the result and the
 output therefore has one fewer row than the input. When ALR falls back to
 CLR, the returned object keeps the original dimensions. The returned values
 are back-transformed to the original ratio space, corresponding to
-\code{x / x_ref}. Zeros in non-reference glycans therefore remain zeros in the
-output.
+\code{x / x_ref}.
 }
 \description{
-This function implements the ALR preprocessing strategy described in DOI: 10.1038/s41467-025-56249-3.
-The data are transformed on the \code{log2} scale relative to an
-automatically selected reference glycan, which is removed from the output.
+This function implements a glycoWork-compatible ALR preprocessing strategy.
+Internally, the data are transformed relative to an automatically selected
+reference glycan using glycoWork-style ALR logic, then back-transformed to
+the original ratio space before returning the result.
 }
 \details{
 Candidate reference glycans are ranked using the product of their Procrustes
 correlation to the corresponding CLR geometry and the inverse of their
-between-group variance. If the best candidate has Procrustes correlation below
-\code{0.9} or between-group variance above \code{0.1}, ALR is abandoned and CLR is
-returned instead, matching the fallback rule described in DOI: 10.1038/s41467-025-56249-3.
+between-group variance, using the same fallback thresholds as \code{glycowork}.
+If the best candidate has Procrustes correlation below \code{0.9} or
+between-group variance above \code{0.1}, ALR is abandoned and CLR is returned.
 
 The reference search only considers glycans that are strictly positive in all
 samples, because the reference must remain finite on the \code{log2} scale.
-Non-reference glycans may still contain zeros; those entries become infinite
-after transformation.
+Non-reference glycans may still contain zeros; those entries remain zero in
+the returned ratio-space output.
+
+When \code{gamma > 0}, successful ALR transformations also include glycoWork-style
+uncertainty on the reference scale rather than reserving \code{gamma} only for
+CLR fallback.
 }

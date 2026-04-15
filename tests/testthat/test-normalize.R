@@ -505,20 +505,20 @@ test_that("normalize_clr uses non-zero entries for the geometric mean", {
   expect_equal(unname(result_mat["V3", "S2"]), 0)
 })
 
-test_that("normalize_clr samples the center with gamma on the log2 scale", {
+test_that("normalize_clr samples per-feature noise on the log2 scale", {
   test_mat <- matrix(
     c(4, 16),
     nrow = 2,
     dimnames = list(c("V1", "V2"), "S1")
   )
 
-  expected_center <- withr::with_seed(1, stats::rnorm(1, mean = 3, sd = 0.1))
+  expected_noise <- withr::with_seed(1, stats::rnorm(2, mean = -3, sd = 0.1))
   result_mat <- withr::with_seed(1, normalize_clr(test_mat, gamma = 0.1))
 
-  expect_equal(unname(result_mat[, 1]), 2^(c(2, 4) - expected_center))
+  expect_equal(unname(result_mat[, 1]), 2^(c(2, 4) + expected_noise))
 })
 
-test_that("normalize_clr applies informed group scales", {
+test_that("normalize_clr ignores group scales when gamma is zero", {
   test_mat <- matrix(
     c(
       4,
@@ -547,7 +547,7 @@ test_that("normalize_clr applies informed group scales", {
   )
 
   expect_equal(unname(result_mat[, "S1"]), c(0.5, 2))
-  expect_equal(unname(result_mat[, "S3"]), c(0.25, 1))
+  expect_equal(unname(result_mat[, "S3"]), c(0.5, 2))
 })
 
 test_that("normalize_clr errors on missing values and negative entries", {
@@ -619,15 +619,15 @@ test_that("normalize_alr falls back to CLR when the reference variance is too hi
     c(
       2,
       2,
-      16,
+      2,
       16,
       4,
       4,
-      32,
+      4,
       32,
       8,
       8,
-      64,
+      8,
       64
     ),
     nrow = 3,
@@ -684,6 +684,52 @@ test_that("normalize_alr allows zeros outside the reference glycan", {
       identical(sort(rownames(result_mat)), c("V2", "V3"))
   )
   expect_equal(unname(result_mat["V2", "S1"]), 0)
+})
+
+test_that("normalize_alr uses gamma on the successful ALR path", {
+  test_mat <- matrix(
+    c(
+      8,
+      8,
+      8,
+      8,
+      8,
+      16,
+      16,
+      32,
+      32,
+      32,
+      4,
+      4,
+      2,
+      2,
+      2,
+      2,
+      2,
+      8,
+      8,
+      8,
+      32,
+      32,
+      16,
+      16,
+      16
+    ),
+    nrow = 5,
+    byrow = TRUE,
+    dimnames = list(
+      paste0("V", 1:5),
+      paste0("S", 1:5)
+    )
+  )
+  groups <- factor(c("A", "A", "B", "B", "B"))
+
+  result_det <- normalize_alr(test_mat, by = groups, gamma = 0)
+  result_stoch <- withr::with_seed(1, normalize_alr(test_mat, by = groups, gamma = 0.1))
+
+  expect_equal(unname(result_stoch["V2", c("S1", "S2")]), c(2, 2))
+  expect_false(all(unname(result_stoch["V2", c("S3", "S4", "S5")]) == c(4, 4, 4)))
+  expect_false(isTRUE(all.equal(result_stoch, result_det)))
 })
 
 test_that("normalize_alr errors on NA values", {
