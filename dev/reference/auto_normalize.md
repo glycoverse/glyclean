@@ -5,8 +5,7 @@ normalization method for the given dataset. If Quality Control (QC)
 samples are present, the method that best stabilizes them (i.e., yields
 the lowest median coefficient of variation) is chosen. Otherwise, it
 defaults to median normalization for glycoproteomics data, and total
-area normalization followed by CLR (for ≤50 glycans) or ALR (for \>50
-glycans) for glycomics data.
+area normalization for glycomics data.
 
 ## Usage
 
@@ -89,14 +88,6 @@ When QC samples are available, the function benchmarks all normalization
 methods in `to_try` and selects the one with the lowest median
 coefficient of variation (CV) among QC samples. Methods that fail are
 skipped with a warning.
-
-When no QC samples are available, the function uses a default strategy
-based on experiment type:
-
-- Glycomics: total area normalization followed by CLR or ALR
-  transformation
-
-- Other types (e.g., glycoproteomics): median normalization
 
 ## Examples
 

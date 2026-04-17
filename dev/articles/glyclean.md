@@ -268,8 +268,8 @@ bringing all intensities to a comparable scale.
 | [`normalize_loessf()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_loessf.md)                   | LOESS with feature smoothing                                         | Non-linear trends                     |
 | [`normalize_loesscyc()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_loesscyc.md)               | LOESS with cyclic smoothing                                          | Cyclic data                           |
 | [`normalize_vsn()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_vsn.md)                         | Variance stabilizing normalization                                   | Heteroscedastic data                  |
-| [`normalize_clr()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_clr.md)                         | Centered Log-Ratio transformation                                    | Glycomics data (compositional)        |
-| [`normalize_alr()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_alr.md)                         | Additive Log-Ratio transformation                                    | Glycomics data (compositional)        |
+| [`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md)                         | Centered Log-Ratio transformation                                    | Glycomics data (compositional)        |
+| [`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md)                         | Additive Log-Ratio transformation                                    | Glycomics data (compositional)        |
 
 **Pro Tips:**
 
@@ -299,14 +299,14 @@ Instead, compositional data analysis techniques are recommended:
   for compositional data, dividing each sample by its median quotient
   relative to a reference sample.
 
-- **[`normalize_clr()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_clr.md)**:
+- **[`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md)**:
   Centered Log-Ratio transformation with `glycowork`-compatible internal
   logic. The transformation is carried out on the `log2` scale and then
   back-transformed to the original ratio space, so zeros remain zeros in
   the returned result. The stochastic branch uses per-feature noise,
   matching `glycowork`.
 
-- **[`normalize_alr()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_alr.md)**:
+- **[`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md)**:
   Additive Log-Ratio transformation with `glycowork`-compatible internal
   logic. The reference glycan is chosen based on Procrustes correlation
   to CLR geometry and minimal between-group variance, and the final

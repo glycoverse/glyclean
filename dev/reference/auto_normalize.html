@@ -3,11 +3,11 @@
 If Quality Control (QC) samples are present, the method that best stabilizes them
 (i.e., yields the lowest median coefficient of variation) is chosen.
 Otherwise, it defaults to median normalization for glycoproteomics data,
-and total area normalization followed by CLR (for ≤50 glycans) or ALR (for &amp;gt;50 glycans) for glycomics data."><meta property="og:description" content="This function automatically selects and applies the most suitable normalization method for the given dataset.
+and total area normalization for glycomics data."><meta property="og:description" content="This function automatically selects and applies the most suitable normalization method for the given dataset.
 If Quality Control (QC) samples are present, the method that best stabilizes them
 (i.e., yields the lowest median coefficient of variation) is chosen.
 Otherwise, it defaults to median normalization for glycoproteomics data,
-and total area normalization followed by CLR (for ≤50 glycans) or ALR (for &amp;gt;50 glycans) for glycomics data."><meta property="og:image" content="https://glycoverse.github.io/glyclean/logo.png"><meta name="robots" content="noindex"></head><body>
+and total area normalization for glycomics data."><meta property="og:image" content="https://glycoverse.github.io/glyclean/logo.png"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -45,7 +45,7 @@ and total area normalization followed by CLR (for ≤50 glycans) or ALR (for &am
 If Quality Control (QC) samples are present, the method that best stabilizes them
 (i.e., yields the lowest median coefficient of variation) is chosen.
 Otherwise, it defaults to median normalization for glycoproteomics data,
-and total area normalization followed by CLR (for ≤50 glycans) or ALR (for &gt;50 glycans) for glycomics data.</p>
+and total area normalization for glycomics data.</p>
     </div>
 
     <div class="section level2">
@@ -104,9 +104,7 @@ Only used when <code>group_col</code> is not NULL. Can be NULL when no QC sample
     <p>When QC samples are available, the function benchmarks all normalization methods in <code>to_try</code>
 and selects the one with the lowest median coefficient of variation (CV) among QC samples.
 Methods that fail are skipped with a warning.</p>
-<p>When no QC samples are available, the function uses a default strategy based on experiment type:</p><ul><li><p>Glycomics: total area normalization followed by CLR or ALR transformation</p></li>
-<li><p>Other types (e.g., glycoproteomics): median normalization</p></li>
-</ul></div>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
