@@ -173,8 +173,8 @@ bringing all intensities to a comparable scale.
 | `normalize_loessf()` | LOESS with feature smoothing | Non-linear trends |
 | `normalize_loesscyc()` | LOESS with cyclic smoothing | Cyclic data |
 | `normalize_vsn()` | Variance stabilizing normalization | Heteroscedastic data |
-| `normalize_clr()` | Centered Log-Ratio transformation | Glycomics data (compositional) |
-| `normalize_alr()` | Additive Log-Ratio transformation | Glycomics data (compositional) |
+| `transform_clr()` | Centered Log-Ratio transformation | Glycomics data (compositional) |
+| `transform_alr()` | Additive Log-Ratio transformation | Glycomics data (compositional) |
 
 **Pro Tips:**
 
@@ -196,9 +196,9 @@ For glycomics data (where intensities represent relative abundances of glycans),
 
 - **`normalize_median_quotient()`**: Median quotient normalization. A robust method specifically designed for compositional data, dividing each sample by its median quotient relative to a reference sample.
 
-- **`normalize_clr()`**: Centered Log-Ratio transformation with `glycowork`-compatible internal logic. The transformation is carried out on the `log2` scale and then back-transformed to the original ratio space, so zeros remain zeros in the returned result. The stochastic branch uses per-feature noise, matching `glycowork`.
+- **`transform_clr()`**: Centered Log-Ratio transformation with `glycowork`-compatible internal logic. The transformation is carried out on the `log2` scale and then back-transformed to the original ratio space, so zeros remain zeros in the returned result. The stochastic branch uses per-feature noise, matching `glycowork`.
 
-- **`normalize_alr()`**: Additive Log-Ratio transformation with `glycowork`-compatible internal logic. The reference glycan is chosen based on Procrustes correlation to CLR geometry and minimal between-group variance, and the final result is returned in the original ratio space. If no suitable reference is found, ALR falls back to CLR.
+- **`transform_alr()`**: Additive Log-Ratio transformation with `glycowork`-compatible internal logic. The reference glycan is chosen based on Procrustes correlation to CLR geometry and minimal between-group variance, and the final result is returned in the original ratio space. If no suitable reference is found, ALR falls back to CLR.
 
 The CLR and ALR methods align with the best practices described in DOI: 10.1038/s41467-025-56249-3 for glycomics data preprocessing.
 

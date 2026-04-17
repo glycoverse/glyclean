@@ -36,7 +36,7 @@ test_that("auto_normalize works for glycomics without QC", {
     1,
     exp |>
       normalize_total_area() |>
-      normalize_clr()
+      transform_clr()
   )
 
   expect_snapshot(

@@ -155,10 +155,10 @@ auto_normalize <- function(
     exp <- normalize_total_area(exp)
     if (nrow(exp) > 50) {
       cli::cli_alert_info("ALR transformation will be used.")
-      exp <- normalize_alr(exp)
+      exp <- transform_alr(exp)
     } else {
       cli::cli_alert_info("CLR transformation will be used.")
-      exp <- normalize_clr(exp)
+      exp <- transform_clr(exp)
     }
     exp
   } else {

@@ -4,15 +4,15 @@
 
 ## New features
 
-- `normalize_clr()` and `normalize_alr()` now align with the methods described in DOI: 10.1038/s41467-025-56249-3.
-- `auto_normalize()` now performs total abundance normalization followed by ALR or CLR tranformation for glycomics data with no QC samples, to be aligned with the best practices described in DOI: 10.1038/s41467-025-56249-3.
+- `transform_clr()` and `transform_alr()` now align with the methods described in DOI: 10.1038/s41467-025-56249-3.
+- `auto_normalize()` now performs total abundance normalization followed by ALR or CLR transformation for glycomics data with no QC samples, to be aligned with the best practices described in DOI: 10.1038/s41467-025-56249-3.
 
 # glyclean 0.12.2
 
 ## New features
 
-- Add `normalize_clr()` for Centered Log-Ratio (CLR) normalization.
-- Add `normalize_alr()` for Additive Log-Ratio (ALR) normalization.
+- Add `transform_clr()` for Centered Log-Ratio (CLR) transformation.
+- Add `transform_alr()` for Additive Log-Ratio (ALR) transformation.
 
 ## Minor improvements and bug fixes
 
