@@ -20,14 +20,15 @@ transform_alr(x, by = NULL, gamma = 0.1, group_scales = NULL)
 If a matrix, rows should be variables and columns should be samples.}
 
 \item{by}{Either a column name in \code{sample_info} (for \code{glyexp_experiment}
-input) or a factor/vector with one value per sample. Used for reference
-ranking and group-aware ALR/CLR behavior.}
+input) or a factor/vector with one value per sample.}
 
-\item{gamma}{Standard deviation of the glycoWork-style uncertainty model.
-Default is \code{0.1}.}
+\item{gamma}{Standard deviation of the scale-uncertainty model on the \code{log2}
+scale. Default is \code{0.1}. Set to \code{0} for deterministic transformation.}
 
-\item{group_scales}{Optional informed group scales passed through to the
-glycoWork-style ALR/CLR logic. See \code{\link[=transform_clr]{transform_clr()}}.}
+\item{group_scales}{Optional informed group scales. For binary comparisons,
+this can be a single positive ratio for the second group relative to the
+first, or two positive scales from which that ratio is derived. For
+multi-group data, provide a positive vector with one scale per group.}
 }
 \value{
 Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
@@ -45,19 +46,47 @@ Internally, the data are transformed relative to an automatically selected
 reference glycan using glycoWork-style ALR logic, then back-transformed to
 the original ratio space before returning the result.
 }
-\details{
-Candidate reference glycans are ranked using the product of their Procrustes
-correlation to the corresponding CLR geometry and the inverse of their
-between-group variance, using the same fallback thresholds as \code{glycowork}.
-If the best candidate has Procrustes correlation below \code{0.9} or
-between-group variance above \code{0.1}, ALR is abandoned and CLR is returned.
+\section{Algorithmic details}{
+The stochastic branch follows \code{glycowork}: when \code{gamma > 0}, CLR noise is
+sampled per feature-sample entry rather than once per sample. Without
+informed scales, this corresponds to jittering around the sample-specific
+\code{log2} geometric mean of the non-zero components and then returning to ratio
+space.
 
-The reference search only considers glycans that are strictly positive in all
-samples, because the reference must remain finite on the \code{log2} scale.
-Non-reference glycans may still contain zeros; those entries remain zero in
-the returned ratio-space output.
-
-When \code{gamma > 0}, successful ALR transformations also include glycoWork-style
-uncertainty on the reference scale rather than reserving \code{gamma} only for
-CLR fallback.
+The \code{group_scales} argument is interpreted in the same way as
+\code{glycowork}'s \code{custom_scale}. For exactly two groups, provide the total-signal
+ratio of the second group relative to the first, either directly as a scalar
+or implicitly through two per-group scales. For multi-group data, provide one
+positive scale per group; these scales are used only in the stochastic branch.
 }
+
+\section{Motif quantification}{
+If you intend to use ALR/CLR transformation with motif quantification,
+you should apply the transformation after motif quantification rather than before.
+In another words, the recommended workflow is:
+\enumerate{
+\item Perform data preprocessing.
+}
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{clean_exp <- auto_clean(exp)
+}\if{html}{\out{</div>}}
+\enumerate{
+\item Perform motif quantification on the cleaned experiment.
+}
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{motif_exp <- glydet::quantify_motifs(clean_exp, motifs)
+}\if{html}{\out{</div>}}
+\enumerate{
+\item Perform ALR/CLR transformation on the motif-quantified experiment.
+}
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{coda_motif_exp <- auto_coda(motif_exp, by = "group", gamma = 0.1)
+}\if{html}{\out{</div>}}
+\enumerate{
+\item Proceed with downstream analyses on the transformed motif experiment.
+}
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{dea_res <- glystats::gly_ttest(coda_motif_exp)
+}\if{html}{\out{</div>}}
+}
+
