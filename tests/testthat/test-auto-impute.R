@@ -12,7 +12,8 @@ test_that("auto_impute works with QC samples", {
 
   # Verify it runs and picks a method
   expect_snapshot(
-    imputed <- auto_impute(exp, group_col = "group", qc_name = "QC")
+    imputed <- auto_impute(exp, group_col = "group", qc_name = "QC"),
+    transform = sanitize_cv_snapshot
   )
   expect_s3_class(imputed, "glyexp_experiment")
 
@@ -111,7 +112,10 @@ test_that("auto_impute works with custom methods", {
     impute_sample_min = impute_sample_min
   )
 
-  expect_snapshot(result <- auto_impute(exp, to_try = custom_methods))
+  expect_snapshot(
+    result <- auto_impute(exp, to_try = custom_methods),
+    transform = sanitize_cv_snapshot
+  )
   expect_s3_class(result, "glyexp_experiment")
   expect_false(any(is.na(result$expr_mat)))
 })

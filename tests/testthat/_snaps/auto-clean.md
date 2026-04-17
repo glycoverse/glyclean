@@ -100,12 +100,12 @@
       * Method "normalize_total_area": Median CV = CV_VALUE
       * Method "normalize_quantile": Median CV = CV_VALUE
       * Method "normalize_median_quotient": Median CV = CV_VALUE
-      * Method "normalize_loessf": Median CV = 0
-      * Method "normalize_loesscyc": Median CV = 0
+      * Method "normalize_loessf": Median CV = CV_VALUE
+      * Method "normalize_loesscyc": Median CV = CV_VALUE
       * Method "normalize_rlr": Median CV = CV_VALUE
       * Method "normalize_rlrma": Median CV = CV_VALUE
       * Method "normalize_rlrmacyc": Median CV = CV_VALUE
-      v Best method: "BEST_METHOD" with Median CV = 0
+      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
       v Normalization completed.
       
       -- Correcting batch effects --

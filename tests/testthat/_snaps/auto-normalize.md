@@ -4,18 +4,18 @@
       normed <- auto_normalize(exp, group_col = "group", qc_name = "QC")
     Message
       i QC samples found. Choosing the best normalization method based on QC samples.
-      * Raw data: Median CV = 0.07814
-      * Method "normalize_median": Median CV = 0.002167
-      * Method "normalize_median_abs": Median CV = 0.002167
-      * Method "normalize_total_area": Median CV = 0.002167
-      * Method "normalize_quantile": Median CV = 0
-      * Method "normalize_median_quotient": Median CV = 0.002167
-      * Method "normalize_loessf": Median CV = 4.539e-06
-      * Method "normalize_loesscyc": Median CV = 6.451e-05
-      * Method "normalize_rlr": Median CV = 5.19e-05
-      * Method "normalize_rlrma": Median CV = 5.182e-06
-      * Method "normalize_rlrmacyc": Median CV = 0.0002218
-      v Best method: "normalize_quantile" with Median CV = 0
+      * Raw data: Median CV = CV_VALUE
+      * Method "normalize_median": Median CV = CV_VALUE
+      * Method "normalize_median_abs": Median CV = CV_VALUE
+      * Method "normalize_total_area": Median CV = CV_VALUE
+      * Method "normalize_quantile": Median CV = CV_VALUE
+      * Method "normalize_median_quotient": Median CV = CV_VALUE
+      * Method "normalize_loessf": Median CV = CV_VALUE
+      * Method "normalize_loesscyc": Median CV = CV_VALUE
+      * Method "normalize_rlr": Median CV = CV_VALUE
+      * Method "normalize_rlrma": Median CV = CV_VALUE
+      * Method "normalize_rlrmacyc": Median CV = CV_VALUE
+      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
 
 # auto_normalize handles NULL qc_name
 

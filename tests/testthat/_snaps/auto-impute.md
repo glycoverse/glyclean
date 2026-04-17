@@ -4,18 +4,18 @@
       imputed <- auto_impute(exp, group_col = "group", qc_name = "QC")
     Message
       i QC samples found. Choosing the best imputation method based on QC samples.
-      * Raw data: Median CV = 0.07814
-      * Method "impute_zero": Median CV = 0.07814
-      * Method "impute_sample_min": Median CV = 0.07814
-      * Method "impute_half_sample_min": Median CV = 0.07814
-      * Method "impute_sw_knn": Median CV = 0.07814
-      * Method "impute_fw_knn": Median CV = 0.07814
-      * Method "impute_bpca": Median CV = 0.07814
-      * Method "impute_ppca": Median CV = 0.07814
-      * Method "impute_svd": Median CV = 0.07814
-      * Method "impute_min_prob": Median CV = 0.07814
-      * Method "impute_miss_forest": Median CV = 0.07814
-      v Best method: "impute_zero" with Median CV = 0.07814
+      * Raw data: Median CV = CV_VALUE
+      * Method "impute_zero": Median CV = CV_VALUE
+      * Method "impute_sample_min": Median CV = CV_VALUE
+      * Method "impute_half_sample_min": Median CV = CV_VALUE
+      * Method "impute_sw_knn": Median CV = CV_VALUE
+      * Method "impute_fw_knn": Median CV = CV_VALUE
+      * Method "impute_bpca": Median CV = CV_VALUE
+      * Method "impute_ppca": Median CV = CV_VALUE
+      * Method "impute_svd": Median CV = CV_VALUE
+      * Method "impute_min_prob": Median CV = CV_VALUE
+      * Method "impute_miss_forest": Median CV = CV_VALUE
+      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
 
 # auto_impute handles NULL qc_name
 
@@ -63,8 +63,8 @@
       result <- auto_impute(exp, to_try = custom_methods)
     Message
       i QC samples found. Choosing the best imputation method based on QC samples.
-      * Raw data: Median CV = 0.07814
-      * Method "impute_zero": Median CV = 0.07814
-      * Method "impute_sample_min": Median CV = 0.07814
-      v Best method: "impute_zero" with Median CV = 0.07814
+      * Raw data: Median CV = CV_VALUE
+      * Method "impute_zero": Median CV = CV_VALUE
+      * Method "impute_sample_min": Median CV = CV_VALUE
+      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
 

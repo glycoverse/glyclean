@@ -53,3 +53,15 @@ real_exp <- function() {
   glyexp::real_experiment |>
     glyexp::slice_head_var(n = 100)
 }
+
+sanitize_cv_snapshot <- function(x) {
+  x |>
+    stringr::str_replace_all(
+      "CV = [-+]?\\d*\\.?\\d+(?:e[-+]?\\d+)?",
+      "CV = CV_VALUE"
+    ) |>
+    stringr::str_replace_all(
+      'Best method: ".*?"',
+      'Best method: "BEST_METHOD"'
+    )
+}

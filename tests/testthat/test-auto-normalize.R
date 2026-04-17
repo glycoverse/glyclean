@@ -12,7 +12,8 @@ test_that("auto_normalize works with QC samples", {
 
   # Let's just verify it runs and picks a method
   expect_snapshot(
-    normed <- auto_normalize(exp, group_col = "group", qc_name = "QC")
+    normed <- auto_normalize(exp, group_col = "group", qc_name = "QC"),
+    transform = sanitize_cv_snapshot
   )
   expect_s3_class(normed, "glyexp_experiment")
 })
