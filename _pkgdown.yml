@@ -14,6 +14,7 @@ reference:
       - auto_normalize
       - auto_remove
       - auto_correct_batch_effect
+      - auto_coda
   - title: Aggregation
     contents:
       - aggregate
@@ -31,6 +32,10 @@ reference:
       - correct_batch_effect
       - detect_batch_effect
       - plot_batch_pca
+  - title: Compositional Data Analysis (CoDA)
+    contents:
+      - transform_clr
+      - transform_alr
   - title: Protein Adjustment
     contents:
       - adjust_protein
