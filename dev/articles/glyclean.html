@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.13.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.12.2.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -400,16 +400,17 @@ quotient normalization. A robust method specifically designed for
 compositional data, dividing each sample by its median quotient relative
 to a reference sample.</p></li>
 <li><p><strong><code><a href="../reference/normalize_clr.html">normalize_clr()</a></code></strong>: Centered Log-Ratio
-transformation. Each sample is log2-transformed and centered by the
-geometric mean of its non-zero components. This method handles zeros
-gracefully (they remain -Inf) and includes a scale-uncertainty
-model.</p></li>
+transformation with <code>glycowork</code>-compatible internal logic.
+The transformation is carried out on the <code>log2</code> scale and
+then back-transformed to the original ratio space, so zeros remain zeros
+in the returned result. The stochastic branch uses per-feature noise,
+matching <code>glycowork</code>.</p></li>
 <li><p><strong><code><a href="../reference/normalize_alr.html">normalize_alr()</a></code></strong>: Additive Log-Ratio
-transformation. The data are log2-transformed relative to an
-automatically selected reference glycan. The reference is chosen based
-on Procrustes correlation to CLR geometry and minimal between-group
-variance. If no suitable reference is found, ALR falls back to
-CLR.</p></li>
+transformation with <code>glycowork</code>-compatible internal logic.
+The reference glycan is chosen based on Procrustes correlation to CLR
+geometry and minimal between-group variance, and the final result is
+returned in the original ratio space. If no suitable reference is found,
+ALR falls back to CLR.</p></li>
 </ul>
 <p>The CLR and ALR methods align with the best practices described in
 DOI: 10.1038/s41467-025-56249-3 for glycomics data preprocessing.</p>

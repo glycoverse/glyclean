@@ -300,17 +300,18 @@ Instead, compositional data analysis techniques are recommended:
   relative to a reference sample.
 
 - **[`normalize_clr()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_clr.md)**:
-  Centered Log-Ratio transformation. Each sample is log2-transformed and
-  centered by the geometric mean of its non-zero components. This method
-  handles zeros gracefully (they remain -Inf) and includes a
-  scale-uncertainty model.
+  Centered Log-Ratio transformation with `glycowork`-compatible internal
+  logic. The transformation is carried out on the `log2` scale and then
+  back-transformed to the original ratio space, so zeros remain zeros in
+  the returned result. The stochastic branch uses per-feature noise,
+  matching `glycowork`.
 
 - **[`normalize_alr()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_alr.md)**:
-  Additive Log-Ratio transformation. The data are log2-transformed
-  relative to an automatically selected reference glycan. The reference
-  is chosen based on Procrustes correlation to CLR geometry and minimal
-  between-group variance. If no suitable reference is found, ALR falls
-  back to CLR.
+  Additive Log-Ratio transformation with `glycowork`-compatible internal
+  logic. The reference glycan is chosen based on Procrustes correlation
+  to CLR geometry and minimal between-group variance, and the final
+  result is returned in the original ratio space. If no suitable
+  reference is found, ALR falls back to CLR.
 
 The CLR and ALR methods align with the best practices described in DOI:
 10.1038/s41467-025-56249-3 for glycomics data preprocessing.

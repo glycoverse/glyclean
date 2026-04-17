@@ -1,9 +1,10 @@
 # Additive Log-Ratio Normalization
 
-This function implements the ALR preprocessing strategy described in
-DOI: 10.1038/s41467-025-56249-3. The data are transformed on the `log2`
-scale relative to an automatically selected reference glycan, which is
-removed from the output.
+This function implements a glycoWork-compatible ALR preprocessing
+strategy. Internally, the data are transformed relative to an
+automatically selected reference glycan using glycoWork-style ALR logic,
+then back-transformed to the original ratio space before returning the
+result.
 
 ## Usage
 
@@ -31,17 +32,17 @@ normalize_alr(x, by = NULL, gamma = 0.1, group_scales = NULL)
 
   Either a column name in `sample_info` (for `glyexp_experiment` input)
   or a factor/vector with one value per sample. Used for reference
-  ranking and for CLR fallback.
+  ranking and group-aware ALR/CLR behavior.
 
 - gamma:
 
-  Standard deviation of the CLR scale-uncertainty model used when ALR
-  falls back to CLR. Default is `0.1`.
+  Standard deviation of the glycoWork-style uncertainty model. Default
+  is `0.1`.
 
 - group_scales:
 
-  Optional known group-level scale differences passed through to CLR
-  fallback. See
+  Optional informed group scales passed through to the glycoWork-style
+  ALR/CLR logic. See
   [`normalize_clr()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_clr.md).
 
 ## Value
@@ -53,19 +54,22 @@ succeeds, the reference glycan is excluded from the result and the
 output therefore has one fewer row than the input. When ALR falls back
 to CLR, the returned object keeps the original dimensions. The returned
 values are back-transformed to the original ratio space, corresponding
-to `x / x_ref`. Zeros in non-reference glycans therefore remain zeros in
-the output.
+to `x / x_ref`.
 
 ## Details
 
 Candidate reference glycans are ranked using the product of their
 Procrustes correlation to the corresponding CLR geometry and the inverse
-of their between-group variance. If the best candidate has Procrustes
-correlation below `0.9` or between-group variance above `0.1`, ALR is
-abandoned and CLR is returned instead, matching the fallback rule
-described in DOI: 10.1038/s41467-025-56249-3.
+of their between-group variance, using the same fallback thresholds as
+`glycowork`. If the best candidate has Procrustes correlation below
+`0.9` or between-group variance above `0.1`, ALR is abandoned and CLR is
+returned.
 
 The reference search only considers glycans that are strictly positive
 in all samples, because the reference must remain finite on the `log2`
 scale. Non-reference glycans may still contain zeros; those entries
-become infinite after transformation.
+remain zero in the returned ratio-space output.
+
+When `gamma > 0`, successful ALR transformations also include
+glycoWork-style uncertainty on the reference scale rather than reserving
+`gamma` only for CLR fallback.
