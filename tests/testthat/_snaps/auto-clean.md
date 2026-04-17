@@ -177,7 +177,6 @@
       
       i No QC samples found. Using default normalization method based on experiment type.
       i Experiment type is "glycomics" with "nrow(exp)" glycans.
-      i CLR transformation will be used.
       v Normalization completed.
       
       -- Correcting batch effects --
