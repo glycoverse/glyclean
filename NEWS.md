@@ -1,11 +1,10 @@
 # glyclean (development version)
 
-# glyclean 0.13.0
-
 ## New features
 
 - `transform_clr()` and `transform_alr()` now align with the methods described in DOI: 10.1038/s41467-025-56249-3.
-- `auto_normalize()` now performs total abundance normalization followed by ALR or CLR transformation for glycomics data with no QC samples, to be aligned with the best practices described in DOI: 10.1038/s41467-025-56249-3.
+- `auto_normalize()` now only performs total abundance normalization for glycomics data.
+- Add `auto_coda()` to use the CoDA strategy in glycowork for glycomics data.
 
 # glyclean 0.12.2
 
