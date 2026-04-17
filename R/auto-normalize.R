@@ -4,16 +4,12 @@
 #' If Quality Control (QC) samples are present, the method that best stabilizes them
 #' (i.e., yields the lowest median coefficient of variation) is chosen.
 #' Otherwise, it defaults to median normalization for glycoproteomics data,
-#' and total area normalization followed by CLR (for ≤50 glycans) or ALR (for >50 glycans) for glycomics data.
+#' and total area normalization for glycomics data.
 #'
 #' @details
 #' When QC samples are available, the function benchmarks all normalization methods in `to_try`
 #' and selects the one with the lowest median coefficient of variation (CV) among QC samples.
 #' Methods that fail are skipped with a warning.
-#'
-#' When no QC samples are available, the function uses a default strategy based on experiment type:
-#' - Glycomics: total area normalization followed by CLR or ALR transformation
-#' - Other types (e.g., glycoproteomics): median normalization
 #'
 #' @param exp An [glyexp::experiment()].
 #' @param group_col The column name in sample_info for groups. Default is "group".
@@ -152,15 +148,7 @@ auto_normalize <- function(
     cli::cli_alert_info(
       "Experiment type is {.val glycomics} with {.val nrow(exp)} glycans."
     )
-    exp <- normalize_total_area(exp)
-    if (nrow(exp) > 50) {
-      cli::cli_alert_info("ALR transformation will be used.")
-      exp <- transform_alr(exp)
-    } else {
-      cli::cli_alert_info("CLR transformation will be used.")
-      exp <- transform_clr(exp)
-    }
-    exp
+    normalize_total_area(exp)
   } else {
     # Default for glycoproteomics and others
     cli::cli_alert_info(
