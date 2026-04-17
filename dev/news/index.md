@@ -2,6 +2,8 @@
 
 ## glyclean (development version)
 
+## glyclean 0.13.0
+
 ### New features
 
 - [`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md)
