@@ -14,6 +14,8 @@
   : Automatic Removing Variables
 - [`auto_correct_batch_effect()`](https://glycoverse.github.io/glyclean/reference/auto_correct_batch_effect.md)
   : Automatic Batch Correction
+- [`auto_coda()`](https://glycoverse.github.io/glyclean/reference/auto_coda.md)
+  : Automatical CoDA transformation
 
 ## Aggregation
 
@@ -24,10 +26,6 @@
 
 ## Normalization
 
-- [`normalize_alr()`](https://glycoverse.github.io/glyclean/reference/normalize_alr.md)
-  : Additive Log-Ratio Normalization
-- [`normalize_clr()`](https://glycoverse.github.io/glyclean/reference/normalize_clr.md)
-  : Centered Log-Ratio Normalization
 - [`normalize_loesscyc()`](https://glycoverse.github.io/glyclean/reference/normalize_loesscyc.md)
   : LoessCyc Normalization
 - [`normalize_loessf()`](https://glycoverse.github.io/glyclean/reference/normalize_loessf.md)
@@ -97,6 +95,13 @@
   : Detect batch effect
 - [`plot_batch_pca()`](https://glycoverse.github.io/glyclean/reference/plot_batch_pca.md)
   : Plot PCA Score by Batch
+
+## Compositional Data Analysis (CoDA)
+
+- [`transform_clr()`](https://glycoverse.github.io/glyclean/reference/transform_clr.md)
+  : Centered Log-Ratio Transformation
+- [`transform_alr()`](https://glycoverse.github.io/glyclean/reference/transform_alr.md)
+  : Additive Log-Ratio Transformation
 
 ## Protein Adjustment
 

@@ -15,6 +15,7 @@
 <url><loc>https://glycoverse.github.io/glyclean/reference/aggregate.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/auto_aggregate.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/auto_clean.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/auto_coda.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/auto_correct_batch_effect.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/auto_impute.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/auto_normalize.html</loc></url>
@@ -39,8 +40,6 @@
 <url><loc>https://glycoverse.github.io/glyclean/reference/impute_sw_knn.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/impute_zero.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/index.html</loc></url>
-<url><loc>https://glycoverse.github.io/glyclean/reference/normalize_alr.html</loc></url>
-<url><loc>https://glycoverse.github.io/glyclean/reference/normalize_clr.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/normalize_loesscyc.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/normalize_loessf.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/normalize_median.html</loc></url>
@@ -66,5 +65,7 @@
 <url><loc>https://glycoverse.github.io/glyclean/reference/remove_low_expr.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/remove_low_var.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/reference/remove_rare.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/transform_alr.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/reference/transform_clr.html</loc></url>
 </urlset>
 
