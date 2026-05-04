@@ -66,13 +66,13 @@ test_that("auto_impute chooses defaults by sample count and experiment type", {
   )
 
   cases <- tibble::tribble(
-    ~exp_type, ~n_samples, ~expected,
-    "glycomics", 20, "impute_min_prob",
-    "glycoproteomics", 20, "impute_min_prob",
-    "glycomics", 50, "impute_bpca",
-    "glycoproteomics", 50, "impute_min_prob",
-    "glycomics", 120, "impute_miss_forest",
-    "glycoproteomics", 120, "impute_bpca"
+    ~exp_type         , ~n_samples , ~expected            ,
+    "glycomics"       ,         20 , "impute_min_prob"    ,
+    "glycoproteomics" ,         20 , "impute_min_prob"    ,
+    "glycomics"       ,         50 , "impute_bpca"        ,
+    "glycoproteomics" ,         50 , "impute_min_prob"    ,
+    "glycomics"       ,        120 , "impute_miss_forest" ,
+    "glycoproteomics" ,        120 , "impute_bpca"
   )
 
   purrr::pwalk(cases, function(exp_type, n_samples, expected) {
