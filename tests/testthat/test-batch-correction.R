@@ -1067,12 +1067,15 @@ test_that("correct_batch_effect works with limma method and matrix input", {
   batch_factor <- factor(rep(c("A", "B"), each = 5))
   group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
 
-  suppressMessages(
-    result_mat <- correct_batch_effect(
-      test_mat,
-      batch = batch_factor,
-      group = group_factor,
-      method = "limma"
+  withr::with_output_sink(
+    nullfile(),
+    suppressMessages(
+      result_mat <- correct_batch_effect(
+        test_mat,
+        batch = batch_factor,
+        group = group_factor,
+        method = "limma"
+      )
     )
   )
 

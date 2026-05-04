@@ -263,9 +263,16 @@ test_that("add_site_seq shows correct message for character vector input", {
   )
 
   fasta_vec <- c(P12345 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-  expect_message(
+  messages <- character()
+  withCallingHandlers(
     add_site_seq(exp, fasta_vec, n_aa = 3),
-    '"Provided" contains 1 protein sequences'
+    message = function(cnd) {
+      messages <<- c(messages, conditionMessage(cnd))
+      invokeRestart("muffleMessage")
+    }
+  )
+  expect_true(
+    any(grepl('"Provided" contains 1 protein sequences', messages, fixed = TRUE))
   )
 })
 

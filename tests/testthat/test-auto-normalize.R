@@ -34,7 +34,7 @@ test_that("auto_normalize works for glycomics without QC", {
   exp$meta_data$glycan_type <- "N" # Required if not others
 
   manual <- normalize_total_area(exp)
-  auto <- auto_normalize(exp, group_col = NULL)
+  suppressMessages(auto <- auto_normalize(exp, group_col = NULL))
 
   expect_equal(auto$expr_mat, manual$expr_mat)
 })
