@@ -1,70 +1,33 @@
-# auto_impute works with QC samples
+# auto_impute uses deterministic defaults with QC samples
 
     Code
-      imputed <- auto_impute(exp, group_col = "group", qc_name = "QC")
+      imputed <- auto_impute(exp, group_col = "group", qc_name = "QC", to_try = list(
+        impute_sample_min = function(x) stop("must not be called")))
     Message
-      i QC samples found. Choosing the best imputation method based on QC samples.
-      * Raw data: Median CV = CV_VALUE
-      * Method "impute_zero": Median CV = CV_VALUE
-      * Method "impute_sample_min": Median CV = CV_VALUE
-      * Method "impute_half_sample_min": Median CV = CV_VALUE
-      * Method "impute_sw_knn": Median CV = CV_VALUE
-      * Method "impute_fw_knn": Median CV = CV_VALUE
-      * Method "impute_bpca": Median CV = CV_VALUE
-      * Method "impute_ppca": Median CV = CV_VALUE
-      * Method "impute_svd": Median CV = CV_VALUE
-      * Method "impute_min_prob": Median CV = CV_VALUE
-      * Method "impute_miss_forest": Median CV = CV_VALUE
-      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
+      i QC samples found. Using deterministic default imputation method.
+      i Using default imputation method for "glycoproteomics" with 30 <= n_samples <= 100: `impute_min_prob()`.
 
 # auto_impute handles NULL qc_name
 
     Code
       imputed <- auto_impute(exp, group_col = "group", qc_name = NULL)
     Message
-      i No QC samples found. Using default imputation method based on sample size.
-      i Sample size <= 30, using `impute_sample_min()`.
-
-# auto_impute uses sample_min for small datasets without QC
-
-    Code
-      auto <- auto_impute(exp, group_col = NULL)
-    Message
-      i No QC samples found. Using default imputation method based on sample size.
-      i Sample size <= 30, using `impute_sample_min()`.
-
-# auto_impute uses min_prob for medium datasets without QC
-
-    Code
-      auto <- auto_impute(exp, group_col = NULL)
-    Message
-      i No QC samples found. Using default imputation method based on sample size.
-      i Sample size <= 100, using `impute_min_prob()`.
+      i No QC samples found. Using deterministic default imputation method.
+      i Using default imputation method for "glycomics" with n_samples < 30: `impute_min_prob()`.
 
 # auto_impute handles missing group_col gracefully
 
     Code
       result <- auto_impute(exp, group_col = NULL)
     Message
-      i No QC samples found. Using default imputation method based on sample size.
-      i Sample size <= 30, using `impute_sample_min()`.
+      i No QC samples found. Using deterministic default imputation method.
+      i Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
 
 # auto_impute handles non-existent group_col gracefully
 
     Code
       result <- auto_impute(exp, group_col = "nonexistent")
     Message
-      i No QC samples found. Using default imputation method based on sample size.
-      i Sample size <= 30, using `impute_sample_min()`.
-
-# auto_impute works with custom methods
-
-    Code
-      result <- auto_impute(exp, to_try = custom_methods)
-    Message
-      i QC samples found. Choosing the best imputation method based on QC samples.
-      * Raw data: Median CV = CV_VALUE
-      * Method "impute_zero": Median CV = CV_VALUE
-      * Method "impute_sample_min": Median CV = CV_VALUE
-      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
+      i No QC samples found. Using deterministic default imputation method.
+      i Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
 

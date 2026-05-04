@@ -28,9 +28,10 @@
 #' label them as "QC" as the "group" in the sample information table.
 #' You can also use set `qc_name` to other names.
 #'
-#' When QC samples exist, [auto_normalize()] and [auto_impute()] will compare various
-#' normalization or imputation methods,
-#' and select the one that stablize QC samples the most.
+#' When QC samples exist, [auto_normalize()] will compare various
+#' normalization methods and select the one that stabilizes QC samples the most.
+#' [auto_impute()] uses deterministic defaults based on sample count and
+#' experiment type, regardless of QC sample availability.
 #'
 #' @param exp A [glyexp::experiment()] containing glycoproteomics or
 #'   glycomics data.
@@ -50,17 +51,8 @@
 #'   - [normalize_rlr()]: RLR normalization
 #'   - [normalize_rlrma()]: RLRMA normalization
 #'   - [normalize_rlrmacyc()]: RLRMAcyc normalization
-#' @param impute_to_try Imputation functions to try. A list. Default includes:
-#'   - [impute_zero()]: zero imputation
-#'   - [impute_sample_min()]: sample-wise minimum imputation
-#'   - [impute_half_sample_min()]: half sample-wise minimum imputation
-#'   - [impute_sw_knn()]: sample-wise KNN imputation
-#'   - [impute_fw_knn()]: feature-wise KNN imputation
-#'   - [impute_bpca()]: BPCA imputation
-#'   - [impute_ppca()]: PPCA imputation
-#'   - [impute_svd()]: SVD imputation
-#'   - [impute_min_prob()]: minimum probability imputation
-#'   - [impute_miss_forest()]: MissForest imputation
+#' @param impute_to_try Deprecated. Passed to [auto_impute()] for compatibility
+#'   and ignored by the deterministic automatic imputation strategy.
 #' @param remove_preset The preset for removing variables. Default is "discovery".
 #'   Available presets:
 #'   - "simple": remove variables with more than 50% missing values.

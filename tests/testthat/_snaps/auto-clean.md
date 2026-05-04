@@ -19,8 +19,8 @@
       
       -- Imputing missing values --
       
-      i No QC samples found. Using default imputation method based on sample size.
-      i Sample size <= 30, using `impute_sample_min()`.
+      i No QC samples found. Using deterministic default imputation method.
+      i Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
       v Imputation completed.
       
       -- Aggregating data --
@@ -71,19 +71,8 @@
       
       -- Imputing missing values --
       
-      i QC samples found. Choosing the best imputation method based on QC samples.
-      * Raw data: Median CV = CV_VALUE
-      * Method "impute_zero": Median CV = CV_VALUE
-      * Method "impute_sample_min": Median CV = CV_VALUE
-      * Method "impute_half_sample_min": Median CV = CV_VALUE
-      * Method "impute_sw_knn": Median CV = CV_VALUE
-      * Method "impute_fw_knn": Median CV = CV_VALUE
-      * Method "impute_bpca": Median CV = CV_VALUE
-      * Method "impute_ppca": Median CV = CV_VALUE
-      * Method "impute_svd": Median CV = CV_VALUE
-      * Method "impute_min_prob": Median CV = CV_VALUE
-      * Method "impute_miss_forest": Median CV = CV_VALUE
-      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
+      i QC samples found. Using deterministic default imputation method.
+      i Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
       v Imputation completed.
       
       -- Aggregating data --
@@ -134,8 +123,8 @@
       
       -- Imputing missing values --
       
-      i No QC samples found. Using default imputation method based on sample size.
-      i Sample size <= 30, using `impute_sample_min()`.
+      i No QC samples found. Using deterministic default imputation method.
+      i Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
       v Imputation completed.
       
       -- Aggregating data --
@@ -169,8 +158,8 @@
       
       -- Imputing missing values --
       
-      i No QC samples found. Using default imputation method based on sample size.
-      i Sample size <= 30, using `impute_sample_min()`.
+      i No QC samples found. Using deterministic default imputation method.
+      i Using default imputation method for "glycomics" with n_samples < 30: `impute_min_prob()`.
       v Imputation completed.
       
       -- Normalizing data --
@@ -199,19 +188,8 @@
       
       -- Imputing missing values --
       
-      i QC samples found. Choosing the best imputation method based on QC samples.
-      * Raw data: Median CV = CV_VALUE
-      * Method "impute_zero": Median CV = CV_VALUE
-      * Method "impute_sample_min": Median CV = CV_VALUE
-      * Method "impute_half_sample_min": Median CV = CV_VALUE
-      * Method "impute_sw_knn": Median CV = CV_VALUE
-      * Method "impute_fw_knn": Median CV = CV_VALUE
-      * Method "impute_bpca": Median CV = CV_VALUE
-      * Method "impute_ppca": Median CV = CV_VALUE
-      * Method "impute_svd": Median CV = CV_VALUE
-      * Method "impute_min_prob": Median CV = CV_VALUE
-      * Method "impute_miss_forest": Median CV = CV_VALUE
-      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
+      i QC samples found. Using deterministic default imputation method.
+      i Using default imputation method for "glycomics" with n_samples < 30: `impute_min_prob()`.
       v Imputation completed.
       
       -- Normalizing data --
