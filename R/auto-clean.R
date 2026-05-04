@@ -97,7 +97,6 @@ auto_clean <- function(
   checkmate::assert_string(batch_col, null.ok = TRUE)
   checkmate::assert_string(qc_name, null.ok = TRUE)
   checkmate::assert_list(normalize_to_try, types = "function", null.ok = TRUE)
-  checkmate::assert_list(impute_to_try, types = "function", null.ok = TRUE)
   checkmate::assert_choice(remove_preset, c("simple", "discovery", "biomarker"))
   checkmate::assert_number(batch_prop_threshold, lower = 0, upper = 1)
   checkmate::assert_flag(check_batch_confounding)
@@ -114,11 +113,18 @@ auto_clean <- function(
     ))
   }
 
+  if (!is.null(impute_to_try)) {
+    lifecycle::deprecate_warn(
+      when = "0.14.0",
+      what = "auto_clean(impute_to_try)",
+      details = "The automatic imputation strategy is now deterministic and does not require user-specified methods to try. The `impute_to_try` parameter will be removed in a future release."
+    )
+  }
+
   params <- list(
     group_col = group_col,
     qc_name = qc_name,
     normalize_to_try = normalize_to_try,
-    impute_to_try = impute_to_try,
     remove_preset = remove_preset,
     batch_prop_threshold = batch_prop_threshold,
     check_batch_confounding = check_batch_confounding,
@@ -156,9 +162,7 @@ auto_clean <- function(
   exp <- auto_impute(
     exp,
     params$group_col,
-    params$qc_name,
-    params$impute_to_try,
-    info
+    info = info
   )
   cli::cli_alert_success("Imputation completed.")
   cli::cli_h2("Aggregating data")
@@ -201,9 +205,7 @@ auto_clean <- function(
   exp <- auto_impute(
     exp,
     params$group_col,
-    params$qc_name,
-    params$impute_to_try,
-    info
+    info = info
   )
   cli::cli_alert_success("Imputation completed.")
   cli::cli_h2("Normalizing data")

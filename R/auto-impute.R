@@ -42,12 +42,25 @@ auto_impute <- function(
   # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")
   checkmate::assert_string(group_col, null.ok = TRUE)
-  checkmate::assert_string(qc_name, null.ok = TRUE)
-  checkmate::assert_list(to_try, types = "function", null.ok = TRUE)
+
+  if (!identical(qc_name, "QC")) {
+    lifecycle::deprecate_warn(
+      when = "0.14.0",
+      what = "auto_impute(qc_name)",
+      details = "This function no longer uses QC sample information and the `qc_name` parameter will be removed in a future release."
+    )
+  }
+  if (!is.null(to_try)) {
+    lifecycle::deprecate_warn(
+      when = "0.14.0",
+      what = "auto_impute(to_try)",
+      details = "The automatic imputation strategy is now deterministic and does not require user-specified methods to try. The `to_try` parameter will be removed in a future release."
+    )
+  }
 
   # Get experiment inspection
   if (is.null(info)) {
-    info <- inspect_experiment(exp, group_col = group_col, qc_name = qc_name)
+    info <- inspect_experiment(exp, group_col = group_col)
   }
 
   .auto_impute_default(exp, info)
@@ -61,16 +74,6 @@ auto_impute <- function(
 #' @returns The imputed experiment.
 #' @noRd
 .auto_impute_default <- function(exp, info) {
-  if (info$has_qc) {
-    cli::cli_alert_info(
-      "QC samples found. Using deterministic default imputation method."
-    )
-  } else {
-    cli::cli_alert_info(
-      "No QC samples found. Using deterministic default imputation method."
-    )
-  }
-
   n_samples <- ncol(exp)
   exp_type <- glyexp::get_exp_type(exp)
   strategy <- .choose_auto_impute_strategy(n_samples, exp_type)

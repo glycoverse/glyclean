@@ -130,13 +130,30 @@ test_that("auto_impute handles non-existent group_col gracefully", {
   expect_false(any(is.na(result$expr_mat)))
 })
 
-test_that("auto_impute validates input arguments", {
+test_that("auto_impute validates input and ignores deprecated arguments", {
+  skip_if_not_installed("mockr")
+
   exp <- simple_exp(10, 10)
+  exp$meta_data$exp_type <- "glycoproteomics"
+  exp$expr_mat[1, 1] <- NA
+
+  mockr::local_mock(
+    impute_min_prob = function(x, ...) {
+      x$expr_mat[is.na(x$expr_mat)] <- 0
+      x
+    }
+  )
 
   # Test invalid exp
   expect_error(auto_impute("not_an_experiment"), "glyexp_experiment")
 
-  # Test invalid to_try
-  expect_error(auto_impute(exp, to_try = "not_a_list"), "list")
-  expect_error(auto_impute(exp, to_try = list("not_a_function")), "function")
+  expect_snapshot(
+    result <- auto_impute(
+      exp,
+      qc_name = NULL,
+      to_try = "not_a_list"
+    )
+  )
+  expect_s3_class(result, "glyexp_experiment")
+  expect_false(any(is.na(result$expr_mat)))
 })
