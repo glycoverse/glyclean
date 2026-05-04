@@ -90,6 +90,41 @@ test_that("auto_impute chooses defaults by sample count and experiment type", {
   expect_equal(called, cases$expected)
 })
 
+test_that("auto_impute uses min_prob for others experiments", {
+  skip_if_not_installed("mockr")
+
+  exp <- simple_exp(10, 10)
+  exp$meta_data$exp_type <- "others"
+  exp$expr_mat[1, 1] <- NA
+
+  called <- NULL
+  mockr::local_mock(
+    impute_min_prob = function(x, ...) {
+      called <<- "impute_min_prob"
+      x$expr_mat[is.na(x$expr_mat)] <- 0
+      x
+    }
+  )
+
+  expect_message(
+    result <- auto_impute(exp, group_col = NULL),
+    'for "others" with n_samples = 10: `impute_min_prob\\(\\)`'
+  )
+  expect_equal(called, "impute_min_prob")
+  expect_s3_class(result, "glyexp_experiment")
+  expect_false(any(is.na(result$expr_mat)))
+})
+
+test_that("auto_impute rejects unsupported experiment types", {
+  exp <- simple_exp(10, 10)
+
+  exp$meta_data$exp_type <- "traitomics"
+  expect_snapshot(error = TRUE, auto_impute(exp, group_col = NULL))
+
+  exp$meta_data$exp_type <- "traitproteomics"
+  expect_snapshot(error = TRUE, auto_impute(exp, group_col = NULL))
+})
+
 test_that("auto_impute handles missing group_col gracefully", {
   skip_if_not_installed("mockr")
 

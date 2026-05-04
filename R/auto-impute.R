@@ -102,6 +102,20 @@ auto_impute <- function(
   checkmate::assert_count(n_samples, positive = TRUE)
   checkmate::assert_string(exp_type, null.ok = TRUE)
 
+  if (identical(exp_type, "others")) {
+    return(list(
+      exp_type = exp_type,
+      sample_group = stringr::str_glue("n_samples = {n_samples}"),
+      method_name = "impute_min_prob"
+    ))
+  }
+  if (exp_type %in% c("traitomics", "traitproteomics")) {
+    cli::cli_abort(c(
+      "Can only apply automatic imputation on glycomics and glycoproteomics experiments.",
+      "x" = "Experiment type {.val {exp_type}} is not supported."
+    ))
+  }
+
   if (identical(exp_type, "glycomics")) {
     strategy_exp_type <- "glycomics"
   } else {

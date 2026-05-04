@@ -21,6 +21,24 @@
     Message
       i Using default imputation method for "glycomics" with n_samples < 30: `impute_min_prob()`.
 
+# auto_impute rejects unsupported experiment types
+
+    Code
+      auto_impute(exp, group_col = NULL)
+    Condition
+      Error in `.choose_auto_impute_strategy()`:
+      ! Can only apply automatic imputation on glycomics and glycoproteomics experiments.
+      x Experiment type "traitomics" is not supported.
+
+---
+
+    Code
+      auto_impute(exp, group_col = NULL)
+    Condition
+      Error in `.choose_auto_impute_strategy()`:
+      ! Can only apply automatic imputation on glycomics and glycoproteomics experiments.
+      x Experiment type "traitproteomics" is not supported.
+
 # auto_impute handles missing group_col gracefully
 
     Code
