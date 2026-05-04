@@ -22,6 +22,7 @@ You can install the latest release of glyclean from
 (**recommended**):
 
 ``` r
+
 # install.packages("pak")
 pak::repo_add(glycoverse = "https://glycoverse.r-universe.dev")
 pak::pkg_install("glyclean")
@@ -30,12 +31,14 @@ pak::pkg_install("glyclean")
 Or from [GitHub](https://github.com/glycoverse/glyclean):
 
 ``` r
+
 pak::pkg_install("glycoverse/glyclean@*release")
 ```
 
 Or install the development version (NOT recommended):
 
 ``` r
+
 pak::pkg_install("glycoverse/glyclean")
 ```
 
@@ -62,6 +65,7 @@ with clean, analysis-ready data.
 ## Example
 
 ``` r
+
 library(glyexp)
 library(glyclean)
 

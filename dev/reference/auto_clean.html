@@ -145,17 +145,8 @@ Only used when <code>group_col</code> is not NULL. Can be NULL when no QC sample
 
 
 <dt id="arg-impute-to-try">impute_to_try<a class="anchor" aria-label="anchor" href="#arg-impute-to-try"></a></dt>
-<dd><p>Imputation functions to try. A list. Default includes:</p><ul><li><p><code><a href="impute_zero.html">impute_zero()</a></code>: zero imputation</p></li>
-<li><p><code><a href="impute_sample_min.html">impute_sample_min()</a></code>: sample-wise minimum imputation</p></li>
-<li><p><code><a href="impute_half_sample_min.html">impute_half_sample_min()</a></code>: half sample-wise minimum imputation</p></li>
-<li><p><code><a href="impute_sw_knn.html">impute_sw_knn()</a></code>: sample-wise KNN imputation</p></li>
-<li><p><code><a href="impute_fw_knn.html">impute_fw_knn()</a></code>: feature-wise KNN imputation</p></li>
-<li><p><code><a href="impute_bpca.html">impute_bpca()</a></code>: BPCA imputation</p></li>
-<li><p><code><a href="impute_ppca.html">impute_ppca()</a></code>: PPCA imputation</p></li>
-<li><p><code><a href="impute_svd.html">impute_svd()</a></code>: SVD imputation</p></li>
-<li><p><code><a href="impute_min_prob.html">impute_min_prob()</a></code>: minimum probability imputation</p></li>
-<li><p><code><a href="impute_miss_forest.html">impute_miss_forest()</a></code>: MissForest imputation</p></li>
-</ul></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a>
+This parameter is no longer used and will be removed in a future release.</p></dd>
 
 
 <dt id="arg-remove-preset">remove_preset<a class="anchor" aria-label="anchor" href="#arg-remove-preset"></a></dt>
@@ -198,9 +189,10 @@ Default is <code>TRUE</code>.</p></dd>
     <p>If you have quality control (QC) samples,
 label them as "QC" as the "group" in the sample information table.
 You can also use set <code>qc_name</code> to other names.</p>
-<p>When QC samples exist, <code><a href="auto_normalize.html">auto_normalize()</a></code> and <code><a href="auto_impute.html">auto_impute()</a></code> will compare various
-normalization or imputation methods,
-and select the one that stablize QC samples the most.</p>
+<p>When QC samples exist, <code><a href="auto_normalize.html">auto_normalize()</a></code> will compare various
+normalization methods and select the one that stabilizes QC samples the most.
+<code><a href="auto_impute.html">auto_impute()</a></code> uses deterministic defaults based on sample count and
+experiment type, regardless of QC sample availability.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -228,8 +220,7 @@ and select the one that stablize QC samples the most.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Imputing missing values</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using default imputation method based on sample size.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Sample size &lt;= 30, using `impute_sample_min()`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using default imputation method for <span style="color: #0000BB;">"glycoproteomics"</span> with n_samples &lt; 30: `impute_min_prob()`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Imputation completed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Aggregating data</span> ──</span>

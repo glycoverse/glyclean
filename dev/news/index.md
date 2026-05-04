@@ -99,7 +99,7 @@
   - [`plot_batch_pca()`](https://glycoverse.github.io/glyclean/dev/reference/plot_batch_pca.md):
     PCA score plot colored by batch.
   - [`plot_rep_scatter()`](https://glycoverse.github.io/glyclean/dev/reference/plot_rep_scatter.md):
-    Scatter plots of replicate sample pairs with $R^{2}$ values.
+    Scatter plots of replicate sample pairs with $`R^2`$ values.
 
 ### Minor improvements and fixes
 

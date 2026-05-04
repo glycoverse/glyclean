@@ -107,37 +107,8 @@ auto_clean(
 
 - impute_to_try:
 
-  Imputation functions to try. A list. Default includes:
-
-  - [`impute_zero()`](https://glycoverse.github.io/glyclean/dev/reference/impute_zero.md):
-    zero imputation
-
-  - [`impute_sample_min()`](https://glycoverse.github.io/glyclean/dev/reference/impute_sample_min.md):
-    sample-wise minimum imputation
-
-  - [`impute_half_sample_min()`](https://glycoverse.github.io/glyclean/dev/reference/impute_half_sample_min.md):
-    half sample-wise minimum imputation
-
-  - [`impute_sw_knn()`](https://glycoverse.github.io/glyclean/dev/reference/impute_sw_knn.md):
-    sample-wise KNN imputation
-
-  - [`impute_fw_knn()`](https://glycoverse.github.io/glyclean/dev/reference/impute_fw_knn.md):
-    feature-wise KNN imputation
-
-  - [`impute_bpca()`](https://glycoverse.github.io/glyclean/dev/reference/impute_bpca.md):
-    BPCA imputation
-
-  - [`impute_ppca()`](https://glycoverse.github.io/glyclean/dev/reference/impute_ppca.md):
-    PPCA imputation
-
-  - [`impute_svd()`](https://glycoverse.github.io/glyclean/dev/reference/impute_svd.md):
-    SVD imputation
-
-  - [`impute_min_prob()`](https://glycoverse.github.io/glyclean/dev/reference/impute_min_prob.md):
-    minimum probability imputation
-
-  - [`impute_miss_forest()`](https://glycoverse.github.io/glyclean/dev/reference/impute_miss_forest.md):
-    MissForest imputation
+  **\[deprecated\]** This parameter is no longer used and will be
+  removed in a future release.
 
 - remove_preset:
 
@@ -191,10 +162,11 @@ to other names.
 
 When QC samples exist,
 [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
-and
+will compare various normalization methods and select the one that
+stabilizes QC samples the most.
 [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
-will compare various normalization or imputation methods, and select the
-one that stablize QC samples the most.
+uses deterministic defaults based on sample count and experiment type,
+regardless of QC sample availability.
 
 ## See also
 
@@ -226,8 +198,7 @@ auto_clean(exp)
 #> 
 #> ── Imputing missing values ──
 #> 
-#> ℹ No QC samples found. Using default imputation method based on sample size.
-#> ℹ Sample size <= 30, using `impute_sample_min()`.
+#> ℹ Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
 #> ✔ Imputation completed.
 #> 
 #> ── Aggregating data ──

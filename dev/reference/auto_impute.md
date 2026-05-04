@@ -1,16 +1,9 @@
 # Automatic Imputation
 
-This function automatically selects and applies the most suitable
-imputation method for the given dataset. If Quality Control (QC) samples
-are present, the method that best stabilizes them (i.e., yields the
-lowest median coefficient of variation) is chosen. Otherwise, it
-defaults to a sample-size-based strategy:
-
-- less than 30 samples: Sample minimum imputation
-
-- between 30 and 100 samples: Minimum probability imputation
-
-- more than 100 samples: MissForest imputation
+This function automatically selects and applies a deterministic default
+imputation method by sample count and experiment type. Quality Control
+(QC) samples are inspected for workflow consistency, but they are not
+used to benchmark or select the imputation method.
 
 ## Usage
 
@@ -38,43 +31,14 @@ auto_impute(
 
 - qc_name:
 
-  The name of QC samples in the `group_col` column. Default is "QC".
-  Only used when `group_col` is not NULL. Can be NULL when no QC samples
-  are available.
+  **\[deprecated\]** This function no longer uses QC sample information.
+  This parameter is ignored and will be removed in a future release.
 
 - to_try:
 
-  Imputation functions to try. A list. Default includes:
-
-  - [`impute_zero()`](https://glycoverse.github.io/glyclean/dev/reference/impute_zero.md):
-    zero imputation
-
-  - [`impute_sample_min()`](https://glycoverse.github.io/glyclean/dev/reference/impute_sample_min.md):
-    sample minimum imputation
-
-  - [`impute_half_sample_min()`](https://glycoverse.github.io/glyclean/dev/reference/impute_half_sample_min.md):
-    half sample minimum imputation
-
-  - [`impute_sw_knn()`](https://glycoverse.github.io/glyclean/dev/reference/impute_sw_knn.md):
-    sample-wise KNN imputation
-
-  - [`impute_fw_knn()`](https://glycoverse.github.io/glyclean/dev/reference/impute_fw_knn.md):
-    feature-wise KNN imputation
-
-  - [`impute_bpca()`](https://glycoverse.github.io/glyclean/dev/reference/impute_bpca.md):
-    BPCA imputation
-
-  - [`impute_ppca()`](https://glycoverse.github.io/glyclean/dev/reference/impute_ppca.md):
-    PPCA imputation
-
-  - [`impute_svd()`](https://glycoverse.github.io/glyclean/dev/reference/impute_svd.md):
-    SVD imputation
-
-  - [`impute_min_prob()`](https://glycoverse.github.io/glyclean/dev/reference/impute_min_prob.md):
-    minimum probability imputation
-
-  - [`impute_miss_forest()`](https://glycoverse.github.io/glyclean/dev/reference/impute_miss_forest.md):
-    MissForest imputation
+  **\[deprecated\]** This parameter is no longer used and will be
+  removed in a future release. The automatic strategy is now
+  deterministic and does not require user-specified methods to try.
 
 - info:
 
@@ -87,15 +51,36 @@ The imputed experiment.
 
 ## Details
 
-By default, all imputation methods are included for benchmarking when QC
-samples are available. Note that some methods (e.g., MissForest) may be
-slow for large datasets.
+The automatic strategy uses these defaults:
+
+- `n_samples < 30`:
+  [`impute_min_prob()`](https://glycoverse.github.io/glyclean/dev/reference/impute_min_prob.md)
+  for glycomics and glycoproteomics.
+
+- `30 <= n_samples <= 100`:
+  [`impute_bpca()`](https://glycoverse.github.io/glyclean/dev/reference/impute_bpca.md)
+  for glycomics and
+  [`impute_min_prob()`](https://glycoverse.github.io/glyclean/dev/reference/impute_min_prob.md)
+  for glycoproteomics.
+
+- `n_samples > 100`:
+  [`impute_miss_forest()`](https://glycoverse.github.io/glyclean/dev/reference/impute_miss_forest.md)
+  for glycomics and
+  [`impute_bpca()`](https://glycoverse.github.io/glyclean/dev/reference/impute_bpca.md)
+  for glycoproteomics.
+
+Other experiment types use the glycoproteomics defaults as a
+conservative fallback.
+[`impute_sample_min()`](https://glycoverse.github.io/glyclean/dev/reference/impute_sample_min.md)
+and
+[`impute_half_sample_min()`](https://glycoverse.github.io/glyclean/dev/reference/impute_half_sample_min.md)
+remain available for manual use, but they are not selected
+automatically.
 
 ## Examples
 
 ``` r
 library(glyexp)
 exp_imputed <- auto_impute(real_experiment)
-#> ℹ No QC samples found. Using default imputation method based on sample size.
-#> ℹ Sample size <= 30, using `impute_sample_min()`.
+#> ℹ Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
 ```
