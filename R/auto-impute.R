@@ -1,33 +1,30 @@
 #' Automatic Imputation
 #'
-#' This function automatically selects and applies the most suitable imputation method for the given dataset.
-#' If Quality Control (QC) samples are present, the method that best stabilizes them
-#' (i.e., yields the lowest median coefficient of variation) is chosen.
-#' Otherwise, it defaults to a sample-size-based strategy:
-#' - less than 30 samples: Sample minimum imputation
-#' - between 30 and 100 samples: Minimum probability imputation
-#' - more than 100 samples: MissForest imputation
+#' This function automatically selects and applies a deterministic default
+#' imputation method by sample count and experiment type.
+#' Quality Control (QC) samples are inspected for workflow consistency, but they
+#' are not used to benchmark or select the imputation method.
 #'
 #' @details
-#' By default, all imputation methods are included for benchmarking when QC samples are available.
-#' Note that some methods (e.g., MissForest) may be slow for large datasets.
+#' The automatic strategy uses these defaults:
+#' - `n_samples < 30`: [impute_min_prob()] for glycomics and glycoproteomics.
+#' - `30 <= n_samples <= 100`: [impute_bpca()] for glycomics and
+#'   [impute_min_prob()] for glycoproteomics.
+#' - `n_samples > 100`: [impute_miss_forest()] for glycomics and
+#'   [impute_bpca()] for glycoproteomics.
+#'
+#' Other experiment types use the glycoproteomics defaults as a conservative
+#' fallback. [impute_sample_min()] and [impute_half_sample_min()] remain
+#' available for manual use, but they are not selected automatically.
 #'
 #' @param exp An [glyexp::experiment()].
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
-#' @param qc_name The name of QC samples in the `group_col` column. Default is "QC".
-#'   Only used when `group_col` is not NULL. Can be NULL when no QC samples are available.
-#' @param to_try Imputation functions to try. A list. Default includes:
-#'   - [impute_zero()]: zero imputation
-#'   - [impute_sample_min()]: sample minimum imputation
-#'   - [impute_half_sample_min()]: half sample minimum imputation
-#'   - [impute_sw_knn()]: sample-wise KNN imputation
-#'   - [impute_fw_knn()]: feature-wise KNN imputation
-#'   - [impute_bpca()]: BPCA imputation
-#'   - [impute_ppca()]: PPCA imputation
-#'   - [impute_svd()]: SVD imputation
-#'   - [impute_min_prob()]: minimum probability imputation
-#'   - [impute_miss_forest()]: MissForest imputation
+#' @param qc_name `r lifecycle::badge("deprecated")` This function no longer uses QC sample information.
+#'   This parameter is ignored and will be removed in a future release.
+#' @param to_try `r lifecycle::badge("deprecated")`
+#'   This parameter is no longer used and will be removed in a future release.
+#'   The automatic strategy is now deterministic and does not require user-specified methods to try.
 #' @param info Internal parameter used by [auto_clean()].
 #'
 #' @returns The imputed experiment.
@@ -45,106 +42,94 @@ auto_impute <- function(
   # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")
   checkmate::assert_string(group_col, null.ok = TRUE)
-  checkmate::assert_string(qc_name, null.ok = TRUE)
-  checkmate::assert_list(to_try, types = "function", null.ok = TRUE)
 
-  # Default imputation methods to try
-  if (is.null(to_try)) {
-    to_try <- list(
-      impute_zero = impute_zero,
-      impute_sample_min = impute_sample_min,
-      impute_half_sample_min = impute_half_sample_min,
-      impute_sw_knn = impute_sw_knn,
-      impute_fw_knn = impute_fw_knn,
-      impute_bpca = impute_bpca,
-      impute_ppca = impute_ppca,
-      impute_svd = impute_svd,
-      impute_min_prob = impute_min_prob,
-      impute_miss_forest = impute_miss_forest
+  if (!identical(qc_name, "QC")) {
+    lifecycle::deprecate_warn(
+      when = "0.14.0",
+      what = "auto_impute(qc_name)",
+      details = "This function no longer uses QC sample information and the `qc_name` parameter will be removed in a future release."
+    )
+  }
+  if (!is.null(to_try)) {
+    lifecycle::deprecate_warn(
+      when = "0.14.0",
+      what = "auto_impute(to_try)",
+      details = "The automatic imputation strategy is now deterministic and does not require user-specified methods to try. The `to_try` parameter will be removed in a future release."
     )
   }
 
   # Get experiment inspection
   if (is.null(info)) {
-    info <- inspect_experiment(exp, group_col = group_col, qc_name = qc_name)
+    info <- inspect_experiment(exp, group_col = group_col)
   }
 
-  if (info$has_qc) {
-    .auto_impute_with_qc(exp, to_try, info)
-  } else {
-    .auto_impute_default(exp)
-  }
+  .auto_impute_default(exp, info)
 }
 
-.auto_impute_with_qc <- function(exp, to_try, info) {
-  cli::cli_alert_info(
-    "QC samples found. Choosing the best imputation method based on QC samples."
-  )
-
-  best_method <- NULL
-  best_cv <- Inf
-  best_exp <- NULL
-
-  # Calculate CV for raw data (excluding NA values)
-  raw_cv <- .calc_median_cv(exp$expr_mat[, info$qc_samples, drop = FALSE])
-  cli::cli_ul("Raw data: Median CV = {.val {signif(raw_cv, 4)}}")
-
-  for (method_name in names(to_try)) {
-    method <- to_try[[method_name]]
-
-    # Try imputation
-    tryCatch(
-      {
-        suppressWarnings(imputed_exp <- method(exp))
-        imputed_mat <- imputed_exp$expr_mat[, info$qc_samples, drop = FALSE]
-        cv <- .calc_median_cv(imputed_mat)
-
-        cli::cli_ul(
-          "Method {.val {method_name}}: Median CV = {.val {signif(cv, 4)}}"
-        )
-
-        if (cv < best_cv) {
-          best_cv <- cv
-          best_method <- method_name
-          best_exp <- imputed_exp
-        }
-      },
-      error = function(e) {
-        cli::cli_alert_warning(
-          "Method {.val {method_name}} failed: {e$message}"
-        )
-      }
-    )
-  }
-
-  if (!is.null(best_exp)) {
-    cli::cli_alert_success(
-      "Best method: {.val {best_method}} with Median CV = {.val {signif(best_cv, 4)}}"
-    )
-    best_exp
-  } else {
-    cli::cli_alert_warning(
-      "All imputation methods failed. Returning original experiment."
-    )
-    exp
-  }
-}
-
-.auto_impute_default <- function(exp) {
-  cli::cli_alert_info(
-    "No QC samples found. Using default imputation method based on sample size."
-  )
-
+#' Apply the deterministic automatic imputation strategy
+#'
+#' @param exp An [glyexp::experiment()].
+#' @param info Experiment inspection metadata from `inspect_experiment()`.
+#'
+#' @returns The imputed experiment.
+#' @noRd
+.auto_impute_default <- function(exp, info) {
   n_samples <- ncol(exp)
+  exp_type <- glyexp::get_exp_type(exp)
+  strategy <- .choose_auto_impute_strategy(n_samples, exp_type)
 
-  if (n_samples <= 30) {
-    cli::cli_alert_info("Sample size <= 30, using {.fn impute_sample_min}.")
-    impute_sample_min(exp)
-  } else if (n_samples <= 100) {
-    cli::cli_alert_info("Sample size <= 100, using {.fn impute_min_prob}.")
-    impute_min_prob(exp)
+  cli::cli_alert_info(
+    "Using default imputation method for {.val {strategy$exp_type}} with {strategy$sample_group}: {.fn {strategy$method_name}}."
+  )
+
+  switch(
+    strategy$method_name,
+    impute_min_prob = impute_min_prob(exp),
+    impute_bpca = impute_bpca(exp),
+    impute_miss_forest = impute_miss_forest(exp)
+  )
+}
+
+#' Choose the deterministic automatic imputation strategy
+#'
+#' @param n_samples Number of samples in the experiment.
+#' @param exp_type Experiment type from [glyexp::get_exp_type()].
+#'
+#' @returns A list containing the normalized experiment type, sample-count
+#'   group label, and method name.
+#' @noRd
+.choose_auto_impute_strategy <- function(n_samples, exp_type) {
+  checkmate::assert_count(n_samples, positive = TRUE)
+  checkmate::assert_string(exp_type, null.ok = TRUE)
+
+  if (identical(exp_type, "glycomics")) {
+    strategy_exp_type <- "glycomics"
   } else {
-    cli::cli_alert_info("Sample size > 100, using {.fn impute_miss_forest}.")
-    impute_miss_forest(exp)
+    strategy_exp_type <- "glycoproteomics"
   }
+
+  if (n_samples < 30) {
+    sample_group <- "n_samples < 30"
+    method_name <- "impute_min_prob"
+  } else if (n_samples <= 100) {
+    sample_group <- "30 <= n_samples <= 100"
+    method_name <- switch(
+      strategy_exp_type,
+      glycomics = "impute_bpca",
+      glycoproteomics = "impute_min_prob"
+    )
+  } else {
+    sample_group <- "n_samples > 100"
+    method_name <- switch(
+      strategy_exp_type,
+      glycomics = "impute_miss_forest",
+      glycoproteomics = "impute_bpca"
+    )
+  }
+
+  list(
+    exp_type = strategy_exp_type,
+    sample_group = sample_group,
+    method_name = method_name
+  )
 }

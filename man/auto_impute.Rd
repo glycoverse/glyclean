@@ -18,22 +18,12 @@ auto_impute(
 \item{group_col}{The column name in sample_info for groups. Default is "group".
 Can be NULL when no group information is available.}
 
-\item{qc_name}{The name of QC samples in the \code{group_col} column. Default is "QC".
-Only used when \code{group_col} is not NULL. Can be NULL when no QC samples are available.}
+\item{qc_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This function no longer uses QC sample information.
+This parameter is ignored and will be removed in a future release.}
 
-\item{to_try}{Imputation functions to try. A list. Default includes:
-\itemize{
-\item \code{\link[=impute_zero]{impute_zero()}}: zero imputation
-\item \code{\link[=impute_sample_min]{impute_sample_min()}}: sample minimum imputation
-\item \code{\link[=impute_half_sample_min]{impute_half_sample_min()}}: half sample minimum imputation
-\item \code{\link[=impute_sw_knn]{impute_sw_knn()}}: sample-wise KNN imputation
-\item \code{\link[=impute_fw_knn]{impute_fw_knn()}}: feature-wise KNN imputation
-\item \code{\link[=impute_bpca]{impute_bpca()}}: BPCA imputation
-\item \code{\link[=impute_ppca]{impute_ppca()}}: PPCA imputation
-\item \code{\link[=impute_svd]{impute_svd()}}: SVD imputation
-\item \code{\link[=impute_min_prob]{impute_min_prob()}}: minimum probability imputation
-\item \code{\link[=impute_miss_forest]{impute_miss_forest()}}: MissForest imputation
-}}
+\item{to_try}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+This parameter is no longer used and will be removed in a future release.
+The automatic strategy is now deterministic and does not require user-specified methods to try.}
 
 \item{info}{Internal parameter used by \code{\link[=auto_clean]{auto_clean()}}.}
 }
@@ -41,19 +31,24 @@ Only used when \code{group_col} is not NULL. Can be NULL when no QC samples are 
 The imputed experiment.
 }
 \description{
-This function automatically selects and applies the most suitable imputation method for the given dataset.
-If Quality Control (QC) samples are present, the method that best stabilizes them
-(i.e., yields the lowest median coefficient of variation) is chosen.
-Otherwise, it defaults to a sample-size-based strategy:
-\itemize{
-\item less than 30 samples: Sample minimum imputation
-\item between 30 and 100 samples: Minimum probability imputation
-\item more than 100 samples: MissForest imputation
-}
+This function automatically selects and applies a deterministic default
+imputation method by sample count and experiment type.
+Quality Control (QC) samples are inspected for workflow consistency, but they
+are not used to benchmark or select the imputation method.
 }
 \details{
-By default, all imputation methods are included for benchmarking when QC samples are available.
-Note that some methods (e.g., MissForest) may be slow for large datasets.
+The automatic strategy uses these defaults:
+\itemize{
+\item \code{n_samples < 30}: \code{\link[=impute_min_prob]{impute_min_prob()}} for glycomics and glycoproteomics.
+\item \verb{30 <= n_samples <= 100}: \code{\link[=impute_bpca]{impute_bpca()}} for glycomics and
+\code{\link[=impute_min_prob]{impute_min_prob()}} for glycoproteomics.
+\item \code{n_samples > 100}: \code{\link[=impute_miss_forest]{impute_miss_forest()}} for glycomics and
+\code{\link[=impute_bpca]{impute_bpca()}} for glycoproteomics.
+}
+
+Other experiment types use the glycoproteomics defaults as a conservative
+fallback. \code{\link[=impute_sample_min]{impute_sample_min()}} and \code{\link[=impute_half_sample_min]{impute_half_sample_min()}} remain
+available for manual use, but they are not selected automatically.
 }
 \examples{
 library(glyexp)

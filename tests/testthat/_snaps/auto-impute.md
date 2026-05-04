@@ -1,70 +1,51 @@
-# auto_impute works with QC samples
+# auto_impute uses deterministic defaults with QC samples
 
     Code
-      imputed <- auto_impute(exp, group_col = "group", qc_name = "QC")
+      imputed <- auto_impute(exp, group_col = "group", qc_name = "QC", to_try = list(
+        impute_sample_min = function(x) stop("must not be called")))
+    Condition
+      Warning:
+      The `to_try` argument of `auto_impute()` is deprecated as of glyclean 0.14.0.
+      i The automatic imputation strategy is now deterministic and does not require user-specified methods to try. The `to_try` parameter will be removed in a future release.
     Message
-      i QC samples found. Choosing the best imputation method based on QC samples.
-      * Raw data: Median CV = CV_VALUE
-      * Method "impute_zero": Median CV = CV_VALUE
-      * Method "impute_sample_min": Median CV = CV_VALUE
-      * Method "impute_half_sample_min": Median CV = CV_VALUE
-      * Method "impute_sw_knn": Median CV = CV_VALUE
-      * Method "impute_fw_knn": Median CV = CV_VALUE
-      * Method "impute_bpca": Median CV = CV_VALUE
-      * Method "impute_ppca": Median CV = CV_VALUE
-      * Method "impute_svd": Median CV = CV_VALUE
-      * Method "impute_min_prob": Median CV = CV_VALUE
-      * Method "impute_miss_forest": Median CV = CV_VALUE
-      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
+      i Using default imputation method for "glycoproteomics" with 30 <= n_samples <= 100: `impute_min_prob()`.
 
 # auto_impute handles NULL qc_name
 
     Code
       imputed <- auto_impute(exp, group_col = "group", qc_name = NULL)
+    Condition
+      Warning:
+      The `qc_name` argument of `auto_impute()` is deprecated as of glyclean 0.14.0.
+      i This function no longer uses QC sample information and the `qc_name` parameter will be removed in a future release.
     Message
-      i No QC samples found. Using default imputation method based on sample size.
-      i Sample size <= 30, using `impute_sample_min()`.
-
-# auto_impute uses sample_min for small datasets without QC
-
-    Code
-      auto <- auto_impute(exp, group_col = NULL)
-    Message
-      i No QC samples found. Using default imputation method based on sample size.
-      i Sample size <= 30, using `impute_sample_min()`.
-
-# auto_impute uses min_prob for medium datasets without QC
-
-    Code
-      auto <- auto_impute(exp, group_col = NULL)
-    Message
-      i No QC samples found. Using default imputation method based on sample size.
-      i Sample size <= 100, using `impute_min_prob()`.
+      i Using default imputation method for "glycomics" with n_samples < 30: `impute_min_prob()`.
 
 # auto_impute handles missing group_col gracefully
 
     Code
       result <- auto_impute(exp, group_col = NULL)
     Message
-      i No QC samples found. Using default imputation method based on sample size.
-      i Sample size <= 30, using `impute_sample_min()`.
+      i Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
 
 # auto_impute handles non-existent group_col gracefully
 
     Code
       result <- auto_impute(exp, group_col = "nonexistent")
     Message
-      i No QC samples found. Using default imputation method based on sample size.
-      i Sample size <= 30, using `impute_sample_min()`.
+      i Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
 
-# auto_impute works with custom methods
+# auto_impute validates input and ignores deprecated arguments
 
     Code
-      result <- auto_impute(exp, to_try = custom_methods)
+      result <- auto_impute(exp, qc_name = NULL, to_try = "not_a_list")
+    Condition
+      Warning:
+      The `qc_name` argument of `auto_impute()` is deprecated as of glyclean 0.14.0.
+      i This function no longer uses QC sample information and the `qc_name` parameter will be removed in a future release.
+      Warning:
+      The `to_try` argument of `auto_impute()` is deprecated as of glyclean 0.14.0.
+      i The automatic imputation strategy is now deterministic and does not require user-specified methods to try. The `to_try` parameter will be removed in a future release.
     Message
-      i QC samples found. Choosing the best imputation method based on QC samples.
-      * Raw data: Median CV = CV_VALUE
-      * Method "impute_zero": Median CV = CV_VALUE
-      * Method "impute_sample_min": Median CV = CV_VALUE
-      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
+      i Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
 

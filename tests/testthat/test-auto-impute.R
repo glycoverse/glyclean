@@ -1,32 +1,47 @@
-test_that("auto_impute works with QC samples", {
-  # Create a simple experiment with missing values
-  exp <- simple_exp(10, 10)
+test_that("auto_impute uses deterministic defaults with QC samples", {
+  skip_if_not_installed("mockr")
 
-  # Add some missing values
+  exp <- simple_exp(10, 50)
+  exp$meta_data$exp_type <- "glycoproteomics"
   exp$expr_mat[1, 1] <- NA
-  exp$expr_mat[3, 5] <- NA
-  exp$expr_mat[5, 8] <- NA
+  exp$sample_info$group <- c(rep("A", 24), rep("B", 24), rep("QC", 2))
 
-  # Add QC samples
-  exp$sample_info$group <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
-
-  # Verify it runs and picks a method
-  expect_snapshot(
-    imputed <- auto_impute(exp, group_col = "group", qc_name = "QC"),
-    transform = sanitize_cv_snapshot
+  called <- NULL
+  mockr::local_mock(
+    impute_min_prob = function(x, ...) {
+      called <<- "impute_min_prob"
+      x$expr_mat[is.na(x$expr_mat)] <- 0
+      x
+    }
   )
-  expect_s3_class(imputed, "glyexp_experiment")
 
-  # Verify no missing values after imputation
-
+  expect_snapshot(
+    imputed <- auto_impute(
+      exp,
+      group_col = "group",
+      qc_name = "QC",
+      to_try = list(impute_sample_min = function(x) stop("must not be called"))
+    )
+  )
+  expect_equal(called, "impute_min_prob")
   expect_false(any(is.na(imputed$expr_mat)))
 })
 
 test_that("auto_impute handles NULL qc_name", {
+  skip_if_not_installed("mockr")
+
   exp <- simple_exp(10, 10)
+  exp$meta_data$exp_type <- "glycomics"
   exp$expr_mat[1, 1] <- NA
   exp$expr_mat[3, 5] <- NA
   exp$sample_info$group <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
+
+  mockr::local_mock(
+    impute_min_prob = function(x, ...) {
+      x$expr_mat[is.na(x$expr_mat)] <- 0
+      x
+    }
+  )
 
   expect_snapshot(
     imputed <- auto_impute(exp, group_col = "group", qc_name = NULL)
@@ -35,44 +50,59 @@ test_that("auto_impute handles NULL qc_name", {
   expect_false(any(is.na(imputed$expr_mat)))
 })
 
-test_that("auto_impute uses sample_min for small datasets without QC", {
-  # Create a small experiment (<=30 samples)
-  exp <- simple_exp(10, 20)
+test_that("auto_impute chooses defaults by sample count and experiment type", {
+  skip_if_not_installed("mockr")
 
-  # Add some missing values
-  exp$expr_mat[1, 1] <- NA
-  exp$expr_mat[3, 5] <- NA
+  called <- character()
+  mark_method <- function(name) {
+    function(x, ...) {
+      called <<- c(called, name)
+      x$expr_mat[is.na(x$expr_mat)] <- 0
+      x
+    }
+  }
 
-  # Manual application
-  manual <- impute_sample_min(exp)
+  mockr::local_mock(
+    impute_min_prob = mark_method("impute_min_prob"),
+    impute_bpca = mark_method("impute_bpca"),
+    impute_miss_forest = mark_method("impute_miss_forest")
+  )
 
-  # Auto application (no QC samples)
-  expect_snapshot(auto <- auto_impute(exp, group_col = NULL))
+  cases <- tibble::tribble(
+    ~exp_type, ~n_samples, ~expected,
+    "glycomics", 20, "impute_min_prob",
+    "glycoproteomics", 20, "impute_min_prob",
+    "glycomics", 50, "impute_bpca",
+    "glycoproteomics", 50, "impute_min_prob",
+    "glycomics", 120, "impute_miss_forest",
+    "glycoproteomics", 120, "impute_bpca"
+  )
 
-  expect_equal(auto$expr_mat, manual$expr_mat)
-})
+  purrr::pwalk(cases, function(exp_type, n_samples, expected) {
+    exp <- simple_exp(10, n_samples)
+    exp$meta_data$exp_type <- exp_type
+    exp$expr_mat[1, 1] <- NA
 
-test_that("auto_impute uses min_prob for medium datasets without QC", {
-  # Create a medium experiment (31-100 samples)
-  exp <- simple_exp(10, 50)
+    suppressMessages(auto <- auto_impute(exp, group_col = NULL))
+    expect_false(any(is.na(auto$expr_mat)))
+  })
 
-  # Add some missing values
-  exp$expr_mat[1, 1] <- NA
-  exp$expr_mat[3, 5] <- NA
-  exp$expr_mat[5, 10] <- NA
-
-  # Auto application (no QC samples)
-  # We can't compare directly with manual since min_prob has random elements
-  expect_snapshot(auto <- auto_impute(exp, group_col = NULL))
-  expect_s3_class(auto, "glyexp_experiment")
-
-  # Verify no missing values after imputation
-  expect_false(any(is.na(auto$expr_mat)))
+  expect_equal(called, cases$expected)
 })
 
 test_that("auto_impute handles missing group_col gracefully", {
+  skip_if_not_installed("mockr")
+
   exp <- simple_exp(10, 10)
+  exp$meta_data$exp_type <- "glycoproteomics"
   exp$expr_mat[1, 1] <- NA
+
+  mockr::local_mock(
+    impute_min_prob = function(x, ...) {
+      x$expr_mat[is.na(x$expr_mat)] <- 0
+      x
+    }
+  )
 
   # When group_col is NULL, should use default strategy
   expect_snapshot(result <- auto_impute(exp, group_col = NULL))
@@ -81,8 +111,18 @@ test_that("auto_impute handles missing group_col gracefully", {
 })
 
 test_that("auto_impute handles non-existent group_col gracefully", {
+  skip_if_not_installed("mockr")
+
   exp <- simple_exp(10, 10)
+  exp$meta_data$exp_type <- "glycoproteomics"
   exp$expr_mat[1, 1] <- NA
+
+  mockr::local_mock(
+    impute_min_prob = function(x, ...) {
+      x$expr_mat[is.na(x$expr_mat)] <- 0
+      x
+    }
+  )
 
   # When group_col doesn't exist, should use default strategy
   expect_snapshot(result <- auto_impute(exp, group_col = "nonexistent"))
@@ -90,31 +130,29 @@ test_that("auto_impute handles non-existent group_col gracefully", {
   expect_false(any(is.na(result$expr_mat)))
 })
 
-test_that("auto_impute validates input arguments", {
+test_that("auto_impute validates input and ignores deprecated arguments", {
+  skip_if_not_installed("mockr")
+
   exp <- simple_exp(10, 10)
+  exp$meta_data$exp_type <- "glycoproteomics"
+  exp$expr_mat[1, 1] <- NA
+
+  mockr::local_mock(
+    impute_min_prob = function(x, ...) {
+      x$expr_mat[is.na(x$expr_mat)] <- 0
+      x
+    }
+  )
 
   # Test invalid exp
   expect_error(auto_impute("not_an_experiment"), "glyexp_experiment")
 
-  # Test invalid to_try
-  expect_error(auto_impute(exp, to_try = "not_a_list"), "list")
-  expect_error(auto_impute(exp, to_try = list("not_a_function")), "function")
-})
-
-test_that("auto_impute works with custom methods", {
-  exp <- simple_exp(10, 10)
-  exp$expr_mat[1, 1] <- NA
-  exp$sample_info$group <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
-
-  # Test with a subset of methods
-  custom_methods <- list(
-    impute_zero = impute_zero,
-    impute_sample_min = impute_sample_min
-  )
-
   expect_snapshot(
-    result <- auto_impute(exp, to_try = custom_methods),
-    transform = sanitize_cv_snapshot
+    result <- auto_impute(
+      exp,
+      qc_name = NULL,
+      to_try = "not_a_list"
+    )
   )
   expect_s3_class(result, "glyexp_experiment")
   expect_false(any(is.na(result$expr_mat)))

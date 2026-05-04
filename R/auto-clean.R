@@ -28,9 +28,10 @@
 #' label them as "QC" as the "group" in the sample information table.
 #' You can also use set `qc_name` to other names.
 #'
-#' When QC samples exist, [auto_normalize()] and [auto_impute()] will compare various
-#' normalization or imputation methods,
-#' and select the one that stablize QC samples the most.
+#' When QC samples exist, [auto_normalize()] will compare various
+#' normalization methods and select the one that stabilizes QC samples the most.
+#' [auto_impute()] uses deterministic defaults based on sample count and
+#' experiment type, regardless of QC sample availability.
 #'
 #' @param exp A [glyexp::experiment()] containing glycoproteomics or
 #'   glycomics data.
@@ -50,17 +51,8 @@
 #'   - [normalize_rlr()]: RLR normalization
 #'   - [normalize_rlrma()]: RLRMA normalization
 #'   - [normalize_rlrmacyc()]: RLRMAcyc normalization
-#' @param impute_to_try Imputation functions to try. A list. Default includes:
-#'   - [impute_zero()]: zero imputation
-#'   - [impute_sample_min()]: sample-wise minimum imputation
-#'   - [impute_half_sample_min()]: half sample-wise minimum imputation
-#'   - [impute_sw_knn()]: sample-wise KNN imputation
-#'   - [impute_fw_knn()]: feature-wise KNN imputation
-#'   - [impute_bpca()]: BPCA imputation
-#'   - [impute_ppca()]: PPCA imputation
-#'   - [impute_svd()]: SVD imputation
-#'   - [impute_min_prob()]: minimum probability imputation
-#'   - [impute_miss_forest()]: MissForest imputation
+#' @param impute_to_try `r lifecycle::badge("deprecated")`
+#'   This parameter is no longer used and will be removed in a future release.
 #' @param remove_preset The preset for removing variables. Default is "discovery".
 #'   Available presets:
 #'   - "simple": remove variables with more than 50% missing values.
@@ -105,7 +97,6 @@ auto_clean <- function(
   checkmate::assert_string(batch_col, null.ok = TRUE)
   checkmate::assert_string(qc_name, null.ok = TRUE)
   checkmate::assert_list(normalize_to_try, types = "function", null.ok = TRUE)
-  checkmate::assert_list(impute_to_try, types = "function", null.ok = TRUE)
   checkmate::assert_choice(remove_preset, c("simple", "discovery", "biomarker"))
   checkmate::assert_number(batch_prop_threshold, lower = 0, upper = 1)
   checkmate::assert_flag(check_batch_confounding)
@@ -122,11 +113,18 @@ auto_clean <- function(
     ))
   }
 
+  if (!is.null(impute_to_try)) {
+    lifecycle::deprecate_warn(
+      when = "0.14.0",
+      what = "auto_clean(impute_to_try)",
+      details = "The automatic imputation strategy is now deterministic and does not require user-specified methods to try. The `impute_to_try` parameter will be removed in a future release."
+    )
+  }
+
   params <- list(
     group_col = group_col,
     qc_name = qc_name,
     normalize_to_try = normalize_to_try,
-    impute_to_try = impute_to_try,
     remove_preset = remove_preset,
     batch_prop_threshold = batch_prop_threshold,
     check_batch_confounding = check_batch_confounding,
@@ -164,9 +162,7 @@ auto_clean <- function(
   exp <- auto_impute(
     exp,
     params$group_col,
-    params$qc_name,
-    params$impute_to_try,
-    info
+    info = info
   )
   cli::cli_alert_success("Imputation completed.")
   cli::cli_h2("Aggregating data")
@@ -209,9 +205,7 @@ auto_clean <- function(
   exp <- auto_impute(
     exp,
     params$group_col,
-    params$qc_name,
-    params$impute_to_try,
-    info
+    info = info
   )
   cli::cli_alert_success("Imputation completed.")
   cli::cli_h2("Normalizing data")

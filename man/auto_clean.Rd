@@ -44,19 +44,8 @@ Only used when \code{group_col} is not NULL. Can be NULL when no QC samples are 
 \item \code{\link[=normalize_rlrmacyc]{normalize_rlrmacyc()}}: RLRMAcyc normalization
 }}
 
-\item{impute_to_try}{Imputation functions to try. A list. Default includes:
-\itemize{
-\item \code{\link[=impute_zero]{impute_zero()}}: zero imputation
-\item \code{\link[=impute_sample_min]{impute_sample_min()}}: sample-wise minimum imputation
-\item \code{\link[=impute_half_sample_min]{impute_half_sample_min()}}: half sample-wise minimum imputation
-\item \code{\link[=impute_sw_knn]{impute_sw_knn()}}: sample-wise KNN imputation
-\item \code{\link[=impute_fw_knn]{impute_fw_knn()}}: feature-wise KNN imputation
-\item \code{\link[=impute_bpca]{impute_bpca()}}: BPCA imputation
-\item \code{\link[=impute_ppca]{impute_ppca()}}: PPCA imputation
-\item \code{\link[=impute_svd]{impute_svd()}}: SVD imputation
-\item \code{\link[=impute_min_prob]{impute_min_prob()}}: minimum probability imputation
-\item \code{\link[=impute_miss_forest]{impute_miss_forest()}}: MissForest imputation
-}}
+\item{impute_to_try}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+This parameter is no longer used and will be removed in a future release.}
 
 \item{remove_preset}{The preset for removing variables. Default is "discovery".
 Available presets:
@@ -114,9 +103,10 @@ If you have quality control (QC) samples,
 label them as "QC" as the "group" in the sample information table.
 You can also use set \code{qc_name} to other names.
 
-When QC samples exist, \code{\link[=auto_normalize]{auto_normalize()}} and \code{\link[=auto_impute]{auto_impute()}} will compare various
-normalization or imputation methods,
-and select the one that stablize QC samples the most.
+When QC samples exist, \code{\link[=auto_normalize]{auto_normalize()}} will compare various
+normalization methods and select the one that stabilizes QC samples the most.
+\code{\link[=auto_impute]{auto_impute()}} uses deterministic defaults based on sample count and
+experiment type, regardless of QC sample availability.
 }
 
 \examples{
