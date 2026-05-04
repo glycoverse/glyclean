@@ -51,8 +51,8 @@
 #'   - [normalize_rlr()]: RLR normalization
 #'   - [normalize_rlrma()]: RLRMA normalization
 #'   - [normalize_rlrmacyc()]: RLRMAcyc normalization
-#' @param impute_to_try Deprecated. Passed to [auto_impute()] for compatibility
-#'   and ignored by the deterministic automatic imputation strategy.
+#' @param impute_to_try `r lifecycle::badge("deprecated")`
+#'   This parameter is no longer used and will be removed in a future release.
 #' @param remove_preset The preset for removing variables. Default is "discovery".
 #'   Available presets:
 #'   - "simple": remove variables with more than 50% missing values.

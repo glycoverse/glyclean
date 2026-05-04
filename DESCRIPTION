@@ -61,7 +61,8 @@ Imports:
     withr,
     forcats,
     stats,
-    ggplot2
+    ggplot2,
+    lifecycle
 Depends: 
     R (>= 4.1)
 VignetteBuilder: knitr

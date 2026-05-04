@@ -20,10 +20,11 @@
 #' @param exp An [glyexp::experiment()].
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
-#' @param qc_name The name of QC samples in the `group_col` column. Default is "QC".
-#'   Only used when `group_col` is not NULL. Can be NULL when no QC samples are available.
-#' @param to_try Deprecated. Retained for compatibility and ignored by the
-#'   deterministic automatic strategy.
+#' @param qc_name `r lifecycle::badge("deprecated")` This function no longer uses QC sample information.
+#'   This parameter is ignored and will be removed in a future release.
+#' @param to_try `r lifecycle::badge("deprecated")`
+#'   This parameter is no longer used and will be removed in a future release.
+#'   The automatic strategy is now deterministic and does not require user-specified methods to try.
 #' @param info Internal parameter used by [auto_clean()].
 #'
 #' @returns The imputed experiment.

@@ -44,8 +44,8 @@ Only used when \code{group_col} is not NULL. Can be NULL when no QC samples are 
 \item \code{\link[=normalize_rlrmacyc]{normalize_rlrmacyc()}}: RLRMAcyc normalization
 }}
 
-\item{impute_to_try}{Deprecated. Passed to \code{\link[=auto_impute]{auto_impute()}} for compatibility
-and ignored by the deterministic automatic imputation strategy.}
+\item{impute_to_try}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+This parameter is no longer used and will be removed in a future release.}
 
 \item{remove_preset}{The preset for removing variables. Default is "discovery".
 Available presets:
