@@ -270,8 +270,6 @@ test_that("add_site_seq shows correct message for character vector input", {
 })
 
 test_that("add_site_seq fetches from UniProt when fasta is NULL", {
-  skip_if_not_installed("mockr")
-
   # Create a simple experiment
   expr_mat <- matrix(c(1, 2), nrow = 1, ncol = 2)
   colnames(expr_mat) <- c("S1", "S2")
@@ -297,10 +295,11 @@ test_that("add_site_seq fetches from UniProt when fasta is NULL", {
 
   # Mock .fetch_uniprot_sequences to return a test sequence
   mock_seq <- "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  mockr::local_mock(
+  testthat::local_mocked_bindings(
     `.fetch_uniprot_sequences` = function(proteins, taxid = 9606) {
       stats::setNames(mock_seq, proteins)
-    }
+    },
+    .package = "glyclean"
   )
 
   # Test with fasta = NULL (should fetch from UniProt)
@@ -312,8 +311,6 @@ test_that("add_site_seq fetches from UniProt when fasta is NULL", {
 })
 
 test_that("add_site_seq uses custom taxid", {
-  skip_if_not_installed("mockr")
-
   expr_mat <- matrix(c(1, 2), nrow = 1, ncol = 2)
   colnames(expr_mat) <- c("S1", "S2")
   rownames(expr_mat) <- c("V1")
@@ -339,11 +336,12 @@ test_that("add_site_seq uses custom taxid", {
   mock_seq <- "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   captured_taxid <- NULL
 
-  mockr::local_mock(
+  testthat::local_mocked_bindings(
     `.fetch_uniprot_sequences` = function(proteins, taxid = 9606) {
       captured_taxid <<- taxid
       stats::setNames(mock_seq, proteins)
-    }
+    },
+    .package = "glyclean"
   )
 
   suppressMessages(
@@ -355,9 +353,7 @@ test_that("add_site_seq uses custom taxid", {
 })
 
 test_that(".fetch_uniprot_sequences merges batches without prefixing names", {
-  skip_if_not_installed("mockr")
-
-  mockr::local_mock(
+  testthat::local_mocked_bindings(
     `.query_uniprot` = function(
       query,
       fields = c("accession", "sequence"),
@@ -370,7 +366,7 @@ test_that(".fetch_uniprot_sequences merges batches without prefixing names", {
         stringsAsFactors = FALSE
       )
     },
-    .env = rlang::ns_env("glyclean")
+    .package = "glyclean"
   )
 
   suppressMessages(

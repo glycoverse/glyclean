@@ -18,7 +18,7 @@ Description:
     to ensure data consistency and interoperability.
 License: MIT + file LICENSE
 Suggests:
-    testthat (>= 3.0.0),
+    testthat (>= 3.2.0),
     vdiffr,
     glyread (>= 0.6.2),
     glyrepr (>= 0.7.4),
@@ -35,7 +35,6 @@ Suggests:
     ggplotify,
     factoextra,
     patchwork,
-    mockr,
     compositions
 Config/testthat/edition: 3
 Encoding: UTF-8

@@ -1,18 +1,17 @@
 test_that("auto_impute uses deterministic defaults with QC samples", {
-  skip_if_not_installed("mockr")
-
   exp <- simple_exp(10, 50)
   exp$meta_data$exp_type <- "glycoproteomics"
   exp$expr_mat[1, 1] <- NA
   exp$sample_info$group <- c(rep("A", 24), rep("B", 24), rep("QC", 2))
 
   called <- NULL
-  mockr::local_mock(
+  testthat::local_mocked_bindings(
     impute_min_prob = function(x, ...) {
       called <<- "impute_min_prob"
       x$expr_mat[is.na(x$expr_mat)] <- 0
       x
-    }
+    },
+    .package = "glyclean"
   )
 
   expect_snapshot(
@@ -28,19 +27,18 @@ test_that("auto_impute uses deterministic defaults with QC samples", {
 })
 
 test_that("auto_impute handles NULL qc_name", {
-  skip_if_not_installed("mockr")
-
   exp <- simple_exp(10, 10)
   exp$meta_data$exp_type <- "glycomics"
   exp$expr_mat[1, 1] <- NA
   exp$expr_mat[3, 5] <- NA
   exp$sample_info$group <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
 
-  mockr::local_mock(
+  testthat::local_mocked_bindings(
     impute_min_prob = function(x, ...) {
       x$expr_mat[is.na(x$expr_mat)] <- 0
       x
-    }
+    },
+    .package = "glyclean"
   )
 
   expect_snapshot(
@@ -51,8 +49,6 @@ test_that("auto_impute handles NULL qc_name", {
 })
 
 test_that("auto_impute chooses defaults by sample count and experiment type", {
-  skip_if_not_installed("mockr")
-
   called <- character()
   mark_method <- function(name) {
     function(x, ...) {
@@ -62,10 +58,11 @@ test_that("auto_impute chooses defaults by sample count and experiment type", {
     }
   }
 
-  mockr::local_mock(
+  testthat::local_mocked_bindings(
     impute_min_prob = mark_method("impute_min_prob"),
     impute_bpca = mark_method("impute_bpca"),
-    impute_miss_forest = mark_method("impute_miss_forest")
+    impute_miss_forest = mark_method("impute_miss_forest"),
+    .package = "glyclean"
   )
 
   cases <- tibble::tribble(
@@ -91,19 +88,18 @@ test_that("auto_impute chooses defaults by sample count and experiment type", {
 })
 
 test_that("auto_impute uses min_prob for others experiments", {
-  skip_if_not_installed("mockr")
-
   exp <- simple_exp(10, 10)
   exp$meta_data$exp_type <- "others"
   exp$expr_mat[1, 1] <- NA
 
   called <- NULL
-  mockr::local_mock(
+  testthat::local_mocked_bindings(
     impute_min_prob = function(x, ...) {
       called <<- "impute_min_prob"
       x$expr_mat[is.na(x$expr_mat)] <- 0
       x
-    }
+    },
+    .package = "glyclean"
   )
 
   expect_message(
@@ -126,17 +122,16 @@ test_that("auto_impute rejects unsupported experiment types", {
 })
 
 test_that("auto_impute handles missing group_col gracefully", {
-  skip_if_not_installed("mockr")
-
   exp <- simple_exp(10, 10)
   exp$meta_data$exp_type <- "glycoproteomics"
   exp$expr_mat[1, 1] <- NA
 
-  mockr::local_mock(
+  testthat::local_mocked_bindings(
     impute_min_prob = function(x, ...) {
       x$expr_mat[is.na(x$expr_mat)] <- 0
       x
-    }
+    },
+    .package = "glyclean"
   )
 
   # When group_col is NULL, should use default strategy
@@ -146,17 +141,16 @@ test_that("auto_impute handles missing group_col gracefully", {
 })
 
 test_that("auto_impute handles non-existent group_col gracefully", {
-  skip_if_not_installed("mockr")
-
   exp <- simple_exp(10, 10)
   exp$meta_data$exp_type <- "glycoproteomics"
   exp$expr_mat[1, 1] <- NA
 
-  mockr::local_mock(
+  testthat::local_mocked_bindings(
     impute_min_prob = function(x, ...) {
       x$expr_mat[is.na(x$expr_mat)] <- 0
       x
-    }
+    },
+    .package = "glyclean"
   )
 
   # When group_col doesn't exist, should use default strategy
@@ -166,17 +160,16 @@ test_that("auto_impute handles non-existent group_col gracefully", {
 })
 
 test_that("auto_impute validates input and ignores deprecated arguments", {
-  skip_if_not_installed("mockr")
-
   exp <- simple_exp(10, 10)
   exp$meta_data$exp_type <- "glycoproteomics"
   exp$expr_mat[1, 1] <- NA
 
-  mockr::local_mock(
+  testthat::local_mocked_bindings(
     impute_min_prob = function(x, ...) {
       x$expr_mat[is.na(x$expr_mat)] <- 0
       x
-    }
+    },
+    .package = "glyclean"
   )
 
   # Test invalid exp
