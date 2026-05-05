@@ -44,7 +44,7 @@ test_that("auto_clean works for glycoproteomics data with QC", {
   expect_false(any(is.na(result_exp$expr_mat)))
 })
 
-test_that("auto_clean works with NULL qc_name", {
+test_that("auto_clean ignores deprecated qc_name", {
   set.seed(123)
   test_exp <- complex_exp()
 
