@@ -90,15 +90,6 @@ For glycoproteomics data, this function calls these functions in sequence:
 \item \code{\link[=auto_correct_batch_effect]{auto_correct_batch_effect()}}
 }
 }
-\section{QC samples}{
-If you have quality control (QC) samples,
-label them as "QC" as the "group" in the sample information table.
-You can also use set \code{qc_name} to other names.
-
-\code{\link[=auto_normalize]{auto_normalize()}} and \code{\link[=auto_impute]{auto_impute()}} use deterministic defaults based on
-experiment type, regardless of QC sample availability.
-}
-
 \examples{
 library(glyexp)
 exp <- real_experiment
