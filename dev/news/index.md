@@ -12,6 +12,11 @@ and
 because we realized that depending on CVs in QC samples to determine the
 imputation or normalization strategy is not robust.
 
+### Breaking changes
+
+- The `info` parameter in `auto_xxx()` functions is removed. This should
+  not be a problem because this parameter used to only for internal use.
+
 ### New features
 
 - [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)

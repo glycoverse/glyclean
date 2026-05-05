@@ -35,6 +35,10 @@
 <h2 class="pkg-version" data-toc-text="development version" id="glyclean-development-version">glyclean (development version)<a class="anchor" aria-label="anchor" href="#glyclean-development-version"></a></h2>
 <p>We have made significant updates to <code><a href="../reference/auto_clean.html">auto_clean()</a></code>. QC-related behaviors are now removed from <code><a href="../reference/auto_impute.html">auto_impute()</a></code>, <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code>, and <code><a href="../reference/auto_remove.html">auto_remove()</a></code>, because we realized that depending on CVs in QC samples to determine the imputation or normalization strategy is not robust.</p>
 <div class="section level3">
+<h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
+<ul><li>The <code>info</code> parameter in <code>auto_xxx()</code> functions is removed. This should not be a problem because this parameter used to only for internal use.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
 <ul><li>
 <code><a href="../reference/auto_impute.html">auto_impute()</a></code> now uses a different strategy. When sample size &lt; 30, use <code><a href="../reference/impute_min_prob.html">impute_min_prob()</a></code>. When 30 &lt;= sample size &lt; 100, use <code><a href="../reference/impute_bpca.html">impute_bpca()</a></code> for glycomics data and <code><a href="../reference/impute_min_prob.html">impute_min_prob()</a></code> for glycoproteomics data. When sample size &gt;= 100, use <code><a href="../reference/impute_miss_forest.html">impute_miss_forest()</a></code> for glycomics data and <code><a href="../reference/impute_bpca.html">impute_bpca()</a></code> for glycoproteomics data.</li>
