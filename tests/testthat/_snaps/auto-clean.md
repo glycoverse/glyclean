@@ -11,7 +11,6 @@
       
       -- Removing variables with too many missing values --
       
-      i No QC samples found. Using all samples.
       i Applying preset "discovery"...
       i No variables removed.
       v Variable removal completed.
@@ -49,7 +48,6 @@
       
       -- Removing variables with too many missing values --
       
-      i QC samples found. Excluding 2 QC samples from removal process.
       i Applying preset "discovery"...
       i No variables removed.
       v Variable removal completed.
@@ -87,7 +85,6 @@
       
       -- Removing variables with too many missing values --
       
-      i No QC samples found. Using all samples.
       i Applying preset "discovery"...
       i No variables removed.
       v Variable removal completed.
@@ -120,7 +117,6 @@
       
       -- Removing variables with too many missing values --
       
-      i No QC samples found. Using all samples.
       i Applying preset "discovery"...
       i No variables removed.
       v Variable removal completed.
@@ -148,7 +144,6 @@
       
       -- Removing variables with too many missing values --
       
-      i QC samples found. Excluding 2 QC samples from removal process.
       i Applying preset "discovery"...
       i No variables removed.
       v Variable removal completed.

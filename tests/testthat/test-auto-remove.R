@@ -1,6 +1,5 @@
-test_that("auto_remove works with simple preset", {
+test_that("auto_remove includes QC samples in simple preset filtering", {
   # Setup: 10 vars, 10 samples (4A, 4B, 2QC)
-  # QC samples should be ignored
   samples <- c(paste0("A", 1:4), paste0("B", 1:4), "QC1", "QC2")
   groups <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
 
@@ -13,8 +12,10 @@ test_that("auto_remove works with simple preset", {
 
   exp <- glyexp::experiment(expr_mat, sample_info, var_info)
 
-  # V1: 60% missing in non-QC (5/8 samples: A1-A4, B1)
+  # V1: 50% missing across all samples, so it should be kept.
   exp$expr_mat["V1", c("A1", "A2", "A3", "A4", "B1")] <- NA
+  # V2: 60% missing across all samples because QC samples are included.
+  exp$expr_mat["V2", c("A1", "A2", "A3", "A4", "QC1", "QC2")] <- NA
 
   # Run auto_remove
   expect_snapshot(
@@ -26,7 +27,8 @@ test_that("auto_remove works with simple preset", {
     )
   )
 
-  expect_false("V1" %in% rownames(res$expr_mat))
+  expect_true("V1" %in% rownames(res$expr_mat))
+  expect_false("V2" %in% rownames(res$expr_mat))
   expect_equal(nrow(res$expr_mat), 9)
 })
 
@@ -72,16 +74,18 @@ test_that("auto_remove works with discovery preset", {
 
   exp <- glyexp::experiment(expr_mat, sample_info, var_info)
 
-  # V1: 90% missing in non-QC (should be removed by global > 80%)
-  exp$expr_mat["V1", c("A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4")] <- NA
+  # V1: 90% missing across all samples (should be removed by global > 80%)
+  exp$expr_mat["V1", c("A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "QC1")] <- NA
 
-  # V2: 60% missing in non-QC. Group A: 100% (>50%), Group B: 25% (<50%).
+  # V2: 50% missing across all samples. Group A: 100% (>50%),
+  # Group B: 25% (<50%), QC: 0% (<50%).
   # Should be KEPT (strict=FALSE)
   exp$expr_mat["V2", c("A1", "A2", "A3", "A4", "B1")] <- NA
 
-  # V3: 60% missing in non-QC. Group A: 75% (>50%), Group B: 75% (>50%).
+  # V3: 80% missing across all samples. Group A: 75% (>50%),
+  # Group B: 75% (>50%), QC: 100% (>50%).
   # Should be REMOVED
-  exp$expr_mat["V3", c("A1", "A2", "A3", "B1", "B2", "B3")] <- NA
+  exp$expr_mat["V3", c("A1", "A2", "A3", "B1", "B2", "B3", "QC1", "QC2")] <- NA
 
   expect_snapshot(
     res <- auto_remove(
