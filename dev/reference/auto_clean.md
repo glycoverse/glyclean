@@ -171,7 +171,7 @@ auto_clean(exp)
 #> 
 #> ── Correcting batch effects ──
 #> 
-#> ℹ Batch column  not found in sample_info. Skipping batch correction.
+#> ℹ Batch column batch not found in sample_info. Skipping batch correction.
 #> ✔ Batch correction completed.
 #> 
 #> ── Glycoproteomics Experiment ──────────────────────────────────────────────────

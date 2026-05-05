@@ -139,7 +139,7 @@ clean_exp <- auto_clean(exp)
 #> 
 #> ── Correcting batch effects ──
 #> 
-#> ℹ Batch column  not found in sample_info. Skipping batch correction.
+#> ℹ Batch effects detected in "2.1%" of variables (<= "30.0%"). Skipping batch correction.
 #> ✔ Batch correction completed.
 ```
 
