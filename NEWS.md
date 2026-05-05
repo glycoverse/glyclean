@@ -1,5 +1,19 @@
 # glyclean (development version)
 
+We have made significant updates to `auto_clean()`. QC-related behaviors are now removed from `auto_impute()`, `auto_normalize()`, and `auto_remove()`, because we realized that depending on CVs in QC samples to determine the imputation or normalization strategy is not robust.
+
+## New features
+
+* `auto_impute()` now uses a different strategy. When sample size < 30, use `impute_min_prob()`. When 30 <= sample size < 100, use `impute_bpca()` for glycomics data and `impute_min_prob()` for glycoproteomics data. When sample size >= 100, use `impute_miss_forest()` for glycomics data and `impute_bpca()` for glycoproteomics data.
+* `auto_impute()` and `auto_normalize()` do not rely on QC samples to determine the strategy.
+* `auto_remove()` does not take into account the QC samples anymore.
+
+## Minor improvements and bug fixes
+
+* `qc_name` argument in `auto_clean()`, `auto_impute()`, `auto_normalize()`, and `auto_remove()` is deprecated.
+* `to_try` argument in `auto_impute()` and `auto_normalize()` is deprecated. `impute_to_try` and `normalize_to_try` arguments in `auto_clean()` are also deprecated.
+* `auto_impute()` and `auto_normalize()` now supports fallbacks for experiments with "others" type.
+
 # glyclean 0.13.0
 
 ## New features
