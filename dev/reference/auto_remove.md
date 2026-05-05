@@ -12,8 +12,6 @@ Available presets:
 - "biomarker": more strict, remove variables with more than 40% missing
   values, and ensure less than 60% of missing values in all groups.
 
-QC samples will not be considered in the removal process.
-
 ## Usage
 
 ``` r
@@ -44,9 +42,8 @@ auto_remove(
 
 - qc_name:
 
-  The name of QC samples in the `group_col` column. Default is "QC".
-  Only used when `group_col` is not NULL. Can be NULL when no QC samples
-  are available.
+  **\[deprecated\]** This function no longer uses QC sample information.
+  This parameter is ignored and will be removed in a future release.
 
 - info:
 
@@ -65,7 +62,6 @@ object.
 library(glyexp)
 exp <- real_experiment
 auto_remove(exp)
-#> ℹ No QC samples found. Using all samples.
 #> ℹ Applying preset "discovery"...
 #> ℹ Total removed: 24 (0.56%) variables.
 #> 

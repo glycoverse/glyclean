@@ -127,8 +127,9 @@ Can be NULL when no batch information is available.</p></dd>
 
 
 <dt id="arg-qc-name">qc_name<a class="anchor" aria-label="anchor" href="#arg-qc-name"></a></dt>
-<dd><p>The name of QC samples in the <code>group_col</code> column. Default is "QC".
-Only used when <code>group_col</code> is not NULL. Can be NULL when no QC samples are available.</p></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> This function no longer
+uses QC sample information.
+This parameter is ignored and will be removed in a future release.</p></dd>
 
 
 <dt id="arg-normalize-to-try">normalize_to_try<a class="anchor" aria-label="anchor" href="#arg-normalize-to-try"></a></dt>
@@ -196,7 +197,6 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Removing variables with too many missing values</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using all samples.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Applying preset <span style="color: #0000BB;">"discovery"</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Total removed: <span style="color: #0000BB;">24</span> (<span style="color: #0000BB;">0.56</span>%) variables.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Variable removal completed.</span>

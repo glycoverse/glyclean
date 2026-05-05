@@ -70,9 +70,8 @@ auto_clean(
 
 - qc_name:
 
-  The name of QC samples in the `group_col` column. Default is "QC".
-  Only used when `group_col` is not NULL. Can be NULL when no QC samples
-  are available.
+  **\[deprecated\]** This function no longer uses QC sample information.
+  This parameter is ignored and will be removed in a future release.
 
 - normalize_to_try:
 
@@ -151,7 +150,6 @@ auto_clean(exp)
 #> 
 #> ── Removing variables with too many missing values ──
 #> 
-#> ℹ No QC samples found. Using all samples.
 #> ℹ Applying preset "discovery"...
 #> ℹ Total removed: 24 (0.56%) variables.
 #> ✔ Variable removal completed.

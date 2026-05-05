@@ -118,7 +118,6 @@ clean_exp <- auto_clean(exp)
 #> 
 #> ── Removing variables with too many missing values ──
 #> 
-#> ℹ No QC samples found. Using all samples.
 #> ℹ Applying preset "discovery"...
 #> ℹ Total removed: 24 (0.56%) variables.
 #> ✔ Variable removal completed.
@@ -228,7 +227,6 @@ clean_exp <- exp |>
   auto_normalize() |>
   auto_impute() |>
   auto_aggregate()
-#> ℹ No QC samples found. Using all samples.
 #> ℹ Applying preset "discovery"...
 #> ℹ Total removed: 24 (0.56%) variables.
 #> ℹ Using default normalization method for "glycoproteomics": `normalize_median()`.
