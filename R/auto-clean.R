@@ -28,9 +28,7 @@
 #' label them as "QC" as the "group" in the sample information table.
 #' You can also use set `qc_name` to other names.
 #'
-#' When QC samples exist, [auto_normalize()] will compare various
-#' normalization methods and select the one that stabilizes QC samples the most.
-#' [auto_impute()] uses deterministic defaults based on sample count and
+#' [auto_normalize()] and [auto_impute()] use deterministic defaults based on
 #' experiment type, regardless of QC sample availability.
 #'
 #' @param exp A [glyexp::experiment()] containing glycoproteomics or
@@ -41,16 +39,10 @@
 #'   Can be NULL when no batch information is available.
 #' @param qc_name The name of QC samples in the `group_col` column. Default is "QC".
 #'   Only used when `group_col` is not NULL. Can be NULL when no QC samples are available.
-#' @param normalize_to_try Normalization functions to try. A list. Default includes:
-#'   - [normalize_median()]: median normalization
-#'   - [normalize_median_abs()]: absolute median normalization
-#'   - [normalize_total_area()]: total area mormalization
-#'   - [normalize_quantile()]: quantile normalization
-#'   - [normalize_loessf()]: LoessF normalization
-#'   - [normalize_loesscyc()]: LoessCyc normalization
-#'   - [normalize_rlr()]: RLR normalization
-#'   - [normalize_rlrma()]: RLRMA normalization
-#'   - [normalize_rlrmacyc()]: RLRMAcyc normalization
+#' @param normalize_to_try `r lifecycle::badge("deprecated")`
+#'   This parameter is no longer used and will be removed in a future release.
+#'   The automatic normalization strategy is now deterministic and does not
+#'   require user-specified methods to try.
 #' @param impute_to_try `r lifecycle::badge("deprecated")`
 #'   This parameter is no longer used and will be removed in a future release.
 #' @param remove_preset The preset for removing variables. Default is "discovery".
@@ -96,7 +88,6 @@ auto_clean <- function(
   checkmate::assert_string(group_col, null.ok = TRUE)
   checkmate::assert_string(batch_col, null.ok = TRUE)
   checkmate::assert_string(qc_name, null.ok = TRUE)
-  checkmate::assert_list(normalize_to_try, types = "function", null.ok = TRUE)
   checkmate::assert_choice(remove_preset, c("simple", "discovery", "biomarker"))
   checkmate::assert_number(batch_prop_threshold, lower = 0, upper = 1)
   checkmate::assert_flag(check_batch_confounding)
@@ -113,6 +104,14 @@ auto_clean <- function(
     ))
   }
 
+  if (!is.null(normalize_to_try)) {
+    lifecycle::deprecate_warn(
+      when = "0.14.0",
+      what = "auto_clean(normalize_to_try)",
+      details = "The automatic normalization strategy is now deterministic and does not require user-specified methods to try. The `normalize_to_try` parameter will be removed in a future release."
+    )
+  }
+
   if (!is.null(impute_to_try)) {
     lifecycle::deprecate_warn(
       when = "0.14.0",
@@ -124,7 +123,6 @@ auto_clean <- function(
   params <- list(
     group_col = group_col,
     qc_name = qc_name,
-    normalize_to_try = normalize_to_try,
     remove_preset = remove_preset,
     batch_prop_threshold = batch_prop_threshold,
     check_batch_confounding = check_batch_confounding,
@@ -143,10 +141,7 @@ auto_clean <- function(
   cli::cli_h2("Normalizing data")
   exp <- auto_normalize(
     exp,
-    params$group_col,
-    params$qc_name,
-    params$normalize_to_try,
-    info
+    group_col = params$group_col
   )
   cli::cli_alert_success("Normalization completed.")
   cli::cli_h2("Removing variables with too many missing values")
@@ -171,10 +166,7 @@ auto_clean <- function(
   cli::cli_h2("Normalizing data again")
   exp <- auto_normalize(
     exp,
-    params$group_col,
-    params$qc_name,
-    params$normalize_to_try,
-    info
+    group_col = params$group_col
   )
   cli::cli_alert_success("Normalization completed.")
   cli::cli_h2("Correcting batch effects")
@@ -211,10 +203,7 @@ auto_clean <- function(
   cli::cli_h2("Normalizing data")
   exp <- auto_normalize(
     exp,
-    params$group_col,
-    params$qc_name,
-    params$normalize_to_try,
-    info
+    group_col = params$group_col
   )
   cli::cli_alert_success("Normalization completed.")
   cli::cli_h2("Correcting batch effects")

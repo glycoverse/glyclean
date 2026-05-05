@@ -59,9 +59,5 @@ sanitize_cv_snapshot <- function(x) {
     stringr::str_replace_all(
       "CV = [-+]?\\d*\\.?\\d+(?:e[-+]?\\d+)?",
       "CV = CV_VALUE"
-    ) |>
-    stringr::str_replace_all(
-      'Best method: ".*?"',
-      'Best method: "BEST_METHOD"'
     )
 }

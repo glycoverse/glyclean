@@ -1,21 +1,30 @@
-test_that("auto_normalize works with QC samples", {
-  # Create a simple experiment
+test_that("auto_normalize uses deterministic defaults with QC samples", {
   exp <- simple_exp(10, 10)
-
-  # Add QC samples
+  exp$meta_data$exp_type <- "glycomics"
+  exp$meta_data$glycan_type <- "N"
   exp$sample_info$group <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
 
-  # Make QC samples have low variance after median normalization
-  # but high variance otherwise (simulated)
-  # Actually, it's hard to simulate "perfectly" for one method without running them.
-  # But we can just check if it runs and returns a valid experiment.
+  called <- NULL
+  testthat::local_mocked_bindings(
+    normalize_total_area = function(x) {
+      called <<- "normalize_total_area"
+      x$expr_mat <- x$expr_mat * 2
+      x
+    },
+    .package = "glyclean"
+  )
 
-  # Let's just verify it runs and picks a method
   expect_snapshot(
-    normed <- auto_normalize(exp, group_col = "group", qc_name = "QC"),
+    normed <- auto_normalize(
+      exp,
+      group_col = "group",
+      qc_name = "QC",
+      to_try = list(normalize_median = function(x) stop("must not be called"))
+    ),
     transform = sanitize_cv_snapshot
   )
-  expect_s3_class(normed, "glyexp_experiment")
+  expect_equal(called, "normalize_total_area")
+  expect_equal(normed$expr_mat, exp$expr_mat * 2)
 })
 
 test_that("auto_normalize handles NULL qc_name", {
@@ -23,7 +32,8 @@ test_that("auto_normalize handles NULL qc_name", {
   exp$sample_info$group <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
 
   expect_snapshot(
-    normed <- auto_normalize(exp, group_col = "group", qc_name = NULL)
+    normed <- auto_normalize(exp, group_col = "group", qc_name = NULL),
+    transform = sanitize_cv_snapshot
   )
   expect_s3_class(normed, "glyexp_experiment")
 })
