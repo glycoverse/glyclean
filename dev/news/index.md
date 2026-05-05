@@ -53,6 +53,9 @@ imputation or normalization strategy is not robust.
   and
   [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
   now supports fallbacks for experiments with “others” type.
+- Fix the bug that `batch_col` argument in
+  [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
+  is ignored.
 
 ## glyclean 0.13.0
 
