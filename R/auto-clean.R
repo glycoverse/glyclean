@@ -120,6 +120,7 @@ auto_clean <- function(
 
   params <- list(
     group_col = group_col,
+    batch_col = batch_col,
     remove_preset = remove_preset,
     batch_prop_threshold = batch_prop_threshold,
     check_batch_confounding = check_batch_confounding,
