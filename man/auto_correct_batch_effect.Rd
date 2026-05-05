@@ -10,8 +10,7 @@ auto_correct_batch_effect(
   batch_col = "batch",
   prop_threshold = 0.3,
   check_confounding = TRUE,
-  confounding_threshold = 0.4,
-  info = NULL
+  confounding_threshold = 0.4
 )
 }
 \arguments{
@@ -31,8 +30,6 @@ Default to TRUE.}
 
 \item{confounding_threshold}{The threshold for Cramer's V to consider batch and group variables highly confounded.
 Only used when \code{check_confounding} is TRUE. Default to 0.4.}
-
-\item{info}{Internal parameter used by \code{\link[=auto_clean]{auto_clean()}}.}
 }
 \value{
 A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with batch effects corrected.

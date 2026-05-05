@@ -22,7 +22,6 @@
 #'   Default to TRUE.
 #' @param confounding_threshold The threshold for Cramer's V to consider batch and group variables highly confounded.
 #'   Only used when `check_confounding` is TRUE. Default to 0.4.
-#' @param info Internal parameter used by [auto_clean()].
 #'
 #' @return A [glyexp::experiment()] object with batch effects corrected.
 #'
@@ -37,8 +36,7 @@ auto_correct_batch_effect <- function(
   batch_col = "batch",
   prop_threshold = 0.3,
   check_confounding = TRUE,
-  confounding_threshold = 0.4,
-  info = NULL
+  confounding_threshold = 0.4
 ) {
   checkmate::assert_class(exp, "glyexp_experiment")
   checkmate::assert_number(prop_threshold, lower = 0, upper = 1)
