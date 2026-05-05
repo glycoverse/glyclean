@@ -140,3 +140,51 @@ test_that("auto_clean works for glycomics data with QC", {
   expect_equal(glyexp::get_exp_type(result_exp), "glycomics")
   expect_false(any(is.na(result_exp$expr_mat)))
 })
+
+test_that("auto_clean forwards batch_col to batch correction", {
+  set.seed(123)
+
+  sample_info <- tibble::tibble(
+    sample = paste0("S", 1:12),
+    plate = rep(c("P1", "P2"), each = 6)
+  )
+  var_info <- tibble::tibble(
+    variable = paste0("V", 1:20),
+    glycan_composition = rep(glyrepr::glycan_composition(c(Hex = 1)), 20)
+  )
+  expr_mat <- matrix(nrow = nrow(var_info), ncol = nrow(sample_info))
+  colnames(expr_mat) <- sample_info$sample
+  rownames(expr_mat) <- var_info$variable
+  for (i in seq_len(nrow(expr_mat))) {
+    plate_effect <- ifelse(sample_info$plate == "P1", 5, 0)
+    expr_mat[i, ] <- rnorm(nrow(sample_info), mean = 10 + plate_effect, sd = 1)
+  }
+
+  test_exp <- glyexp::experiment(
+    expr_mat,
+    sample_info,
+    var_info,
+    exp_type = "glycomics",
+    glycan_type = "N"
+  )
+
+  result_with_batch <- suppressMessages(auto_clean(
+    test_exp,
+    group_col = NULL,
+    batch_col = "plate",
+    batch_prop_threshold = 0,
+    check_batch_confounding = FALSE
+  ))
+  result_without_batch <- suppressMessages(auto_clean(
+    test_exp,
+    group_col = NULL,
+    batch_col = NULL,
+    batch_prop_threshold = 0,
+    check_batch_confounding = FALSE
+  ))
+
+  expect_false(isTRUE(all.equal(
+    result_with_batch$expr_mat,
+    result_without_batch$expr_mat
+  )))
+})

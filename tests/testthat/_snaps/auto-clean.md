@@ -32,7 +32,7 @@
       
       -- Correcting batch effects --
       
-      i Batch column  not found in sample_info. Skipping batch correction.
+      i Batch column batch not found in sample_info. Skipping batch correction.
       v Batch correction completed.
 
 # auto_clean works for glycoproteomics data with QC
@@ -69,7 +69,7 @@
       
       -- Correcting batch effects --
       
-      i Batch column  not found in sample_info. Skipping batch correction.
+      i Batch column batch not found in sample_info. Skipping batch correction.
       v Batch correction completed.
 
 # auto_clean ignores deprecated qc_name
@@ -110,7 +110,7 @@
       
       -- Correcting batch effects --
       
-      i Batch column  not found in sample_info. Skipping batch correction.
+      i Batch column batch not found in sample_info. Skipping batch correction.
       v Batch correction completed.
 
 # auto_clean works for glycomics data
@@ -137,7 +137,7 @@
       
       -- Correcting batch effects --
       
-      i Batch column  not found in sample_info. Skipping batch correction.
+      i Batch column batch not found in sample_info. Skipping batch correction.
       v Batch correction completed.
 
 # auto_clean works for glycomics data with QC
@@ -164,6 +164,6 @@
       
       -- Correcting batch effects --
       
-      i Batch column  not found in sample_info. Skipping batch correction.
+      i Batch column batch not found in sample_info. Skipping batch correction.
       v Batch correction completed.
 
