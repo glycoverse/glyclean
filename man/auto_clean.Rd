@@ -28,8 +28,9 @@ Can be NULL when no group information is available.}
 \item{batch_col}{The column name in sample_info for batches. Default is "batch".
 Can be NULL when no batch information is available.}
 
-\item{qc_name}{The name of QC samples in the \code{group_col} column. Default is "QC".
-Only used when \code{group_col} is not NULL. Can be NULL when no QC samples are available.}
+\item{qc_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This function no longer
+uses QC sample information.
+This parameter is ignored and will be removed in a future release.}
 
 \item{normalize_to_try}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 This parameter is no longer used and will be removed in a future release.

@@ -27,8 +27,9 @@
 #'   Can be NULL when no group information is available.
 #' @param batch_col The column name in sample_info for batches. Default is "batch".
 #'   Can be NULL when no batch information is available.
-#' @param qc_name The name of QC samples in the `group_col` column. Default is "QC".
-#'   Only used when `group_col` is not NULL. Can be NULL when no QC samples are available.
+#' @param qc_name `r lifecycle::badge("deprecated")` This function no longer
+#'   uses QC sample information.
+#'   This parameter is ignored and will be removed in a future release.
 #' @param normalize_to_try `r lifecycle::badge("deprecated")`
 #'   This parameter is no longer used and will be removed in a future release.
 #'   The automatic normalization strategy is now deterministic and does not
@@ -77,7 +78,6 @@ auto_clean <- function(
   checkmate::assert_class(exp, "glyexp_experiment")
   checkmate::assert_string(group_col, null.ok = TRUE)
   checkmate::assert_string(batch_col, null.ok = TRUE)
-  checkmate::assert_string(qc_name, null.ok = TRUE)
   checkmate::assert_choice(remove_preset, c("simple", "discovery", "biomarker"))
   checkmate::assert_number(batch_prop_threshold, lower = 0, upper = 1)
   checkmate::assert_flag(check_batch_confounding)
@@ -110,16 +110,23 @@ auto_clean <- function(
     )
   }
 
+  if (!identical(qc_name, "QC")) {
+    lifecycle::deprecate_warn(
+      when = "0.14.0",
+      what = "auto_clean(qc_name)",
+      details = "This function no longer uses QC sample information and the `qc_name` parameter will be removed in a future release."
+    )
+  }
+
   params <- list(
     group_col = group_col,
-    qc_name = qc_name,
     remove_preset = remove_preset,
     batch_prop_threshold = batch_prop_threshold,
     check_batch_confounding = check_batch_confounding,
     batch_confounding_threshold = batch_confounding_threshold,
     standardize_variable = standardize_variable
   )
-  info <- inspect_experiment(exp, group_col = group_col, qc_name = qc_name)
+  info <- inspect_experiment(exp, group_col = group_col)
   switch(
     glyexp::get_exp_type(exp),
     glycoproteomics = .auto_clean_glycoproteomics(exp, params, info),

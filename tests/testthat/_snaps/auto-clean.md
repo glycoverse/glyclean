@@ -72,10 +72,14 @@
       i Batch column  not found in sample_info. Skipping batch correction.
       v Batch correction completed.
 
-# auto_clean works with NULL qc_name
+# auto_clean ignores deprecated qc_name
 
     Code
       result_exp <- auto_clean(test_exp, qc_name = NULL, standardize_variable = FALSE)
+    Condition
+      Warning:
+      The `qc_name` argument of `auto_clean()` is deprecated as of glyclean 0.14.0.
+      i This function no longer uses QC sample information and the `qc_name` parameter will be removed in a future release.
     Message
       
       -- Normalizing data --
