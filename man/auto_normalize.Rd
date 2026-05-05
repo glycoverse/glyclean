@@ -18,39 +18,33 @@ auto_normalize(
 \item{group_col}{The column name in sample_info for groups. Default is "group".
 Can be NULL when no group information is available.}
 
-\item{qc_name}{The name of QC samples in the \code{group_col} column. Default is "QC".
-Only used when \code{group_col} is not NULL. Can be NULL when no QC samples are available.}
+\item{qc_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This function no longer
+uses this argument.
+This parameter is ignored and will be removed in a future release.}
 
-\item{to_try}{Normalization functions to try when QC samples are present. A list. Default includes:
-\itemize{
-\item \code{\link[=normalize_median]{normalize_median()}}: median normalization
-\item \code{\link[=normalize_median_abs]{normalize_median_abs()}}: absolute median normalization
-\item \code{\link[=normalize_total_area]{normalize_total_area()}}: total area normalization
-\item \code{\link[=normalize_quantile]{normalize_quantile()}}: quantile normalization
-\item \code{\link[=normalize_loessf]{normalize_loessf()}}: LoessF normalization
-\item \code{\link[=normalize_loesscyc]{normalize_loesscyc()}}: LoessCyc normalization
-\item \code{\link[=normalize_median_quotient]{normalize_median_quotient()}}: median quotient normalization
-\item \code{\link[=normalize_rlr]{normalize_rlr()}}: Robust Linear Regression normalization
-\item \code{\link[=normalize_rlrma]{normalize_rlrma()}}: Robust Linear Regression with Median Adjustment normalization
-\item \code{\link[=normalize_rlrmacyc]{normalize_rlrmacyc()}}: Robust Linear Regression with Median Adjustment and Cyclic normalization
-}}
+\item{to_try}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+This parameter is no longer used and will be removed in a future release.
+The automatic strategy is now deterministic and does not require
+user-specified methods to try.}
 
-\item{info}{Internal parameter used by \code{\link[=auto_clean]{auto_clean()}}.}
+\item{info}{Internal parameter used by \code{\link[=auto_clean]{auto_clean()}}. Ignored by
+\code{\link[=auto_normalize]{auto_normalize()}}.}
 }
 \value{
 The normalized experiment.
 }
 \description{
-This function automatically selects and applies the most suitable normalization method for the given dataset.
-If Quality Control (QC) samples are present, the method that best stabilizes them
-(i.e., yields the lowest median coefficient of variation) is chosen.
-Otherwise, it defaults to median normalization for glycoproteomics data,
-and total area normalization for glycomics data.
+This function automatically applies a deterministic default normalization
+method based on experiment type. Quality Control (QC) samples are not used
+to benchmark, select, or report normalization behavior.
 }
 \details{
-When QC samples are available, the function benchmarks all normalization methods in \code{to_try}
-and selects the one with the lowest median coefficient of variation (CV) among QC samples.
-Methods that fail are skipped with a warning.
+The automatic strategy uses these defaults:
+\itemize{
+\item \code{glycomics}: \code{\link[=normalize_total_area]{normalize_total_area()}}.
+\item \code{glycoproteomics}: \code{\link[=normalize_median]{normalize_median()}}.
+\item missing or other experiment types: \code{\link[=normalize_median]{normalize_median()}}.
+}
 }
 \examples{
 library(glyexp)

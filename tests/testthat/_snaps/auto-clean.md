@@ -6,8 +6,7 @@
       
       -- Normalizing data --
       
-      i No QC samples found. Using default normalization method based on experiment type.
-      i Experiment type is "glycoproteomics". Using `normalize_median()`.
+      i Using default normalization method for "glycoproteomics": `normalize_median()`.
       v Normalization completed.
       
       -- Removing variables with too many missing values --
@@ -29,8 +28,7 @@
       
       -- Normalizing data again --
       
-      i No QC samples found. Using default normalization method based on experiment type.
-      i Experiment type is "glycoproteomics". Using `normalize_median()`.
+      i Using default normalization method for "glycoproteomics": `normalize_median()`.
       v Normalization completed.
       
       -- Correcting batch effects --
@@ -46,19 +44,7 @@
       
       -- Normalizing data --
       
-      i QC samples found. Choosing the best normalization method based on QC samples.
-      * Raw data: Median CV = CV_VALUE
-      * Method "normalize_median": Median CV = CV_VALUE
-      * Method "normalize_median_abs": Median CV = CV_VALUE
-      * Method "normalize_total_area": Median CV = CV_VALUE
-      * Method "normalize_quantile": Median CV = CV_VALUE
-      * Method "normalize_median_quotient": Median CV = CV_VALUE
-      * Method "normalize_loessf": Median CV = CV_VALUE
-      * Method "normalize_loesscyc": Median CV = CV_VALUE
-      * Method "normalize_rlr": Median CV = CV_VALUE
-      * Method "normalize_rlrma": Median CV = CV_VALUE
-      * Method "normalize_rlrmacyc": Median CV = CV_VALUE
-      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
+      i Using default normalization method for "glycoproteomics": `normalize_median()`.
       v Normalization completed.
       
       -- Removing variables with too many missing values --
@@ -80,19 +66,7 @@
       
       -- Normalizing data again --
       
-      i QC samples found. Choosing the best normalization method based on QC samples.
-      * Raw data: Median CV = CV_VALUE
-      * Method "normalize_median": Median CV = CV_VALUE
-      * Method "normalize_median_abs": Median CV = CV_VALUE
-      * Method "normalize_total_area": Median CV = CV_VALUE
-      * Method "normalize_quantile": Median CV = CV_VALUE
-      * Method "normalize_median_quotient": Median CV = CV_VALUE
-      * Method "normalize_loessf": Median CV = CV_VALUE
-      * Method "normalize_loesscyc": Median CV = CV_VALUE
-      * Method "normalize_rlr": Median CV = CV_VALUE
-      * Method "normalize_rlrma": Median CV = CV_VALUE
-      * Method "normalize_rlrmacyc": Median CV = CV_VALUE
-      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
+      i Using default normalization method for "glycoproteomics": `normalize_median()`.
       v Normalization completed.
       
       -- Correcting batch effects --
@@ -108,8 +82,7 @@
       
       -- Normalizing data --
       
-      i No QC samples found. Using default normalization method based on experiment type.
-      i Experiment type is "glycoproteomics". Using `normalize_median()`.
+      i Using default normalization method for "glycoproteomics": `normalize_median()`.
       v Normalization completed.
       
       -- Removing variables with too many missing values --
@@ -131,8 +104,7 @@
       
       -- Normalizing data again --
       
-      i No QC samples found. Using default normalization method based on experiment type.
-      i Experiment type is "glycoproteomics". Using `normalize_median()`.
+      i Using default normalization method for "glycoproteomics": `normalize_median()`.
       v Normalization completed.
       
       -- Correcting batch effects --
@@ -160,8 +132,7 @@
       
       -- Normalizing data --
       
-      i No QC samples found. Using default normalization method based on experiment type.
-      i Experiment type is "glycomics" with "nrow(exp)" glycans.
+      i Using default normalization method for "glycomics": `normalize_total_area()`.
       v Normalization completed.
       
       -- Correcting batch effects --
@@ -189,19 +160,7 @@
       
       -- Normalizing data --
       
-      i QC samples found. Choosing the best normalization method based on QC samples.
-      * Raw data: Median CV = CV_VALUE
-      * Method "normalize_median": Median CV = CV_VALUE
-      * Method "normalize_median_abs": Median CV = CV_VALUE
-      * Method "normalize_total_area": Median CV = CV_VALUE
-      * Method "normalize_quantile": Median CV = CV_VALUE
-      * Method "normalize_median_quotient": Median CV = CV_VALUE
-      * Method "normalize_loessf": Median CV = CV_VALUE
-      * Method "normalize_loesscyc": Median CV = CV_VALUE
-      * Method "normalize_rlr": Median CV = CV_VALUE
-      * Method "normalize_rlrma": Median CV = CV_VALUE
-      * Method "normalize_rlrmacyc": Median CV = CV_VALUE
-      v Best method: "BEST_METHOD" with Median CV = CV_VALUE
+      i Using default normalization method for "glycomics": `normalize_total_area()`.
       v Normalization completed.
       
       -- Correcting batch effects --

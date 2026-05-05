@@ -31,18 +31,10 @@ Can be NULL when no batch information is available.}
 \item{qc_name}{The name of QC samples in the \code{group_col} column. Default is "QC".
 Only used when \code{group_col} is not NULL. Can be NULL when no QC samples are available.}
 
-\item{normalize_to_try}{Normalization functions to try. A list. Default includes:
-\itemize{
-\item \code{\link[=normalize_median]{normalize_median()}}: median normalization
-\item \code{\link[=normalize_median_abs]{normalize_median_abs()}}: absolute median normalization
-\item \code{\link[=normalize_total_area]{normalize_total_area()}}: total area mormalization
-\item \code{\link[=normalize_quantile]{normalize_quantile()}}: quantile normalization
-\item \code{\link[=normalize_loessf]{normalize_loessf()}}: LoessF normalization
-\item \code{\link[=normalize_loesscyc]{normalize_loesscyc()}}: LoessCyc normalization
-\item \code{\link[=normalize_rlr]{normalize_rlr()}}: RLR normalization
-\item \code{\link[=normalize_rlrma]{normalize_rlrma()}}: RLRMA normalization
-\item \code{\link[=normalize_rlrmacyc]{normalize_rlrmacyc()}}: RLRMAcyc normalization
-}}
+\item{normalize_to_try}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+This parameter is no longer used and will be removed in a future release.
+The automatic normalization strategy is now deterministic and does not
+require user-specified methods to try.}
 
 \item{impute_to_try}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 This parameter is no longer used and will be removed in a future release.}
@@ -98,17 +90,6 @@ For glycoproteomics data, this function calls these functions in sequence:
 \item \code{\link[=auto_correct_batch_effect]{auto_correct_batch_effect()}}
 }
 }
-\section{QC samples}{
-If you have quality control (QC) samples,
-label them as "QC" as the "group" in the sample information table.
-You can also use set \code{qc_name} to other names.
-
-When QC samples exist, \code{\link[=auto_normalize]{auto_normalize()}} will compare various
-normalization methods and select the one that stabilizes QC samples the most.
-\code{\link[=auto_impute]{auto_impute()}} uses deterministic defaults based on sample count and
-experiment type, regardless of QC sample availability.
-}
-
 \examples{
 library(glyexp)
 exp <- real_experiment
