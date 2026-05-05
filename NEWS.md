@@ -2,6 +2,10 @@
 
 We have made significant updates to `auto_clean()`. QC-related behaviors are now removed from `auto_impute()`, `auto_normalize()`, and `auto_remove()`, because we realized that depending on CVs in QC samples to determine the imputation or normalization strategy is not robust.
 
+## Breaking changes
+
+* The `info` parameter in `auto_xxx()` functions is removed. This should not be a problem because this parameter used to only for internal use.
+
 ## New features
 
 * `auto_impute()` now uses a different strategy. When sample size < 30, use `impute_min_prob()`. When 30 <= sample size < 100, use `impute_bpca()` for glycomics data and `impute_min_prob()` for glycoproteomics data. When sample size >= 100, use `impute_miss_forest()` for glycomics data and `impute_bpca()` for glycoproteomics data.
