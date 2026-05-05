@@ -21,8 +21,8 @@ Default "discovery" if group information is available, otherwise "simple".}
 \item{group_col}{The column name in sample_info for groups. Default is "group".
 Can be NULL when no group information is available.}
 
-\item{qc_name}{The name of QC samples in the \code{group_col} column. Default is "QC".
-Only used when \code{group_col} is not NULL. Can be NULL when no QC samples are available.}
+\item{qc_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This function no longer uses QC sample information.
+This parameter is ignored and will be removed in a future release.}
 
 \item{info}{Internal parameter used by \code{\link[=auto_clean]{auto_clean()}}.}
 }
@@ -39,8 +39,6 @@ but ensure less than 50\% of missing values in at least one group.
 \item "biomarker": more strict, remove variables with more than 40\% missing values,
 and ensure less than 60\% of missing values in all groups.
 }
-
-QC samples will not be considered in the removal process.
 }
 \examples{
 library(glyexp)

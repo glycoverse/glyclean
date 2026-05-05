@@ -137,10 +137,9 @@ auto_clean <- function(
   cli::cli_h2("Removing variables with too many missing values")
   exp <- auto_remove(
     exp,
-    params$remove_preset,
-    params$group_col,
-    params$qc_name,
-    info
+    preset = params$remove_preset,
+    group_col = params$group_col,
+    info = info
   )
   cli::cli_alert_success("Variable removal completed.")
   cli::cli_h2("Imputing missing values")
@@ -177,10 +176,9 @@ auto_clean <- function(
   cli::cli_h2("Removing variables with too many missing values")
   exp <- auto_remove(
     exp,
-    params$remove_preset,
-    params$group_col,
-    params$qc_name,
-    info
+    preset = params$remove_preset,
+    group_col = params$group_col,
+    info = info
   )
   cli::cli_alert_success("Variable removal completed.")
   cli::cli_h2("Imputing missing values")
