@@ -76,34 +76,9 @@ auto_clean(
 
 - normalize_to_try:
 
-  Normalization functions to try. A list. Default includes:
-
-  - [`normalize_median()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_median.md):
-    median normalization
-
-  - [`normalize_median_abs()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_median_abs.md):
-    absolute median normalization
-
-  - [`normalize_total_area()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_total_area.md):
-    total area mormalization
-
-  - [`normalize_quantile()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_quantile.md):
-    quantile normalization
-
-  - [`normalize_loessf()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_loessf.md):
-    LoessF normalization
-
-  - [`normalize_loesscyc()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_loesscyc.md):
-    LoessCyc normalization
-
-  - [`normalize_rlr()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_rlr.md):
-    RLR normalization
-
-  - [`normalize_rlrma()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_rlrma.md):
-    RLRMA normalization
-
-  - [`normalize_rlrmacyc()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_rlrmacyc.md):
-    RLRMAcyc normalization
+  **\[deprecated\]** This parameter is no longer used and will be
+  removed in a future release. The automatic normalization strategy is
+  now deterministic and does not require user-specified methods to try.
 
 - impute_to_try:
 
@@ -154,20 +129,6 @@ A modified
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
 object.
 
-## QC samples
-
-If you have quality control (QC) samples, label them as "QC" as the
-"group" in the sample information table. You can also use set `qc_name`
-to other names.
-
-When QC samples exist,
-[`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
-will compare various normalization methods and select the one that
-stabilizes QC samples the most.
-[`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
-uses deterministic defaults based on sample count and experiment type,
-regardless of QC sample availability.
-
 ## See also
 
 [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md),
@@ -185,8 +146,7 @@ auto_clean(exp)
 #> 
 #> ── Normalizing data ──
 #> 
-#> ℹ No QC samples found. Using default normalization method based on experiment type.
-#> ℹ Experiment type is "glycoproteomics". Using `normalize_median()`.
+#> ℹ Using default normalization method for "glycoproteomics": `normalize_median()`.
 #> ✔ Normalization completed.
 #> 
 #> ── Removing variables with too many missing values ──
@@ -208,8 +168,7 @@ auto_clean(exp)
 #> 
 #> ── Normalizing data again ──
 #> 
-#> ℹ No QC samples found. Using default normalization method based on experiment type.
-#> ℹ Experiment type is "glycoproteomics". Using `normalize_median()`.
+#> ℹ Using default normalization method for "glycoproteomics": `normalize_median()`.
 #> ✔ Normalization completed.
 #> 
 #> ── Correcting batch effects ──

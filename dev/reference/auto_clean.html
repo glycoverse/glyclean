@@ -132,16 +132,10 @@ Only used when <code>group_col</code> is not NULL. Can be NULL when no QC sample
 
 
 <dt id="arg-normalize-to-try">normalize_to_try<a class="anchor" aria-label="anchor" href="#arg-normalize-to-try"></a></dt>
-<dd><p>Normalization functions to try. A list. Default includes:</p><ul><li><p><code><a href="normalize_median.html">normalize_median()</a></code>: median normalization</p></li>
-<li><p><code><a href="normalize_median_abs.html">normalize_median_abs()</a></code>: absolute median normalization</p></li>
-<li><p><code><a href="normalize_total_area.html">normalize_total_area()</a></code>: total area mormalization</p></li>
-<li><p><code><a href="normalize_quantile.html">normalize_quantile()</a></code>: quantile normalization</p></li>
-<li><p><code><a href="normalize_loessf.html">normalize_loessf()</a></code>: LoessF normalization</p></li>
-<li><p><code><a href="normalize_loesscyc.html">normalize_loesscyc()</a></code>: LoessCyc normalization</p></li>
-<li><p><code><a href="normalize_rlr.html">normalize_rlr()</a></code>: RLR normalization</p></li>
-<li><p><code><a href="normalize_rlrma.html">normalize_rlrma()</a></code>: RLRMA normalization</p></li>
-<li><p><code><a href="normalize_rlrmacyc.html">normalize_rlrmacyc()</a></code>: RLRMAcyc normalization</p></li>
-</ul></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a>
+This parameter is no longer used and will be removed in a future release.
+The automatic normalization strategy is now deterministic and does not
+require user-specified methods to try.</p></dd>
 
 
 <dt id="arg-impute-to-try">impute_to_try<a class="anchor" aria-label="anchor" href="#arg-impute-to-try"></a></dt>
@@ -185,16 +179,6 @@ Default is <code>TRUE</code>.</p></dd>
     <p>A modified <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object.</p>
     </div>
     <div class="section level2">
-    <h2 id="qc-samples">QC samples<a class="anchor" aria-label="anchor" href="#qc-samples"></a></h2>
-    <p>If you have quality control (QC) samples,
-label them as "QC" as the "group" in the sample information table.
-You can also use set <code>qc_name</code> to other names.</p>
-<p>When QC samples exist, <code><a href="auto_normalize.html">auto_normalize()</a></code> will compare various
-normalization methods and select the one that stabilizes QC samples the most.
-<code><a href="auto_impute.html">auto_impute()</a></code> uses deterministic defaults based on sample count and
-experiment type, regardless of QC sample availability.</p>
-    </div>
-    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="auto_normalize.html">auto_normalize()</a></code>, <code><a href="auto_remove.html">auto_remove()</a></code>, <code><a href="auto_impute.html">auto_impute()</a></code>, <code><a href="auto_aggregate.html">auto_aggregate()</a></code>, <code><a href="auto_correct_batch_effect.html">auto_correct_batch_effect()</a></code></p></div>
     </div>
@@ -207,8 +191,7 @@ experiment type, regardless of QC sample availability.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Normalizing data</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using default normalization method based on experiment type.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Experiment type is <span style="color: #0000BB;">"glycoproteomics"</span>. Using `normalize_median()`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using default normalization method for <span style="color: #0000BB;">"glycoproteomics"</span>: `normalize_median()`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Normalization completed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Removing variables with too many missing values</span> ──</span>
@@ -230,8 +213,7 @@ experiment type, regardless of QC sample availability.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Normalizing data again</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using default normalization method based on experiment type.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Experiment type is <span style="color: #0000BB;">"glycoproteomics"</span>. Using `normalize_median()`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using default normalization method for <span style="color: #0000BB;">"glycoproteomics"</span>: `normalize_median()`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Normalization completed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Correcting batch effects</span> ──</span>

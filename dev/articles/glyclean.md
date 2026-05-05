@@ -113,8 +113,7 @@ clean_exp <- auto_clean(exp)
 #> 
 #> ── Normalizing data ──
 #> 
-#> ℹ No QC samples found. Using default normalization method based on experiment type.
-#> ℹ Experiment type is "glycoproteomics". Using `normalize_median()`.
+#> ℹ Using default normalization method for "glycoproteomics": `normalize_median()`.
 #> ✔ Normalization completed.
 #> 
 #> ── Removing variables with too many missing values ──
@@ -136,8 +135,7 @@ clean_exp <- auto_clean(exp)
 #> 
 #> ── Normalizing data again ──
 #> 
-#> ℹ No QC samples found. Using default normalization method based on experiment type.
-#> ℹ Experiment type is "glycoproteomics". Using `normalize_median()`.
+#> ℹ Using default normalization method for "glycoproteomics": `normalize_median()`.
 #> ✔ Normalization completed.
 #> 
 #> ── Correcting batch effects ──
@@ -204,24 +202,21 @@ calls the following functions in sequence:
 - [`auto_correct_batch_effect()`](https://glycoverse.github.io/glyclean/dev/reference/auto_correct_batch_effect.md):
   Automatically correct the batch effects
 
-These functions automatically choose the best method for the given
-dataset.
+These functions apply deterministic defaults for the given dataset.
 
 **How
 [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
 works:**
 
-- **When QC samples are available**: All normalization methods are
-  benchmarked, and the one with the lowest median coefficient of
-  variation (CV) among QC samples is selected.
+- **When QC samples are available**: QC samples do not change the
+  automatic method choice and are not used for normalization
+  diagnostics.
 
-- **For glycomics data without QC samples**: Total area normalization is
-  applied first, followed by CLR transformation (for ≤50 glycans) or ALR
-  transformation (for \>50 glycans), following the best practices from
-  DOI: 10.1038/s41467-025-56249-3.
+- **For glycomics data**: Total area normalization is used as the
+  default.
 
-- **For glycoproteomics data without QC samples**: Median normalization
-  is used as the default.
+- **For glycoproteomics data and other experiment types**: Median
+  normalization is used as the default.
 
 You can make a custom pipeline by calling these functions in different
 orders:
@@ -236,8 +231,7 @@ clean_exp <- exp |>
 #> ℹ No QC samples found. Using all samples.
 #> ℹ Applying preset "discovery"...
 #> ℹ Total removed: 24 (0.56%) variables.
-#> ℹ No QC samples found. Using default normalization method based on experiment type.
-#> ℹ Experiment type is "glycoproteomics". Using `normalize_median()`.
+#> ℹ Using default normalization method for "glycoproteomics": `normalize_median()`.
 #> ℹ Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
 #> ℹ Aggregating to "gfs" level
 ```
