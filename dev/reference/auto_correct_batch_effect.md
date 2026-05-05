@@ -18,8 +18,7 @@ auto_correct_batch_effect(
   batch_col = "batch",
   prop_threshold = 0.3,
   check_confounding = TRUE,
-  confounding_threshold = 0.4,
-  info = NULL
+  confounding_threshold = 0.4
 )
 ```
 
@@ -56,11 +55,6 @@ auto_correct_batch_effect(
   The threshold for Cramer's V to consider batch and group variables
   highly confounded. Only used when `check_confounding` is TRUE. Default
   to 0.4.
-
-- info:
-
-  Internal parameter used by
-  [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md).
 
 ## Value
 

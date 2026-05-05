@@ -8,13 +8,7 @@ used to benchmark or select the imputation method.
 ## Usage
 
 ``` r
-auto_impute(
-  exp,
-  group_col = "group",
-  qc_name = "QC",
-  to_try = NULL,
-  info = NULL
-)
+auto_impute(exp, group_col = "group", qc_name = "QC", to_try = NULL)
 ```
 
 ## Arguments
@@ -39,11 +33,6 @@ auto_impute(
   **\[deprecated\]** This parameter is no longer used and will be
   removed in a future release. The automatic strategy is now
   deterministic and does not require user-specified methods to try.
-
-- info:
-
-  Internal parameter used by
-  [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md).
 
 ## Value
 

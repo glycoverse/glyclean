@@ -15,13 +15,7 @@ Available presets:
 ## Usage
 
 ``` r
-auto_remove(
-  exp,
-  preset = "discovery",
-  group_col = "group",
-  qc_name = "QC",
-  info = NULL
-)
+auto_remove(exp, preset = "discovery", group_col = "group", qc_name = "QC")
 ```
 
 ## Arguments
@@ -44,11 +38,6 @@ auto_remove(
 
   **\[deprecated\]** This function no longer uses QC sample information.
   This parameter is ignored and will be removed in a future release.
-
-- info:
-
-  Internal parameter used by
-  [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md).
 
 ## Value
 
