@@ -2,6 +2,58 @@
 
 ## glyclean (development version)
 
+We have made significant updates to
+[`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md).
+QC-related behaviors are now removed from
+[`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md),
+[`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md),
+and
+[`auto_remove()`](https://glycoverse.github.io/glyclean/dev/reference/auto_remove.md),
+because we realized that depending on CVs in QC samples to determine the
+imputation or normalization strategy is not robust.
+
+### New features
+
+- [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
+  now uses a different strategy. When sample size \< 30, use
+  [`impute_min_prob()`](https://glycoverse.github.io/glyclean/dev/reference/impute_min_prob.md).
+  When 30 \<= sample size \< 100, use
+  [`impute_bpca()`](https://glycoverse.github.io/glyclean/dev/reference/impute_bpca.md)
+  for glycomics data and
+  [`impute_min_prob()`](https://glycoverse.github.io/glyclean/dev/reference/impute_min_prob.md)
+  for glycoproteomics data. When sample size \>= 100, use
+  [`impute_miss_forest()`](https://glycoverse.github.io/glyclean/dev/reference/impute_miss_forest.md)
+  for glycomics data and
+  [`impute_bpca()`](https://glycoverse.github.io/glyclean/dev/reference/impute_bpca.md)
+  for glycoproteomics data.
+- [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
+  and
+  [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
+  do not rely on QC samples to determine the strategy.
+- [`auto_remove()`](https://glycoverse.github.io/glyclean/dev/reference/auto_remove.md)
+  does not take into account the QC samples anymore.
+
+### Minor improvements and bug fixes
+
+- `qc_name` argument in
+  [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md),
+  [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md),
+  [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md),
+  and
+  [`auto_remove()`](https://glycoverse.github.io/glyclean/dev/reference/auto_remove.md)
+  is deprecated.
+- `to_try` argument in
+  [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
+  and
+  [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
+  is deprecated. `impute_to_try` and `normalize_to_try` arguments in
+  [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
+  are also deprecated.
+- [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
+  and
+  [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
+  now supports fallbacks for experiments with “others” type.
+
 ## glyclean 0.13.0
 
 ### New features
