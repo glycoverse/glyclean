@@ -4,13 +4,7 @@
 \alias{auto_normalize}
 \title{Automatic Normalization}
 \usage{
-auto_normalize(
-  exp,
-  group_col = "group",
-  qc_name = "QC",
-  to_try = NULL,
-  info = NULL
-)
+auto_normalize(exp, group_col = "group", qc_name = "QC", to_try = NULL)
 }
 \arguments{
 \item{exp}{An \code{\link[glyexp:experiment]{glyexp::experiment()}}.}
@@ -26,9 +20,6 @@ This parameter is ignored and will be removed in a future release.}
 This parameter is no longer used and will be removed in a future release.
 The automatic strategy is now deterministic and does not require
 user-specified methods to try.}
-
-\item{info}{Internal parameter used by \code{\link[=auto_clean]{auto_clean()}}. Ignored by
-\code{\link[=auto_normalize]{auto_normalize()}}.}
 }
 \value{
 The normalized experiment.

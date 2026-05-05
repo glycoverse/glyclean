@@ -20,8 +20,6 @@
 #'   This parameter is no longer used and will be removed in a future release.
 #'   The automatic strategy is now deterministic and does not require
 #'   user-specified methods to try.
-#' @param info Internal parameter used by [auto_clean()]. Ignored by
-#'   [auto_normalize()].
 #'
 #' @returns The normalized experiment.
 #' @examples
@@ -32,8 +30,7 @@ auto_normalize <- function(
   exp,
   group_col = "group",
   qc_name = "QC",
-  to_try = NULL,
-  info = NULL
+  to_try = NULL
 ) {
   # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")

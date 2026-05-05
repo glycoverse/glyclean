@@ -25,7 +25,6 @@
 #' @param to_try `r lifecycle::badge("deprecated")`
 #'   This parameter is no longer used and will be removed in a future release.
 #'   The automatic strategy is now deterministic and does not require user-specified methods to try.
-#' @param info Internal parameter used by [auto_clean()].
 #'
 #' @returns The imputed experiment.
 #' @examples
@@ -36,8 +35,7 @@ auto_impute <- function(
   exp,
   group_col = "group",
   qc_name = "QC",
-  to_try = NULL,
-  info = NULL
+  to_try = NULL
 ) {
   # Check arguments
   checkmate::assert_class(exp, "glyexp_experiment")
@@ -58,22 +56,16 @@ auto_impute <- function(
     )
   }
 
-  # Get experiment inspection
-  if (is.null(info)) {
-    info <- inspect_experiment(exp, group_col = group_col)
-  }
-
-  .auto_impute_default(exp, info)
+  .auto_impute_default(exp)
 }
 
 #' Apply the deterministic automatic imputation strategy
 #'
 #' @param exp An [glyexp::experiment()].
-#' @param info Experiment inspection metadata from `inspect_experiment()`.
 #'
 #' @returns The imputed experiment.
 #' @noRd
-.auto_impute_default <- function(exp, info) {
+.auto_impute_default <- function(exp) {
   n_samples <- ncol(exp)
   exp_type <- glyexp::get_exp_type(exp)
   strategy <- .choose_auto_impute_strategy(n_samples, exp_type)

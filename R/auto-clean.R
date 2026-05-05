@@ -127,15 +127,14 @@ auto_clean <- function(
     batch_confounding_threshold = batch_confounding_threshold,
     standardize_variable = standardize_variable
   )
-  info <- inspect_experiment(exp, group_col = group_col)
   switch(
     glyexp::get_exp_type(exp),
-    glycoproteomics = .auto_clean_glycoproteomics(exp, params, info),
-    glycomics = .auto_clean_glycomics(exp, params, info)
+    glycoproteomics = .auto_clean_glycoproteomics(exp, params),
+    glycomics = .auto_clean_glycomics(exp, params)
   )
 }
 
-.auto_clean_glycoproteomics <- function(exp, params, info) {
+.auto_clean_glycoproteomics <- function(exp, params) {
   cli::cli_h2("Normalizing data")
   exp <- auto_normalize(
     exp,
@@ -146,15 +145,13 @@ auto_clean <- function(
   exp <- auto_remove(
     exp,
     preset = params$remove_preset,
-    group_col = params$group_col,
-    info = info
+    group_col = params$group_col
   )
   cli::cli_alert_success("Variable removal completed.")
   cli::cli_h2("Imputing missing values")
   exp <- auto_impute(
     exp,
-    params$group_col,
-    info = info
+    params$group_col
   )
   cli::cli_alert_success("Imputation completed.")
   cli::cli_h2("Aggregating data")
@@ -173,27 +170,24 @@ auto_clean <- function(
     params$batch_col,
     params$batch_prop_threshold,
     params$check_batch_confounding,
-    params$batch_confounding_threshold,
-    info
+    params$batch_confounding_threshold
   )
   cli::cli_alert_success("Batch correction completed.")
   exp
 }
 
-.auto_clean_glycomics <- function(exp, params, info) {
+.auto_clean_glycomics <- function(exp, params) {
   cli::cli_h2("Removing variables with too many missing values")
   exp <- auto_remove(
     exp,
     preset = params$remove_preset,
-    group_col = params$group_col,
-    info = info
+    group_col = params$group_col
   )
   cli::cli_alert_success("Variable removal completed.")
   cli::cli_h2("Imputing missing values")
   exp <- auto_impute(
     exp,
-    params$group_col,
-    info = info
+    params$group_col
   )
   cli::cli_alert_success("Imputation completed.")
   cli::cli_h2("Normalizing data")
@@ -209,8 +203,7 @@ auto_clean <- function(
     params$batch_col,
     params$batch_prop_threshold,
     params$check_batch_confounding,
-    params$batch_confounding_threshold,
-    info
+    params$batch_confounding_threshold
   )
   cli::cli_alert_success("Batch correction completed.")
   exp

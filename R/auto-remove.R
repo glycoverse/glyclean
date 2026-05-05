@@ -16,7 +16,6 @@
 #'   Can be NULL when no group information is available.
 #' @param qc_name `r lifecycle::badge("deprecated")` This function no longer uses QC sample information.
 #'   This parameter is ignored and will be removed in a future release.
-#' @param info Internal parameter used by [auto_clean()].
 #'
 #' @returns A modified [glyexp::experiment()] object.
 #'
@@ -30,8 +29,7 @@ auto_remove <- function(
   exp,
   preset = "discovery",
   group_col = "group",
-  qc_name = "QC",
-  info = NULL
+  qc_name = "QC"
 ) {
   checkmate::assert_class(exp, "glyexp_experiment")
   checkmate::assert_choice(preset, c("simple", "discovery", "biomarker"))
@@ -45,11 +43,7 @@ auto_remove <- function(
     )
   }
 
-  if (is.null(info)) {
-    has_group <- !is.null(group_col) && group_col %in% colnames(exp$sample_info)
-  } else {
-    has_group <- isTRUE(info$has_group)
-  }
+  has_group <- !is.null(group_col) && group_col %in% colnames(exp$sample_info)
 
   exp_filtered <- exp
   if (has_group && is.factor(exp_filtered$sample_info[[group_col]])) {
