@@ -64,7 +64,10 @@ auto_normalize <- function(
   strategy <- .choose_auto_normalize_strategy(glyexp::get_exp_type(exp))
 
   cli::cli_alert_info(
-    "Using default normalization method for {.val {strategy$exp_type}}: {.fn {strategy$method_name}}."
+    "Normalization method: {.fn {strategy$method_name}}"
+  )
+  cli::cli_alert_info(
+    "Reason: default for {.val {strategy$exp_type}}."
   )
 
   switch(

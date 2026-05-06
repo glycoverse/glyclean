@@ -6,7 +6,8 @@
       
       -- Normalizing data --
       
-      i Using default normalization method for "glycoproteomics": `normalize_median()`.
+      i Normalization method: `normalize_median()`
+      i Reason: default for "glycoproteomics".
       v Normalization completed.
       
       -- Removing variables with too many missing values --
@@ -17,7 +18,8 @@
       
       -- Imputing missing values --
       
-      i Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
+      i Imputation method: `impute_min_prob()`
+      i Reason: default for "glycoproteomics" with n_samples < 30.
       v Imputation completed.
       
       -- Aggregating data --
@@ -27,7 +29,8 @@
       
       -- Normalizing data again --
       
-      i Using default normalization method for "glycoproteomics": `normalize_median()`.
+      i Normalization method: `normalize_median()`
+      i Reason: default for "glycoproteomics".
       v Normalization completed.
       
       -- Correcting batch effects --
@@ -43,7 +46,8 @@
       
       -- Normalizing data --
       
-      i Using default normalization method for "glycoproteomics": `normalize_median()`.
+      i Normalization method: `normalize_median()`
+      i Reason: default for "glycoproteomics".
       v Normalization completed.
       
       -- Removing variables with too many missing values --
@@ -54,7 +58,8 @@
       
       -- Imputing missing values --
       
-      i Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
+      i Imputation method: `impute_min_prob()`
+      i Reason: default for "glycoproteomics" with n_samples < 30.
       v Imputation completed.
       
       -- Aggregating data --
@@ -64,7 +69,8 @@
       
       -- Normalizing data again --
       
-      i Using default normalization method for "glycoproteomics": `normalize_median()`.
+      i Normalization method: `normalize_median()`
+      i Reason: default for "glycoproteomics".
       v Normalization completed.
       
       -- Correcting batch effects --
@@ -84,7 +90,8 @@
       
       -- Normalizing data --
       
-      i Using default normalization method for "glycoproteomics": `normalize_median()`.
+      i Normalization method: `normalize_median()`
+      i Reason: default for "glycoproteomics".
       v Normalization completed.
       
       -- Removing variables with too many missing values --
@@ -95,7 +102,8 @@
       
       -- Imputing missing values --
       
-      i Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
+      i Imputation method: `impute_min_prob()`
+      i Reason: default for "glycoproteomics" with n_samples < 30.
       v Imputation completed.
       
       -- Aggregating data --
@@ -105,7 +113,8 @@
       
       -- Normalizing data again --
       
-      i Using default normalization method for "glycoproteomics": `normalize_median()`.
+      i Normalization method: `normalize_median()`
+      i Reason: default for "glycoproteomics".
       v Normalization completed.
       
       -- Correcting batch effects --
@@ -127,12 +136,14 @@
       
       -- Imputing missing values --
       
-      i Using default imputation method for "glycomics" with n_samples < 30: `impute_min_prob()`.
+      i Imputation method: `impute_min_prob()`
+      i Reason: default for "glycomics" with n_samples < 30.
       v Imputation completed.
       
       -- Normalizing data --
       
-      i Using default normalization method for "glycomics": `normalize_total_area()`.
+      i Normalization method: `normalize_total_area()`
+      i Reason: default for "glycomics".
       v Normalization completed.
       
       -- Correcting batch effects --
@@ -154,12 +165,14 @@
       
       -- Imputing missing values --
       
-      i Using default imputation method for "glycomics" with n_samples < 30: `impute_min_prob()`.
+      i Imputation method: `impute_min_prob()`
+      i Reason: default for "glycomics" with n_samples < 30.
       v Imputation completed.
       
       -- Normalizing data --
       
-      i Using default normalization method for "glycomics": `normalize_total_area()`.
+      i Normalization method: `normalize_total_area()`
+      i Reason: default for "glycomics".
       v Normalization completed.
       
       -- Correcting batch effects --
