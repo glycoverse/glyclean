@@ -4,21 +4,21 @@ We have made significant updates to `auto_clean()`. QC-related behaviors are now
 
 ## Breaking changes
 
-* The `info` parameter in `auto_xxx()` functions is removed. This should not be a problem because this parameter used to only for internal use.
+* The `info` parameter in `auto_xxx()` functions is removed. This should not be a problem because this parameter used to only for internal use (#13).
 
 ## New features
 
-* `auto_impute()` now uses a different strategy. When sample size < 30, use `impute_min_prob()`. When 30 <= sample size < 100, use `impute_bpca()` for glycomics data and `impute_min_prob()` for glycoproteomics data. When sample size >= 100, use `impute_miss_forest()` for glycomics data and `impute_bpca()` for glycoproteomics data.
-* `auto_impute()` and `auto_normalize()` do not rely on QC samples to determine the strategy.
-* `auto_remove()` does not take into account the QC samples anymore.
+* `auto_impute()` now uses a different strategy. When sample size < 30, use `impute_min_prob()`. When 30 <= sample size < 100, use `impute_bpca()` for glycomics data and `impute_min_prob()` for glycoproteomics data. When sample size >= 100, use `impute_miss_forest()` for glycomics data and `impute_bpca()` for glycoproteomics data (#8).
+* `auto_impute()` and `auto_normalize()` do not rely on QC samples to determine the strategy (#8, #9).
+* `auto_remove()` does not take into account the QC samples anymore (a1cb616).
 
 ## Minor improvements and bug fixes
 
-* `qc_name` argument in `auto_clean()`, `auto_impute()`, `auto_normalize()`, and `auto_remove()` is deprecated.
-* `to_try` argument in `auto_impute()` and `auto_normalize()` is deprecated. `impute_to_try` and `normalize_to_try` arguments in `auto_clean()` are also deprecated.
-* `auto_impute()` and `auto_normalize()` now supports fallbacks for experiments with "others" type.
-* Fix the bug that `batch_col` argument in `auto_clean()` is ignored.
-* Optimize message printing in `auto_xxx()` functions.
+* `qc_name` argument in `auto_clean()`, `auto_impute()`, `auto_normalize()`, and `auto_remove()` is deprecated (#8, #9, #10).
+* `to_try` argument in `auto_impute()` and `auto_normalize()` is deprecated. `impute_to_try` and `normalize_to_try` arguments in `auto_clean()` are also deprecated (#8, #9).
+* `auto_impute()` and `auto_normalize()` now supports fallbacks for experiments with "others" type (#8, #9).
+* Fix the bug that `batch_col` argument in `auto_clean()` is ignored (#12).
+* Optimize message printing in `auto_xxx()` functions (#14).
 
 # glyclean 0.13.0
 
