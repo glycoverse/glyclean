@@ -18,6 +18,7 @@ We have made significant updates to `auto_clean()`. QC-related behaviors are now
 * `to_try` argument in `auto_impute()` and `auto_normalize()` is deprecated. `impute_to_try` and `normalize_to_try` arguments in `auto_clean()` are also deprecated.
 * `auto_impute()` and `auto_normalize()` now supports fallbacks for experiments with "others" type.
 * Fix the bug that `batch_col` argument in `auto_clean()` is ignored.
+* Optimize message printing in `auto_xxx()` functions.
 
 # glyclean 0.13.0
 
