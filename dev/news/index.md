@@ -61,6 +61,7 @@ imputation or normalization strategy is not robust.
 - Fix the bug that `batch_col` argument in
   [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
   is ignored.
+- Optimize message printing in `auto_xxx()` functions.
 
 ## glyclean 0.13.0
 
