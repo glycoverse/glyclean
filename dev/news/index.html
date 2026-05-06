@@ -36,27 +36,27 @@
 <p>We have made significant updates to <code><a href="../reference/auto_clean.html">auto_clean()</a></code>. QC-related behaviors are now removed from <code><a href="../reference/auto_impute.html">auto_impute()</a></code>, <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code>, and <code><a href="../reference/auto_remove.html">auto_remove()</a></code>, because we realized that depending on CVs in QC samples to determine the imputation or normalization strategy is not robust.</p>
 <div class="section level3">
 <h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
-<ul><li>The <code>info</code> parameter in <code>auto_xxx()</code> functions is removed. This should not be a problem because this parameter used to only for internal use.</li>
+<ul><li>The <code>info</code> parameter in <code>auto_xxx()</code> functions is removed. This should not be a problem because this parameter used to only for internal use (#13).</li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
 <ul><li>
-<code><a href="../reference/auto_impute.html">auto_impute()</a></code> now uses a different strategy. When sample size &lt; 30, use <code><a href="../reference/impute_min_prob.html">impute_min_prob()</a></code>. When 30 &lt;= sample size &lt; 100, use <code><a href="../reference/impute_bpca.html">impute_bpca()</a></code> for glycomics data and <code><a href="../reference/impute_min_prob.html">impute_min_prob()</a></code> for glycoproteomics data. When sample size &gt;= 100, use <code><a href="../reference/impute_miss_forest.html">impute_miss_forest()</a></code> for glycomics data and <code><a href="../reference/impute_bpca.html">impute_bpca()</a></code> for glycoproteomics data.</li>
+<code><a href="../reference/auto_impute.html">auto_impute()</a></code> now uses a different strategy. When sample size &lt; 30, use <code><a href="../reference/impute_min_prob.html">impute_min_prob()</a></code>. When 30 &lt;= sample size &lt; 100, use <code><a href="../reference/impute_bpca.html">impute_bpca()</a></code> for glycomics data and <code><a href="../reference/impute_min_prob.html">impute_min_prob()</a></code> for glycoproteomics data. When sample size &gt;= 100, use <code><a href="../reference/impute_miss_forest.html">impute_miss_forest()</a></code> for glycomics data and <code><a href="../reference/impute_bpca.html">impute_bpca()</a></code> for glycoproteomics data (#8).</li>
 <li>
-<code><a href="../reference/auto_impute.html">auto_impute()</a></code> and <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code> do not rely on QC samples to determine the strategy.</li>
+<code><a href="../reference/auto_impute.html">auto_impute()</a></code> and <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code> do not rely on QC samples to determine the strategy (#8, #9).</li>
 <li>
-<code><a href="../reference/auto_remove.html">auto_remove()</a></code> does not take into account the QC samples anymore.</li>
+<code><a href="../reference/auto_remove.html">auto_remove()</a></code> does not take into account the QC samples anymore (a1cb616).</li>
 </ul></div>
 <div class="section level3">
 <h3 id="minor-improvements-and-bug-fixes-development-version">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-development-version"></a></h3>
 <ul><li>
-<code>qc_name</code> argument in <code><a href="../reference/auto_clean.html">auto_clean()</a></code>, <code><a href="../reference/auto_impute.html">auto_impute()</a></code>, <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code>, and <code><a href="../reference/auto_remove.html">auto_remove()</a></code> is deprecated.</li>
+<code>qc_name</code> argument in <code><a href="../reference/auto_clean.html">auto_clean()</a></code>, <code><a href="../reference/auto_impute.html">auto_impute()</a></code>, <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code>, and <code><a href="../reference/auto_remove.html">auto_remove()</a></code> is deprecated (#8, #9, #10).</li>
 <li>
-<code>to_try</code> argument in <code><a href="../reference/auto_impute.html">auto_impute()</a></code> and <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code> is deprecated. <code>impute_to_try</code> and <code>normalize_to_try</code> arguments in <code><a href="../reference/auto_clean.html">auto_clean()</a></code> are also deprecated.</li>
+<code>to_try</code> argument in <code><a href="../reference/auto_impute.html">auto_impute()</a></code> and <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code> is deprecated. <code>impute_to_try</code> and <code>normalize_to_try</code> arguments in <code><a href="../reference/auto_clean.html">auto_clean()</a></code> are also deprecated (#8, #9).</li>
 <li>
-<code><a href="../reference/auto_impute.html">auto_impute()</a></code> and <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code> now supports fallbacks for experiments with “others” type.</li>
-<li>Fix the bug that <code>batch_col</code> argument in <code><a href="../reference/auto_clean.html">auto_clean()</a></code> is ignored.</li>
-<li>Optimize message printing in <code>auto_xxx()</code> functions.</li>
+<code><a href="../reference/auto_impute.html">auto_impute()</a></code> and <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code> now supports fallbacks for experiments with “others” type (#8, #9).</li>
+<li>Fix the bug that <code>batch_col</code> argument in <code><a href="../reference/auto_clean.html">auto_clean()</a></code> is ignored (#12).</li>
+<li>Optimize message printing in <code>auto_xxx()</code> functions (#14).</li>
 </ul></div>
 </div>
     <div class="section level2">

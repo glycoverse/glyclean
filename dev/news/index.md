@@ -15,7 +15,8 @@ imputation or normalization strategy is not robust.
 ### Breaking changes
 
 - The `info` parameter in `auto_xxx()` functions is removed. This should
-  not be a problem because this parameter used to only for internal use.
+  not be a problem because this parameter used to only for internal use
+  (#13).
 
 ### New features
 
@@ -30,13 +31,13 @@ imputation or normalization strategy is not robust.
   [`impute_miss_forest()`](https://glycoverse.github.io/glyclean/dev/reference/impute_miss_forest.md)
   for glycomics data and
   [`impute_bpca()`](https://glycoverse.github.io/glyclean/dev/reference/impute_bpca.md)
-  for glycoproteomics data.
+  for glycoproteomics data (#8).
 - [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
   and
   [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
-  do not rely on QC samples to determine the strategy.
+  do not rely on QC samples to determine the strategy (#8, \#9).
 - [`auto_remove()`](https://glycoverse.github.io/glyclean/dev/reference/auto_remove.md)
-  does not take into account the QC samples anymore.
+  does not take into account the QC samples anymore (a1cb616).
 
 ### Minor improvements and bug fixes
 
@@ -46,22 +47,22 @@ imputation or normalization strategy is not robust.
   [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md),
   and
   [`auto_remove()`](https://glycoverse.github.io/glyclean/dev/reference/auto_remove.md)
-  is deprecated.
+  is deprecated (#8, \#9, \#10).
 - `to_try` argument in
   [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
   and
   [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
   is deprecated. `impute_to_try` and `normalize_to_try` arguments in
   [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
-  are also deprecated.
+  are also deprecated (#8, \#9).
 - [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
   and
   [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
-  now supports fallbacks for experiments with “others” type.
+  now supports fallbacks for experiments with “others” type (#8, \#9).
 - Fix the bug that `batch_col` argument in
   [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
-  is ignored.
-- Optimize message printing in `auto_xxx()` functions.
+  is ignored (#12).
+- Optimize message printing in `auto_xxx()` functions (#14).
 
 ## glyclean 0.13.0
 
