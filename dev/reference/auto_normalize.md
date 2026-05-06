@@ -56,5 +56,6 @@ The automatic strategy uses these defaults:
 ``` r
 library(glyexp)
 exp_normed <- auto_normalize(real_experiment)
-#> ℹ Using default normalization method for "glycoproteomics": `normalize_median()`.
+#> ℹ Normalization method: `normalize_median()`
+#> ℹ Reason: default for "glycoproteomics".
 ```

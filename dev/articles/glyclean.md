@@ -113,7 +113,8 @@ clean_exp <- auto_clean(exp)
 #> 
 #> ── Normalizing data ──
 #> 
-#> ℹ Using default normalization method for "glycoproteomics": `normalize_median()`.
+#> ℹ Normalization method: `normalize_median()`
+#> ℹ Reason: default for "glycoproteomics".
 #> ✔ Normalization completed.
 #> 
 #> ── Removing variables with too many missing values ──
@@ -124,7 +125,8 @@ clean_exp <- auto_clean(exp)
 #> 
 #> ── Imputing missing values ──
 #> 
-#> ℹ Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
+#> ℹ Imputation method: `impute_min_prob()`
+#> ℹ Reason: default for "glycoproteomics" with n_samples < 30.
 #> ✔ Imputation completed.
 #> 
 #> ── Aggregating data ──
@@ -134,7 +136,8 @@ clean_exp <- auto_clean(exp)
 #> 
 #> ── Normalizing data again ──
 #> 
-#> ℹ Using default normalization method for "glycoproteomics": `normalize_median()`.
+#> ℹ Normalization method: `normalize_median()`
+#> ℹ Reason: default for "glycoproteomics".
 #> ✔ Normalization completed.
 #> 
 #> ── Correcting batch effects ──
@@ -229,8 +232,10 @@ clean_exp <- exp |>
   auto_aggregate()
 #> ℹ Applying preset "discovery"...
 #> ℹ Total removed: 24 (0.56%) variables.
-#> ℹ Using default normalization method for "glycoproteomics": `normalize_median()`.
-#> ℹ Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
+#> ℹ Normalization method: `normalize_median()`
+#> ℹ Reason: default for "glycoproteomics".
+#> ℹ Imputation method: `impute_min_prob()`
+#> ℹ Reason: default for "glycoproteomics" with n_samples < 30.
 #> ℹ Aggregating to "gfs" level
 ```
 

@@ -71,5 +71,6 @@ automatically.
 ``` r
 library(glyexp)
 exp_imputed <- auto_impute(real_experiment)
-#> ℹ Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
+#> ℹ Imputation method: `impute_min_prob()`
+#> ℹ Reason: default for "glycoproteomics" with n_samples < 30.
 ```
