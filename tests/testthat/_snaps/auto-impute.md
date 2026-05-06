@@ -8,7 +8,8 @@
       The `to_try` argument of `auto_impute()` is deprecated as of glyclean 0.14.0.
       i The automatic imputation strategy is now deterministic and does not require user-specified methods to try. The `to_try` parameter will be removed in a future release.
     Message
-      i Using default imputation method for "glycoproteomics" with 30 <= n_samples <= 100: `impute_min_prob()`.
+      i Imputation method: `impute_min_prob()`
+      i Reason: default for "glycoproteomics" with 30 <= n_samples <= 100.
 
 # auto_impute handles NULL qc_name
 
@@ -19,7 +20,8 @@
       The `qc_name` argument of `auto_impute()` is deprecated as of glyclean 0.14.0.
       i This function no longer uses QC sample information and the `qc_name` parameter will be removed in a future release.
     Message
-      i Using default imputation method for "glycomics" with n_samples < 30: `impute_min_prob()`.
+      i Imputation method: `impute_min_prob()`
+      i Reason: default for "glycomics" with n_samples < 30.
 
 # auto_impute rejects unsupported experiment types
 
@@ -44,14 +46,16 @@
     Code
       result <- auto_impute(exp, group_col = NULL)
     Message
-      i Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
+      i Imputation method: `impute_min_prob()`
+      i Reason: default for "glycoproteomics" with n_samples < 30.
 
 # auto_impute handles non-existent group_col gracefully
 
     Code
       result <- auto_impute(exp, group_col = "nonexistent")
     Message
-      i Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
+      i Imputation method: `impute_min_prob()`
+      i Reason: default for "glycoproteomics" with n_samples < 30.
 
 # auto_impute validates input and ignores deprecated arguments
 
@@ -65,5 +69,6 @@
       The `to_try` argument of `auto_impute()` is deprecated as of glyclean 0.14.0.
       i The automatic imputation strategy is now deterministic and does not require user-specified methods to try. The `to_try` parameter will be removed in a future release.
     Message
-      i Using default imputation method for "glycoproteomics" with n_samples < 30: `impute_min_prob()`.
+      i Imputation method: `impute_min_prob()`
+      i Reason: default for "glycoproteomics" with n_samples < 30.
 

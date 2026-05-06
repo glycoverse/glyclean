@@ -71,7 +71,10 @@ auto_impute <- function(
   strategy <- .choose_auto_impute_strategy(n_samples, exp_type)
 
   cli::cli_alert_info(
-    "Using default imputation method for {.val {strategy$exp_type}} with {strategy$sample_group}: {.fn {strategy$method_name}}."
+    "Imputation method: {.fn {strategy$method_name}}"
+  )
+  cli::cli_alert_info(
+    "Reason: default for {.val {strategy$exp_type}} with {strategy$sample_group}."
   )
 
   switch(

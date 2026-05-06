@@ -104,7 +104,7 @@ test_that("auto_impute uses min_prob for others experiments", {
 
   expect_message(
     result <- auto_impute(exp, group_col = NULL),
-    'for "others" with n_samples = 10: `impute_min_prob\\(\\)`'
+    'Reason: default for "others" with n_samples = 10\\.'
   )
   expect_equal(called, "impute_min_prob")
   expect_s3_class(result, "glyexp_experiment")
