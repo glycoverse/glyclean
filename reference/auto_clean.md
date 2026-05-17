@@ -70,74 +70,19 @@ auto_clean(
 
 - qc_name:
 
-  The name of QC samples in the `group_col` column. Default is "QC".
-  Only used when `group_col` is not NULL. Can be NULL when no QC samples
-  are available.
+  **\[deprecated\]** This function no longer uses QC sample information.
+  This parameter is ignored and will be removed in a future release.
 
 - normalize_to_try:
 
-  Normalization functions to try. A list. Default includes:
-
-  - [`normalize_median()`](https://glycoverse.github.io/glyclean/reference/normalize_median.md):
-    median normalization
-
-  - [`normalize_median_abs()`](https://glycoverse.github.io/glyclean/reference/normalize_median_abs.md):
-    absolute median normalization
-
-  - [`normalize_total_area()`](https://glycoverse.github.io/glyclean/reference/normalize_total_area.md):
-    total area mormalization
-
-  - [`normalize_quantile()`](https://glycoverse.github.io/glyclean/reference/normalize_quantile.md):
-    quantile normalization
-
-  - [`normalize_loessf()`](https://glycoverse.github.io/glyclean/reference/normalize_loessf.md):
-    LoessF normalization
-
-  - [`normalize_loesscyc()`](https://glycoverse.github.io/glyclean/reference/normalize_loesscyc.md):
-    LoessCyc normalization
-
-  - [`normalize_rlr()`](https://glycoverse.github.io/glyclean/reference/normalize_rlr.md):
-    RLR normalization
-
-  - [`normalize_rlrma()`](https://glycoverse.github.io/glyclean/reference/normalize_rlrma.md):
-    RLRMA normalization
-
-  - [`normalize_rlrmacyc()`](https://glycoverse.github.io/glyclean/reference/normalize_rlrmacyc.md):
-    RLRMAcyc normalization
+  **\[deprecated\]** This parameter is no longer used and will be
+  removed in a future release. The automatic normalization strategy is
+  now deterministic and does not require user-specified methods to try.
 
 - impute_to_try:
 
-  Imputation functions to try. A list. Default includes:
-
-  - [`impute_zero()`](https://glycoverse.github.io/glyclean/reference/impute_zero.md):
-    zero imputation
-
-  - [`impute_sample_min()`](https://glycoverse.github.io/glyclean/reference/impute_sample_min.md):
-    sample-wise minimum imputation
-
-  - [`impute_half_sample_min()`](https://glycoverse.github.io/glyclean/reference/impute_half_sample_min.md):
-    half sample-wise minimum imputation
-
-  - [`impute_sw_knn()`](https://glycoverse.github.io/glyclean/reference/impute_sw_knn.md):
-    sample-wise KNN imputation
-
-  - [`impute_fw_knn()`](https://glycoverse.github.io/glyclean/reference/impute_fw_knn.md):
-    feature-wise KNN imputation
-
-  - [`impute_bpca()`](https://glycoverse.github.io/glyclean/reference/impute_bpca.md):
-    BPCA imputation
-
-  - [`impute_ppca()`](https://glycoverse.github.io/glyclean/reference/impute_ppca.md):
-    PPCA imputation
-
-  - [`impute_svd()`](https://glycoverse.github.io/glyclean/reference/impute_svd.md):
-    SVD imputation
-
-  - [`impute_min_prob()`](https://glycoverse.github.io/glyclean/reference/impute_min_prob.md):
-    minimum probability imputation
-
-  - [`impute_miss_forest()`](https://glycoverse.github.io/glyclean/reference/impute_miss_forest.md):
-    MissForest imputation
+  **\[deprecated\]** This parameter is no longer used and will be
+  removed in a future release.
 
 - remove_preset:
 
@@ -183,19 +128,6 @@ A modified
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
 object.
 
-## QC samples
-
-If you have quality control (QC) samples, label them as "QC" as the
-"group" in the sample information table. You can also use set `qc_name`
-to other names.
-
-When QC samples exist,
-[`auto_normalize()`](https://glycoverse.github.io/glyclean/reference/auto_normalize.md)
-and
-[`auto_impute()`](https://glycoverse.github.io/glyclean/reference/auto_impute.md)
-will compare various normalization or imputation methods, and select the
-one that stablize QC samples the most.
-
 ## See also
 
 [`auto_normalize()`](https://glycoverse.github.io/glyclean/reference/auto_normalize.md),
@@ -213,21 +145,20 @@ auto_clean(exp)
 #> 
 #> ── Normalizing data ──
 #> 
-#> ℹ No QC samples found. Using default normalization method based on experiment type.
-#> ℹ Experiment type is "glycoproteomics". Using `normalize_median()`.
+#> ℹ Normalization method: `normalize_median()`
+#> ℹ Reason: default for "glycoproteomics".
 #> ✔ Normalization completed.
 #> 
 #> ── Removing variables with too many missing values ──
 #> 
-#> ℹ No QC samples found. Using all samples.
 #> ℹ Applying preset "discovery"...
 #> ℹ Total removed: 24 (0.56%) variables.
 #> ✔ Variable removal completed.
 #> 
 #> ── Imputing missing values ──
 #> 
-#> ℹ No QC samples found. Using default imputation method based on sample size.
-#> ℹ Sample size <= 30, using `impute_sample_min()`.
+#> ℹ Imputation method: `impute_min_prob()`
+#> ℹ Reason: default for "glycoproteomics" with n_samples < 30.
 #> ✔ Imputation completed.
 #> 
 #> ── Aggregating data ──
@@ -237,13 +168,13 @@ auto_clean(exp)
 #> 
 #> ── Normalizing data again ──
 #> 
-#> ℹ No QC samples found. Using default normalization method based on experiment type.
-#> ℹ Experiment type is "glycoproteomics". Using `normalize_median()`.
+#> ℹ Normalization method: `normalize_median()`
+#> ℹ Reason: default for "glycoproteomics".
 #> ✔ Normalization completed.
 #> 
 #> ── Correcting batch effects ──
 #> 
-#> ℹ Batch column  not found in sample_info. Skipping batch correction.
+#> ℹ Batch column batch not found in sample_info. Skipping batch correction.
 #> ✔ Batch correction completed.
 #> 
 #> ── Glycoproteomics Experiment ──────────────────────────────────────────────────

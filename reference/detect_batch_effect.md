@@ -61,5 +61,5 @@ batch_factor <- factor(rep(c("A", "B"), each = 5))
 group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
 p_values <- detect_batch_effect(mat, batch = batch_factor, group = group_factor)
 #> ℹ Detecting batch effects using ANOVA for 20 variables...
-#> ✔ Batch effect detection completed. 0 out of 20 variables show significant batch effects (p < 0.05).
+#> ✔ Batch effect detection completed. 1 out of 20 variables show significant batch effects (p < 0.05).
 ```

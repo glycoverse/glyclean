@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.13.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.14.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,6 +31,34 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.14.0" id="glyclean-0140">glyclean 0.14.0<a class="anchor" aria-label="anchor" href="#glyclean-0140"></a></h2>
+<p>We have made significant updates to <code><a href="../reference/auto_clean.html">auto_clean()</a></code>. QC-related behaviors are now removed from <code><a href="../reference/auto_impute.html">auto_impute()</a></code>, <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code>, and <code><a href="../reference/auto_remove.html">auto_remove()</a></code>, because we realized that depending on CVs in QC samples to determine the imputation or normalization strategy is not robust.</p>
+<div class="section level3">
+<h3 id="breaking-changes-0-14-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-14-0"></a></h3>
+<ul><li>The <code>info</code> parameter in <code>auto_xxx()</code> functions is removed. This should not be a problem because this parameter was only used internally (#13).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-0-14-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-14-0"></a></h3>
+<ul><li>
+<code><a href="../reference/auto_impute.html">auto_impute()</a></code> now uses a different strategy. When sample size &lt; 30, use <code><a href="../reference/impute_min_prob.html">impute_min_prob()</a></code>. When 30 &lt;= sample size &lt; 100, use <code><a href="../reference/impute_bpca.html">impute_bpca()</a></code> for glycomics data and <code><a href="../reference/impute_min_prob.html">impute_min_prob()</a></code> for glycoproteomics data. When sample size &gt;= 100, use <code><a href="../reference/impute_miss_forest.html">impute_miss_forest()</a></code> for glycomics data and <code><a href="../reference/impute_bpca.html">impute_bpca()</a></code> for glycoproteomics data (#8).</li>
+<li>
+<code><a href="../reference/auto_impute.html">auto_impute()</a></code> and <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code> do not rely on QC samples to determine the strategy (#8, #9).</li>
+<li>
+<code><a href="../reference/auto_remove.html">auto_remove()</a></code> does not take into account the QC samples anymore (a1cb616).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-and-bug-fixes-0-14-0">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-0-14-0"></a></h3>
+<ul><li>
+<code>qc_name</code> argument in <code><a href="../reference/auto_clean.html">auto_clean()</a></code>, <code><a href="../reference/auto_impute.html">auto_impute()</a></code>, <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code>, and <code><a href="../reference/auto_remove.html">auto_remove()</a></code> is deprecated (#8, #9, #10).</li>
+<li>
+<code>to_try</code> argument in <code><a href="../reference/auto_impute.html">auto_impute()</a></code> and <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code> is deprecated. <code>impute_to_try</code> and <code>normalize_to_try</code> arguments in <code><a href="../reference/auto_clean.html">auto_clean()</a></code> are also deprecated (#8, #9).</li>
+<li>
+<code><a href="../reference/auto_impute.html">auto_impute()</a></code> and <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code> now support fallbacks for experiments with “others” type (#8, #9).</li>
+<li>Fix the bug that <code>batch_col</code> argument in <code><a href="../reference/auto_clean.html">auto_clean()</a></code> is ignored (#12).</li>
+<li>Optimize message printing in <code>auto_xxx()</code> functions (#14).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.13.0" id="glyclean-0130">glyclean 0.13.0<a class="anchor" aria-label="anchor" href="#glyclean-0130"></a></h2>
 <div class="section level3">

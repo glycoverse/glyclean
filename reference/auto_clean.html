@@ -47,7 +47,7 @@ auto_correct_batch_effect()
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.13.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.14.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -127,35 +127,21 @@ Can be NULL when no batch information is available.</p></dd>
 
 
 <dt id="arg-qc-name">qc_name<a class="anchor" aria-label="anchor" href="#arg-qc-name"></a></dt>
-<dd><p>The name of QC samples in the <code>group_col</code> column. Default is "QC".
-Only used when <code>group_col</code> is not NULL. Can be NULL when no QC samples are available.</p></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> This function no longer
+uses QC sample information.
+This parameter is ignored and will be removed in a future release.</p></dd>
 
 
 <dt id="arg-normalize-to-try">normalize_to_try<a class="anchor" aria-label="anchor" href="#arg-normalize-to-try"></a></dt>
-<dd><p>Normalization functions to try. A list. Default includes:</p><ul><li><p><code><a href="normalize_median.html">normalize_median()</a></code>: median normalization</p></li>
-<li><p><code><a href="normalize_median_abs.html">normalize_median_abs()</a></code>: absolute median normalization</p></li>
-<li><p><code><a href="normalize_total_area.html">normalize_total_area()</a></code>: total area mormalization</p></li>
-<li><p><code><a href="normalize_quantile.html">normalize_quantile()</a></code>: quantile normalization</p></li>
-<li><p><code><a href="normalize_loessf.html">normalize_loessf()</a></code>: LoessF normalization</p></li>
-<li><p><code><a href="normalize_loesscyc.html">normalize_loesscyc()</a></code>: LoessCyc normalization</p></li>
-<li><p><code><a href="normalize_rlr.html">normalize_rlr()</a></code>: RLR normalization</p></li>
-<li><p><code><a href="normalize_rlrma.html">normalize_rlrma()</a></code>: RLRMA normalization</p></li>
-<li><p><code><a href="normalize_rlrmacyc.html">normalize_rlrmacyc()</a></code>: RLRMAcyc normalization</p></li>
-</ul></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a>
+This parameter is no longer used and will be removed in a future release.
+The automatic normalization strategy is now deterministic and does not
+require user-specified methods to try.</p></dd>
 
 
 <dt id="arg-impute-to-try">impute_to_try<a class="anchor" aria-label="anchor" href="#arg-impute-to-try"></a></dt>
-<dd><p>Imputation functions to try. A list. Default includes:</p><ul><li><p><code><a href="impute_zero.html">impute_zero()</a></code>: zero imputation</p></li>
-<li><p><code><a href="impute_sample_min.html">impute_sample_min()</a></code>: sample-wise minimum imputation</p></li>
-<li><p><code><a href="impute_half_sample_min.html">impute_half_sample_min()</a></code>: half sample-wise minimum imputation</p></li>
-<li><p><code><a href="impute_sw_knn.html">impute_sw_knn()</a></code>: sample-wise KNN imputation</p></li>
-<li><p><code><a href="impute_fw_knn.html">impute_fw_knn()</a></code>: feature-wise KNN imputation</p></li>
-<li><p><code><a href="impute_bpca.html">impute_bpca()</a></code>: BPCA imputation</p></li>
-<li><p><code><a href="impute_ppca.html">impute_ppca()</a></code>: PPCA imputation</p></li>
-<li><p><code><a href="impute_svd.html">impute_svd()</a></code>: SVD imputation</p></li>
-<li><p><code><a href="impute_min_prob.html">impute_min_prob()</a></code>: minimum probability imputation</p></li>
-<li><p><code><a href="impute_miss_forest.html">impute_miss_forest()</a></code>: MissForest imputation</p></li>
-</ul></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a>
+This parameter is no longer used and will be removed in a future release.</p></dd>
 
 
 <dt id="arg-remove-preset">remove_preset<a class="anchor" aria-label="anchor" href="#arg-remove-preset"></a></dt>
@@ -194,15 +180,6 @@ Default is <code>TRUE</code>.</p></dd>
     <p>A modified <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object.</p>
     </div>
     <div class="section level2">
-    <h2 id="qc-samples">QC samples<a class="anchor" aria-label="anchor" href="#qc-samples"></a></h2>
-    <p>If you have quality control (QC) samples,
-label them as "QC" as the "group" in the sample information table.
-You can also use set <code>qc_name</code> to other names.</p>
-<p>When QC samples exist, <code><a href="auto_normalize.html">auto_normalize()</a></code> and <code><a href="auto_impute.html">auto_impute()</a></code> will compare various
-normalization or imputation methods,
-and select the one that stablize QC samples the most.</p>
-    </div>
-    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="auto_normalize.html">auto_normalize()</a></code>, <code><a href="auto_remove.html">auto_remove()</a></code>, <code><a href="auto_impute.html">auto_impute()</a></code>, <code><a href="auto_aggregate.html">auto_aggregate()</a></code>, <code><a href="auto_correct_batch_effect.html">auto_correct_batch_effect()</a></code></p></div>
     </div>
@@ -215,21 +192,20 @@ and select the one that stablize QC samples the most.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Normalizing data</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using default normalization method based on experiment type.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Experiment type is <span style="color: #0000BB;">"glycoproteomics"</span>. Using `normalize_median()`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Normalization method: `normalize_median()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Reason: default for <span style="color: #0000BB;">"glycoproteomics"</span>.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Normalization completed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Removing variables with too many missing values</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using all samples.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Applying preset <span style="color: #0000BB;">"discovery"</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Total removed: <span style="color: #0000BB;">24</span> (<span style="color: #0000BB;">0.56</span>%) variables.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Variable removal completed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Imputing missing values</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using default imputation method based on sample size.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Sample size &lt;= 30, using `impute_sample_min()`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Imputation method: `impute_min_prob()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Reason: default for <span style="color: #0000BB;">"glycoproteomics"</span> with n_samples &lt; 30.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Imputation completed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Aggregating data</span> ──</span>
@@ -239,13 +215,13 @@ and select the one that stablize QC samples the most.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Normalizing data again</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No QC samples found. Using default normalization method based on experiment type.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Experiment type is <span style="color: #0000BB;">"glycoproteomics"</span>. Using `normalize_median()`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Normalization method: `normalize_median()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Reason: default for <span style="color: #0000BB;">"glycoproteomics"</span>.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Normalization completed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Correcting batch effects</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Batch column  not found in sample_info. Skipping batch correction.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Batch column <span style="color: #00BB00;">batch</span> not found in sample_info. Skipping batch correction.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Batch correction completed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Glycoproteomics Experiment</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────</span></span>

@@ -24,6 +24,7 @@ first. We’ll also be using the
 data – it’s the go-to tool in the `glycoverse` ecosystem.
 
 ``` r
+
 library(glyclean)
 #> 
 #> Attaching package: 'glyclean'
@@ -44,6 +45,7 @@ to load our data into a proper
 object.
 
 ``` r
+
 exp <- real_experiment |>
   mutate_obs(batch = factor(rep(c("A", "B", "C"), 4)))
 exp
@@ -57,6 +59,7 @@ exp
 Let’s peek under the hood and see what we’re working with:
 
 ``` r
+
 get_var_info(exp)
 #> # A tibble: 4,262 × 8
 #>    variable   peptide peptide_site protein protein_site gene  glycan_composition
@@ -76,6 +79,7 @@ get_var_info(exp)
 ```
 
 ``` r
+
 get_sample_info(exp)
 #> # A tibble: 12 × 3
 #>    sample group batch
@@ -104,25 +108,25 @@ perfect playground for demonstrating preprocessing techniques!
 Ready for some magic? Watch this:
 
 ``` r
+
 clean_exp <- auto_clean(exp)
 #> 
 #> ── Normalizing data ──
 #> 
-#> ℹ No QC samples found. Using default normalization method based on experiment type.
-#> ℹ Experiment type is "glycoproteomics". Using `normalize_median()`.
+#> ℹ Normalization method: `normalize_median()`
+#> ℹ Reason: default for "glycoproteomics".
 #> ✔ Normalization completed.
 #> 
 #> ── Removing variables with too many missing values ──
 #> 
-#> ℹ No QC samples found. Using all samples.
 #> ℹ Applying preset "discovery"...
 #> ℹ Total removed: 24 (0.56%) variables.
 #> ✔ Variable removal completed.
 #> 
 #> ── Imputing missing values ──
 #> 
-#> ℹ No QC samples found. Using default imputation method based on sample size.
-#> ℹ Sample size <= 30, using `impute_sample_min()`.
+#> ℹ Imputation method: `impute_min_prob()`
+#> ℹ Reason: default for "glycoproteomics" with n_samples < 30.
 #> ✔ Imputation completed.
 #> 
 #> ── Aggregating data ──
@@ -132,13 +136,13 @@ clean_exp <- auto_clean(exp)
 #> 
 #> ── Normalizing data again ──
 #> 
-#> ℹ No QC samples found. Using default normalization method based on experiment type.
-#> ℹ Experiment type is "glycoproteomics". Using `normalize_median()`.
+#> ℹ Normalization method: `normalize_median()`
+#> ℹ Reason: default for "glycoproteomics".
 #> ✔ Normalization completed.
 #> 
 #> ── Correcting batch effects ──
 #> 
-#> ℹ Batch column  not found in sample_info. Skipping batch correction.
+#> ℹ Batch effects detected in "2.1%" of variables (<= "30.0%"). Skipping batch correction.
 #> ✔ Batch correction completed.
 ```
 
@@ -162,6 +166,7 @@ Let’s look into the details of what
 does. Here is a simplified version of the function:
 
 ``` r
+
 auto_clean <- function(exp, ...) {
   # ... are other arguments, see documentation for more details
   if (glyexp::get_exp_type(exp) == "glycoproteomics") {
@@ -199,41 +204,38 @@ calls the following functions in sequence:
 - [`auto_correct_batch_effect()`](https://glycoverse.github.io/glyclean/reference/auto_correct_batch_effect.md):
   Automatically correct the batch effects
 
-These functions automatically choose the best method for the given
-dataset.
+These functions apply deterministic defaults for the given dataset.
 
 **How
 [`auto_normalize()`](https://glycoverse.github.io/glyclean/reference/auto_normalize.md)
 works:**
 
-- **When QC samples are available**: All normalization methods are
-  benchmarked, and the one with the lowest median coefficient of
-  variation (CV) among QC samples is selected.
+- **When QC samples are available**: QC samples do not change the
+  automatic method choice and are not used for normalization
+  diagnostics.
 
-- **For glycomics data without QC samples**: Total area normalization is
-  applied first, followed by CLR transformation (for ≤50 glycans) or ALR
-  transformation (for \>50 glycans), following the best practices from
-  DOI: 10.1038/s41467-025-56249-3.
+- **For glycomics data**: Total area normalization is used as the
+  default.
 
-- **For glycoproteomics data without QC samples**: Median normalization
-  is used as the default.
+- **For glycoproteomics data and other experiment types**: Median
+  normalization is used as the default.
 
 You can make a custom pipeline by calling these functions in different
 orders:
 
 ``` r
+
 clean_exp <- exp |>
   auto_remove() |>
   auto_normalize() |>
   auto_impute() |>
   auto_aggregate()
-#> ℹ No QC samples found. Using all samples.
 #> ℹ Applying preset "discovery"...
 #> ℹ Total removed: 24 (0.56%) variables.
-#> ℹ No QC samples found. Using default normalization method based on experiment type.
-#> ℹ Experiment type is "glycoproteomics". Using `normalize_median()`.
-#> ℹ No QC samples found. Using default imputation method based on sample size.
-#> ℹ Sample size <= 30, using `impute_sample_min()`.
+#> ℹ Normalization method: `normalize_median()`
+#> ℹ Reason: default for "glycoproteomics".
+#> ℹ Imputation method: `impute_min_prob()`
+#> ℹ Reason: default for "glycoproteomics" with n_samples < 30.
 #> ℹ Aggregating to "gfs" level
 ```
 
@@ -255,21 +257,21 @@ bringing all intensities to a comparable scale.
 
 **Available normalization methods in `glyclean`:**
 
-| Function                                                                                                      | Description                                                          | Best For                              |
-|---------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------|---------------------------------------|
-| [`normalize_median()`](https://glycoverse.github.io/glyclean/reference/normalize_median.md)                   | Median-based normalization                                           | General use, robust to outliers       |
-| [`normalize_median_abs()`](https://glycoverse.github.io/glyclean/reference/normalize_median_abs.md)           | Median absolute deviation                                            | When you need extra robustness        |
-| [`normalize_median_quotient()`](https://glycoverse.github.io/glyclean/reference/normalize_median_quotient.md) | Median quotient method                                               | Glycomics data (compositional)        |
-| [`normalize_quantile()`](https://glycoverse.github.io/glyclean/reference/normalize_quantile.md)               | Quantile normalization                                               | When you want identical distributions |
-| [`normalize_total_area()`](https://glycoverse.github.io/glyclean/reference/normalize_total_area.md)           | Total area normalization                                             | Relative abundance data               |
-| [`normalize_rlr()`](https://glycoverse.github.io/glyclean/reference/normalize_rlr.md)                         | Robust linear regression                                             | Complex batch designs                 |
-| [`normalize_rlrma()`](https://glycoverse.github.io/glyclean/reference/normalize_rlrma.md)                     | Robust linear regression with median adjustment                      | Complex batch designs                 |
-| [`normalize_rlrmacyc()`](https://glycoverse.github.io/glyclean/reference/normalize_rlrmacyc.md)               | Robust linear regression with median adjustment and cyclic smoothing | Complex batch designs                 |
-| [`normalize_loessf()`](https://glycoverse.github.io/glyclean/reference/normalize_loessf.md)                   | LOESS with feature smoothing                                         | Non-linear trends                     |
-| [`normalize_loesscyc()`](https://glycoverse.github.io/glyclean/reference/normalize_loesscyc.md)               | LOESS with cyclic smoothing                                          | Cyclic data                           |
-| [`normalize_vsn()`](https://glycoverse.github.io/glyclean/reference/normalize_vsn.md)                         | Variance stabilizing normalization                                   | Heteroscedastic data                  |
-| [`transform_clr()`](https://glycoverse.github.io/glyclean/reference/transform_clr.md)                         | Centered Log-Ratio transformation                                    | Glycomics data (compositional)        |
-| [`transform_alr()`](https://glycoverse.github.io/glyclean/reference/transform_alr.md)                         | Additive Log-Ratio transformation                                    | Glycomics data (compositional)        |
+| Function | Description | Best For |
+|----|----|----|
+| [`normalize_median()`](https://glycoverse.github.io/glyclean/reference/normalize_median.md) | Median-based normalization | General use, robust to outliers |
+| [`normalize_median_abs()`](https://glycoverse.github.io/glyclean/reference/normalize_median_abs.md) | Median absolute deviation | When you need extra robustness |
+| [`normalize_median_quotient()`](https://glycoverse.github.io/glyclean/reference/normalize_median_quotient.md) | Median quotient method | Glycomics data (compositional) |
+| [`normalize_quantile()`](https://glycoverse.github.io/glyclean/reference/normalize_quantile.md) | Quantile normalization | When you want identical distributions |
+| [`normalize_total_area()`](https://glycoverse.github.io/glyclean/reference/normalize_total_area.md) | Total area normalization | Relative abundance data |
+| [`normalize_rlr()`](https://glycoverse.github.io/glyclean/reference/normalize_rlr.md) | Robust linear regression | Complex batch designs |
+| [`normalize_rlrma()`](https://glycoverse.github.io/glyclean/reference/normalize_rlrma.md) | Robust linear regression with median adjustment | Complex batch designs |
+| [`normalize_rlrmacyc()`](https://glycoverse.github.io/glyclean/reference/normalize_rlrmacyc.md) | Robust linear regression with median adjustment and cyclic smoothing | Complex batch designs |
+| [`normalize_loessf()`](https://glycoverse.github.io/glyclean/reference/normalize_loessf.md) | LOESS with feature smoothing | Non-linear trends |
+| [`normalize_loesscyc()`](https://glycoverse.github.io/glyclean/reference/normalize_loesscyc.md) | LOESS with cyclic smoothing | Cyclic data |
+| [`normalize_vsn()`](https://glycoverse.github.io/glyclean/reference/normalize_vsn.md) | Variance stabilizing normalization | Heteroscedastic data |
+| [`transform_clr()`](https://glycoverse.github.io/glyclean/reference/transform_clr.md) | Centered Log-Ratio transformation | Glycomics data (compositional) |
+| [`transform_alr()`](https://glycoverse.github.io/glyclean/reference/transform_alr.md) | Additive Log-Ratio transformation | Glycomics data (compositional) |
 
 **Pro Tips:**
 
@@ -282,6 +284,7 @@ bringing all intensities to a comparable scale.
   your experiment object.
 
 ``` r
+
 # Example: Using by parameter with a custom vector
 # Normalize within custom groups (e.g., based on some external criteria)
 custom_groups <- c("A", "A", "B", "B", "C", "C", "A", "A", "B", "B", "C", "C")
@@ -319,6 +322,7 @@ The CLR and ALR methods align with the best practices described in DOI:
 Here we do the median normalization manually:
 
 ``` r
+
 normed_exp <- normalize_median(exp)
 ```
 
@@ -330,18 +334,19 @@ variables with too many missing values are often more noise than signal.
 
 **Available variable filtering functions in `glyclean`:**
 
-| Function                                                                                  | Description                                        | Best For    |
-|-------------------------------------------------------------------------------------------|----------------------------------------------------|-------------|
-| [`remove_rare()`](https://glycoverse.github.io/glyclean/reference/remove_rare.md)         | Remove variables with too many missing values      | General use |
-| [`remove_low_var()`](https://glycoverse.github.io/glyclean/reference/remove_low_var.md)   | Remove variables with low variance                 | General use |
-| [`remove_low_cv()`](https://glycoverse.github.io/glyclean/reference/remove_low_cv.md)     | Remove variables with low coefficient of variation | General use |
-| [`remove_constant()`](https://glycoverse.github.io/glyclean/reference/remove_constant.md) | Remove constant variables                          | General use |
-| [`remove_low_expr()`](https://glycoverse.github.io/glyclean/reference/remove_low_expr.md) | Remove variables with low expression               | General use |
+| Function | Description | Best For |
+|----|----|----|
+| [`remove_rare()`](https://glycoverse.github.io/glyclean/reference/remove_rare.md) | Remove variables with too many missing values | General use |
+| [`remove_low_var()`](https://glycoverse.github.io/glyclean/reference/remove_low_var.md) | Remove variables with low variance | General use |
+| [`remove_low_cv()`](https://glycoverse.github.io/glyclean/reference/remove_low_cv.md) | Remove variables with low coefficient of variation | General use |
+| [`remove_constant()`](https://glycoverse.github.io/glyclean/reference/remove_constant.md) | Remove constant variables | General use |
+| [`remove_low_expr()`](https://glycoverse.github.io/glyclean/reference/remove_low_expr.md) | Remove variables with low expression | General use |
 
 Here we remove variables with more than 50% missing values in all
 samples:
 
 ``` r
+
 filtered_exp <- remove_rare(normed_exp, prop = 0.5)
 #> ℹ Removed 137 of 4262 (3.21%) variables.
 ```
@@ -360,22 +365,23 @@ detection threshold.
 
 **Your imputation toolkit:**
 
-| Function                                                                                                | Method                             | Best For                   |
-|---------------------------------------------------------------------------------------------------------|------------------------------------|----------------------------|
-| [`impute_zero()`](https://glycoverse.github.io/glyclean/reference/impute_zero.md)                       | Replace with zeros                 | Quick and simple           |
-| [`impute_sample_min()`](https://glycoverse.github.io/glyclean/reference/impute_sample_min.md)           | Sample minimum values              | Small datasets             |
-| [`impute_half_sample_min()`](https://glycoverse.github.io/glyclean/reference/impute_half_sample_min.md) | Half of sample minimum             | Conservative approach      |
-| [`impute_min_prob()`](https://glycoverse.github.io/glyclean/reference/impute_min_prob.md)               | Probabilistic minimum              | Medium datasets            |
-| [`impute_miss_forest()`](https://glycoverse.github.io/glyclean/reference/impute_miss_forest.md)         | Random Forest ML                   | Large datasets             |
-| [`impute_bpca()`](https://glycoverse.github.io/glyclean/reference/impute_bpca.md)                       | Bayesian PCA                       | High correlation structure |
-| [`impute_ppca()`](https://glycoverse.github.io/glyclean/reference/impute_ppca.md)                       | Probabilistic PCA                  | Linear relationships       |
-| [`impute_sw_knn()`](https://glycoverse.github.io/glyclean/reference/impute_sw_knn.md)                   | K-nearest neighbors (Sample-wise)  | Local similarity patterns  |
-| [`impute_fw_knn()`](https://glycoverse.github.io/glyclean/reference/impute_fw_knn.md)                   | K-nearest neighbors (Feature-wise) | Local similarity patterns  |
-| [`impute_svd()`](https://glycoverse.github.io/glyclean/reference/impute_svd.md)                         | Singular value decomposition       | High correlation structure |
+| Function | Method | Best For |
+|----|----|----|
+| [`impute_zero()`](https://glycoverse.github.io/glyclean/reference/impute_zero.md) | Replace with zeros | Quick and simple |
+| [`impute_sample_min()`](https://glycoverse.github.io/glyclean/reference/impute_sample_min.md) | Sample minimum values | Small datasets |
+| [`impute_half_sample_min()`](https://glycoverse.github.io/glyclean/reference/impute_half_sample_min.md) | Half of sample minimum | Conservative approach |
+| [`impute_min_prob()`](https://glycoverse.github.io/glyclean/reference/impute_min_prob.md) | Probabilistic minimum | Medium datasets |
+| [`impute_miss_forest()`](https://glycoverse.github.io/glyclean/reference/impute_miss_forest.md) | Random Forest ML | Large datasets |
+| [`impute_bpca()`](https://glycoverse.github.io/glyclean/reference/impute_bpca.md) | Bayesian PCA | High correlation structure |
+| [`impute_ppca()`](https://glycoverse.github.io/glyclean/reference/impute_ppca.md) | Probabilistic PCA | Linear relationships |
+| [`impute_sw_knn()`](https://glycoverse.github.io/glyclean/reference/impute_sw_knn.md) | K-nearest neighbors (Sample-wise) | Local similarity patterns |
+| [`impute_fw_knn()`](https://glycoverse.github.io/glyclean/reference/impute_fw_knn.md) | K-nearest neighbors (Feature-wise) | Local similarity patterns |
+| [`impute_svd()`](https://glycoverse.github.io/glyclean/reference/impute_svd.md) | Singular value decomposition | High correlation structure |
 
 For demonstration, let’s use the simple zero imputation:
 
 ``` r
+
 imputed_exp <- impute_zero(filtered_exp)
 ```
 
@@ -404,6 +410,7 @@ due to:
 - **“gf”**: Glycoforms with compositions (most condensed)
 
 ``` r
+
 aggregated_exp <- aggregate(imputed_exp, to_level = "gf")
 ```
 
@@ -411,6 +418,7 @@ aggregated_exp <- aggregate(imputed_exp, to_level = "gf")
 intensity distributions:
 
 ``` r
+
 aggregated_exp2 <- normalize_median(aggregated_exp)
 ```
 
@@ -426,6 +434,7 @@ introduce systematic bias.
 work wonders!
 
 ``` r
+
 # To detect batch effects:
 p_values <- detect_batch_effect(aggregated_exp2)
 #> ℹ Detecting batch effects using ANOVA for 2738 variables...
@@ -443,6 +452,7 @@ Here we do not have batch effects, but we will correct it anyway for
 demonstration.
 
 ``` r
+
 # To correct batch effects:
 corrected_exp <- correct_batch_effect(aggregated_exp2)
 #> Found3batches
@@ -474,6 +484,7 @@ changes (not protein abundance changes), you need to mathematically
 cancellation for biology!
 
 ``` r
+
 # We don't run the code here because we don't have the protein expression matrix.
 adjusted_exp <- adjust_protein(inferred_exp, pro_expr_mat)
 ```
@@ -512,6 +523,7 @@ if you’re working with traditional data formats. The functions
 intelligently detect your input type and handle it appropriately.
 
 ``` r
+
 # Example: Using glyclean with a plain matrix
 my_matrix <- matrix(rnorm(100), nrow = 10)
 normalized_matrix <- normalize_median(my_matrix)
@@ -525,6 +537,7 @@ processing. This parameter offers maximum flexibility – it accepts both
 column names from your sample metadata and direct vectors!
 
 ``` r
+
 # Using column names (standard approach)
 normalized_exp <- normalize_median(exp, by = "group")
 
@@ -548,17 +561,17 @@ various stages of the preprocessing pipeline.
 
 **Available QC plotting functions in `glyclean`:**
 
-| Function                                                                                            | Description                              | Best For                                                      |
-|-----------------------------------------------------------------------------------------------------|------------------------------------------|---------------------------------------------------------------|
-| [`plot_missing_heatmap()`](https://glycoverse.github.io/glyclean/reference/plot_missing_heatmap.md) | Binary heatmap of missing value patterns | Visualizing global missingness structure                      |
-| [`plot_missing_bar()`](https://glycoverse.github.io/glyclean/reference/plot_missing_bar.md)         | Bar plot of missing proportions          | Identifying samples/variables with high missingness           |
-| [`plot_tic_bar()`](https://glycoverse.github.io/glyclean/reference/plot_tic_bar.md)                 | Total intensity (TIC) bar plot           | Checking for systematic intensity differences between samples |
-| [`plot_rank_abundance()`](https://glycoverse.github.io/glyclean/reference/plot_rank_abundance.md)   | Protein rank abundance plot              | Assessing the dynamic range of detected proteins              |
-| [`plot_int_boxplot()`](https://glycoverse.github.io/glyclean/reference/plot_int_boxplot.md)         | Log2-intensity boxplots                  | Visualizing data distribution and normalization effects       |
-| [`plot_rle()`](https://glycoverse.github.io/glyclean/reference/plot_rle.md)                         | Relative Log Expression (RLE) boxplots   | Detecting sample-wise bias and batch effects                  |
-| [`plot_cv_dent()`](https://glycoverse.github.io/glyclean/reference/plot_cv_dent.md)                 | CV density plot                          | Assessing reproducibility and technical variation             |
-| [`plot_batch_pca()`](https://glycoverse.github.io/glyclean/reference/plot_batch_pca.md)             | PCA score plot by batch                  | Visualizing batch effects and sample clustering               |
-| [`plot_rep_scatter()`](https://glycoverse.github.io/glyclean/reference/plot_rep_scatter.md)         | Replicate scatter plots                  | Checking concordance between replicate samples                |
+| Function | Description | Best For |
+|----|----|----|
+| [`plot_missing_heatmap()`](https://glycoverse.github.io/glyclean/reference/plot_missing_heatmap.md) | Binary heatmap of missing value patterns | Visualizing global missingness structure |
+| [`plot_missing_bar()`](https://glycoverse.github.io/glyclean/reference/plot_missing_bar.md) | Bar plot of missing proportions | Identifying samples/variables with high missingness |
+| [`plot_tic_bar()`](https://glycoverse.github.io/glyclean/reference/plot_tic_bar.md) | Total intensity (TIC) bar plot | Checking for systematic intensity differences between samples |
+| [`plot_rank_abundance()`](https://glycoverse.github.io/glyclean/reference/plot_rank_abundance.md) | Protein rank abundance plot | Assessing the dynamic range of detected proteins |
+| [`plot_int_boxplot()`](https://glycoverse.github.io/glyclean/reference/plot_int_boxplot.md) | Log2-intensity boxplots | Visualizing data distribution and normalization effects |
+| [`plot_rle()`](https://glycoverse.github.io/glyclean/reference/plot_rle.md) | Relative Log Expression (RLE) boxplots | Detecting sample-wise bias and batch effects |
+| [`plot_cv_dent()`](https://glycoverse.github.io/glyclean/reference/plot_cv_dent.md) | CV density plot | Assessing reproducibility and technical variation |
+| [`plot_batch_pca()`](https://glycoverse.github.io/glyclean/reference/plot_batch_pca.md) | PCA score plot by batch | Visualizing batch effects and sample clustering |
+| [`plot_rep_scatter()`](https://glycoverse.github.io/glyclean/reference/plot_rep_scatter.md) | Replicate scatter plots | Checking concordance between replicate samples |
 
 These functions are designed to work seamlessly with
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
@@ -570,6 +583,7 @@ For example, you can use
 to visualize the missing values in your data before and after cleaning:
 
 ``` r
+
 library(patchwork)
 
 plot_missing_heatmap(exp) + plot_missing_heatmap(clean_exp)
