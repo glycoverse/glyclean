@@ -2,6 +2,8 @@
 
 ## glyclean (development version)
 
+## glyclean 0.14.0
+
 We have made significant updates to
 [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md).
 QC-related behaviors are now removed from
@@ -15,7 +17,7 @@ imputation or normalization strategy is not robust.
 ### Breaking changes
 
 - The `info` parameter in `auto_xxx()` functions is removed. This should
-  not be a problem because this parameter used to only for internal use
+  not be a problem because this parameter was only used internally
   (#13).
 
 ### New features
@@ -58,7 +60,7 @@ imputation or normalization strategy is not robust.
 - [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
   and
   [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
-  now supports fallbacks for experiments with “others” type (#8, \#9).
+  now support fallbacks for experiments with “others” type (#8, \#9).
 - Fix the bug that `batch_col` argument in
   [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
   is ignored (#12).
