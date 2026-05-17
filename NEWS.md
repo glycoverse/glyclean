@@ -1,3 +1,5 @@
+# glyclean (development version)
+
 # glyclean 0.14.0
 
 We have made significant updates to `auto_clean()`. QC-related behaviors are now removed from `auto_impute()`, `auto_normalize()`, and `auto_remove()`, because we realized that depending on CVs in QC samples to determine the imputation or normalization strategy is not robust.
