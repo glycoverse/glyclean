@@ -1,10 +1,10 @@
-# glyclean (development version)
+# glyclean 0.14.0
 
 We have made significant updates to `auto_clean()`. QC-related behaviors are now removed from `auto_impute()`, `auto_normalize()`, and `auto_remove()`, because we realized that depending on CVs in QC samples to determine the imputation or normalization strategy is not robust.
 
 ## Breaking changes
 
-* The `info` parameter in `auto_xxx()` functions is removed. This should not be a problem because this parameter used to only for internal use (#13).
+* The `info` parameter in `auto_xxx()` functions is removed. This should not be a problem because this parameter was only used internally (#13).
 
 ## New features
 
@@ -16,7 +16,7 @@ We have made significant updates to `auto_clean()`. QC-related behaviors are now
 
 * `qc_name` argument in `auto_clean()`, `auto_impute()`, `auto_normalize()`, and `auto_remove()` is deprecated (#8, #9, #10).
 * `to_try` argument in `auto_impute()` and `auto_normalize()` is deprecated. `impute_to_try` and `normalize_to_try` arguments in `auto_clean()` are also deprecated (#8, #9).
-* `auto_impute()` and `auto_normalize()` now supports fallbacks for experiments with "others" type (#8, #9).
+* `auto_impute()` and `auto_normalize()` now support fallbacks for experiments with "others" type (#8, #9).
 * Fix the bug that `batch_col` argument in `auto_clean()` is ignored (#12).
 * Optimize message printing in `auto_xxx()` functions (#14).
 
