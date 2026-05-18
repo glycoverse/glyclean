@@ -2,6 +2,8 @@
 
 ## glyclean (development version)
 
+## glyclean 0.14.1
+
 ### Minor improvements and bug fixes
 
 - [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
