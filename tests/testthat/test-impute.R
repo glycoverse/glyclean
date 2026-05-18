@@ -169,6 +169,45 @@ test_that("impute_min_prob uses left-censored log-scale draws", {
   expect_equal(dimnames(result), dimnames(test_mat))
 })
 
+test_that("impute_min_prob falls back to global center for all-missing samples", {
+  test_mat <- matrix(
+    c(
+      2,
+      NA,
+      8,
+      4,
+      NA,
+      16,
+      8,
+      NA,
+      32,
+      16,
+      NA,
+      64
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  rownames(test_mat) <- paste0("V", 1:4)
+  colnames(test_mat) <- paste0("S", 1:3)
+
+  set.seed(42)
+  result <- impute_min_prob(test_mat, q = 0.1, tune.sigma = 0)
+
+  expect_equal(sum(is.na(result)), 0)
+  expect_equal(result[, c("S1", "S3")], test_mat[, c("S1", "S3")])
+  expect_true(all(is.finite(result[, "S2"])))
+})
+
+test_that("impute_min_prob validates unsupported dots clearly", {
+  test_mat <- matrix(c(1, NA, 3, 4), nrow = 2)
+
+  expect_error(
+    impute_min_prob(test_mat, unsupported = TRUE),
+    "Unsupported argument"
+  )
+})
+
 
 test_that("impute_miss_forest works", {
   skip_if_not_installed("missForest")

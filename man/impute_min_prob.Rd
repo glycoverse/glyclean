@@ -7,13 +7,13 @@
 \alias{impute_min_prob.default}
 \title{Minimum Probability Imputation}
 \usage{
-impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1)
+impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
 
-\method{impute_min_prob}{glyexp_experiment}(x, by = NULL, q = 0.01, tune.sigma = 1)
+\method{impute_min_prob}{glyexp_experiment}(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
 
-\method{impute_min_prob}{matrix}(x, by = NULL, q = 0.01, tune.sigma = 1)
+\method{impute_min_prob}{matrix}(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
 
-\method{impute_min_prob}{default}(x, by = NULL, q = 0.01, tune.sigma = 1)
+\method{impute_min_prob}{default}(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.
@@ -27,6 +27,9 @@ sample. Default is \code{0.01}.}
 
 \item{tune.sigma}{Non-negative multiplier for the standard deviation of the
 left-censored draw distribution. Default is \code{1}.}
+
+\item{...}{Reserved for backward compatibility. Extra arguments are not
+supported.}
 }
 \value{
 Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
