@@ -3,6 +3,7 @@
 ## Minor improvements and bug fixes
 
 * `auto_clean()` is now out-of-box without needing to install other packages (#15).
+* Reimplement `impute_min_prob()` to avoid the dependency on `imputeLCMD` package (#16).
 
 # glyclean 0.14.0
 
