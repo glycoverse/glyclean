@@ -1,5 +1,9 @@
 # glyclean (development version)
 
+## Minor improvements and bug fixes
+
+* `auto_clean()` is now out-of-box without needing to install other packages (#15).
+
 # glyclean 0.14.0
 
 We have made significant updates to `auto_clean()`. QC-related behaviors are now removed from `auto_impute()`, `auto_normalize()`, and `auto_remove()`, because we realized that depending on CVs in QC samples to determine the imputation or normalization strategy is not robust.
@@ -26,20 +30,20 @@ We have made significant updates to `auto_clean()`. QC-related behaviors are now
 
 ## New features
 
-- `transform_clr()` and `transform_alr()` now align with the methods described in DOI: 10.1038/s41467-025-56249-3.
-- `auto_normalize()` now only performs total abundance normalization for glycomics data.
-- Add `auto_coda()` to use the CoDA strategy in glycowork for glycomics data.
+* `transform_clr()` and `transform_alr()` now align with the methods described in DOI: 10.1038/s41467-025-56249-3.
+* `auto_normalize()` now only performs total abundance normalization for glycomics data.
+* Add `auto_coda()` to use the CoDA strategy in glycowork for glycomics data.
 
 # glyclean 0.12.2
 
 ## New features
 
-- Add `transform_clr()` for Centered Log-Ratio (CLR) transformation.
-- Add `transform_alr()` for Additive Log-Ratio (ALR) transformation.
+* Add `transform_clr()` for Centered Log-Ratio (CLR) transformation.
+* Add `transform_alr()` for Additive Log-Ratio (ALR) transformation.
 
 ## Minor improvements and bug fixes
 
-- Update documentation of `auto_clean()` for QC-related behaviors.
+* Update documentation of `auto_clean()` for QC-related behaviors.
 
 # glyclean 0.12.1
 
@@ -51,185 +55,185 @@ We have made significant updates to `auto_clean()`. QC-related behaviors are now
 
 ## New features
 
-- Add `method` parameter to `correct_batch_effect()` supporting limma method for batch correction.
+* Add `method` parameter to `correct_batch_effect()` supporting limma method for batch correction.
 
 ## Minor improvements and bug fixes
 
-- Fix method handling in `correct_batch_effect()` for glyexp_experiment method.
-- Fix long example line to avoid Rd line width note.
+* Fix method handling in `correct_batch_effect()` for glyexp_experiment method.
+* Fix long example line to avoid Rd line width note.
 
 # glyclean 0.11.0
 
 ## New features
 
-- Added automatic UniProt sequence fetching when FASTA is NULL in `add_site_seq()`.
-- `aggregate()` now calls `glyexp::standardize_variable()` after aggregation to ensure meaningful variable names.
+* Added automatic UniProt sequence fetching when FASTA is NULL in `add_site_seq()`.
+* `aggregate()` now calls `glyexp::standardize_variable()` after aggregation to ensure meaningful variable names.
 
 # glyclean 0.10.1
 
 ## Minor improvements and fixes
 
-- Fix a bug that the `qc_name` argument and `group_col` argument were ignored in `auto_clean()`.
-- The `qc_name` argument in `auto_xxx()` functions now can be NULL.
+* Fix a bug that the `qc_name` argument and `group_col` argument were ignored in `auto_clean()`.
+* The `qc_name` argument in `auto_xxx()` functions now can be NULL.
 
 # glyclean 0.10.0
 
 ## New features
 
-- Added a comprehensive suite of Quality Control (QC) plotting functions:
-    - `plot_missing_heatmap()`: Binary heatmap of missing value patterns.
-    - `plot_missing_bar()`: Bar plot of missing proportions by sample or variable.
-    - `plot_tic_bar()`: Total intensity (TIC) bar plot by sample.
-    - `plot_rank_abundance()`: Protein rank abundance plot.
-    - `plot_int_boxplot()`: Log2-intensity boxplots by sample, with optional grouping.
-    - `plot_rle()`: Relative Log Expression (RLE) boxplots for detecting sample-wise bias.
-    - `plot_cv_dent()`: CV density plot, with optional stratified groups.
-    - `plot_batch_pca()`: PCA score plot colored by batch.
-    - `plot_rep_scatter()`: Scatter plots of replicate sample pairs with $R^2$ values.
+* Added a comprehensive suite of Quality Control (QC) plotting functions:
+    * `plot_missing_heatmap()`: Binary heatmap of missing value patterns.
+    * `plot_missing_bar()`: Bar plot of missing proportions by sample or variable.
+    * `plot_tic_bar()`: Total intensity (TIC) bar plot by sample.
+    * `plot_rank_abundance()`: Protein rank abundance plot.
+    * `plot_int_boxplot()`: Log2-intensity boxplots by sample, with optional grouping.
+    * `plot_rle()`: Relative Log Expression (RLE) boxplots for detecting sample-wise bias.
+    * `plot_cv_dent()`: CV density plot, with optional stratified groups.
+    * `plot_batch_pca()`: PCA score plot colored by batch.
+    * `plot_rep_scatter()`: Scatter plots of replicate sample pairs with $R^2$ values.
 
 ## Minor improvements and fixes
 
-- Add `pheatmap`, `ggplotify`, `factoextra`, and `patchwork` to `Suggests` to support enhanced QC visualizations.
-- Document and provide examples for the new QC functions in the main vignette.
+* Add `pheatmap`, `ggplotify`, `factoextra`, and `patchwork` to `Suggests` to support enhanced QC visualizations.
+* Document and provide examples for the new QC functions in the main vignette.
 
 # glyclean 0.9.1
 
 ## Minor improvements and fixes
 
-- Optimize the message printing of `auto_xxx()` functions.
+* Optimize the message printing of `auto_xxx()` functions.
 
 # glyclean 0.9.0
 
 ## Breaking changes
 
-- `auto_clean()` has been redesigned to be more flexible and robust. It now calls `auto_normalize()`, `auto_remove()`, `auto_impute()`, `auto_aggregate()`, and `auto_correct_batch_effect()` in sequence, depending on the experiment type.
+* `auto_clean()` has been redesigned to be more flexible and robust. It now calls `auto_normalize()`, `auto_remove()`, `auto_impute()`, `auto_aggregate()`, and `auto_correct_batch_effect()` in sequence, depending on the experiment type.
 
 ## New features
 
-- Add `auto_normalize()` to automatically normalize the data.
-- Add `auto_remove()` to automatically remove variables with too many missing values.
-- Add `auto_impute()` to automatically impute the missing values.
-- Add `auto_aggregate()` to automatically aggregate the data.
-- Add `auto_correct_batch_effect()` to automatically correct the batch effects.
+* Add `auto_normalize()` to automatically normalize the data.
+* Add `auto_remove()` to automatically remove variables with too many missing values.
+* Add `auto_impute()` to automatically impute the missing values.
+* Add `auto_aggregate()` to automatically aggregate the data.
+* Add `auto_correct_batch_effect()` to automatically correct the batch effects.
 
 ## Minor improvements and fixes
 
-- `remove_xxx()` functions now print a message about the number and proportion of variables removed.
-- Add a `seed` argument to `impute_miss_forest()` to make the imputation results reproducible.
-- `normalize_median()` now issues a warning if any sample has a median value of 0, producing all NaNs in the result.
-- `correct_batch_effect()` now uses a new method to detect group-batch confounding. It uses Cramer's V to measure the strength of the association between batch and group variables.
-- Fix an error in `correct_batch_effect()` examples.
+* `remove_xxx()` functions now print a message about the number and proportion of variables removed.
+* Add a `seed` argument to `impute_miss_forest()` to make the imputation results reproducible.
+* `normalize_median()` now issues a warning if any sample has a median value of 0, producing all NaNs in the result.
+* `correct_batch_effect()` now uses a new method to detect group-batch confounding. It uses Cramer's V to measure the strength of the association between batch and group variables.
+* Fix an error in `correct_batch_effect()` examples.
 
 # glyclean 0.8.1
 
 ## Minor improvements and fixes
 
-- glyclean now depends on the CRAN version of glyrepr.
+* glyclean now depends on the CRAN version of glyrepr.
 
 # glyclean 0.8.0
 
 ## Breaking changes
 
-- Rename `remove_missing_variables()` to `remove_rare()`.
+* Rename `remove_missing_variables()` to `remove_rare()`.
 
 ## New features
 
-- All functions in `glyclean` are generic now. This makes it easier to extend `glyclean` to other data types.
-- Add `remove_low_var()` for removing variables with low variance.
-- Add `remove_low_cv()` for removing variables with low coefficient of variation.
-- Add `remove_constant()` for removing constant variables.
-- Add `remove_low_expr()` for removing variables with low expression or abundance.
+* All functions in `glyclean` are generic now. This makes it easier to extend `glyclean` to other data types.
+* Add `remove_low_var()` for removing variables with low variance.
+* Add `remove_low_cv()` for removing variables with low coefficient of variation.
+* Add `remove_constant()` for removing constant variables.
+* Add `remove_low_expr()` for removing variables with low expression or abundance.
 
 ## Minor improvements
 
-- Update documentation to include the newly added functions.
+* Update documentation to include the newly added functions.
 
 # glyclean 0.7.1
 
 ## Minor improvements and bug fixes
 
-- Fix bugs introduced by the breaking changes in `glyexp` 0.10.0.
+* Fix bugs introduced by the breaking changes in `glyexp` 0.10.0.
 
 # glyclean 0.7.0
 
 ## Breaking changes
 
-- `aggregate()` now has a new logic for aggregating glycoproteomics data. Instead of dropping all other columns, aggregate() now keeps columns intelligently. Common columns including "gene" will be kept in this way. This new logic has an important implication: columns added by functions like `glymotif::add_motif_lgl()` or `glydet::add_meta_properties()` will be kept.
+* `aggregate()` now has a new logic for aggregating glycoproteomics data. Instead of dropping all other columns, aggregate() now keeps columns intelligently. Common columns including "gene" will be kept in this way. This new logic has an important implication: columns added by functions like `glymotif::add_motif_lgl()` or `glydet::add_meta_properties()` will be kept.
 
 ## Minor improvements and bug fixes
 
-- Better error message for `aggregate()` when the user tries to aggregate to a level demanding structure but the structure column is missing.
-- Explicitly check if `sva` package is installed in `correct_batch_effect()`.
-- Update dependencies to explicitly require `tibble` and `glyexp`.
+* Better error message for `aggregate()` when the user tries to aggregate to a level demanding structure but the structure column is missing.
+* Explicitly check if `sva` package is installed in `correct_batch_effect()`.
+* Update dependencies to explicitly require `tibble` and `glyexp`.
 
 # glyclean 0.6.4
 
 ## Minor improvements and bug fixes
 
--  Update dependencies to depend on release versions of glycoverse packages.
+*  Update dependencies to depend on release versions of glycoverse packages.
 
 # glyclean 0.6.3
 
 ## Bug fixes
 
-- Fix bugs in documentation examples due to breaking changes introduced in `glyexp` 0.8.0.
+* Fix bugs in documentation examples due to breaking changes introduced in `glyexp` 0.8.0.
 
 # glyclean 0.6.2
 
 ## Bug fixes
 
-- Add `scales` to `Imports`.
+* Add `scales` to `Imports`.
 
 # glyclean 0.6.1
 
 ## Minor improvements
 
-- Update the documentation of `aggregate()`.
+* Update the documentation of `aggregate()`.
 
 ## Bug fixes
 
-- Fix a bug in `aggregate()` where it falled on experiments returned by most `glyread` functions.
+* Fix a bug in `aggregate()` where it falled on experiments returned by most `glyread` functions.
 
 # glyclean 0.6.0
 
 ## Major changes
 
-- Add `add_site_seq()` function to add site sequences to a glycopeptide experiment.
+* Add `add_site_seq()` function to add site sequences to a glycopeptide experiment.
 
 # glyclean 0.5.0
 
 ## Major changes
 
-- Add `infer_protein()` function to resolve multiple protein assignments for glycopeptides.
-- Add `adjust_protein()` function to remove protein expression from glycopeptide expression.
+* Add `infer_protein()` function to resolve multiple protein assignments for glycopeptides.
+* Add `adjust_protein()` function to remove protein expression from glycopeptide expression.
 
 ## Minor improvements
 
-- Rename the first argument of `aggregate()` from `x` to `exp` to be consistent with other functions.
+* Rename the first argument of `aggregate()` from `x` to `exp` to be consistent with other functions.
 
 # glyclean 0.4.0
 
 ## Major changes
 
-- All data processing functions now accept matrices as input in addition to `glyexp_experiment` objects.
-- The `by` parameter in data processing functions now accepts factors in addition to column names, 
+* All data processing functions now accept matrices as input in addition to `glyexp_experiment` objects.
+* The `by` parameter in data processing functions now accepts factors in addition to column names, 
   enabling direct use with matrix inputs.
-- API updated to support custom grouping factors for batch operations when working with matrices.
+* API updated to support custom grouping factors for batch operations when working with matrices.
 
 ## Minor improvements
 
-- Improved error messages for `correct_batch_effect()` and `detect_batch_effect()` when column 
+* Improved error messages for `correct_batch_effect()` and `detect_batch_effect()` when column 
   names are not found in sample information.
-- More meaningful error messages when providing column names as `batch` or `group` arguments 
+* More meaningful error messages when providing column names as `batch` or `group` arguments 
   with matrix inputs.
-- Enhanced parameter validation and error handling across all modules.
+* Enhanced parameter validation and error handling across all modules.
 
 ## Bug fixes
 
-- Fixed incorrect behavior of `by` argument in `filter_missing_variable()`.
-- Resolved issues with parameter processing when using different input types.
+* Fixed incorrect behavior of `by` argument in `filter_missing_variable()`.
+* Resolved issues with parameter processing when using different input types.
 
 # glyclean 0.3.0
 
-- `auto_clean()` now detects batch effects before batch correction.
-- `to_level` argument is removed from `auto_clean()`.
+* `auto_clean()` now detects batch effects before batch correction.
+* `to_level` argument is removed from `auto_clean()`.
