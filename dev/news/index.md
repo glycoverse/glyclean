@@ -6,6 +6,9 @@
 
 - [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
   is now out-of-box without needing to install other packages (#15).
+- Reimplement
+  [`impute_min_prob()`](https://glycoverse.github.io/glyclean/dev/reference/impute_min_prob.md)
+  to avoid the dependency on `imputeLCMD` package (#16).
 
 ## glyclean 0.14.0
 
