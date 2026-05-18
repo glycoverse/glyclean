@@ -337,39 +337,59 @@ impute_svd.default <- function(x, by = NULL, ...) {
 
 #' Minimum Probability Imputation
 #'
-#' A wrapper around the [imputeLCMD::impute.MinProb()].
 #' Impute missing values using random draws from the left-censored
-#' gaussian distribution.
+#' gaussian distribution. Missing values are imputed on the log2 intensity
+#' scale and then transformed back to the original scale.
 #'
 #' @param x Either a `glyexp_experiment` object or a matrix.
 #'   If a matrix, rows should be variables and columns should be samples.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Used for grouping when imputing missing values.
-#' @param ... Additional arguments to pass to `imputeLCMD::impute.MinProb()`.
+#' @param q Quantile used to estimate the lower-intensity center for each
+#'   sample. Default is `0.01`.
+#' @param tune.sigma Non-negative multiplier for the standard deviation of the
+#'   left-censored draw distribution. Default is `1`.
 #'
 #' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
 #'   returns a `glyexp_experiment` with missing values imputed.
 #'   If `x` is a matrix, returns a matrix with missing values imputed.
 #' @export
-impute_min_prob <- function(x, by = NULL, ...) {
+impute_min_prob <- function(x, by = NULL, q = 0.01, tune.sigma = 1) {
   UseMethod("impute_min_prob")
 }
 
 #' @rdname impute_min_prob
 #' @export
-impute_min_prob.glyexp_experiment <- function(x, by = NULL, ...) {
-  .dispatch_and_apply_by_group(x, .impute_min_prob, by = by, ...)
+impute_min_prob.glyexp_experiment <- function(
+  x,
+  by = NULL,
+  q = 0.01,
+  tune.sigma = 1
+) {
+  .dispatch_and_apply_by_group(
+    x,
+    .impute_min_prob,
+    by = by,
+    q = q,
+    tune.sigma = tune.sigma
+  )
 }
 
 #' @rdname impute_min_prob
 #' @export
-impute_min_prob.matrix <- function(x, by = NULL, ...) {
-  .dispatch_and_apply_by_group(x, .impute_min_prob, by = by, ...)
+impute_min_prob.matrix <- function(x, by = NULL, q = 0.01, tune.sigma = 1) {
+  .dispatch_and_apply_by_group(
+    x,
+    .impute_min_prob,
+    by = by,
+    q = q,
+    tune.sigma = tune.sigma
+  )
 }
 
 #' @rdname impute_min_prob
 #' @export
-impute_min_prob.default <- function(x, by = NULL, ...) {
+impute_min_prob.default <- function(x, by = NULL, q = 0.01, tune.sigma = 1) {
   cli::cli_abort(c(
     "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
     "x" = "Got {.cls {class(x)}}."
@@ -504,15 +524,67 @@ impute_miss_forest.default <- function(x, by = NULL, seed = 123, ...) {
 }
 
 
-.impute_min_prob <- function(mat, ...) {
-  rlang::check_installed("imputeLCMD", reason = "to use `impute_min_prob()`")
+.impute_min_prob <- function(mat, q = 0.01, tune.sigma = 1) {
+  checkmate::assert_number(q, lower = 0, upper = 1, finite = TRUE)
+  checkmate::assert_number(tune.sigma, lower = 0, finite = TRUE)
+
+  if (!anyNA(mat)) {
+    return(mat)
+  }
+
   normed <- log2(mat)
-  # Use withr::with_output_sink to silence the output from imputeLCMD::impute.MinProb
-  normed <- withr::with_output_sink(
-    tempfile(),
-    imputeLCMD::impute.MinProb(normed, ...)
+  sample_centers <- .min_prob_sample_centers(normed, q)
+  draw_sd <- .min_prob_draw_sd(normed, tune.sigma)
+
+  imputed_cols <- purrr::map(seq_len(ncol(normed)), function(sample_idx) {
+    sample_values <- normed[, sample_idx]
+    missing_idx <- which(is.na(sample_values))
+
+    if (length(missing_idx) > 0) {
+      sample_draws <- stats::rnorm(
+        nrow(normed),
+        mean = sample_centers[sample_idx],
+        sd = draw_sd
+      )
+      sample_values[missing_idx] <- sample_draws[missing_idx]
+    }
+
+    sample_values
+  })
+
+  imputed <- do.call(cbind, imputed_cols)
+  dimnames(imputed) <- dimnames(mat)
+  2^imputed
+}
+
+
+.min_prob_sample_centers <- function(normed, q) {
+  purrr::map_dbl(
+    seq_len(ncol(normed)),
+    ~ unname(stats::quantile(normed[, .x], probs = q, na.rm = TRUE))
   )
-  2^normed
+}
+
+
+.min_prob_draw_sd <- function(normed, tune.sigma) {
+  observed_fraction <- rowMeans(!is.na(normed))
+  filtered <- normed[observed_fraction > 0.5, , drop = FALSE]
+  feature_sds <- purrr::map_dbl(
+    seq_len(nrow(filtered)),
+    ~ stats::sd(filtered[.x, ], na.rm = TRUE)
+  )
+  draw_sd <- stats::median(feature_sds, na.rm = TRUE) * tune.sigma
+
+  if (is.finite(draw_sd)) {
+    return(draw_sd)
+  }
+
+  fallback_sd <- stats::sd(as.numeric(normed), na.rm = TRUE) * tune.sigma
+  if (is.finite(fallback_sd)) {
+    return(fallback_sd)
+  }
+
+  0
 }
 
 

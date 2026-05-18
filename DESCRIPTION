@@ -42,7 +42,6 @@ Imports:
     cli,
     dplyr,
     glyexp (>= 0.12.1),
-    imputeLCMD,
     limma,
     magrittr,
     matrixStats,

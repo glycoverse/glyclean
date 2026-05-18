@@ -7,13 +7,13 @@
 \alias{impute_min_prob.default}
 \title{Minimum Probability Imputation}
 \usage{
-impute_min_prob(x, by = NULL, ...)
+impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1)
 
-\method{impute_min_prob}{glyexp_experiment}(x, by = NULL, ...)
+\method{impute_min_prob}{glyexp_experiment}(x, by = NULL, q = 0.01, tune.sigma = 1)
 
-\method{impute_min_prob}{matrix}(x, by = NULL, ...)
+\method{impute_min_prob}{matrix}(x, by = NULL, q = 0.01, tune.sigma = 1)
 
-\method{impute_min_prob}{default}(x, by = NULL, ...)
+\method{impute_min_prob}{default}(x, by = NULL, q = 0.01, tune.sigma = 1)
 }
 \arguments{
 \item{x}{Either a \code{glyexp_experiment} object or a matrix.
@@ -22,7 +22,11 @@ If a matrix, rows should be variables and columns should be samples.}
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
 specifying group assignments for each sample. Used for grouping when imputing missing values.}
 
-\item{...}{Additional arguments to pass to \code{imputeLCMD::impute.MinProb()}.}
+\item{q}{Quantile used to estimate the lower-intensity center for each
+sample. Default is \code{0.01}.}
+
+\item{tune.sigma}{Non-negative multiplier for the standard deviation of the
+left-censored draw distribution. Default is \code{1}.}
 }
 \value{
 Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
@@ -30,7 +34,7 @@ returns a \code{glyexp_experiment} with missing values imputed.
 If \code{x} is a matrix, returns a matrix with missing values imputed.
 }
 \description{
-A wrapper around the \code{\link[imputeLCMD:impute.MinProb]{imputeLCMD::impute.MinProb()}}.
 Impute missing values using random draws from the left-censored
-gaussian distribution.
+gaussian distribution. Missing values are imputed on the log2 intensity
+scale and then transformed back to the original scale.
 }

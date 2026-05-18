@@ -112,9 +112,61 @@ test_that("impute_svd works", {
 
 
 test_that("impute_min_prob works", {
-  skip_if_not_installed("imputeLCMD")
   result_exp <- impute_min_prob(test_exp)
   expect_equal(sum(is.na(result_exp$expr_mat)), 0)
+})
+
+test_that("impute_min_prob uses left-censored log-scale draws", {
+  test_mat <- matrix(
+    c(
+      2,
+      4,
+      8,
+      4,
+      NA,
+      16,
+      NA,
+      8,
+      32,
+      16,
+      32,
+      64
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  rownames(test_mat) <- paste0("V", 1:4)
+  colnames(test_mat) <- paste0("S", 1:3)
+
+  normed <- log2(test_mat)
+  sample_mins <- purrr::map_dbl(
+    seq_len(ncol(normed)),
+    ~ unname(stats::quantile(normed[, .x], probs = 0.1, na.rm = TRUE))
+  )
+  feature_sds <- purrr::map_dbl(
+    which(rowMeans(!is.na(normed)) > 0.5),
+    ~ stats::sd(normed[.x, ], na.rm = TRUE)
+  )
+  draw_sd <- stats::median(feature_sds, na.rm = TRUE) * 0.25
+
+  expected <- normed
+  set.seed(42)
+  purrr::walk(seq_len(ncol(normed)), function(sample_idx) {
+    sample_draws <- stats::rnorm(
+      nrow(normed),
+      mean = sample_mins[sample_idx],
+      sd = draw_sd
+    )
+    missing_idx <- which(is.na(normed[, sample_idx]))
+    expected[missing_idx, sample_idx] <<- sample_draws[missing_idx]
+  })
+
+  set.seed(42)
+  result <- impute_min_prob(test_mat, q = 0.1, tune.sigma = 0.25)
+
+  expect_equal(result, 2^expected)
+  expect_equal(result[!is.na(test_mat)], test_mat[!is.na(test_mat)])
+  expect_equal(dimnames(result), dimnames(test_mat))
 })
 
 
@@ -203,8 +255,6 @@ test_that("matrix input with by parameter: wrong length vector should error for 
 })
 
 test_that("impute_min_prob works with matrix input and by parameter", {
-  skip_if_not_installed("imputeLCMD")
-
   # Create test matrix with missing values
   test_mat <- matrix(rnorm(24, mean = 10, sd = 2), nrow = 4, ncol = 6)
   test_mat[c(1, 7, 13, 19)] <- NA # Add some missing values
@@ -265,6 +315,13 @@ test_that("impute functions error on unsupported input", {
   })
 })
 
+test_that("impute_min_prob is self-contained", {
+  deps <- packageDescription("glyclean")[c("Imports", "Suggests")]
+  deps <- paste(unlist(deps), collapse = "\n")
+
+  expect_false(grepl("imputeLCMD", deps, fixed = TRUE))
+})
+
 test_that("impute methods requiring suggested packages run or error cleanly", {
   test_mat <- matrix(runif(36, 1, 100), nrow = 6)
   test_mat[1, 2] <- NA
@@ -277,7 +334,6 @@ test_that("impute methods requiring suggested packages run or error cleanly", {
     list(fn = impute_bpca, pkg = "pcaMethods", args = list()),
     list(fn = impute_ppca, pkg = "pcaMethods", args = list()),
     list(fn = impute_svd, pkg = "pcaMethods", args = list()),
-    list(fn = impute_min_prob, pkg = "imputeLCMD", args = list()),
     list(fn = impute_miss_forest, pkg = "missForest", args = list(seed = 1))
   )
 
