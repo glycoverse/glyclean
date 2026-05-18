@@ -24,11 +24,7 @@ Suggests:
     glyrepr (>= 0.7.4),
     vsn,
     impute,
-    imputeLCMD,
-    pcaMethods,
     MASS,
-    missForest,
-    sva,
     knitr,
     rmarkdown,
     pheatmap,
@@ -46,9 +42,12 @@ Imports:
     cli,
     dplyr,
     glyexp (>= 0.12.1),
+    imputeLCMD,
     limma,
     magrittr,
     matrixStats,
+    missForest,
+    pcaMethods,
     purrr,
     rlang,
     seqinr,
@@ -61,7 +60,8 @@ Imports:
     forcats,
     stats,
     ggplot2,
-    lifecycle
+    lifecycle,
+    sva
 Depends: 
     R (>= 4.1)
 VignetteBuilder: knitr
