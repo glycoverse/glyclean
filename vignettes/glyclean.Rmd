@@ -105,9 +105,8 @@ auto_clean <- function(exp, ...) {
     exp <- auto_correct_batch_effect(exp, ...)
   } else if (glyexp::get_exp_type(exp) == "glycomics") {
     exp <- auto_remove(exp, ...)
-    exp <- auto_normalize(exp, ...)
-    exp <- normalize_total_area(exp)
     exp <- auto_impute(exp, ...)
+    exp <- auto_normalize(exp, ...)
     exp <- auto_correct_batch_effect(exp, ...)
   } else {
     stop("The experiment type must be 'glycoproteomics' or 'glycomics'.")

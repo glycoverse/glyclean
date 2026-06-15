@@ -8,9 +8,8 @@
 #'
 #' For glycomics data, this function calls these functions in sequence:
 #' - [auto_remove()]
-#' - [auto_normalize()]
-#' - [normalize_total_area()]
 #' - [auto_impute()]
+#' - [auto_normalize()]
 #' - [auto_correct_batch_effect()]
 #'
 #' For glycoproteomics data, this function calls these functions in sequence:

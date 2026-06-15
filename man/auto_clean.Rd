@@ -75,9 +75,8 @@ glycoproteomics data), and batch effect correction.
 For glycomics data, this function calls these functions in sequence:
 \itemize{
 \item \code{\link[=auto_remove]{auto_remove()}}
-\item \code{\link[=auto_normalize]{auto_normalize()}}
-\item \code{\link[=normalize_total_area]{normalize_total_area()}}
 \item \code{\link[=auto_impute]{auto_impute()}}
+\item \code{\link[=auto_normalize]{auto_normalize()}}
 \item \code{\link[=auto_correct_batch_effect]{auto_correct_batch_effect()}}
 }
 
