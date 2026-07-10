@@ -2,9 +2,8 @@ test_that("aggregating to glycopeptides works", {
   exp <- real_exp()
   res <- aggregate(exp, to_level = "gp", standardize_variable = FALSE)
   expect_setequal(
-    colnames(res$var_info),
+    colnames(SummarizedExperiment::rowData(res)),
     c(
-      "variable",
       "peptide",
       "protein",
       "gene",
@@ -19,8 +18,8 @@ test_that("aggregating to glycoforms works", {
   exp <- real_exp()
   res <- aggregate(exp, to_level = "gf", standardize_variable = FALSE)
   expect_setequal(
-    colnames(res$var_info),
-    c("variable", "protein", "gene", "glycan_composition", "protein_site")
+    colnames(SummarizedExperiment::rowData(res)),
+    c("protein", "gene", "glycan_composition", "protein_site")
   )
 })
 
@@ -28,9 +27,8 @@ test_that("aggregating to glycopeptides (with structures) works", {
   exp <- real_exp()
   res <- aggregate(exp, to_level = "gps", standardize_variable = FALSE)
   expect_setequal(
-    colnames(res$var_info),
+    colnames(SummarizedExperiment::rowData(res)),
     c(
-      "variable",
       "peptide",
       "protein",
       "gene",
@@ -51,9 +49,8 @@ test_that("aggregating to glycoforms (with structures) works", {
   exp <- real_exp()
   res <- aggregate(exp, to_level = "gfs", standardize_variable = FALSE)
   expect_setequal(
-    colnames(res$var_info),
+    colnames(SummarizedExperiment::rowData(res)),
     c(
-      "variable",
       "protein",
       "gene",
       "glycan_composition",
@@ -68,8 +65,8 @@ test_that("aggregating from glycopeptides to glycoforms works", {
   exp <- aggregate(exp, to_level = "gp", standardize_variable = FALSE)
   res <- aggregate(exp, to_level = "gf", standardize_variable = FALSE)
   expect_setequal(
-    colnames(res$var_info),
-    c("variable", "protein", "gene", "glycan_composition", "protein_site")
+    colnames(SummarizedExperiment::rowData(res)),
+    c("protein", "gene", "glycan_composition", "protein_site")
   )
 })
 
@@ -88,8 +85,8 @@ test_that("aggregating from glycoforms with structure to glycoforms without stru
   exp <- aggregate(exp, to_level = "gfs", standardize_variable = FALSE)
   res <- aggregate(exp, to_level = "gf", standardize_variable = FALSE)
   expect_setequal(
-    colnames(res$var_info),
-    c("variable", "protein", "gene", "glycan_composition", "protein_site")
+    colnames(SummarizedExperiment::rowData(res)),
+    c("protein", "gene", "glycan_composition", "protein_site")
   )
 })
 

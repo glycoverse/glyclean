@@ -1,14 +1,16 @@
 test_that("auto_normalize uses deterministic defaults with QC samples", {
   exp <- simple_exp(10, 10)
-  exp$meta_data$exp_type <- "glycomics"
-  exp$meta_data$glycan_type <- "N"
-  exp$sample_info$group <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
+  SummarizedExperiment::colData(exp)$group <- c(
+    rep("A", 4),
+    rep("B", 4),
+    rep("QC", 2)
+  )
 
   called <- NULL
   testthat::local_mocked_bindings(
     normalize_total_area = function(x) {
       called <<- "normalize_total_area"
-      x$expr_mat <- x$expr_mat * 2
+      SummarizedExperiment::assay(x) <- SummarizedExperiment::assay(x) * 2
       x
     },
     .package = "glyclean"
@@ -24,35 +26,41 @@ test_that("auto_normalize uses deterministic defaults with QC samples", {
     transform = sanitize_cv_snapshot
   )
   expect_equal(called, "normalize_total_area")
-  expect_equal(normed$expr_mat, exp$expr_mat * 2)
+  expect_equal(
+    SummarizedExperiment::assay(normed),
+    SummarizedExperiment::assay(exp) * 2
+  )
 })
 
 test_that("auto_normalize handles NULL qc_name", {
   exp <- simple_exp(10, 10)
-  exp$sample_info$group <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
+  SummarizedExperiment::colData(exp)$group <- c(
+    rep("A", 4),
+    rep("B", 4),
+    rep("QC", 2)
+  )
 
   expect_snapshot(
     normed <- auto_normalize(exp, group_col = "group", qc_name = NULL),
     transform = sanitize_cv_snapshot
   )
-  expect_s3_class(normed, "glyexp_experiment")
+  expect_glyco_se(normed)
 })
 
 test_that("auto_normalize works for glycomics without QC", {
   exp <- simple_exp(10, 6)
-  exp$meta_data$exp_type <- "glycomics"
-  exp$meta_data$glycan_type <- "N" # Required if not others
 
   manual <- normalize_total_area(exp)
   suppressMessages(auto <- auto_normalize(exp, group_col = NULL))
 
-  expect_equal(auto$expr_mat, manual$expr_mat)
+  expect_equal(
+    SummarizedExperiment::assay(auto),
+    SummarizedExperiment::assay(manual)
+  )
 })
 
 test_that("auto_normalize works for glycoproteomics without QC", {
-  exp <- simple_exp(10, 6)
-  exp$meta_data$exp_type <- "glycoproteomics"
-  exp$meta_data$glycan_type <- "N"
+  exp <- simple_glycoproteomic_exp(10, 6)
 
   # Manual application
   manual <- normalize_median(exp)
@@ -60,12 +68,14 @@ test_that("auto_normalize works for glycoproteomics without QC", {
   # Auto application
   expect_snapshot(auto <- auto_normalize(exp, group_col = NULL))
 
-  expect_equal(auto$expr_mat, manual$expr_mat)
+  expect_equal(
+    SummarizedExperiment::assay(auto),
+    SummarizedExperiment::assay(manual)
+  )
 })
 
 test_that("auto_normalize falls back to median for others", {
-  exp <- simple_exp(10, 6)
-  exp$meta_data$exp_type <- "others"
+  exp <- legacy_exp(10, 6)
 
   # Manual application
   manual <- normalize_median(exp)

@@ -21,7 +21,7 @@ test_that("auto_correct_batch_effect performs correction when threshold exceeded
     expr_mat[i, ] <- rnorm(n_samples, mean = 10 + batch_effect, sd = 1)
   }
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -35,7 +35,10 @@ test_that("auto_correct_batch_effect performs correction when threshold exceeded
   )
 
   # Result should be different (corrected)
-  expect_false(identical(result$expr_mat, exp$expr_mat))
+  expect_false(identical(
+    SummarizedExperiment::assay(result),
+    SummarizedExperiment::assay(exp)
+  ))
 
   # Check that batch effects are reduced
   p_vals_orig <- suppressMessages(detect_batch_effect(exp))
@@ -67,7 +70,7 @@ test_that("auto_correct_batch_effect skips correction when below threshold", {
   rownames(expr_mat) <- var_info$variable
   colnames(expr_mat) <- sample_info$sample
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -80,13 +83,16 @@ test_that("auto_correct_batch_effect skips correction when below threshold", {
   )
 
   # Result should be identical to original
-  expect_identical(result$expr_mat, exp$expr_mat)
+  expect_identical(
+    SummarizedExperiment::assay(result),
+    SummarizedExperiment::assay(exp)
+  )
 })
 
 test_that("auto_correct_batch_effect handles missing batch column", {
-  exp <- glyexp::toy_experiment
+  exp <- simple_exp(4, 6)
   # Remove batch column if exists
-  exp$sample_info$batch <- NULL
+  SummarizedExperiment::colData(exp)$batch <- NULL
 
   expect_snapshot(result <- auto_correct_batch_effect(exp, batch_col = "batch"))
 
@@ -111,7 +117,7 @@ test_that("auto_correct_batch_effect uses group information", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -134,6 +140,6 @@ test_that("auto_correct_batch_effect validation", {
     "Must inherit from class 'glyexp_experiment'"
   )
 
-  exp <- glyexp::toy_experiment
+  exp <- simple_exp(4, 6)
   expect_error(auto_correct_batch_effect(exp, prop_threshold = 1.5), "not <= 1")
 })

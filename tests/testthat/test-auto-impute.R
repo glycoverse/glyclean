@@ -1,14 +1,17 @@
 test_that("auto_impute uses deterministic defaults with QC samples", {
-  exp <- simple_exp(10, 50)
-  exp$meta_data$exp_type <- "glycoproteomics"
-  exp$expr_mat[1, 1] <- NA
-  exp$sample_info$group <- c(rep("A", 24), rep("B", 24), rep("QC", 2))
+  exp <- simple_glycoproteomic_exp(10, 50)
+  SummarizedExperiment::assay(exp)[1, 1] <- NA
+  SummarizedExperiment::colData(exp)$group <- c(
+    rep("A", 24),
+    rep("B", 24),
+    rep("QC", 2)
+  )
 
   called <- NULL
   testthat::local_mocked_bindings(
     impute_min_prob = function(x, ...) {
       called <<- "impute_min_prob"
-      x$expr_mat[is.na(x$expr_mat)] <- 0
+      SummarizedExperiment::assay(x)[is.na(SummarizedExperiment::assay(x))] <- 0
       x
     },
     .package = "glyclean"
@@ -23,19 +26,23 @@ test_that("auto_impute uses deterministic defaults with QC samples", {
     )
   )
   expect_equal(called, "impute_min_prob")
-  expect_false(any(is.na(imputed$expr_mat)))
+  expect_false(any(is.na(SummarizedExperiment::assay(imputed))))
 })
 
 test_that("auto_impute handles NULL qc_name", {
   exp <- simple_exp(10, 10)
-  exp$meta_data$exp_type <- "glycomics"
-  exp$expr_mat[1, 1] <- NA
-  exp$expr_mat[3, 5] <- NA
-  exp$sample_info$group <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
+  S4Vectors::metadata(exp)$exp_type <- "glycomics"
+  SummarizedExperiment::assay(exp)[1, 1] <- NA
+  SummarizedExperiment::assay(exp)[3, 5] <- NA
+  SummarizedExperiment::colData(exp)$group <- c(
+    rep("A", 4),
+    rep("B", 4),
+    rep("QC", 2)
+  )
 
   testthat::local_mocked_bindings(
     impute_min_prob = function(x, ...) {
-      x$expr_mat[is.na(x$expr_mat)] <- 0
+      SummarizedExperiment::assay(x)[is.na(SummarizedExperiment::assay(x))] <- 0
       x
     },
     .package = "glyclean"
@@ -44,8 +51,8 @@ test_that("auto_impute handles NULL qc_name", {
   expect_snapshot(
     imputed <- auto_impute(exp, group_col = "group", qc_name = NULL)
   )
-  expect_s3_class(imputed, "glyexp_experiment")
-  expect_false(any(is.na(imputed$expr_mat)))
+  expect_glyco_se(imputed)
+  expect_false(any(is.na(SummarizedExperiment::assay(imputed))))
 })
 
 test_that("auto_impute chooses defaults by sample count and experiment type", {
@@ -53,7 +60,7 @@ test_that("auto_impute chooses defaults by sample count and experiment type", {
   mark_method <- function(name) {
     function(x, ...) {
       called <<- c(called, name)
-      x$expr_mat[is.na(x$expr_mat)] <- 0
+      SummarizedExperiment::assay(x)[is.na(SummarizedExperiment::assay(x))] <- 0
       x
     }
   }
@@ -76,20 +83,22 @@ test_that("auto_impute chooses defaults by sample count and experiment type", {
   )
 
   purrr::pwalk(cases, function(exp_type, n_samples, expected) {
-    exp <- simple_exp(10, n_samples)
-    exp$meta_data$exp_type <- exp_type
-    exp$expr_mat[1, 1] <- NA
+    exp <- if (exp_type == "glycomics") {
+      simple_exp(10, n_samples)
+    } else {
+      simple_glycoproteomic_exp(10, n_samples)
+    }
+    SummarizedExperiment::assay(exp)[1, 1] <- NA
 
     suppressMessages(auto <- auto_impute(exp, group_col = NULL))
-    expect_false(any(is.na(auto$expr_mat)))
+    expect_false(any(is.na(SummarizedExperiment::assay(auto))))
   })
 
   expect_equal(called, cases$expected)
 })
 
 test_that("auto_impute uses min_prob for others experiments", {
-  exp <- simple_exp(10, 10)
-  exp$meta_data$exp_type <- "others"
+  exp <- legacy_exp(10, 10)
   exp$expr_mat[1, 1] <- NA
 
   called <- NULL
@@ -112,23 +121,20 @@ test_that("auto_impute uses min_prob for others experiments", {
 })
 
 test_that("auto_impute rejects unsupported experiment types", {
-  exp <- simple_exp(10, 10)
-
-  exp$meta_data$exp_type <- "traitomics"
+  exp <- legacy_exp(10, 10, exp_type = "traitomics", glycan_type = "N")
   expect_snapshot(error = TRUE, auto_impute(exp, group_col = NULL))
 
-  exp$meta_data$exp_type <- "traitproteomics"
+  exp <- legacy_exp(10, 10, exp_type = "traitproteomics", glycan_type = "N")
   expect_snapshot(error = TRUE, auto_impute(exp, group_col = NULL))
 })
 
 test_that("auto_impute handles missing group_col gracefully", {
-  exp <- simple_exp(10, 10)
-  exp$meta_data$exp_type <- "glycoproteomics"
-  exp$expr_mat[1, 1] <- NA
+  exp <- simple_glycoproteomic_exp(10, 10)
+  SummarizedExperiment::assay(exp)[1, 1] <- NA
 
   testthat::local_mocked_bindings(
     impute_min_prob = function(x, ...) {
-      x$expr_mat[is.na(x$expr_mat)] <- 0
+      SummarizedExperiment::assay(x)[is.na(SummarizedExperiment::assay(x))] <- 0
       x
     },
     .package = "glyclean"
@@ -136,18 +142,17 @@ test_that("auto_impute handles missing group_col gracefully", {
 
   # When group_col is NULL, should use default strategy
   expect_snapshot(result <- auto_impute(exp, group_col = NULL))
-  expect_s3_class(result, "glyexp_experiment")
-  expect_false(any(is.na(result$expr_mat)))
+  expect_glyco_se(result)
+  expect_false(any(is.na(SummarizedExperiment::assay(result))))
 })
 
 test_that("auto_impute handles non-existent group_col gracefully", {
-  exp <- simple_exp(10, 10)
-  exp$meta_data$exp_type <- "glycoproteomics"
-  exp$expr_mat[1, 1] <- NA
+  exp <- simple_glycoproteomic_exp(10, 10)
+  SummarizedExperiment::assay(exp)[1, 1] <- NA
 
   testthat::local_mocked_bindings(
     impute_min_prob = function(x, ...) {
-      x$expr_mat[is.na(x$expr_mat)] <- 0
+      SummarizedExperiment::assay(x)[is.na(SummarizedExperiment::assay(x))] <- 0
       x
     },
     .package = "glyclean"
@@ -155,18 +160,17 @@ test_that("auto_impute handles non-existent group_col gracefully", {
 
   # When group_col doesn't exist, should use default strategy
   expect_snapshot(result <- auto_impute(exp, group_col = "nonexistent"))
-  expect_s3_class(result, "glyexp_experiment")
-  expect_false(any(is.na(result$expr_mat)))
+  expect_glyco_se(result)
+  expect_false(any(is.na(SummarizedExperiment::assay(result))))
 })
 
 test_that("auto_impute validates input and ignores deprecated arguments", {
-  exp <- simple_exp(10, 10)
-  exp$meta_data$exp_type <- "glycoproteomics"
-  exp$expr_mat[1, 1] <- NA
+  exp <- simple_glycoproteomic_exp(10, 10)
+  SummarizedExperiment::assay(exp)[1, 1] <- NA
 
   testthat::local_mocked_bindings(
     impute_min_prob = function(x, ...) {
-      x$expr_mat[is.na(x$expr_mat)] <- 0
+      SummarizedExperiment::assay(x)[is.na(SummarizedExperiment::assay(x))] <- 0
       x
     },
     .package = "glyclean"
@@ -182,6 +186,6 @@ test_that("auto_impute validates input and ignores deprecated arguments", {
       to_try = "not_a_list"
     )
   )
-  expect_s3_class(result, "glyexp_experiment")
-  expect_false(any(is.na(result$expr_mat)))
+  expect_glyco_se(result)
+  expect_false(any(is.na(SummarizedExperiment::assay(result))))
 })

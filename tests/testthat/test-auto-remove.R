@@ -3,19 +3,22 @@ test_that("auto_remove includes QC samples in simple preset filtering", {
   samples <- c(paste0("A", 1:4), paste0("B", 1:4), "QC1", "QC2")
   groups <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
 
-  expr_mat <- matrix(rnorm(100), nrow = 10, ncol = 10)
+  expr_mat <- matrix(abs(rnorm(100)), nrow = 10, ncol = 10)
   colnames(expr_mat) <- samples
   rownames(expr_mat) <- paste0("V", 1:10)
 
   sample_info <- tibble::tibble(sample = samples, group = groups)
   var_info <- tibble::tibble(variable = paste0("V", 1:10))
 
-  exp <- glyexp::experiment(expr_mat, sample_info, var_info)
+  exp <- test_glycomic_se(expr_mat, sample_info, var_info)
 
   # V1: 50% missing across all samples, so it should be kept.
-  exp$expr_mat["V1", c("A1", "A2", "A3", "A4", "B1")] <- NA
+  SummarizedExperiment::assay(exp)["V1", c("A1", "A2", "A3", "A4", "B1")] <- NA
   # V2: 60% missing across all samples because QC samples are included.
-  exp$expr_mat["V2", c("A1", "A2", "A3", "A4", "QC1", "QC2")] <- NA
+  SummarizedExperiment::assay(exp)[
+    "V2",
+    c("A1", "A2", "A3", "A4", "QC1", "QC2")
+  ] <- NA
 
   # Run auto_remove
   expect_snapshot(
@@ -27,26 +30,29 @@ test_that("auto_remove includes QC samples in simple preset filtering", {
     )
   )
 
-  expect_true("V1" %in% rownames(res$expr_mat))
-  expect_false("V2" %in% rownames(res$expr_mat))
-  expect_equal(nrow(res$expr_mat), 9)
+  expect_true("V1" %in% rownames(SummarizedExperiment::assay(res)))
+  expect_false("V2" %in% rownames(SummarizedExperiment::assay(res)))
+  expect_equal(nrow(SummarizedExperiment::assay(res)), 9)
 })
 
 test_that("auto_remove handles NULL qc_name", {
   samples <- c(paste0("A", 1:4), paste0("B", 1:4), "QC1", "QC2")
   groups <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
 
-  expr_mat <- matrix(rnorm(100), nrow = 10, ncol = 10)
+  expr_mat <- matrix(abs(rnorm(100)), nrow = 10, ncol = 10)
   colnames(expr_mat) <- samples
   rownames(expr_mat) <- paste0("V", 1:10)
 
   sample_info <- tibble::tibble(sample = samples, group = groups)
   var_info <- tibble::tibble(variable = paste0("V", 1:10))
 
-  exp <- glyexp::experiment(expr_mat, sample_info, var_info)
+  exp <- test_glycomic_se(expr_mat, sample_info, var_info)
 
   # V1: 60% missing across all samples (including QC)
-  exp$expr_mat["V1", c("A1", "A2", "A3", "A4", "QC1", "QC2")] <- NA
+  SummarizedExperiment::assay(exp)[
+    "V1",
+    c("A1", "A2", "A3", "A4", "QC1", "QC2")
+  ] <- NA
 
   expect_snapshot(
     res <- auto_remove(
@@ -57,35 +63,41 @@ test_that("auto_remove handles NULL qc_name", {
     )
   )
 
-  expect_false("V1" %in% rownames(res$expr_mat))
-  expect_equal(nrow(res$expr_mat), 9)
+  expect_false("V1" %in% rownames(SummarizedExperiment::assay(res)))
+  expect_equal(nrow(SummarizedExperiment::assay(res)), 9)
 })
 
 test_that("auto_remove works with discovery preset", {
   samples <- c(paste0("A", 1:4), paste0("B", 1:4), "QC1", "QC2")
   groups <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
 
-  expr_mat <- matrix(rnorm(100), nrow = 10, ncol = 10)
+  expr_mat <- matrix(abs(rnorm(100)), nrow = 10, ncol = 10)
   colnames(expr_mat) <- samples
   rownames(expr_mat) <- paste0("V", 1:10)
 
   sample_info <- tibble::tibble(sample = samples, group = groups)
   var_info <- tibble::tibble(variable = paste0("V", 1:10))
 
-  exp <- glyexp::experiment(expr_mat, sample_info, var_info)
+  exp <- test_glycomic_se(expr_mat, sample_info, var_info)
 
   # V1: 90% missing across all samples (should be removed by global > 80%)
-  exp$expr_mat["V1", c("A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "QC1")] <- NA
+  SummarizedExperiment::assay(exp)[
+    "V1",
+    c("A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "QC1")
+  ] <- NA
 
   # V2: 50% missing across all samples. Group A: 100% (>50%),
   # Group B: 25% (<50%), QC: 0% (<50%).
   # Should be KEPT (strict=FALSE)
-  exp$expr_mat["V2", c("A1", "A2", "A3", "A4", "B1")] <- NA
+  SummarizedExperiment::assay(exp)["V2", c("A1", "A2", "A3", "A4", "B1")] <- NA
 
   # V3: 80% missing across all samples. Group A: 75% (>50%),
   # Group B: 75% (>50%), QC: 100% (>50%).
   # Should be REMOVED
-  exp$expr_mat["V3", c("A1", "A2", "A3", "B1", "B2", "B3", "QC1", "QC2")] <- NA
+  SummarizedExperiment::assay(exp)[
+    "V3",
+    c("A1", "A2", "A3", "B1", "B2", "B3", "QC1", "QC2")
+  ] <- NA
 
   expect_snapshot(
     res <- auto_remove(
@@ -96,34 +108,34 @@ test_that("auto_remove works with discovery preset", {
     )
   )
 
-  expect_false("V1" %in% rownames(res$expr_mat))
-  expect_true("V2" %in% rownames(res$expr_mat))
-  expect_false("V3" %in% rownames(res$expr_mat))
+  expect_false("V1" %in% rownames(SummarizedExperiment::assay(res)))
+  expect_true("V2" %in% rownames(SummarizedExperiment::assay(res)))
+  expect_false("V3" %in% rownames(SummarizedExperiment::assay(res)))
 })
 
 test_that("auto_remove works with biomarker preset", {
   samples <- c(paste0("A", 1:4), paste0("B", 1:4), "QC1", "QC2")
   groups <- c(rep("A", 4), rep("B", 4), rep("QC", 2))
 
-  expr_mat <- matrix(rnorm(100), nrow = 10, ncol = 10)
+  expr_mat <- matrix(abs(rnorm(100)), nrow = 10, ncol = 10)
   colnames(expr_mat) <- samples
   rownames(expr_mat) <- paste0("V", 1:10)
 
   sample_info <- tibble::tibble(sample = samples, group = groups)
   var_info <- tibble::tibble(variable = paste0("V", 1:10))
 
-  exp <- glyexp::experiment(expr_mat, sample_info, var_info)
+  exp <- test_glycomic_se(expr_mat, sample_info, var_info)
 
   # V1: 50% missing (should be removed by global > 40%)
-  exp$expr_mat["V1", c("A1", "A2", "A3", "A4")] <- NA
+  SummarizedExperiment::assay(exp)["V1", c("A1", "A2", "A3", "A4")] <- NA
 
   # V2: 30% missing. Group A: 50% (<60%), Group B: 0%.
   # Should be KEPT
-  exp$expr_mat["V2", c("A1", "A2")] <- NA
+  SummarizedExperiment::assay(exp)["V2", c("A1", "A2")] <- NA
 
   # V3: 30% missing. Group A: 75% (>60%), Group B: 0%.
   # Should be REMOVED (strict=TRUE)
-  exp$expr_mat["V3", c("A1", "A2", "A3")] <- NA
+  SummarizedExperiment::assay(exp)["V3", c("A1", "A2", "A3")] <- NA
 
   expect_snapshot(
     res <- auto_remove(
@@ -134,26 +146,26 @@ test_that("auto_remove works with biomarker preset", {
     )
   )
 
-  expect_false("V1" %in% rownames(res$expr_mat))
-  expect_true("V2" %in% rownames(res$expr_mat))
-  expect_false("V3" %in% rownames(res$expr_mat))
+  expect_false("V1" %in% rownames(SummarizedExperiment::assay(res)))
+  expect_true("V2" %in% rownames(SummarizedExperiment::assay(res)))
+  expect_false("V3" %in% rownames(SummarizedExperiment::assay(res)))
 })
 
 test_that("auto_remove handles no QC samples", {
   samples <- c(paste0("A", 1:4), paste0("B", 1:4))
   groups <- c(rep("A", 4), rep("B", 4))
 
-  expr_mat <- matrix(rnorm(80), nrow = 10, ncol = 8)
+  expr_mat <- matrix(abs(rnorm(80)), nrow = 10, ncol = 8)
   colnames(expr_mat) <- samples
   rownames(expr_mat) <- paste0("V", 1:10)
 
   sample_info <- tibble::tibble(sample = samples, group = groups)
   var_info <- tibble::tibble(variable = paste0("V", 1:10))
 
-  exp <- glyexp::experiment(expr_mat, sample_info, var_info)
+  exp <- test_glycomic_se(expr_mat, sample_info, var_info)
 
   # V1: 62.5% missing (5/8)
-  exp$expr_mat["V1", c("A1", "A2", "A3", "A4", "B1")] <- NA
+  SummarizedExperiment::assay(exp)["V1", c("A1", "A2", "A3", "A4", "B1")] <- NA
 
   expect_snapshot(
     res <- auto_remove(
@@ -164,7 +176,7 @@ test_that("auto_remove handles no QC samples", {
     )
   )
 
-  expect_false("V1" %in% rownames(res$expr_mat))
+  expect_false("V1" %in% rownames(SummarizedExperiment::assay(res)))
 })
 
 test_that("auto_remove errors with invalid input", {

@@ -147,7 +147,7 @@ test_that("QC functions accept glyco SE subclasses", {
 })
 
 test_that("legacy experiment inputs still return experiments", {
-  x <- simple_exp(4, 6)
+  x <- legacy_exp(4, 6)
 
   expect_s3_class(normalize_median(x), "glyexp_experiment")
   expect_s3_class(suppressMessages(remove_rare(x)), "glyexp_experiment")

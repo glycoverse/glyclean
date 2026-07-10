@@ -42,8 +42,10 @@
       
       v Batch correction completed.
       
-      -- Others Experiment -----------------------------------------------------------
-      i Expression matrix: 12 samples, 10 variables
-      i Sample information fields: batch <chr>, group <chr>
-      i Variable information fields: none
+      -- GlycomicSE ------------------------------------------------------------------
+      i Abundance assay: 12 samples, 10 variables
+      i Glycan type: N
+      i Row data fields: glycan_composition <comp>
+      i Column data fields: batch <chr>, group <chr>
+      i Metadata fields: glycan_type <chr>
 

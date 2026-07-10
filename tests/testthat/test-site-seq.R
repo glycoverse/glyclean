@@ -16,7 +16,7 @@ test_that("add_site_seq works correctly", {
     glycan_composition = c("H5N2", "H3N2")
   )
 
-  exp <- glyexp::experiment(
+  exp <- test_glycoproteomic_se(
     expr_mat,
     sample_info,
     var_info,
@@ -41,14 +41,22 @@ test_that("add_site_seq works correctly", {
     result <- suppressMessages(add_site_seq(exp, temp_fasta, n_aa = 3))
 
     # Check that site_sequence column was added
-    expect_true("site_sequence" %in% colnames(result$var_info))
+    expect_true(
+      "site_sequence" %in% colnames(SummarizedExperiment::rowData(result))
+    )
 
     # Check the sequences
     # P12345 site 10 (J) with n_aa=3: GHIJKLM
-    expect_equal(result$var_info$site_sequence[1], "GHIJKLM")
+    expect_equal(
+      SummarizedExperiment::rowData(result)$site_sequence[1],
+      "GHIJKLM"
+    )
 
     # Q67890 site 5 (R) with n_aa=3: NPQRSTU (R is at position 5, sequence is MNPQRSTUVW)
-    expect_equal(result$var_info$site_sequence[2], "NPQRSTU")
+    expect_equal(
+      SummarizedExperiment::rowData(result)$site_sequence[2],
+      "NPQRSTU"
+    )
   })
 })
 
@@ -70,7 +78,7 @@ test_that("add_site_seq handles missing proteins gracefully", {
     glycan_composition = c("H5N2")
   )
 
-  exp <- glyexp::experiment(
+  exp <- test_glycoproteomic_se(
     expr_mat,
     sample_info,
     var_info,
@@ -93,7 +101,7 @@ test_that("add_site_seq handles missing proteins gracefully", {
     suppressMessages(result <- add_site_seq(exp, temp_fasta, n_aa = 3))
 
     # Should return NA
-    expect_true(is.na(result$var_info$site_sequence[1]))
+    expect_true(is.na(SummarizedExperiment::rowData(result)$site_sequence[1]))
   })
 })
 
@@ -115,7 +123,7 @@ test_that("add_site_seq handles out-of-range sites gracefully", {
     glycan_composition = c("H5N2")
   )
 
-  exp <- glyexp::experiment(
+  exp <- test_glycoproteomic_se(
     expr_mat,
     sample_info,
     var_info,
@@ -138,7 +146,7 @@ test_that("add_site_seq handles out-of-range sites gracefully", {
     suppressMessages(result <- add_site_seq(exp, temp_fasta, n_aa = 3))
 
     # Should return all X's
-    expect_true(is.na(result$var_info$site_sequence[1]))
+    expect_true(is.na(SummarizedExperiment::rowData(result)$site_sequence[1]))
   })
 })
 
@@ -191,7 +199,7 @@ test_that("add_site_seq accepts named character vector for fasta", {
     glycan_composition = c("H5N2")
   )
 
-  exp <- glyexp::experiment(
+  exp <- test_glycoproteomic_se(
     expr_mat,
     sample_info,
     var_info,
@@ -205,8 +213,13 @@ test_that("add_site_seq accepts named character vector for fasta", {
   fasta_vec <- c(P12345 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
   result <- suppressMessages(add_site_seq(exp, fasta_vec, n_aa = 3))
 
-  expect_true("site_sequence" %in% colnames(result$var_info))
-  expect_equal(result$var_info$site_sequence[1], "GHIJKLM")
+  expect_true(
+    "site_sequence" %in% colnames(SummarizedExperiment::rowData(result))
+  )
+  expect_equal(
+    SummarizedExperiment::rowData(result)$site_sequence[1],
+    "GHIJKLM"
+  )
 })
 
 test_that("add_site_seq rejects unnamed character vector for fasta", {
@@ -222,7 +235,7 @@ test_that("add_site_seq rejects unnamed character vector for fasta", {
     glycan_composition = c("H5N2")
   )
 
-  exp <- glyexp::experiment(
+  exp <- test_glycoproteomic_se(
     expr_mat,
     sample_info,
     var_info,
@@ -252,7 +265,7 @@ test_that("add_site_seq shows correct message for character vector input", {
     glycan_composition = c("H5N2")
   )
 
-  exp <- glyexp::experiment(
+  exp <- test_glycoproteomic_se(
     expr_mat,
     sample_info,
     var_info,
@@ -272,7 +285,11 @@ test_that("add_site_seq shows correct message for character vector input", {
     }
   )
   expect_true(
-    any(grepl('"Provided" contains 1 protein sequences', messages, fixed = TRUE))
+    any(grepl(
+      '"Provided" contains 1 protein sequences',
+      messages,
+      fixed = TRUE
+    ))
   )
 })
 
@@ -290,7 +307,7 @@ test_that("add_site_seq fetches from UniProt when fasta is NULL", {
     glycan_composition = c("H5N2")
   )
 
-  exp <- glyexp::experiment(
+  exp <- test_glycoproteomic_se(
     expr_mat,
     sample_info,
     var_info,
@@ -312,9 +329,14 @@ test_that("add_site_seq fetches from UniProt when fasta is NULL", {
   # Test with fasta = NULL (should fetch from UniProt)
   suppressMessages(result <- add_site_seq(exp, fasta = NULL, n_aa = 3))
 
-  expect_true("site_sequence" %in% colnames(result$var_info))
+  expect_true(
+    "site_sequence" %in% colnames(SummarizedExperiment::rowData(result))
+  )
   # Site 10 with n_aa=3: positions 7-13 = GHIJKLM
-  expect_equal(result$var_info$site_sequence[1], "GHIJKLM")
+  expect_equal(
+    SummarizedExperiment::rowData(result)$site_sequence[1],
+    "GHIJKLM"
+  )
 })
 
 test_that("add_site_seq uses custom taxid", {
@@ -330,7 +352,7 @@ test_that("add_site_seq uses custom taxid", {
     glycan_composition = c("H5N2")
   )
 
-  exp <- glyexp::experiment(
+  exp <- test_glycoproteomic_se(
     expr_mat,
     sample_info,
     var_info,
@@ -356,7 +378,9 @@ test_that("add_site_seq uses custom taxid", {
   )
 
   expect_equal(captured_taxid, 10090)
-  expect_true("site_sequence" %in% colnames(result$var_info))
+  expect_true(
+    "site_sequence" %in% colnames(SummarizedExperiment::rowData(result))
+  )
 })
 
 test_that(".fetch_uniprot_sequences merges batches without prefixing names", {

@@ -1,6 +1,6 @@
 missing_exp_3_3 <- function() {
   exp <- simple_exp(3, 3)
-  old_expr_mat <- exp$expr_mat
+  old_expr_mat <- SummarizedExperiment::assay(exp)
   new_expr_mat <- matrix(
     c(1, 1, NA, NA, 2, 4, 1, 3, 6),
     nrow = 3,
@@ -8,14 +8,14 @@ missing_exp_3_3 <- function() {
   )
   colnames(new_expr_mat) <- colnames(old_expr_mat)
   rownames(new_expr_mat) <- rownames(old_expr_mat)
-  exp$expr_mat <- new_expr_mat
+  SummarizedExperiment::assay(exp) <- new_expr_mat
   exp
 }
 
 
 missing_exp_10_10 <- function() {
   exp <- simple_exp(10, 10)
-  exp$expr_mat[c(1, 5, 29, 68, 45, 100)] <- NA
+  SummarizedExperiment::assay(exp)[c(1, 5, 29, 68, 45, 100)] <- NA
   exp
 }
 
@@ -25,27 +25,30 @@ test_that("data can be loaded", {
   # Set seed for reproducible random sampling
   set.seed(999)
   # Add some NA values for testing
-  test_exp$expr_mat[sample(length(test_exp$expr_mat), 20)] <- NA
+  SummarizedExperiment::assay(test_exp)[sample(
+    length(SummarizedExperiment::assay(test_exp)),
+    20
+  )] <- NA
   expect_no_error(old_test_exp <<- test_exp)
 })
 
 
 test_that("impute_zero works", {
   result_exp <- impute_zero(test_exp)
-  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
+  expect_equal(sum(is.na(SummarizedExperiment::assay(result_exp))), 0)
   # Check that NA values were replaced with 0
-  na_positions <- which(is.na(test_exp$expr_mat))
-  expect_true(all(result_exp$expr_mat[na_positions] == 0))
+  na_positions <- which(is.na(SummarizedExperiment::assay(test_exp)))
+  expect_true(all(SummarizedExperiment::assay(result_exp)[na_positions] == 0))
 })
 
 
 test_that("impute_sample_min works", {
   result_exp <- impute_sample_min(old_test_exp)
-  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
+  expect_equal(sum(is.na(SummarizedExperiment::assay(result_exp))), 0)
 
   # Test that the filled values are actually the minimum values in each column
-  old_mat <- old_test_exp$expr_mat
-  new_mat <- result_exp$expr_mat
+  old_mat <- SummarizedExperiment::assay(old_test_exp)
+  new_mat <- SummarizedExperiment::assay(result_exp)
 
   for (i in seq_len(ncol(old_mat))) {
     if (any(is.na(old_mat[, i]))) {
@@ -60,11 +63,11 @@ test_that("impute_sample_min works", {
 
 test_that("impute_half_sample_min works", {
   result_exp <- impute_half_sample_min(old_test_exp)
-  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
+  expect_equal(sum(is.na(SummarizedExperiment::assay(result_exp))), 0)
 
   # Test that the filled values are actually half the minimum values in each column
-  old_mat <- old_test_exp$expr_mat
-  new_mat <- result_exp$expr_mat
+  old_mat <- SummarizedExperiment::assay(old_test_exp)
+  new_mat <- SummarizedExperiment::assay(result_exp)
 
   for (i in seq_len(ncol(old_mat))) {
     if (any(is.na(old_mat[, i]))) {
@@ -80,40 +83,40 @@ test_that("impute_half_sample_min works", {
 test_that("impute_sw_knn works", {
   skip_if_not_installed("impute")
   result_exp <- impute_sw_knn(test_exp, k = 5)
-  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
+  expect_equal(sum(is.na(SummarizedExperiment::assay(result_exp))), 0)
 })
 
 
 test_that("impute_fw_knn works", {
   skip_if_not_installed("impute")
   result_exp <- impute_fw_knn(test_exp, k = 5)
-  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
+  expect_equal(sum(is.na(SummarizedExperiment::assay(result_exp))), 0)
 })
 
 
 test_that("impute_bpca works", {
   skip_if_not_installed("pcaMethods")
   result_exp <- impute_bpca(test_exp)
-  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
+  expect_equal(sum(is.na(SummarizedExperiment::assay(result_exp))), 0)
 })
 
 
 # test_that("impute_ppca works", {
 #   skip_if_not_installed("pcaMethods")
 #   result_exp <- impute_ppca(test_exp)
-#   expect_equal(sum(is.na(result_exp$expr_mat)), 0)
+#   expect_equal(sum(is.na(SummarizedExperiment::assay(result_exp))), 0)
 # })
 
 test_that("impute_svd works", {
   skip_if_not_installed("pcaMethods")
   result_exp <- impute_svd(test_exp)
-  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
+  expect_equal(sum(is.na(SummarizedExperiment::assay(result_exp))), 0)
 })
 
 
 test_that("impute_min_prob works", {
   result_exp <- impute_min_prob(test_exp)
-  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
+  expect_equal(sum(is.na(SummarizedExperiment::assay(result_exp))), 0)
 })
 
 test_that("impute_min_prob uses left-censored log-scale draws", {
@@ -201,7 +204,7 @@ test_that("impute_min_prob falls back to global center for all-missing samples",
 
 test_that("impute_min_prob validates unsupported dots clearly", {
   test_exp <- simple_exp(2, 2)
-  test_exp$expr_mat[2] <- NA
+  SummarizedExperiment::assay(test_exp)[2] <- NA
 
   expect_error(
     impute_min_prob(test_exp, unsupported = TRUE),
@@ -213,11 +216,11 @@ test_that("impute_min_prob validates unsupported dots clearly", {
 test_that("impute_miss_forest works", {
   skip_if_not_installed("missForest")
   result_exp <- impute_miss_forest(test_exp)
-  expect_equal(sum(is.na(result_exp$expr_mat)), 0)
+  expect_equal(sum(is.na(SummarizedExperiment::assay(result_exp))), 0)
 })
 
 
-test_that("imputation functions require glyexp experiments", {
+test_that("imputation functions reject inputs outside supported containers", {
   funcs <- list(
     impute_zero,
     impute_sample_min,
@@ -246,8 +249,8 @@ test_that("impute_min_prob is self-contained", {
 
 test_that("impute methods requiring suggested packages run or error cleanly", {
   test_exp <- simple_exp(6, 6)
-  test_exp$expr_mat[] <- runif(36, 1, 100)
-  test_exp$expr_mat[1, 2] <- NA
+  SummarizedExperiment::assay(test_exp)[] <- runif(36, 1, 100)
+  SummarizedExperiment::assay(test_exp)[1, 2] <- NA
 
   cases <- list(
     list(fn = impute_sw_knn, pkg = "impute", args = list(k = 2)),
@@ -261,8 +264,8 @@ test_that("impute methods requiring suggested packages run or error cleanly", {
   purrr::walk(cases, function(case) {
     if (rlang::is_installed(case$pkg)) {
       result <- suppressWarnings(do.call(case$fn, c(list(test_exp), case$args)))
-      expect_s3_class(result, "glyexp_experiment")
-      expect_equal(sum(is.na(result$expr_mat)), 0)
+      expect_glyco_se(result)
+      expect_equal(sum(is.na(SummarizedExperiment::assay(result))), 0)
     } else {
       expect_error(do.call(case$fn, c(list(test_exp), case$args)), case$pkg)
     }

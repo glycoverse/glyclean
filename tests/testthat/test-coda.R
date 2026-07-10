@@ -1,6 +1,6 @@
-test_that("transform_clr works with experiment input", {
+test_that("transform_clr works with GlycomicSE input", {
   test_exp <- simple_exp(5, 5)
-  test_exp$expr_mat <- matrix(
+  SummarizedExperiment::assay(test_exp) <- matrix(
     c(
       4,
       4,
@@ -31,21 +31,30 @@ test_that("transform_clr works with experiment input", {
     nrow = 5,
     byrow = TRUE,
     dimnames = list(
-      rownames(test_exp$expr_mat),
-      colnames(test_exp$expr_mat)
+      rownames(SummarizedExperiment::assay(test_exp)),
+      colnames(SummarizedExperiment::assay(test_exp))
     )
   )
   original_exp <- test_exp
   result_exp <- transform_clr(test_exp, gamma = 0)
 
   # Check that the function returns the correct structure
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(dim(result_exp$expr_mat), dim(original_exp$expr_mat))
-  expect_equal(rownames(result_exp$expr_mat), rownames(original_exp$expr_mat))
-  expect_equal(colnames(result_exp$expr_mat), colnames(original_exp$expr_mat))
+  expect_glyco_se(result_exp)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result_exp)),
+    dim(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    rownames(SummarizedExperiment::assay(result_exp)),
+    rownames(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    colnames(SummarizedExperiment::assay(result_exp)),
+    colnames(SummarizedExperiment::assay(original_exp))
+  )
 
   expect_equal(
-    unname(result_exp$expr_mat[, 1]),
+    unname(SummarizedExperiment::assay(result_exp)[, 1]),
     c(0.25, 1, 4, 0.5, 2)
   )
 })
@@ -127,11 +136,11 @@ test_that("transform_clr ignores group scales when gamma is zero", {
 
 test_that("transform_clr errors on missing values and negative entries", {
   test_exp <- simple_exp(3, 3)
-  test_exp$expr_mat[1, 1] <- NA
+  SummarizedExperiment::assay(test_exp)[1, 1] <- NA
   expect_error(transform_clr(test_exp, gamma = 0), "missing")
 
   test_exp <- simple_exp(3, 3)
-  test_exp$expr_mat[1, 1] <- -1
+  SummarizedExperiment::assay(test_exp)[1, 1] <- -1
   expect_error(transform_clr(test_exp, gamma = 0), "negative|positive")
 })
 
@@ -141,10 +150,16 @@ test_that("transform_clr errors on unsupported input", {
   expect_error(transform_clr("string"), "glyexp_experiment")
 })
 
-test_that("transform_alr works with experiment input", {
+test_that("transform_alr works with GlycomicSE input", {
   test_exp <- simple_exp(5, 5)
-  test_exp$sample_info$group <- factor(c("A", "A", "B", "B", "B"))
-  test_exp$expr_mat <- matrix(
+  SummarizedExperiment::colData(test_exp)$group <- factor(c(
+    "A",
+    "A",
+    "B",
+    "B",
+    "B"
+  ))
+  SummarizedExperiment::assay(test_exp) <- matrix(
     c(
       8,
       8,
@@ -175,19 +190,22 @@ test_that("transform_alr works with experiment input", {
     nrow = 5,
     byrow = TRUE,
     dimnames = list(
-      rownames(test_exp$expr_mat),
-      colnames(test_exp$expr_mat)
+      rownames(SummarizedExperiment::assay(test_exp)),
+      colnames(SummarizedExperiment::assay(test_exp))
     )
   )
 
   result_exp <- transform_alr(test_exp, by = "group", gamma = 0)
 
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(nrow(result_exp$expr_mat), nrow(test_exp$expr_mat) - 1)
-  expect_false("V1" %in% rownames(result_exp$expr_mat))
-  expect_false("V1" %in% result_exp$var_info$variable)
-  expect_true(all(is.finite(result_exp$expr_mat)))
-  expect_equal(unname(result_exp$expr_mat["V2", 1]), 2)
+  expect_glyco_se(result_exp)
+  expect_equal(
+    nrow(SummarizedExperiment::assay(result_exp)),
+    nrow(SummarizedExperiment::assay(test_exp)) - 1
+  )
+  expect_false("V1" %in% rownames(SummarizedExperiment::assay(result_exp)))
+  expect_false("V1" %in% rownames(result_exp))
+  expect_true(all(is.finite(SummarizedExperiment::assay(result_exp))))
+  expect_equal(unname(SummarizedExperiment::assay(result_exp)["V2", 1]), 2)
 })
 
 test_that("transform_alr falls back to CLR when the reference variance is too high", {
@@ -315,13 +333,13 @@ test_that("transform_alr uses gamma on the successful ALR path", {
 
 test_that("transform_alr errors on NA values", {
   test_exp <- simple_exp(3, 3)
-  test_exp$expr_mat[1, 1] <- NA
+  SummarizedExperiment::assay(test_exp)[1, 1] <- NA
   expect_error(transform_alr(test_exp, gamma = 0), "NA|missing")
 })
 
 test_that("transform_alr errors on negative values", {
   test_exp <- simple_exp(3, 3)
-  test_exp$expr_mat[1, 1] <- -1
+  SummarizedExperiment::assay(test_exp)[1, 1] <- -1
   expect_error(transform_alr(test_exp, gamma = 0), "negative|positive")
 })
 

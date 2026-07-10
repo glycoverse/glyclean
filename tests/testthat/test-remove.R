@@ -1,22 +1,28 @@
 test_that("remove_rare: filtering with proportion works", {
   exp <- simple_exp(5, 5)
-  exp$expr_mat[1, 1] <- NA # V1: 1/5 missing
-  exp$expr_mat[2, 1:3] <- NA # V2: 3/5 missing, should be removed
+  SummarizedExperiment::assay(exp)[1, 1] <- NA # V1: 1/5 missing
+  SummarizedExperiment::assay(exp)[2, 1:3] <- NA # V2: 3/5 missing, should be removed
 
   suppressMessages(res <- remove_rare(exp, prop = 0.5))
-  expect_equal(res$expr_mat, exp$expr_mat[-2, ])
-  expect_equal(res$var_info$variable, c("V1", "V3", "V4", "V5"))
+  expect_equal(
+    SummarizedExperiment::assay(res),
+    SummarizedExperiment::assay(exp)[-2, ]
+  )
+  expect_equal(rownames(res), c("V1", "V3", "V4", "V5"))
 })
 
 
 test_that("remove_rare: filtering with n works", {
   exp <- simple_exp(5, 5)
-  exp$expr_mat[1, 1] <- NA # V1: 1 missing
-  exp$expr_mat[2, 1:3] <- NA # V2: 3 missing, should be removed
+  SummarizedExperiment::assay(exp)[1, 1] <- NA # V1: 1 missing
+  SummarizedExperiment::assay(exp)[2, 1:3] <- NA # V2: 3 missing, should be removed
 
   suppressMessages(res <- remove_rare(exp, n = 1))
-  expect_equal(res$expr_mat, exp$expr_mat[-2, ])
-  expect_equal(res$var_info$variable, c("V1", "V3", "V4", "V5"))
+  expect_equal(
+    SummarizedExperiment::assay(res),
+    SummarizedExperiment::assay(exp)[-2, ]
+  )
+  expect_equal(rownames(res), c("V1", "V3", "V4", "V5"))
 })
 
 
@@ -28,40 +34,49 @@ test_that("remove_rare: supplying both prop and n throws an error", {
 
 test_that("remove_rare: ignoring both prop and n uses prop = 0.5", {
   exp <- simple_exp(5, 5)
-  exp$expr_mat[1, 1] <- NA # V1: 1/5 missing
-  exp$expr_mat[2, 1:3] <- NA # V2: 3/5 missing, should be removed
+  SummarizedExperiment::assay(exp)[1, 1] <- NA # V1: 1/5 missing
+  SummarizedExperiment::assay(exp)[2, 1:3] <- NA # V2: 3/5 missing, should be removed
 
   suppressMessages(res <- remove_rare(exp))
-  expect_equal(res$expr_mat, exp$expr_mat[-2, ])
-  expect_equal(res$var_info$variable, c("V1", "V3", "V4", "V5"))
+  expect_equal(
+    SummarizedExperiment::assay(res),
+    SummarizedExperiment::assay(exp)[-2, ]
+  )
+  expect_equal(rownames(res), c("V1", "V3", "V4", "V5"))
 })
 
 
 test_that("remove_rare: filtering with by (strict = FALSE) works", {
   exp <- simple_exp(4, 6)
-  exp$sample_info$group <- c("A", "A", "A", "B", "B", "B")
+  SummarizedExperiment::colData(exp)$group <- c("A", "A", "A", "B", "B", "B")
   # V1: missing in group A, should be kept
-  exp$expr_mat[1, 1:3] <- NA
+  SummarizedExperiment::assay(exp)[1, 1:3] <- NA
   # V2: 2 missings in both groups, should be removed
-  exp$expr_mat[2, c(1, 2, 4, 5)] <- NA
+  SummarizedExperiment::assay(exp)[2, c(1, 2, 4, 5)] <- NA
 
   suppressMessages(res <- remove_rare(exp, by = "group", strict = FALSE))
-  expect_equal(res$expr_mat, exp$expr_mat[-2, ])
-  expect_equal(res$var_info$variable, c("V1", "V3", "V4"))
+  expect_equal(
+    SummarizedExperiment::assay(res),
+    SummarizedExperiment::assay(exp)[-2, ]
+  )
+  expect_equal(rownames(res), c("V1", "V3", "V4"))
 })
 
 
 test_that("remove_rare: filtering with by (strict = TRUE) works", {
   exp <- simple_exp(4, 6)
-  exp$sample_info$group <- c("A", "A", "A", "B", "B", "B")
+  SummarizedExperiment::colData(exp)$group <- c("A", "A", "A", "B", "B", "B")
   # V1: missing in group A, should be removed
-  exp$expr_mat[1, 1:3] <- NA
+  SummarizedExperiment::assay(exp)[1, 1:3] <- NA
   # V2: 2 missings in both groups, should be removed
-  exp$expr_mat[2, c(1, 2, 4, 5)] <- NA
+  SummarizedExperiment::assay(exp)[2, c(1, 2, 4, 5)] <- NA
 
   suppressMessages(res <- remove_rare(exp, by = "group", strict = TRUE))
-  expect_equal(res$expr_mat, exp$expr_mat[c(3, 4), ])
-  expect_equal(res$var_info$variable, c("V3", "V4"))
+  expect_equal(
+    SummarizedExperiment::assay(res),
+    SummarizedExperiment::assay(exp)[c(3, 4), ]
+  )
+  expect_equal(rownames(res), c("V3", "V4"))
 })
 
 
@@ -69,35 +84,35 @@ test_that("remove_rare: filtering with by (strict = TRUE) works", {
 test_that("remove_rare: default min_n calculation works correctly", {
   # Test with 2 samples (min_n should be 2)
   exp <- simple_exp(3, 2)
-  exp$expr_mat[1, 1] <- NA # V1: 1 non-missing (should be removed)
-  exp$expr_mat[2, ] <- NA # V2: 0 non-missing (should be removed)
+  SummarizedExperiment::assay(exp)[1, 1] <- NA # V1: 1 non-missing (should be removed)
+  SummarizedExperiment::assay(exp)[2, ] <- NA # V2: 0 non-missing (should be removed)
   # V3: 2 non-missing (should be kept)
 
   suppressMessages(res <- remove_rare(exp, prop = 1)) # prop = 1 means no prop filtering
-  expect_equal(res$var_info$variable, "V3")
+  expect_equal(rownames(res), "V3")
 
   # Test with 4 samples (min_n should be 3)
   exp <- simple_exp(4, 4)
-  exp$expr_mat[1, 1] <- NA # V1: 3 non-missing (should be kept)
-  exp$expr_mat[2, 1:2] <- NA # V2: 2 non-missing (should be removed)
-  exp$expr_mat[3, 1:3] <- NA # V3: 1 non-missing (should be removed)
+  SummarizedExperiment::assay(exp)[1, 1] <- NA # V1: 3 non-missing (should be kept)
+  SummarizedExperiment::assay(exp)[2, 1:2] <- NA # V2: 2 non-missing (should be removed)
+  SummarizedExperiment::assay(exp)[3, 1:3] <- NA # V3: 1 non-missing (should be removed)
   # V4: 4 non-missing (should be kept)
 
   suppressMessages(res <- remove_rare(exp, prop = 1)) # prop = 1 means no prop filtering
-  expect_equal(res$var_info$variable, c("V1", "V4"))
+  expect_equal(rownames(res), c("V1", "V4"))
 })
 
 
 test_that("remove_rare: custom min_n works correctly", {
   exp <- simple_exp(4, 5)
-  exp$expr_mat[1, 1] <- NA # V1: 4 non-missing
-  exp$expr_mat[2, 1:2] <- NA # V2: 3 non-missing
-  exp$expr_mat[3, 1:3] <- NA # V3: 2 non-missing
+  SummarizedExperiment::assay(exp)[1, 1] <- NA # V1: 4 non-missing
+  SummarizedExperiment::assay(exp)[2, 1:2] <- NA # V2: 3 non-missing
+  SummarizedExperiment::assay(exp)[3, 1:3] <- NA # V3: 2 non-missing
   # V4: 5 non-missing
 
   # With min_n = 4, only V1 and V4 should be kept
   suppressMessages(res <- remove_rare(exp, prop = 1, min_n = 4))
-  expect_equal(res$var_info$variable, c("V1", "V4"))
+  expect_equal(rownames(res), c("V1", "V4"))
 })
 
 
@@ -111,15 +126,15 @@ test_that("remove_rare: min_n validation works", {
 
 test_that("remove_rare: min_n with grouping works correctly", {
   exp <- simple_exp(4, 6)
-  exp$sample_info$group <- c("A", "A", "A", "B", "B", "B")
+  SummarizedExperiment::colData(exp)$group <- c("A", "A", "A", "B", "B", "B")
 
   # V1: 2 non-missing in A, 3 non-missing in B
-  exp$expr_mat[1, 1] <- NA
+  SummarizedExperiment::assay(exp)[1, 1] <- NA
   # V2: 1 non-missing in A, 2 non-missing in B
-  exp$expr_mat[2, 1:2] <- NA
-  exp$expr_mat[2, 4] <- NA
+  SummarizedExperiment::assay(exp)[2, 1:2] <- NA
+  SummarizedExperiment::assay(exp)[2, 4] <- NA
   # V3: 0 non-missing in A, 3 non-missing in B
-  exp$expr_mat[3, 1:3] <- NA
+  SummarizedExperiment::assay(exp)[3, 1:3] <- NA
   # V4: 3 non-missing in A, 3 non-missing in B (no NAs)
 
   # With default min_n (3 for each group), strict = FALSE
@@ -130,7 +145,7 @@ test_that("remove_rare: min_n with grouping works correctly", {
   suppressMessages(
     res <- remove_rare(exp, by = "group", prop = 1, strict = FALSE)
   )
-  expect_equal(res$var_info$variable, c("V1", "V3", "V4"))
+  expect_equal(rownames(res), c("V1", "V3", "V4"))
 
   # With strict = TRUE, remove if fails in any group
   # V1: fails in A -> remove
@@ -140,13 +155,13 @@ test_that("remove_rare: min_n with grouping works correctly", {
   suppressMessages(
     res <- remove_rare(exp, by = "group", prop = 1, strict = TRUE)
   )
-  expect_equal(res$var_info$variable, "V4")
+  expect_equal(rownames(res), "V4")
 })
 
 
 test_that("remove_rare: min_n validation with grouping works", {
   exp <- simple_exp(3, 6)
-  exp$sample_info$group <- c("A", "A", "B", "B", "B", "B") # Group A: 2 samples, Group B: 4 samples
+  SummarizedExperiment::colData(exp)$group <- c("A", "A", "B", "B", "B", "B") # Group A: 2 samples, Group B: 4 samples
 
   # min_n = 3 should fail for group A (only 2 samples)
   expect_error(remove_rare(exp, by = "group", min_n = 3))
@@ -155,14 +170,14 @@ test_that("remove_rare: min_n validation with grouping works", {
 
 test_that("remove_rare: min_n overrides prop filtering", {
   exp <- simple_exp(3, 4)
-  exp$expr_mat[1, 1] <- NA # V1: 3 non-missing, 25% missing
-  exp$expr_mat[2, 1:2] <- NA # V2: 2 non-missing, 50% missing
+  SummarizedExperiment::assay(exp)[1, 1] <- NA # V1: 3 non-missing, 25% missing
+  SummarizedExperiment::assay(exp)[2, 1:2] <- NA # V2: 2 non-missing, 50% missing
   # V3: 4 non-missing, 0% missing
 
   # With prop = 0.5 alone, V1 and V3 would be kept
   # But with min_n = 4, only V3 should be kept
   suppressMessages(res <- remove_rare(exp, prop = 0.5, min_n = 4))
-  expect_equal(res$var_info$variable, "V3")
+  expect_equal(rownames(res), "V3")
 })
 
 test_that("remove_rare works with factor by parameter", {
@@ -170,12 +185,12 @@ test_that("remove_rare works with factor by parameter", {
   test_exp <- complex_exp()
 
   # Introduce some missing values
-  test_exp$expr_mat[1, 1] <- NA
-  test_exp$expr_mat[2, 2] <- NA
-  test_exp$expr_mat[3, 5] <- NA
+  SummarizedExperiment::assay(test_exp)[1, 1] <- NA
+  SummarizedExperiment::assay(test_exp)[2, 2] <- NA
+  SummarizedExperiment::assay(test_exp)[3, 5] <- NA
 
   # Create a factor for grouping (matching the complex_exp structure)
-  group_factor <- factor(test_exp$sample_info$group)
+  group_factor <- factor(SummarizedExperiment::colData(test_exp)$group)
 
   # Apply filtering with factor by parameter
   suppressMessages(
@@ -187,8 +202,11 @@ test_that("remove_rare works with factor by parameter", {
     )
   )
 
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_true(nrow(result_exp$expr_mat) <= nrow(test_exp$expr_mat))
+  expect_glyco_se(result_exp)
+  expect_true(
+    nrow(SummarizedExperiment::assay(result_exp)) <=
+      nrow(SummarizedExperiment::assay(test_exp))
+  )
 })
 
 test_that("remove_rare works with character vector by parameter", {
@@ -196,12 +214,12 @@ test_that("remove_rare works with character vector by parameter", {
   test_exp <- complex_exp()
 
   # Introduce some missing values
-  test_exp$expr_mat[1, 1:3] <- NA # More missing values in one group
+  SummarizedExperiment::assay(test_exp)[1, 1:3] <- NA # More missing values in one group
 
   # Create a character vector for grouping
   group_vector <- rep(
     c("GroupA", "GroupB"),
-    length.out = ncol(test_exp$expr_mat)
+    length.out = ncol(SummarizedExperiment::assay(test_exp))
   )
 
   # Apply filtering with vector by parameter
@@ -214,8 +232,11 @@ test_that("remove_rare works with character vector by parameter", {
     )
   )
 
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_true(nrow(result_exp$expr_mat) <= nrow(test_exp$expr_mat))
+  expect_glyco_se(result_exp)
+  expect_true(
+    nrow(SummarizedExperiment::assay(result_exp)) <=
+      nrow(SummarizedExperiment::assay(test_exp))
+  )
 })
 
 test_that("remove_rare by parameter validation works", {
@@ -229,18 +250,21 @@ test_that("remove_rare by parameter validation works", {
   )
 
   # Test with correct length numeric vector
-  numeric_vector <- rep(c(1, 2), length.out = ncol(test_exp$expr_mat))
+  numeric_vector <- rep(
+    c(1, 2),
+    length.out = ncol(SummarizedExperiment::assay(test_exp))
+  )
   suppressMessages(
     result_exp <- remove_rare(test_exp, by = numeric_vector, prop = 0.5)
   )
-  expect_s3_class(result_exp, "glyexp_experiment")
+  expect_glyco_se(result_exp)
 })
 
 test_that("remove_rare: column name vs factor comparison", {
   # Create experiment with group column and missing values
   test_exp <- complex_exp()
-  test_exp$expr_mat[1, 1:2] <- NA
-  test_exp$expr_mat[2, 4:6] <- NA
+  SummarizedExperiment::assay(test_exp)[1, 1:2] <- NA
+  SummarizedExperiment::assay(test_exp)[2, 4:6] <- NA
 
   # Filter using column name
   suppressMessages(
@@ -253,7 +277,7 @@ test_that("remove_rare: column name vs factor comparison", {
   )
 
   # Filter using factor directly
-  group_factor <- factor(test_exp$sample_info$group)
+  group_factor <- factor(SummarizedExperiment::colData(test_exp)$group)
   suppressMessages(
     result_by_factor <- remove_rare(
       test_exp,
@@ -264,8 +288,14 @@ test_that("remove_rare: column name vs factor comparison", {
   )
 
   # Results should be identical
-  expect_equal(result_by_name$expr_mat, result_by_factor$expr_mat)
-  expect_equal(result_by_name$var_info, result_by_factor$var_info)
+  expect_equal(
+    SummarizedExperiment::assay(result_by_name),
+    SummarizedExperiment::assay(result_by_factor)
+  )
+  expect_equal(
+    SummarizedExperiment::rowData(result_by_name),
+    SummarizedExperiment::rowData(result_by_factor)
+  )
 })
 
 test_that("rare-variable matrix filter works", {
@@ -447,47 +477,56 @@ test_that("remove_rare parameter validation edge cases", {
 
   # Test prop = 0 (no missing values allowed)
   suppressMessages(result <- remove_rare(exp, prop = 0))
-  expect_s3_class(result, "glyexp_experiment")
+  expect_glyco_se(result)
 
   # Test prop = 1 (all missing values allowed)
   suppressMessages(result <- remove_rare(exp, prop = 1))
-  expect_s3_class(result, "glyexp_experiment")
+  expect_glyco_se(result)
 
   # Test n = 0 (no missing values allowed)
   suppressMessages(result <- remove_rare(exp, n = 0))
-  expect_s3_class(result, "glyexp_experiment")
+  expect_glyco_se(result)
 
   # Test with min_n = 1
   suppressMessages(result <- remove_rare(exp, min_n = 1))
-  expect_s3_class(result, "glyexp_experiment")
+  expect_glyco_se(result)
 })
 
 test_that("remove_rare with complex grouping scenarios", {
   # Create experiment with unbalanced groups
   exp <- simple_exp(5, 8)
-  exp$sample_info$group <- c("A", "A", "B", "B", "B", "C", "C", "C")
+  SummarizedExperiment::colData(exp)$group <- c(
+    "A",
+    "A",
+    "B",
+    "B",
+    "B",
+    "C",
+    "C",
+    "C"
+  )
 
   # Create specific missing patterns
-  exp$expr_mat[1, c(1, 3, 6)] <- NA # Missing in different groups
-  exp$expr_mat[2, c(1, 2)] <- NA # Missing only in group A
-  exp$expr_mat[3, c(3, 4, 5)] <- NA # Missing only in group B
-  exp$expr_mat[4, c(6, 7, 8)] <- NA # Missing only in group C
+  SummarizedExperiment::assay(exp)[1, c(1, 3, 6)] <- NA # Missing in different groups
+  SummarizedExperiment::assay(exp)[2, c(1, 2)] <- NA # Missing only in group A
+  SummarizedExperiment::assay(exp)[3, c(3, 4, 5)] <- NA # Missing only in group B
+  SummarizedExperiment::assay(exp)[4, c(6, 7, 8)] <- NA # Missing only in group C
 
   # Test with various combinations
   suppressMessages(
     result1 <- remove_rare(exp, by = "group", prop = 0.4, strict = FALSE)
   )
-  expect_s3_class(result1, "glyexp_experiment")
+  expect_glyco_se(result1)
 
   suppressMessages(
     result2 <- remove_rare(exp, by = "group", prop = 0.4, strict = TRUE)
   )
-  expect_s3_class(result2, "glyexp_experiment")
+  expect_glyco_se(result2)
 
   suppressMessages(
     result3 <- remove_rare(exp, by = "group", n = 1, strict = FALSE)
   )
-  expect_s3_class(result3, "glyexp_experiment")
+  expect_glyco_se(result3)
 })
 
 test_that("rare-variable matrix filter validates inputs", {
@@ -515,15 +554,15 @@ test_that("low-variance matrix filter works", {
   expect_equal(rownames(result), c("V2", "V3"))
 })
 
-test_that("remove_low_var works with experiment input", {
+test_that("remove_low_var works with GlycomicSE input", {
   exp <- simple_exp(3, 3)
-  exp$expr_mat[1, ] <- 1 # the first variable has zero variance
+  SummarizedExperiment::assay(exp)[1, ] <- 1 # the first variable has zero variance
 
   suppressMessages(result <- remove_low_var(exp))
-  expected_mat <- exp$expr_mat[-1, ]
-  expected_var_info <- exp$var_info[-1, ]
-  expect_equal(result$expr_mat, expected_mat)
-  expect_equal(result$var_info, expected_var_info)
+  expected_mat <- SummarizedExperiment::assay(exp)[-1, ]
+  expected_var_info <- SummarizedExperiment::rowData(exp)[-1, , drop = FALSE]
+  expect_equal(SummarizedExperiment::assay(result), expected_mat)
+  expect_equal(SummarizedExperiment::rowData(result), expected_var_info)
 })
 
 test_that("remove_low_var respects var_cutoff", {
@@ -848,15 +887,15 @@ test_that("low-CV matrix filter works", {
   expect_equal(rownames(result), c("V2", "V3"))
 })
 
-test_that("remove_low_cv works with experiment input", {
+test_that("remove_low_cv works with GlycomicSE input", {
   exp <- simple_exp(3, 3)
-  exp$expr_mat[1, ] <- 1 # zero CV
+  SummarizedExperiment::assay(exp)[1, ] <- 1 # zero CV
 
   suppressMessages(result <- remove_low_cv(exp))
-  expected_mat <- exp$expr_mat[-1, ]
-  expected_var_info <- exp$var_info[-1, ]
-  expect_equal(result$expr_mat, expected_mat)
-  expect_equal(result$var_info, expected_var_info)
+  expected_mat <- SummarizedExperiment::assay(exp)[-1, ]
+  expected_var_info <- SummarizedExperiment::rowData(exp)[-1, , drop = FALSE]
+  expect_equal(SummarizedExperiment::assay(result), expected_mat)
+  expect_equal(SummarizedExperiment::rowData(result), expected_var_info)
 })
 
 test_that("remove_low_cv respects cv_cutoff", {
@@ -1063,15 +1102,15 @@ test_that("remove_low_cv handles NaN and Inf gracefully", {
 
 test_that("remove_constant works", {
   exp <- simple_exp(3, 3)
-  exp$expr_mat[1, ] <- 1
+  SummarizedExperiment::assay(exp)[1, ] <- 1
 
   suppressMessages(res <- remove_constant(exp))
 
-  expect_s3_class(res, "glyexp_experiment")
-  expect_equal(rownames(res$expr_mat), c("V2", "V3"))
+  expect_glyco_se(res)
+  expect_equal(rownames(SummarizedExperiment::assay(res)), c("V2", "V3"))
 })
 
-test_that("removal functions require glyexp experiments", {
+test_that("removal functions reject inputs outside supported containers", {
   funcs <- list(
     remove_rare,
     remove_low_var,
@@ -1115,27 +1154,27 @@ test_that("low-expression matrix filter retains type and dimnames", {
   expect_identical(rownames(res), c("r3", "r4"))
 })
 
-test_that("remove_low_expr filters glyexp_experiment while preserving class", {
+test_that("remove_low_expr filters GlycomicSE while preserving class", {
   exp <- simple_exp(4, 4)
-  exp$expr_mat[1, ] <- c(0, 1, 2, 3)
-  exp$expr_mat[2, ] <- c(2, 2, 2, 2)
-  exp$expr_mat[3, ] <- c(5, 5, 5, 5)
-  exp$expr_mat[4, ] <- c(9, 9, 9, 9)
+  SummarizedExperiment::assay(exp)[1, ] <- c(0, 1, 2, 3)
+  SummarizedExperiment::assay(exp)[2, ] <- c(2, 2, 2, 2)
+  SummarizedExperiment::assay(exp)[3, ] <- c(5, 5, 5, 5)
+  SummarizedExperiment::assay(exp)[4, ] <- c(9, 9, 9, 9)
 
   suppressMessages(res <- remove_low_expr(exp, percentile = 0.5))
 
-  expect_s3_class(res, "glyexp_experiment")
-  expect_identical(rownames(res$expr_mat), c("V3", "V4"))
-  expect_identical(res$var_info$variable, c("V3", "V4"))
+  expect_glyco_se(res)
+  expect_identical(rownames(SummarizedExperiment::assay(res)), c("V3", "V4"))
+  expect_identical(rownames(res), c("V3", "V4"))
 })
 
 test_that("remove_low_expr by column name or vector gives identical results", {
   exp <- simple_exp(4, 6)
-  exp$sample_info$group <- rep(c("A", "B", "C"), each = 2)
-  exp$expr_mat[1, ] <- c(1, 1, 9, 9, 9, 9)
-  exp$expr_mat[2, ] <- c(2, 2, 2, 2, 2, 2)
-  exp$expr_mat[3, ] <- c(3, 3, 3, 3, 3, 3)
-  exp$expr_mat[4, ] <- c(10, 10, 10, 10, 10, 10)
+  SummarizedExperiment::colData(exp)$group <- rep(c("A", "B", "C"), each = 2)
+  SummarizedExperiment::assay(exp)[1, ] <- c(1, 1, 9, 9, 9, 9)
+  SummarizedExperiment::assay(exp)[2, ] <- c(2, 2, 2, 2, 2, 2)
+  SummarizedExperiment::assay(exp)[3, ] <- c(3, 3, 3, 3, 3, 3)
+  SummarizedExperiment::assay(exp)[4, ] <- c(10, 10, 10, 10, 10, 10)
 
   suppressMessages(
     res_by_name <- remove_low_expr(
@@ -1149,13 +1188,19 @@ test_that("remove_low_expr by column name or vector gives identical results", {
     res_by_vec <- remove_low_expr(
       exp,
       percentile = 0.4,
-      by = exp$sample_info$group,
+      by = SummarizedExperiment::colData(exp)$group,
       strict = TRUE
     )
   )
 
-  expect_identical(res_by_name$expr_mat, res_by_vec$expr_mat)
-  expect_identical(res_by_name$var_info, res_by_vec$var_info)
+  expect_identical(
+    SummarizedExperiment::assay(res_by_name),
+    SummarizedExperiment::assay(res_by_vec)
+  )
+  expect_identical(
+    SummarizedExperiment::rowData(res_by_name),
+    SummarizedExperiment::rowData(res_by_vec)
+  )
 })
 
 test_that("remove_low_expr errors on non-numeric inputs", {
