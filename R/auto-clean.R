@@ -20,8 +20,8 @@
 #' - [auto_normalize()]
 #' - [auto_correct_batch_effect()]
 #'
-#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
-#'   [glyexp::experiment()] containing glycomics or glycoproteomics data.
+#' @param exp A [glyexp::experiment()] containing glycoproteomics or
+#'   glycomics data.
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
 #' @param batch_col The column name in sample_info for batches. Default is "batch".
@@ -52,7 +52,7 @@
 #'   after aggregation. Set to `FALSE` to skip network calls for faster testing.
 #'   Default is `TRUE`.
 #'
-#' @return A preprocessed object with the same container type as `exp`.
+#' @return A modified `glyexp::experiment()` object.
 #'
 #' @examples
 #' library(glyexp)

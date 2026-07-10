@@ -5,8 +5,7 @@
 #' Rows (variables) are sorted by missing value proportion from low to high.
 #' Columns (samples) are clustered using hierarchical clustering.
 #'
-#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
-#'   [glyexp::experiment()].
+#' @param exp A [glyexp::experiment()] object.
 #' @param ... Other arguments passed to `pheatmap::pheatmap()`.
 #'
 #' @returns A ggplot object of the missing value heatmap.
@@ -53,7 +52,7 @@ plot_missing_heatmap <- function(exp, ...) {
 #' Draw a bar plot of missing value proportions for each sample or variable.
 #' Items are ordered from low to high missing proportion.
 #'
-#' @param exp A supported glyco SE or legacy experiment container.
+#' @param exp A [glyexp::experiment()] object.
 #' @param on Whether to plot missingness by `"sample(s)"` or `"variable(s)"`.
 #'   Defaults to `"sample"`.
 #'
@@ -100,7 +99,7 @@ plot_missing_bar <- function(exp, on = "sample") {
 #' Draw a bar plot showing total intensity (TIC) for each sample. Samples are
 #' ordered from high to low TIC from left to right.
 #'
-#' @param exp A supported glyco SE or legacy experiment container.
+#' @param exp A [glyexp::experiment()] object.
 #'
 #' @returns A ggplot object of total intensity by sample.
 #'
@@ -134,7 +133,7 @@ plot_tic_bar <- function(exp) {
 #' Draw a scatter plot of proteins ranked by mean log2 intensity.
 #' Proteins are ordered from high to low mean intensity along the x-axis.
 #'
-#' @param exp A supported glyco SE or legacy experiment container.
+#' @param exp A [glyexp::experiment()] object.
 #'
 #' @returns A ggplot object of protein rank abundance.
 #'
@@ -197,7 +196,7 @@ plot_rank_abundance <- function(exp) {
 #' Draw boxplots of log2-transformed intensities for each sample.
 #' Optionally color and group samples by a metadata variable.
 #'
-#' @param exp A supported glyco SE or legacy experiment container.
+#' @param exp A [glyexp::experiment()] object.
 #' @param by Grouping variable for samples. Can be a column name in `sample_info`
 #'   or a vector/factor with length equal to the number of samples. When provided,
 #'   samples are grouped along the x-axis and boxplots are colored by group.
@@ -249,7 +248,7 @@ plot_int_boxplot <- function(exp, by = NULL) {
 #' Draw boxplots of relative log expression (log2 intensity minus row median)
 #' for each sample. Optionally color and group samples by a metadata variable.
 #'
-#' @param exp A supported glyco SE or legacy experiment container.
+#' @param exp A [glyexp::experiment()] object.
 #' @param by Grouping variable for samples. Can be a column name in `sample_info`
 #'   or a vector/factor with length equal to the number of samples. When provided,
 #'   samples are grouped along the x-axis and boxplots are colored by group.
@@ -304,7 +303,7 @@ plot_rle <- function(exp, by = NULL) {
 #' When `by` is provided, CVs are computed within each group and densities are
 #' shown with different fills.
 #'
-#' @param exp A supported glyco SE or legacy experiment container.
+#' @param exp A [glyexp::experiment()] object.
 #' @param by Grouping variable for samples. Can be a column name in `sample_info`
 #'   or a vector/factor with length equal to the number of samples. When provided,
 #'   CVs are computed within each group and densities are shown with different fills.
@@ -377,7 +376,7 @@ plot_cv_dent <- function(exp, by = NULL) {
 #' PCA is computed on log2-transformed intensities after removing variables
 #' with missing values.
 #'
-#' @param exp A supported glyco SE or legacy experiment container.
+#' @param exp A [glyexp::experiment()] object.
 #' @param batch_col Column name in `sample_info`, or a factor/vector with length
 #'   equal to the number of samples.
 #'
@@ -454,7 +453,7 @@ plot_batch_pca <- function(exp, batch_col = "batch") {
 #' Randomly draw replicate sample pairs and plot log2 intensity scatter plots.
 #' The plot title shows sample names, and the subtitle reports the R2 value.
 #'
-#' @param exp A supported glyco SE or legacy experiment container.
+#' @param exp A [glyexp::experiment()] object.
 #' @param rep_col Column name in `sample_info` used to define replicate groups.
 #'   Samples with the same value in this column are treated as replicates
 #'   (e.g. `c("A", "A", "A", "B", "B", "B")` indicates three replicates for

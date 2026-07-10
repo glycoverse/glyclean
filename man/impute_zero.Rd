@@ -7,11 +7,10 @@
 impute_zero(x)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
-\code{\link[glyexp:experiment]{glyexp::experiment()}}.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 }
 \value{
-The input container type with missing values imputed.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed.
 }
 \description{
 Impute missing values in an expression matrix by replacing them with zeros.

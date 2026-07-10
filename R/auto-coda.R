@@ -8,8 +8,8 @@
 #' @inheritSection transform_clr Algorithmic details
 #' @inheritSection transform_clr Motif quantification
 #'
-#' @returns The input container type with a CoDA-transformed expression matrix
-#'   (ALR if >50 variables, CLR otherwise).
+#' @returns A [glyexp::experiment()] object with a CoDA-transformed expression
+#'   matrix (ALR if >50 variables, CLR otherwise).
 #' @export
 auto_coda <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
   .assert_glyclean_container(x)

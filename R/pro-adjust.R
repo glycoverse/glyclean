@@ -26,14 +26,13 @@
 #'
 #' In both methods, only glycoproteins identified in both `exp` and `pro_expr_mat` will be retained.
 #'
-#' @param exp A [glyexp::GlycoproteomicSE()] or a legacy
-#'   glycoproteomics [glyexp::experiment()] object.
+#' @param exp A [glyexp::experiment()] object with "glycoproteomics" type.
 #' @param pro_expr_mat A matrix of protein expression.
 #'  Columns are samples, rows are uniprot protein accessions.
 #' @param method The method to use for protein adjustment.
 #'  Either "ratio" or "reg". Default is "ratio".
 #'
-#' @return The input container type with adjusted protein expression.
+#' @return A [glyexp::experiment()] object with adjusted protein expression.
 #' @export
 #'
 #' @importFrom rlang .data
@@ -51,8 +50,8 @@ adjust_protein.glyexp_experiment <- function(
   .adjust_protein_experiment(exp, pro_expr_mat = pro_expr_mat, method = method)
 }
 
-#' @rdname adjust_protein
 #' @export
+#' @noRd
 adjust_protein.GlycomicSE <- function(
   exp,
   pro_expr_mat,
@@ -61,8 +60,8 @@ adjust_protein.GlycomicSE <- function(
   .adjust_protein_experiment(exp, pro_expr_mat = pro_expr_mat, method = method)
 }
 
-#' @rdname adjust_protein
 #' @export
+#' @noRd
 adjust_protein.GlycoproteomicSE <- function(
   exp,
   pro_expr_mat,

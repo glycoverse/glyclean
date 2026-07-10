@@ -7,8 +7,7 @@
 detect_batch_effect(x, batch = "batch", group = NULL)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
-\code{\link[glyexp:experiment]{glyexp::experiment()}}.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{batch}{Either a factor/character vector specifying batch assignments for each sample,
 or a string specifying the column name in \code{sample_info}. Defaults to "batch".}
@@ -21,7 +20,7 @@ Default to NULL.}
 }
 \value{
 A double vector of p-values for each variable, with the same length
-as the number of rows in the input assay.
+as \code{nrow(glyexp::get_expr_mat(x))}.
 }
 \description{
 Use ANOVA to detect if batch effect is present in the data.

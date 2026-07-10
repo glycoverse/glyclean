@@ -7,7 +7,7 @@
 impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
 }
 \arguments{
-\item{x}{A supported glyco SE or legacy experiment container.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
 specifying group assignments for each sample. Used for grouping when imputing missing values.}
@@ -22,7 +22,7 @@ left-censored draw distribution. Default is \code{1}.}
 supported.}
 }
 \value{
-The input container type with missing values imputed.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed.
 }
 \description{
 Impute missing values using random draws from the left-censored

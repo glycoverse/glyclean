@@ -32,8 +32,7 @@
 #' On the other hand, the "peptide" column is removed for "gf" level,
 #' as one "glycoform" can contain multiple "peptides".
 #'
-#' @param exp A [glyexp::GlycoproteomicSE()] or a legacy
-#'   glycoproteomics [glyexp::experiment()] object.
+#' @param exp A [glyexp::experiment()] object with "glycoproteomics" type.
 #' @param to_level The aggregation level,
 #'   one of: "gf" (glycoforms), "gp" (glycopeptides),
 #'   "gfs" (glycoforms with structures),
@@ -42,7 +41,7 @@
 #' @param standardize_variable Whether to call [glyexp::standardize_variable()]
 #'   after aggregation. Set to `FALSE` to skip network calls for faster testing.
 #'   Default is `TRUE`.
-#' @returns The input container type with an aggregated expression matrix and
+#' @returns A modified [glyexp::experiment()] object with aggregated expression matrix and
 #'   updated variable information.
 #' @export
 aggregate <- function(
@@ -80,8 +79,8 @@ glyclean_aggregate.glyexp_experiment <- function(
   )
 }
 
-#' @rdname aggregate
 #' @export
+#' @noRd
 glyclean_aggregate.GlycomicSE <- function(
   exp,
   to_level = c("gf", "gp", "gfs", "gps"),
@@ -95,8 +94,8 @@ glyclean_aggregate.GlycomicSE <- function(
   )
 }
 
-#' @rdname aggregate
 #' @export
+#' @noRd
 glyclean_aggregate.GlycoproteomicSE <- function(
   exp,
   to_level = c("gf", "gp", "gfs", "gps"),

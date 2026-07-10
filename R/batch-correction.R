@@ -21,13 +21,7 @@
 #' the group information will be included in the model to preserve biological variation
 #' while correcting for batch effects.
 #'
-#' Because glyco SE abundance assays must be non-negative, negative corrected
-#' values are set to zero for [glyexp::GlycomicSE()] and
-#' [glyexp::GlycoproteomicSE()] inputs. Legacy [glyexp::experiment()] behavior
-#' is unchanged.
-#'
-#' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
-#'   [glyexp::experiment()].
+#' @param x A [glyexp::experiment()] object.
 #' @param batch Either a factor/character vector specifying batch assignments for each sample,
 #'   or a string specifying the column name in `sample_info`. Defaults to "batch".
 #' @param group Either a factor/character vector specifying group assignments for each sample,
@@ -42,7 +36,7 @@
 #' @param method The batch correction method to use. Either "combat" (default, uses
 #'   sva::ComBat) or "limma" (uses limma::removeBatchEffect). Default to "combat".
 #'
-#' @return The input container type with batch effects corrected.
+#' @return A [glyexp::experiment()] object with batch effects corrected.
 #'
 #' @examples
 #' # With glyexp_experiment and column names
@@ -109,8 +103,7 @@ correct_batch_effect <- function(
 #' Use ANOVA to detect if batch effect is present in the data.
 #' If `group` is provided, it will be used as a covariate in the ANOVA model.
 #'
-#' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
-#'   [glyexp::experiment()].
+#' @param x A [glyexp::experiment()] object.
 #' @param batch Either a factor/character vector specifying batch assignments for each sample,
 #'   or a string specifying the column name in `sample_info`. Defaults to "batch".
 #' @param group Either a factor/character vector specifying group assignments for each sample,
@@ -120,7 +113,7 @@ correct_batch_effect <- function(
 #'   Default to NULL.
 #'
 #' @returns A double vector of p-values for each variable, with the same length
-#'   as the number of rows in the input assay.
+#'   as `nrow(glyexp::get_expr_mat(x))`.
 #'
 #' @examples
 #' # With glyexp_experiment and column names

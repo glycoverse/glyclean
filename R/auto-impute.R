@@ -17,8 +17,7 @@
 #' fallback. [impute_sample_min()] and [impute_half_sample_min()] remain
 #' available for manual use, but they are not selected automatically.
 #'
-#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
-#'   [glyexp::experiment()].
+#' @param exp An [glyexp::experiment()].
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
 #' @param qc_name `r lifecycle::badge("deprecated")` This function no longer uses QC sample information.
@@ -27,7 +26,7 @@
 #'   This parameter is no longer used and will be removed in a future release.
 #'   The automatic strategy is now deterministic and does not require user-specified methods to try.
 #'
-#' @returns The imputed object with the same container type as `exp`.
+#' @returns The imputed experiment.
 #' @examples
 #' library(glyexp)
 #' exp_imputed <- auto_impute(real_experiment)

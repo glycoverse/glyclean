@@ -7,8 +7,7 @@
 auto_normalize(exp, group_col = "group", qc_name = "QC", to_try = NULL)
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
-\code{\link[glyexp:experiment]{glyexp::experiment()}}.}
+\item{exp}{An \code{\link[glyexp:experiment]{glyexp::experiment()}}.}
 
 \item{group_col}{The column name in sample_info for groups. Default is "group".
 Can be NULL when no group information is available.}
@@ -23,7 +22,7 @@ The automatic strategy is now deterministic and does not require
 user-specified methods to try.}
 }
 \value{
-The normalized object with the same container type as \code{exp}.
+The normalized experiment.
 }
 \description{
 This function automatically applies a deterministic default normalization

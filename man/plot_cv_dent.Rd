@@ -7,7 +7,7 @@
 plot_cv_dent(exp, by = NULL)
 }
 \arguments{
-\item{exp}{A supported glyco SE or legacy experiment container.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{by}{Grouping variable for samples. Can be a column name in \code{sample_info}
 or a vector/factor with length equal to the number of samples. When provided,

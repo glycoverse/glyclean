@@ -7,7 +7,7 @@
 plot_rep_scatter(exp, rep_col, n_pairs = 9)
 }
 \arguments{
-\item{exp}{A supported glyco SE or legacy experiment container.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{rep_col}{Column name in \code{sample_info} used to define replicate groups.
 Samples with the same value in this column are treated as replicates

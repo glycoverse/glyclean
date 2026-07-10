@@ -9,8 +9,7 @@
 #' - "biomarker": more strict, remove variables with more than 40% missing values,
 #'   and ensure less than 60% of missing values in all groups.
 #'
-#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
-#'   [glyexp::experiment()].
+#' @param exp A glyexp_experiment object.
 #' @param preset One of "simple", "discovery", or "biomarker".
 #'   Default "discovery" if group information is available, otherwise "simple".
 #' @param group_col The column name in sample_info for groups. Default is "group".
@@ -18,7 +17,7 @@
 #' @param qc_name `r lifecycle::badge("deprecated")` This function no longer uses QC sample information.
 #'   This parameter is ignored and will be removed in a future release.
 #'
-#' @returns The filtered object with the same container type as `exp`.
+#' @returns A modified [glyexp::experiment()] object.
 #'
 #' @examples
 #' library(glyexp)

@@ -3,8 +3,6 @@
 \name{add_site_seq}
 \alias{add_site_seq}
 \alias{add_site_seq.glyexp_experiment}
-\alias{add_site_seq.GlycomicSE}
-\alias{add_site_seq.GlycoproteomicSE}
 \alias{add_site_seq.default}
 \title{Add site-specific sequence information.}
 \usage{
@@ -12,15 +10,10 @@ add_site_seq(exp, fasta = NULL, n_aa = 7, taxid = 9606)
 
 \method{add_site_seq}{glyexp_experiment}(exp, fasta = NULL, n_aa = 7, taxid = 9606)
 
-\method{add_site_seq}{GlycomicSE}(exp, fasta = NULL, n_aa = 7, taxid = 9606)
-
-\method{add_site_seq}{GlycoproteomicSE}(exp, fasta = NULL, n_aa = 7, taxid = 9606)
-
 \method{add_site_seq}{default}(exp, fasta = NULL, n_aa = 7, taxid = 9606)
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} or a legacy
-glycoproteomics \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with "glycoproteomics" type.}
 
 \item{fasta}{Either a file path to a FASTA file, a named character vector
 with protein IDs as names and sequences as value, or \code{NULL} to fetch from UniProt.}
@@ -31,7 +24,7 @@ For example, if \code{n_aa = 5}, the resulting sequence will contain 11 amino ac
 \item{taxid}{NCBI taxonomy ID for UniProt lookup. Default: \code{9606} (human).}
 }
 \value{
-The input container type with the new \code{site_sequence} column.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with the new "site_sequence" column.
 }
 \description{
 This function adds a new "site_sequence" column to the variable information table.

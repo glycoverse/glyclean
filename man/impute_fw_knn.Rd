@@ -7,7 +7,7 @@
 impute_fw_knn(x, k = 5, by = NULL, ...)
 }
 \arguments{
-\item{x}{A supported glyco SE or legacy experiment container.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{k}{The number of nearest neighbors to consider.}
 
@@ -17,7 +17,7 @@ specifying group assignments for each sample. Used for grouping when imputing mi
 \item{...}{Additional arguments to pass to \code{impute::impute.knn()}.}
 }
 \value{
-The input container type with missing values imputed.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed.
 }
 \description{
 A wrapper around the \code{\link[impute:impute.knn]{impute::impute.knn()}}.

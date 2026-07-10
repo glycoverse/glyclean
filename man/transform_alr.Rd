@@ -7,8 +7,7 @@
 transform_alr(x, by = NULL, gamma = 0.1, group_scales = NULL)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
-\code{\link[glyexp:experiment]{glyexp::experiment()}}.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} or a factor/vector with one
 value per sample.}
@@ -22,7 +21,7 @@ first, or two positive scales from which that ratio is derived. For
 multi-group data, provide a positive vector with one scale per group.}
 }
 \value{
-The input container type with an ALR-transformed expression
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with an ALR-transformed expression
 matrix.
 When ALR succeeds, the reference glycan is excluded from the result and the
 output therefore has one fewer row than the input. When ALR falls back to

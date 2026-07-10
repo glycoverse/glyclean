@@ -7,7 +7,7 @@
 plot_rank_abundance(exp)
 }
 \arguments{
-\item{exp}{A supported glyco SE or legacy experiment container.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 }
 \value{
 A ggplot object of protein rank abundance.

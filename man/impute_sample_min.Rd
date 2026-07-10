@@ -7,10 +7,10 @@
 impute_sample_min(x)
 }
 \arguments{
-\item{x}{A supported glyco SE or legacy experiment container.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 }
 \value{
-The input container type with missing values imputed.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed.
 }
 \description{
 Impute missing values with the minimum value of the corresponding sample.

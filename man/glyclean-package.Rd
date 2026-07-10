@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Provides comprehensive data preprocessing tools for glycomics and glycoproteomics experiments. The package offers both automated and manual preprocessing pipelines, including normalization (median, quantile, vsn, total area), missing value handling (filtering, imputation using various methods), batch effect correction (using ComBat and other methods), data aggregation (at peptide, glycan, or site level), and quality control functions. The automated pipeline intelligently selects appropriate methods based on data characteristics and sample size, making it easy to prepare clean, analysis-ready data for downstream statistical analysis within the glycoverse ecosystem. Natively supports 'glyexp::GlycomicSE' and 'glyexp::GlycoproteomicSE' objects while retaining compatibility with 'glyexp::experiment()' objects.
+Provides comprehensive data preprocessing tools for glycomics and glycoproteomics experiments. The package offers both automated and manual preprocessing pipelines, including normalization (median, quantile, vsn, total area), missing value handling (filtering, imputation using various methods), batch effect correction (using ComBat and other methods), data aggregation (at peptide, glycan, or site level), and quality control functions. The automated pipeline intelligently selects appropriate methods based on data characteristics and sample size, making it easy to prepare clean, analysis-ready data for downstream statistical analysis within the glycoverse ecosystem. Works seamlessly with 'glyexp::experiment()' objects to ensure data consistency and interoperability.
 }
 \seealso{
 Useful links:

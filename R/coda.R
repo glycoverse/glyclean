@@ -46,8 +46,7 @@
 #' dea_res <- glystats::gly_ttest(coda_motif_exp)
 #' ```
 #'
-#' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
-#'   [glyexp::experiment()].
+#' @param x A [glyexp::experiment()] object.
 #' @param by Either a column name in `sample_info` or a factor/vector with one
 #'   value per sample.
 #' @param gamma Standard deviation of the scale-uncertainty model on the `log2`
@@ -57,7 +56,7 @@
 #'   first, or two positive scales from which that ratio is derived. For
 #'   multi-group data, provide a positive vector with one scale per group.
 #'
-#' @return The input container type with a transformed expression matrix.
+#' @return A [glyexp::experiment()] object with a transformed expression matrix.
 #'   The returned values are back-transformed to the original ratio space.
 #'   Zeros in the input therefore remain zeros in the output.
 #' @export
@@ -83,7 +82,7 @@ transform_clr <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
 #'
 #' @inheritParams transform_clr
 #'
-#' @return The input container type with an ALR-transformed expression
+#' @return A [glyexp::experiment()] object with an ALR-transformed expression
 #'   matrix.
 #'   When ALR succeeds, the reference glycan is excluded from the result and the
 #'   output therefore has one fewer row than the input. When ALR falls back to

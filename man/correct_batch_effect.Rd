@@ -14,8 +14,7 @@ correct_batch_effect(
 )
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
-\code{\link[glyexp:experiment]{glyexp::experiment()}}.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{batch}{Either a factor/character vector specifying batch assignments for each sample,
 or a string specifying the column name in \code{sample_info}. Defaults to "batch".}
@@ -36,7 +35,7 @@ Only used when \code{check_confounding} is TRUE. Default to 0.4.}
 sva::ComBat) or "limma" (uses limma::removeBatchEffect). Default to "combat".}
 }
 \value{
-The input container type with batch effects corrected.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with batch effects corrected.
 }
 \description{
 Correct batch effects in glycoproteomics/glycomics data using ComBat algorithm
@@ -57,11 +56,6 @@ to avoid over-correction.
 When both batch and group information are available and not highly confounded,
 the group information will be included in the model to preserve biological variation
 while correcting for batch effects.
-
-Because glyco SE abundance assays must be non-negative, negative corrected
-values are set to zero for \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
-\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} inputs. Legacy \code{\link[glyexp:experiment]{glyexp::experiment()}} behavior
-is unchanged.
 }
 \examples{
 # With glyexp_experiment and column names

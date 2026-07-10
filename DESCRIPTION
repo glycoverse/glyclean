@@ -14,9 +14,8 @@ Description:
     functions. The automated pipeline intelligently selects appropriate methods 
     based on data characteristics and sample size, making it easy to prepare 
     clean, analysis-ready data for downstream statistical analysis within the 
-    glycoverse ecosystem. Natively supports 'glyexp::GlycomicSE' and
-    'glyexp::GlycoproteomicSE' objects while retaining compatibility with
-    'glyexp::experiment()' objects.
+    glycoverse ecosystem. Works seamlessly with 'glyexp::experiment()' objects
+    to ensure data consistency and interoperability.
 License: MIT + file LICENSE
 Suggests:
     testthat (>= 3.2.0),

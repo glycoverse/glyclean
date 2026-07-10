@@ -7,8 +7,7 @@
 remove_rare(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
-\code{\link[glyexp:experiment]{glyexp::experiment()}}.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{prop}{The proportion of missing values to use as a threshold.
 Variables with missing values above this threshold will be removed.
@@ -35,7 +34,7 @@ to be kept. If \code{NULL} (default), it is calculated dynamically:
 }}
 }
 \value{
-The input container type with filtered variables.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with filtered variables.
 }
 \description{
 Remove Rare Variables with Too Many Missing Values

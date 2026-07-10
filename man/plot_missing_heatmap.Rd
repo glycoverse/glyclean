@@ -7,8 +7,7 @@
 plot_missing_heatmap(exp, ...)
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
-\code{\link[glyexp:experiment]{glyexp::experiment()}}.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{...}{Other arguments passed to \code{pheatmap::pheatmap()}.}
 }

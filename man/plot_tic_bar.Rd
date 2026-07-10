@@ -7,7 +7,7 @@
 plot_tic_bar(exp)
 }
 \arguments{
-\item{exp}{A supported glyco SE or legacy experiment container.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 }
 \value{
 A ggplot object of total intensity by sample.

@@ -10,8 +10,7 @@
 #' - `glycoproteomics`: [normalize_median()].
 #' - missing or other experiment types: [normalize_median()].
 #'
-#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
-#'   [glyexp::experiment()].
+#' @param exp An [glyexp::experiment()].
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
 #' @param qc_name `r lifecycle::badge("deprecated")` This function no longer
@@ -22,7 +21,7 @@
 #'   The automatic strategy is now deterministic and does not require
 #'   user-specified methods to try.
 #'
-#' @returns The normalized object with the same container type as `exp`.
+#' @returns The normalized experiment.
 #' @examples
 #' library(glyexp)
 #' exp_normed <- auto_normalize(real_experiment)

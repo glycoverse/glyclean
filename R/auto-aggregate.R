@@ -4,13 +4,12 @@
 #' if the glycan structure column exists,
 #' otherwise to "gf" (glycoforms with compositions) level.
 #'
-#' @param exp A [glyexp::GlycoproteomicSE()] or a legacy
-#'   glycoproteomics [glyexp::experiment()] object.
+#' @param exp A [glyexp::experiment()] object with "glycoproteomics" type.
 #' @param standardize_variable Whether to call [glyexp::standardize_variable()]
 #'   after aggregation. Set to `FALSE` to skip network calls for faster testing.
 #'   Default is `TRUE`.
 #'
-#' @returns The input container type with an aggregated expression matrix and
+#' @returns A modified [glyexp::experiment()] object with aggregated expression matrix and
 #'   updated variable information.
 #'
 #' @examples

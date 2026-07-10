@@ -31,10 +31,8 @@ Meet `glyclean` – your Swiss Army knife for glycoproteomics and glycomics data
 This package provides a comprehensive toolkit that takes the guesswork out of data cleaning,
 with specialized methods designed specifically for the unique challenges of glycan analysis.
 
-**Important Note:** This package natively supports `glyexp::GlycomicSE` and
-`glyexp::GlycoproteomicSE` objects, while retaining support for legacy
-`glyexp::experiment()` objects.
-If you're new to these data structures,
+**Important Note:** This package is primarily designed for `glyexp::experiment()` objects.
+If you're new to this data structure,
 we highly recommend checking out [its introduction](https://glycoverse.github.io/glyexp/articles/glyexp.html) first.
 We'll also be using the [glyread](https://github.com/glycoverse/glyread) package to load our data – 
 it's the go-to tool in the `glycoverse` ecosystem.
@@ -48,22 +46,22 @@ library(glyrepr)  # for printing glycan compositions and structures
 ## Meet Our Star Player: Real Glycoproteomics Data 🌟
 
 Let's dive in with a real-world dataset that will showcase what `glyclean` can do.
-We'll convert the example dataset to a native `glyexp::GlycoproteomicSE` object.
+We'll use `glyread::read_pglyco3_pglycoquant()` to load our data into a proper `glyexp::experiment()` object.
 
 ```{r}
-exp <- as_glycoproteomic_se(real_experiment)
-SummarizedExperiment::colData(exp)$batch <- factor(rep(c("A", "B", "C"), 4))
+exp <- real_experiment |>
+  mutate_obs(batch = factor(rep(c("A", "B", "C"), 4)))
 exp
 ```
 
 Let's peek under the hood and see what we're working with:
 
 ```{r}
-SummarizedExperiment::rowData(exp)
+get_var_info(exp)
 ```
 
 ```{r}
-SummarizedExperiment::colData(exp)
+get_sample_info(exp)
 ```
 
 What we have here is a beautiful N-glycoproteomics dataset featuring 500 PSMs (Peptide Spectrum Matches) across 12 samples.
@@ -98,14 +96,14 @@ Here is a simplified version of the function:
 ```r
 auto_clean <- function(exp, ...) {
   # ... are other arguments, see documentation for more details
-  if (glyexp::is_glycoproteomic_se(exp)) {
+  if (glyexp::get_exp_type(exp) == "glycoproteomics") {
     exp <- auto_normalize(exp, ...)
     exp <- auto_remove(exp, ...)
     exp <- auto_impute(exp, ...)
     exp <- auto_aggregate(exp)
     exp <- auto_normalize(exp, ...)
     exp <- auto_correct_batch_effect(exp, ...)
-  } else if (glyexp::is_glycomic_se(exp)) {
+  } else if (glyexp::get_exp_type(exp) == "glycomics") {
     exp <- auto_remove(exp, ...)
     exp <- auto_impute(exp, ...)
     exp <- auto_normalize(exp, ...)
@@ -353,8 +351,8 @@ adjusted_exp <- adjust_protein(inferred_exp, pro_expr_mat)
 - Sample matching needs to be perfect – no mixing apples with oranges!
 
 **Pro Tip:** 
-Wrap protein expression data in a supported glyco SE or legacy experiment
-container before using `glyclean` preprocessing functions. Consistency is key!
+Wrap protein expression data in a `glyexp::experiment()` object before using
+`glyclean` preprocessing functions. Consistency is key!
 
 ### 🎉 Mission Accomplished!
 
@@ -400,9 +398,8 @@ Perfect for complex experimental designs or external grouping criteria!
 | `plot_batch_pca()` | PCA score plot by batch | Visualizing batch effects and sample clustering |
 | `plot_rep_scatter()` | Replicate scatter plots | Checking concordance between replicate samples |
 
-These functions accept `glyexp::GlycomicSE`, `glyexp::GlycoproteomicSE`, and
-legacy `glyexp::experiment()` objects and provide consistent, high-quality
-visualizations using `ggplot2`.
+These functions are designed to work seamlessly with `glyexp::experiment()` objects and provide consistent,
+high-quality visualizations using `ggplot2`.
 
 For example, you can use `plot_missing_heatmap()` to visualize the missing values in your data before and after cleaning:
 

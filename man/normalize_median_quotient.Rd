@@ -7,14 +7,14 @@
 normalize_median_quotient(x, by = NULL)
 }
 \arguments{
-\item{x}{A supported glyco SE or legacy experiment container.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
 specifying group assignments for each sample. Optional.
 If provided, the normalization will be performed within each group.}
 }
 \value{
-The input container type with a normalized expression matrix.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with a normalized expression matrix.
 }
 \description{
 This approach is based on the calculation of the dilution factor of each

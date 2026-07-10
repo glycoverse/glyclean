@@ -15,10 +15,9 @@
 #' It effectively and robustly removes the bias introduced by total protein abundance,
 #' and removes batch effects in part.
 #'
-#' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
-#'   [glyexp::experiment()].
+#' @param x A [glyexp::experiment()] object.
 #'
-#' @return The input container type with a normalized expression matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_median <- function(x) {
   .update_expr_mat(x, .normalize_median)
@@ -30,9 +29,9 @@ normalize_median <- function(x) {
 #' Normalize the expression matrix by dividing each column (sample) by the absolute
 #' median of that column (NA ignored), so that the absolute median of each column is 1.
 #'
-#' @param x A supported glyco SE or legacy experiment container.
+#' @param x A [glyexp::experiment()] object.
 #'
-#' @return The input container type with a normalized expression matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_median_abs <- function(x) {
   .update_expr_mat(x, .normalize_median_abs)
@@ -48,9 +47,9 @@ normalize_median_abs <- function(x) {
 #' However, it results in compositional data, which may result in unrealistic
 #' downstream analysis results.
 #'
-#' @param x A supported glyco SE or legacy experiment container.
+#' @param x A [glyexp::experiment()] object.
 #'
-#' @return The input container type with a normalized expression matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_total_area <- function(x) {
   .update_expr_mat(x, .normalize_total_area)
@@ -66,13 +65,13 @@ normalize_total_area <- function(x) {
 #' See [wikipedia](https://en.wikipedia.org/wiki/Quantile_normalization)
 #' for more information.
 #'
-#' @param x A supported glyco SE or legacy experiment container.
+#' @param x A [glyexp::experiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
 #' @param ... Additional arguments to pass to [limma::normalizeQuantiles()].
 #'
-#' @return The input container type with a normalized expression matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_quantile <- function(x, by = NULL, ...) {
   .update_expr_mat(x, .normalize_quantile, by = by, ...)
@@ -88,13 +87,13 @@ normalize_quantile <- function(x, by = NULL, ...) {
 #' See [this paper](https://doi.org/10.1093/bib/bbw095) for more information.
 #' Also see [limma::normalizeCyclicLoess()].
 #'
-#' @param x A supported glyco SE or legacy experiment container.
+#' @param x A [glyexp::experiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
 #' @param ... Additional arguments to pass to [limma::normalizeCyclicLoess()].
 #'
-#' @return The input container type with a normalized expression matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_loessf <- function(x, by = NULL, ...) {
   .update_expr_mat(x, .normalize_loessf, by = by, ...)
@@ -109,13 +108,13 @@ normalize_loessf <- function(x, by = NULL, ...) {
 #' See [this paper](https://doi.org/10.1093/bib/bbw095) for more information.
 #' Also see [limma::normalizeCyclicLoess()].
 #'
-#' @param x A supported glyco SE or legacy experiment container.
+#' @param x A [glyexp::experiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
 #' @param ... Additional arguments to pass to [limma::normalizeCyclicLoess()].
 #'
-#' @return The input container type with a normalized expression matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_loesscyc <- function(x, by = NULL, ...) {
   .update_expr_mat(x, .normalize_loesscyc, by = by, ...)
@@ -137,13 +136,13 @@ normalize_loesscyc <- function(x, by = NULL, ...) {
 #' At least 42 variables should be provided for this method.
 #' This follows the convention of the `vsn` package.
 #'
-#' @param x A supported glyco SE or legacy experiment container.
+#' @param x A [glyexp::experiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
 #' @param ... Additional arguments to pass to [limma::normalizeVSN()].
 #'
-#' @return The input container type with a normalized expression matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_vsn <- function(x, by = NULL, ...) {
   .update_expr_mat(x, .normalize_vsn, by = by, ...)
@@ -164,12 +163,12 @@ normalize_vsn <- function(x, by = NULL, ...) {
 #' in the collected samples.
 #' See [this paper](https://dx.doi.org/10.1021/ac051632c) for more information.
 #'
-#' @param x A supported glyco SE or legacy experiment container.
+#' @param x A [glyexp::experiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
 #'
-#' @return The input container type with a normalized expression matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_median_quotient <- function(x, by = NULL) {
   .update_expr_mat(x, .normalize_median_quotient, by = by)
@@ -187,12 +186,12 @@ normalize_median_quotient <- function(x, by = NULL) {
 #' observed across individuals are imputable to diﬀerent amounts of the biological
 #' material in the collected samples.
 #'
-#' @param x A supported glyco SE or legacy experiment container.
+#' @param x A [glyexp::experiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
 #'
-#' @return The input container type with a normalized expression matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_rlr <- function(x, by = NULL) {
   .update_expr_mat(x, .normalize_rlr, by = by)
@@ -206,12 +205,12 @@ normalize_rlr <- function(x, by = NULL) {
 #' is subtracted from the sample's abundance values. Then, it's like the
 #' [normalize_rlr()] method.
 #'
-#' @param x A supported glyco SE or legacy experiment container.
+#' @param x A [glyexp::experiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
 #'
-#' @return The input container type with a normalized expression matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_rlrma <- function(x, by = NULL) {
   .update_expr_mat(x, .normalize_rlrma, by = by)
@@ -228,13 +227,13 @@ normalize_rlrma <- function(x, by = NULL) {
 #' is then used to normalize the two samples. The process is repeated for a
 #' number of iterations.
 #'
-#' @param x A supported glyco SE or legacy experiment container.
+#' @param x A [glyexp::experiment()] object.
 #' @param n_iter The number of iterations to perform. Default is 3.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
 #'
-#' @return The input container type with a normalized expression matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_rlrmacyc <- function(x, n_iter = 3, by = NULL) {
   .update_expr_mat(x, .normalize_rlrmacyc, by = by, n_iter = n_iter)

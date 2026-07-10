@@ -2,8 +2,7 @@
 
 #' Remove Rare Variables with Too Many Missing Values
 #'
-#' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
-#'   [glyexp::experiment()].
+#' @param x A [glyexp::experiment()] object.
 #' @param prop The proportion of missing values to use as a threshold.
 #' Variables with missing values above this threshold will be removed.
 #' Defaults to 0.5.
@@ -50,7 +49,7 @@
 #'
 #' @importFrom rlang .data
 #'
-#' @return The input container type with filtered variables.
+#' @return A [glyexp::experiment()] object with filtered variables.
 #' @export
 remove_rare <- function(
   x,
@@ -285,13 +284,13 @@ remove_rare <- function(
 #' Filters variables whose variance falls below a threshold.
 #' Default behavior is to remove variables with zero variance.
 #'
-#' @param x A supported glyco SE or legacy experiment container.
+#' @param x A [glyexp::experiment()] object.
 #' @param var_cutoff The cutoff for variance. Defaults to 0.
 #' @param by A factor specifying the groupings. Defaults to NULL.
 #' @param strict If `FALSE`, remove a variable only if it passes the variance threshold in all groups.
 #'   If `TRUE`, remove a variable if it passes the variance threshold in any group.
 #'
-#' @returns The input container type with filtered variables.
+#' @returns A [glyexp::experiment()] object with filtered variables.
 #'
 #' @seealso [remove_low_cv()], [remove_constant()]
 #' @export
@@ -340,13 +339,13 @@ remove_low_var <- function(x, var_cutoff = 0, by = NULL, strict = FALSE) {
 #' Filters variables whose coefficient of variation falls below a threshold.
 #' Default behavior is to remove variables with zero coefficient of variation.
 #'
-#' @param x A supported glyco SE or legacy experiment container.
+#' @param x A [glyexp::experiment()] object.
 #' @param cv_cutoff The cutoff for coefficient of variation. Defaults to 0.
 #' @param by A factor specifying the groupings. Defaults to NULL.
 #' @param strict If `FALSE`, remove a variable only if it passes the coefficient of variation threshold in all groups.
 #'   If `TRUE`, remove a variable if it passes the coefficient of variation threshold in any group.
 #'
-#' @returns The input container type with filtered variables.
+#' @returns A [glyexp::experiment()] object with filtered variables.
 #'
 #' @seealso [remove_low_var()]
 #' @export
@@ -429,12 +428,12 @@ remove_low_cv <- function(x, cv_cutoff = 0, by = NULL, strict = FALSE) {
 #' Constant variables are variables with the same value in all samples.
 #' This function is equivalent to `remove_low_var(x, var_cutoff = 0, by = by, strict = strict)`.
 #'
-#' @param x A supported glyco SE or legacy experiment container.
+#' @param x A [glyexp::experiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a vector specifying group assignments for each sample.
 #' @param strict If `FALSE`, remove a variable only if it is constant in all groups.
 #'   If `TRUE`, remove a variable if it is constant in any group. Defaults to FALSE.
 #'
-#' @returns The input container type with filtered variables.
+#' @returns A [glyexp::experiment()] object with filtered variables.
 #'
 #' @seealso [remove_low_var()]
 #' @export
@@ -449,14 +448,14 @@ remove_constant <- function(x, by = NULL, strict = FALSE) {
 #' Filters variables based on median expression values.
 #' Variables with median expression values below certain percentile will be removed.
 #'
-#' @param x A supported glyco SE or legacy experiment container.
+#' @param x A [glyexp::experiment()] object.
 #' @param percentile The percentile for median expression values.
 #'   Defaults to 0.05, i.e., the 5% lowest median expression values will be removed.
 #' @param by Either a column name in `sample_info` (string) or a vector specifying group assignments for each sample.
 #' @param strict If `FALSE`, remove a variable only if it passes the abundance thresholds in all groups.
 #'   If `TRUE`, remove a variable if it passes the abundance thresholds in any group. Defaults to FALSE.
 #'
-#' @returns The input container type with filtered variables.
+#' @returns A [glyexp::experiment()] object with filtered variables.
 #' @export
 remove_low_expr <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
   .filter_exp(x, by, strict, .filter_matrix_low_expr, percentile = percentile)

@@ -7,10 +7,10 @@
 normalize_median_abs(x)
 }
 \arguments{
-\item{x}{A supported glyco SE or legacy experiment container.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 }
 \value{
-The input container type with a normalized expression matrix.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with a normalized expression matrix.
 }
 \description{
 Normalize the expression matrix by dividing each column (sample) by the absolute
