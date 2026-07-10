@@ -298,7 +298,14 @@
     return(glyexp::standardize_variable(x))
   }
 
-  standardized <- glyexp::standardize_variable(glyexp::from_se(x))
+  metadata <- .get_container_metadata(x)
+  standardized <- glyexp::standardize_variable(
+    glyexp::from_se(
+      x,
+      exp_type = .get_exp_type(x),
+      glycan_type = metadata$glycan_type
+    )
+  )
   if (glyexp::is_glycomic_se(x)) {
     glyexp::as_glycomic_se(standardized)
   } else {
