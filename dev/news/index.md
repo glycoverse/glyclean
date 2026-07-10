@@ -4,6 +4,20 @@
 
 ### Breaking changes
 
+- Deprecated automatic-preprocessing arguments have been removed:
+  `qc_name` from
+  [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md),
+  [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md),
+  [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md),
+  and
+  [`auto_remove()`](https://glycoverse.github.io/glyclean/dev/reference/auto_remove.md);
+  `to_try` from
+  [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
+  and
+  [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md);
+  and `impute_to_try` and `normalize_to_try` from
+  [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md).
+  (#20)
 - Normalization, imputation, filtering, CoDA, and batch-correction
   functions now require a
   [`glyexp::GlycomicSE`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),

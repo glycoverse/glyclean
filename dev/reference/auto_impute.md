@@ -8,7 +8,7 @@ used to benchmark or select the imputation method.
 ## Usage
 
 ``` r
-auto_impute(exp, group_col = "group", qc_name = "QC", to_try = NULL)
+auto_impute(exp, group_col = "group")
 ```
 
 ## Arguments
@@ -22,17 +22,6 @@ auto_impute(exp, group_col = "group", qc_name = "QC", to_try = NULL)
 
   The column name in sample_info for groups. Default is "group". Can be
   NULL when no group information is available.
-
-- qc_name:
-
-  **\[deprecated\]** This function no longer uses QC sample information.
-  This parameter is ignored and will be removed in a future release.
-
-- to_try:
-
-  **\[deprecated\]** This parameter is no longer used and will be
-  removed in a future release. The automatic strategy is now
-  deterministic and does not require user-specified methods to try.
 
 ## Value
 

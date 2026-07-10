@@ -37,9 +37,6 @@ auto_clean(
   exp,
   group_col = "group",
   batch_col = "batch",
-  qc_name = "QC",
-  normalize_to_try = NULL,
-  impute_to_try = NULL,
   remove_preset = "discovery",
   batch_prop_threshold = 0.3,
   check_batch_confounding = TRUE,
@@ -65,22 +62,6 @@ auto_clean(
 
   The column name in sample_info for batches. Default is "batch". Can be
   NULL when no batch information is available.
-
-- qc_name:
-
-  **\[deprecated\]** This function no longer uses QC sample information.
-  This parameter is ignored and will be removed in a future release.
-
-- normalize_to_try:
-
-  **\[deprecated\]** This parameter is no longer used and will be
-  removed in a future release. The automatic normalization strategy is
-  now deterministic and does not require user-specified methods to try.
-
-- impute_to_try:
-
-  **\[deprecated\]** This parameter is no longer used and will be
-  removed in a future release.
 
 - remove_preset:
 
