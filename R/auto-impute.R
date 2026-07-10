@@ -20,11 +20,6 @@
 #' @param exp An [glyexp::experiment()].
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
-#' @param qc_name `r lifecycle::badge("deprecated")` This function no longer uses QC sample information.
-#'   This parameter is ignored and will be removed in a future release.
-#' @param to_try `r lifecycle::badge("deprecated")`
-#'   This parameter is no longer used and will be removed in a future release.
-#'   The automatic strategy is now deterministic and does not require user-specified methods to try.
 #'
 #' @returns The imputed experiment.
 #' @examples
@@ -33,28 +28,11 @@
 #' @export
 auto_impute <- function(
   exp,
-  group_col = "group",
-  qc_name = "QC",
-  to_try = NULL
+  group_col = "group"
 ) {
   # Check arguments
   .assert_glyclean_container(exp)
   checkmate::assert_string(group_col, null.ok = TRUE)
-
-  if (!identical(qc_name, "QC")) {
-    lifecycle::deprecate_warn(
-      when = "0.14.0",
-      what = "auto_impute(qc_name)",
-      details = "This function no longer uses QC sample information and the `qc_name` parameter will be removed in a future release."
-    )
-  }
-  if (!is.null(to_try)) {
-    lifecycle::deprecate_warn(
-      when = "0.14.0",
-      what = "auto_impute(to_try)",
-      details = "The automatic imputation strategy is now deterministic and does not require user-specified methods to try. The `to_try` parameter will be removed in a future release."
-    )
-  }
 
   .auto_impute_default(exp)
 }

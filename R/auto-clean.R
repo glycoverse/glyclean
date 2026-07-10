@@ -26,15 +26,6 @@
 #'   Can be NULL when no group information is available.
 #' @param batch_col The column name in sample_info for batches. Default is "batch".
 #'   Can be NULL when no batch information is available.
-#' @param qc_name `r lifecycle::badge("deprecated")` This function no longer
-#'   uses QC sample information.
-#'   This parameter is ignored and will be removed in a future release.
-#' @param normalize_to_try `r lifecycle::badge("deprecated")`
-#'   This parameter is no longer used and will be removed in a future release.
-#'   The automatic normalization strategy is now deterministic and does not
-#'   require user-specified methods to try.
-#' @param impute_to_try `r lifecycle::badge("deprecated")`
-#'   This parameter is no longer used and will be removed in a future release.
 #' @param remove_preset The preset for removing variables. Default is "discovery".
 #'   Available presets:
 #'   - "simple": remove variables with more than 50% missing values.
@@ -65,9 +56,6 @@ auto_clean <- function(
   exp,
   group_col = "group",
   batch_col = "batch",
-  qc_name = "QC",
-  normalize_to_try = NULL,
-  impute_to_try = NULL,
   remove_preset = "discovery",
   batch_prop_threshold = 0.3,
   check_batch_confounding = TRUE,
@@ -87,30 +75,6 @@ auto_clean <- function(
       "The experiment type must be {.val glycoproteomics} or {.val glycomics}.",
       "x" = "Got {.val {exp_type}}."
     ))
-  }
-
-  if (!is.null(normalize_to_try)) {
-    lifecycle::deprecate_warn(
-      when = "0.14.0",
-      what = "auto_clean(normalize_to_try)",
-      details = "The automatic normalization strategy is now deterministic and does not require user-specified methods to try. The `normalize_to_try` parameter will be removed in a future release."
-    )
-  }
-
-  if (!is.null(impute_to_try)) {
-    lifecycle::deprecate_warn(
-      when = "0.14.0",
-      what = "auto_clean(impute_to_try)",
-      details = "The automatic imputation strategy is now deterministic and does not require user-specified methods to try. The `impute_to_try` parameter will be removed in a future release."
-    )
-  }
-
-  if (!identical(qc_name, "QC")) {
-    lifecycle::deprecate_warn(
-      when = "0.14.0",
-      what = "auto_clean(qc_name)",
-      details = "This function no longer uses QC sample information and the `qc_name` parameter will be removed in a future release."
-    )
   }
 
   params <- list(

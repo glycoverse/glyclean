@@ -59,7 +59,6 @@ Imports:
     forcats,
     stats,
     ggplot2,
-    lifecycle,
     sva,
     SummarizedExperiment,
     S4Vectors

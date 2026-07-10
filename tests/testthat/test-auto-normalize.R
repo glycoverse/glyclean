@@ -19,9 +19,7 @@ test_that("auto_normalize uses deterministic defaults with QC samples", {
   expect_snapshot(
     normed <- auto_normalize(
       exp,
-      group_col = "group",
-      qc_name = "QC",
-      to_try = list(normalize_median = function(x) stop("must not be called"))
+      group_col = "group"
     ),
     transform = sanitize_cv_snapshot
   )
@@ -30,21 +28,6 @@ test_that("auto_normalize uses deterministic defaults with QC samples", {
     SummarizedExperiment::assay(normed),
     SummarizedExperiment::assay(exp) * 2
   )
-})
-
-test_that("auto_normalize handles NULL qc_name", {
-  exp <- simple_exp(10, 10)
-  SummarizedExperiment::colData(exp)$group <- c(
-    rep("A", 4),
-    rep("B", 4),
-    rep("QC", 2)
-  )
-
-  expect_snapshot(
-    normed <- auto_normalize(exp, group_col = "group", qc_name = NULL),
-    transform = sanitize_cv_snapshot
-  )
-  expect_glyco_se(normed)
 })
 
 test_that("auto_normalize works for glycomics without QC", {

@@ -2,6 +2,7 @@
 
 ## Breaking changes
 
+* Deprecated automatic-preprocessing arguments have been removed: `qc_name` from `auto_clean()`, `auto_impute()`, `auto_normalize()`, and `auto_remove()`; `to_try` from `auto_impute()` and `auto_normalize()`; and `impute_to_try` and `normalize_to_try` from `auto_clean()`.
 * Normalization, imputation, filtering, CoDA, and batch-correction functions now require a `glyexp::GlycomicSE`, `glyexp::GlycoproteomicSE`, or legacy `glyexp::experiment()` object; matrix inputs error and should first be wrapped in a supported container. (#18, #19)
 
 ## New features

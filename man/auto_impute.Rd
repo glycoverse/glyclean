@@ -4,20 +4,13 @@
 \alias{auto_impute}
 \title{Automatic Imputation}
 \usage{
-auto_impute(exp, group_col = "group", qc_name = "QC", to_try = NULL)
+auto_impute(exp, group_col = "group")
 }
 \arguments{
 \item{exp}{An \code{\link[glyexp:experiment]{glyexp::experiment()}}.}
 
 \item{group_col}{The column name in sample_info for groups. Default is "group".
 Can be NULL when no group information is available.}
-
-\item{qc_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This function no longer uses QC sample information.
-This parameter is ignored and will be removed in a future release.}
-
-\item{to_try}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
-This parameter is no longer used and will be removed in a future release.
-The automatic strategy is now deterministic and does not require user-specified methods to try.}
 }
 \value{
 The imputed experiment.
