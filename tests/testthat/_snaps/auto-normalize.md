@@ -20,8 +20,8 @@
       The `qc_name` argument of `auto_normalize()` is deprecated as of glyclean 0.14.0.
       i This function no longer uses the `qc_name` parameter and it will be removed in a future release.
     Message
-      i Normalization method: `normalize_median()`
-      i Reason: default for "others".
+      i Normalization method: `normalize_total_area()`
+      i Reason: default for "glycomics".
 
 # auto_normalize works for glycoproteomics without QC
 

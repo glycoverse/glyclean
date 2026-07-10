@@ -5,9 +5,9 @@ test_that("auto_clean works for glycoproteomics data", {
     result_exp <- auto_clean(test_exp, standardize_variable = FALSE)
   )
 
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(glyexp::get_exp_type(result_exp), "glycoproteomics")
-  expect_false(any(is.na(result_exp$expr_mat)))
+  expect_glyco_se(result_exp)
+  expect_true(glyexp::is_glycoproteomic_se(result_exp))
+  expect_false(any(is.na(SummarizedExperiment::assay(result_exp))))
 })
 
 test_that("auto_clean works for glycoproteomics data with QC", {
@@ -17,19 +17,24 @@ test_that("auto_clean works for glycoproteomics data with QC", {
   # Add QC samples
   qc_mat <- matrix(rnorm(nrow(test_exp) * 2, mean = 10), ncol = 2)
   colnames(qc_mat) <- c("QC1", "QC2")
-  expr_mat <- cbind(test_exp$expr_mat, qc_mat)
+  expr_mat <- cbind(SummarizedExperiment::assay(test_exp), qc_mat)
 
   sample_info <- dplyr::bind_rows(
-    test_exp$sample_info,
+    tibble::as_tibble(
+      SummarizedExperiment::colData(test_exp),
+      rownames = "sample"
+    ),
     tibble::tibble(sample = c("QC1", "QC2"), group = "QC")
   ) |>
     dplyr::mutate(group = factor(group, levels = c("A", "B", "QC")))
 
-  test_exp <- glyexp::experiment(
+  test_exp <- test_glycoproteomic_se(
     expr_mat,
     sample_info,
-    test_exp$var_info,
-    exp_type = "glycoproteomics",
+    tibble::as_tibble(
+      SummarizedExperiment::rowData(test_exp),
+      rownames = "variable"
+    ),
     glycan_type = "N",
     check_col_types = FALSE
   )
@@ -39,9 +44,9 @@ test_that("auto_clean works for glycoproteomics data with QC", {
     transform = sanitize_cv_snapshot
   )
 
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(glyexp::get_exp_type(result_exp), "glycoproteomics")
-  expect_false(any(is.na(result_exp$expr_mat)))
+  expect_glyco_se(result_exp)
+  expect_true(glyexp::is_glycoproteomic_se(result_exp))
+  expect_false(any(is.na(SummarizedExperiment::assay(result_exp))))
 })
 
 test_that("auto_clean ignores deprecated qc_name", {
@@ -51,19 +56,24 @@ test_that("auto_clean ignores deprecated qc_name", {
   # Add QC samples
   qc_mat <- matrix(rnorm(nrow(test_exp) * 2, mean = 10), ncol = 2)
   colnames(qc_mat) <- c("QC1", "QC2")
-  expr_mat <- cbind(test_exp$expr_mat, qc_mat)
+  expr_mat <- cbind(SummarizedExperiment::assay(test_exp), qc_mat)
 
   sample_info <- dplyr::bind_rows(
-    test_exp$sample_info,
+    tibble::as_tibble(
+      SummarizedExperiment::colData(test_exp),
+      rownames = "sample"
+    ),
     tibble::tibble(sample = c("QC1", "QC2"), group = "QC")
   ) |>
     dplyr::mutate(group = factor(group, levels = c("A", "B", "QC")))
 
-  test_exp <- glyexp::experiment(
+  test_exp <- test_glycoproteomic_se(
     expr_mat,
     sample_info,
-    test_exp$var_info,
-    exp_type = "glycoproteomics",
+    tibble::as_tibble(
+      SummarizedExperiment::rowData(test_exp),
+      rownames = "variable"
+    ),
     glycan_type = "N",
     check_col_types = FALSE
   )
@@ -76,9 +86,9 @@ test_that("auto_clean ignores deprecated qc_name", {
     )
   )
 
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(glyexp::get_exp_type(result_exp), "glycoproteomics")
-  expect_false(any(is.na(result_exp$expr_mat)))
+  expect_glyco_se(result_exp)
+  expect_true(glyexp::is_glycoproteomic_se(result_exp))
+  expect_false(any(is.na(SummarizedExperiment::assay(result_exp))))
 })
 
 # Test main logic path for glycomics data
@@ -93,19 +103,18 @@ test_that("auto_clean works for glycomics data", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  test_exp <- glyexp::experiment(
+  test_exp <- test_glycomic_se(
     expr_mat,
     sample_info,
     var_info,
-    exp_type = "glycomics",
     glycan_type = "N"
   )
 
   expect_snapshot(result_exp <- auto_clean(test_exp))
 
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(glyexp::get_exp_type(result_exp), "glycomics")
-  expect_false(any(is.na(result_exp$expr_mat)))
+  expect_glyco_se(result_exp)
+  expect_true(glyexp::is_glycomic_se(result_exp))
+  expect_false(any(is.na(SummarizedExperiment::assay(result_exp))))
 })
 
 test_that("auto_clean works for glycomics data with QC", {
@@ -123,11 +132,10 @@ test_that("auto_clean works for glycomics data with QC", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  test_exp <- glyexp::experiment(
+  test_exp <- test_glycomic_se(
     expr_mat,
     sample_info,
     var_info,
-    exp_type = "glycomics",
     glycan_type = "N"
   )
 
@@ -136,9 +144,9 @@ test_that("auto_clean works for glycomics data with QC", {
     transform = sanitize_cv_snapshot
   )
 
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(glyexp::get_exp_type(result_exp), "glycomics")
-  expect_false(any(is.na(result_exp$expr_mat)))
+  expect_glyco_se(result_exp)
+  expect_true(glyexp::is_glycomic_se(result_exp))
+  expect_false(any(is.na(SummarizedExperiment::assay(result_exp))))
 })
 
 test_that("auto_clean forwards batch_col to batch correction", {
@@ -160,11 +168,10 @@ test_that("auto_clean forwards batch_col to batch correction", {
     expr_mat[i, ] <- rnorm(nrow(sample_info), mean = 10 + plate_effect, sd = 1)
   }
 
-  test_exp <- glyexp::experiment(
+  test_exp <- test_glycomic_se(
     expr_mat,
     sample_info,
     var_info,
-    exp_type = "glycomics",
     glycan_type = "N"
   )
 
@@ -184,7 +191,7 @@ test_that("auto_clean forwards batch_col to batch correction", {
   ))
 
   expect_false(isTRUE(all.equal(
-    result_with_batch$expr_mat,
-    result_without_batch$expr_mat
+    SummarizedExperiment::assay(result_with_batch),
+    SummarizedExperiment::assay(result_without_batch)
   )))
 })

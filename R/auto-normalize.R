@@ -33,7 +33,7 @@ auto_normalize <- function(
   to_try = NULL
 ) {
   # Check arguments
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
   checkmate::assert_string(group_col, null.ok = TRUE)
 
   if (!identical(qc_name, "QC")) {
@@ -56,12 +56,12 @@ auto_normalize <- function(
 
 #' Apply the deterministic automatic normalization strategy
 #'
-#' @param exp An [glyexp::experiment()].
+#' @param exp A supported glyclean container.
 #'
 #' @returns The normalized experiment.
 #' @noRd
 .auto_normalize_default <- function(exp) {
-  strategy <- .choose_auto_normalize_strategy(glyexp::get_exp_type(exp))
+  strategy <- .choose_auto_normalize_strategy(.get_exp_type(exp))
 
   cli::cli_alert_info(
     "Normalization method: {.fn {strategy$method_name}}"

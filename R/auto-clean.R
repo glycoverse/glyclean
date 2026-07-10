@@ -74,22 +74,18 @@ auto_clean <- function(
   batch_confounding_threshold = 0.4,
   standardize_variable = TRUE
 ) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
   checkmate::assert_string(group_col, null.ok = TRUE)
   checkmate::assert_string(batch_col, null.ok = TRUE)
   checkmate::assert_choice(remove_preset, c("simple", "discovery", "biomarker"))
   checkmate::assert_number(batch_prop_threshold, lower = 0, upper = 1)
   checkmate::assert_flag(check_batch_confounding)
   checkmate::assert_number(batch_confounding_threshold, lower = 0, upper = 1)
-  if (
-    !checkmate::test_choice(
-      glyexp::get_exp_type(exp),
-      c("glycoproteomics", "glycomics")
-    )
-  ) {
+  exp_type <- .get_exp_type(exp)
+  if (!checkmate::test_choice(exp_type, c("glycoproteomics", "glycomics"))) {
     cli::cli_abort(c(
       "The experiment type must be {.val glycoproteomics} or {.val glycomics}.",
-      "x" = "Got {.val {glyexp::get_exp_type(exp)}}."
+      "x" = "Got {.val {exp_type}}."
     ))
   }
 
@@ -127,7 +123,7 @@ auto_clean <- function(
     standardize_variable = standardize_variable
   )
   switch(
-    glyexp::get_exp_type(exp),
+    .get_exp_type(exp),
     glycoproteomics = .auto_clean_glycoproteomics(exp, params),
     glycomics = .auto_clean_glycomics(exp, params)
   )

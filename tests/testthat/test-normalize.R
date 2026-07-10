@@ -4,23 +4,35 @@ test_that("normalize_median works", {
   result_exp <- normalize_median(test_exp)
 
   # Check that the function returns the correct structure
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(dim(result_exp$expr_mat), dim(original_exp$expr_mat))
-  expect_equal(rownames(result_exp$expr_mat), rownames(original_exp$expr_mat))
-  expect_equal(colnames(result_exp$expr_mat), colnames(original_exp$expr_mat))
+  expect_glyco_se(result_exp)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result_exp)),
+    dim(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    rownames(SummarizedExperiment::assay(result_exp)),
+    rownames(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    colnames(SummarizedExperiment::assay(result_exp)),
+    colnames(SummarizedExperiment::assay(original_exp))
+  )
 
   # Check that median normalization has been applied correctly
   # After median normalization, each column should have the same median
-  col_medians <- apply(result_exp$expr_mat, 2, median)
+  col_medians <- apply(SummarizedExperiment::assay(result_exp), 2, median)
   expect_true(all(abs(diff(col_medians)) < 1e-10))
 })
 
 
 test_that("normalize_median raises warnings for NaNs", {
   test_exp <- simple_exp(3, 3)
-  test_exp$expr_mat <- matrix(0, nrow = 3, ncol = 3)
-  test_exp$expr_mat[1, ] <- 1
-  expect_warning(normalize_median(test_exp))
+  SummarizedExperiment::assay(test_exp)[] <- 0
+  SummarizedExperiment::assay(test_exp)[1, ] <- 1
+  expect_warning(
+    expect_warning(normalize_median(test_exp), "NaNs"),
+    "no non-missing arguments"
+  )
 })
 
 
@@ -30,14 +42,23 @@ test_that("normalize_median_abs works", {
   result_exp <- normalize_median_abs(test_exp)
 
   # Check that the function returns the correct structure
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(dim(result_exp$expr_mat), dim(original_exp$expr_mat))
-  expect_equal(rownames(result_exp$expr_mat), rownames(original_exp$expr_mat))
-  expect_equal(colnames(result_exp$expr_mat), colnames(original_exp$expr_mat))
+  expect_glyco_se(result_exp)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result_exp)),
+    dim(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    rownames(SummarizedExperiment::assay(result_exp)),
+    rownames(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    colnames(SummarizedExperiment::assay(result_exp)),
+    colnames(SummarizedExperiment::assay(original_exp))
+  )
 
   # Check that median absolute deviation normalization has been applied
   # After normalization, all columns should have similar scale
-  expect_true(all(is.finite(result_exp$expr_mat)))
+  expect_true(all(is.finite(SummarizedExperiment::assay(result_exp))))
 })
 
 
@@ -47,13 +68,24 @@ test_that("normalize_total_area works", {
   result_exp <- normalize_total_area(test_exp)
 
   # Check that the function returns the correct structure
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(dim(result_exp$expr_mat), dim(original_exp$expr_mat))
-  expect_equal(rownames(result_exp$expr_mat), rownames(original_exp$expr_mat))
-  expect_equal(colnames(result_exp$expr_mat), colnames(original_exp$expr_mat))
+  expect_glyco_se(result_exp)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result_exp)),
+    dim(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    rownames(SummarizedExperiment::assay(result_exp)),
+    rownames(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    colnames(SummarizedExperiment::assay(result_exp)),
+    colnames(SummarizedExperiment::assay(original_exp))
+  )
 
   # all column sums should be 1
-  expect_true(all(abs(colSums(result_exp$expr_mat) - 1) < 1e-10))
+  expect_true(all(
+    abs(colSums(SummarizedExperiment::assay(result_exp)) - 1) < 1e-10
+  ))
 })
 
 
@@ -63,14 +95,23 @@ test_that("normalize_quantile works", {
   result_exp <- normalize_quantile(test_exp)
 
   # Check that the function returns the correct structure
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(dim(result_exp$expr_mat), dim(original_exp$expr_mat))
-  expect_equal(rownames(result_exp$expr_mat), rownames(original_exp$expr_mat))
-  expect_equal(colnames(result_exp$expr_mat), colnames(original_exp$expr_mat))
+  expect_glyco_se(result_exp)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result_exp)),
+    dim(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    rownames(SummarizedExperiment::assay(result_exp)),
+    rownames(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    colnames(SummarizedExperiment::assay(result_exp)),
+    colnames(SummarizedExperiment::assay(original_exp))
+  )
 
   # After quantile normalization, all columns should have identical distributions
   # Check that all columns have the same sorted values
-  sorted_cols <- apply(result_exp$expr_mat, 2, sort)
+  sorted_cols <- apply(SummarizedExperiment::assay(result_exp), 2, sort)
   for (i in 2:ncol(sorted_cols)) {
     expect_equal(sorted_cols[, 1], sorted_cols[, i], tolerance = 1e-10)
   }
@@ -83,13 +124,22 @@ test_that("normalize_loessf works", {
   result_exp <- normalize_loessf(test_exp)
 
   # Check that the function returns the correct structure
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(dim(result_exp$expr_mat), dim(original_exp$expr_mat))
-  expect_equal(rownames(result_exp$expr_mat), rownames(original_exp$expr_mat))
-  expect_equal(colnames(result_exp$expr_mat), colnames(original_exp$expr_mat))
+  expect_glyco_se(result_exp)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result_exp)),
+    dim(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    rownames(SummarizedExperiment::assay(result_exp)),
+    rownames(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    colnames(SummarizedExperiment::assay(result_exp)),
+    colnames(SummarizedExperiment::assay(original_exp))
+  )
 
   # Check that all values are finite after normalization
-  expect_true(all(is.finite(result_exp$expr_mat)))
+  expect_true(all(is.finite(SummarizedExperiment::assay(result_exp))))
 })
 
 
@@ -99,13 +149,22 @@ test_that("normalize_loesscyc works", {
   result_exp <- normalize_loesscyc(test_exp)
 
   # Check that the function returns the correct structure
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(dim(result_exp$expr_mat), dim(original_exp$expr_mat))
-  expect_equal(rownames(result_exp$expr_mat), rownames(original_exp$expr_mat))
-  expect_equal(colnames(result_exp$expr_mat), colnames(original_exp$expr_mat))
+  expect_glyco_se(result_exp)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result_exp)),
+    dim(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    rownames(SummarizedExperiment::assay(result_exp)),
+    rownames(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    colnames(SummarizedExperiment::assay(result_exp)),
+    colnames(SummarizedExperiment::assay(original_exp))
+  )
 
   # Check that all values are finite after normalization
-  expect_true(all(is.finite(result_exp$expr_mat)))
+  expect_true(all(is.finite(SummarizedExperiment::assay(result_exp))))
 })
 
 
@@ -115,16 +174,25 @@ test_that("normalize_vsn works", {
   result_exp <- normalize_vsn(test_exp)
 
   # Check that the function returns the correct structure
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(dim(result_exp$expr_mat), dim(original_exp$expr_mat))
-  expect_equal(rownames(result_exp$expr_mat), rownames(original_exp$expr_mat))
-  expect_equal(colnames(result_exp$expr_mat), colnames(original_exp$expr_mat))
+  expect_glyco_se(result_exp)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result_exp)),
+    dim(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    rownames(SummarizedExperiment::assay(result_exp)),
+    rownames(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    colnames(SummarizedExperiment::assay(result_exp)),
+    colnames(SummarizedExperiment::assay(original_exp))
+  )
 
   # Check that all values are finite after normalization
-  expect_true(all(is.finite(result_exp$expr_mat)))
+  expect_true(all(is.finite(SummarizedExperiment::assay(result_exp))))
 
   # VSN should stabilize variance, check that the variance is reasonable
-  col_vars <- apply(result_exp$expr_mat, 2, var)
+  col_vars <- apply(SummarizedExperiment::assay(result_exp), 2, var)
   expect_true(all(col_vars > 0))
 })
 
@@ -135,13 +203,22 @@ test_that("normalize_median_quotient works", {
   result_exp <- normalize_median_quotient(test_exp)
 
   # Check that the function returns the correct structure
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(dim(result_exp$expr_mat), dim(original_exp$expr_mat))
-  expect_equal(rownames(result_exp$expr_mat), rownames(original_exp$expr_mat))
-  expect_equal(colnames(result_exp$expr_mat), colnames(original_exp$expr_mat))
+  expect_glyco_se(result_exp)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result_exp)),
+    dim(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    rownames(SummarizedExperiment::assay(result_exp)),
+    rownames(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    colnames(SummarizedExperiment::assay(result_exp)),
+    colnames(SummarizedExperiment::assay(original_exp))
+  )
 
   # Check that all values are finite after normalization
-  expect_true(all(is.finite(result_exp$expr_mat)))
+  expect_true(all(is.finite(SummarizedExperiment::assay(result_exp))))
 })
 
 
@@ -152,8 +229,11 @@ test_that("normalize_median_quotient with `by` specified works", {
   # Apply normalization grouped by "group"
   normed_exp <- normalize_median_quotient(test_exp, by = "group")
 
-  expect_s3_class(normed_exp, "glyexp_experiment")
-  expect_equal(dim(normed_exp$expr_mat), dim(test_exp$expr_mat))
+  expect_glyco_se(normed_exp)
+  expect_equal(
+    dim(SummarizedExperiment::assay(normed_exp)),
+    dim(SummarizedExperiment::assay(test_exp))
+  )
 })
 
 
@@ -163,13 +243,22 @@ test_that("normalize_rlr works", {
   result_exp <- normalize_rlr(test_exp)
 
   # Check that the function returns the correct structure
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(dim(result_exp$expr_mat), dim(original_exp$expr_mat))
-  expect_equal(rownames(result_exp$expr_mat), rownames(original_exp$expr_mat))
-  expect_equal(colnames(result_exp$expr_mat), colnames(original_exp$expr_mat))
+  expect_glyco_se(result_exp)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result_exp)),
+    dim(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    rownames(SummarizedExperiment::assay(result_exp)),
+    rownames(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    colnames(SummarizedExperiment::assay(result_exp)),
+    colnames(SummarizedExperiment::assay(original_exp))
+  )
 
   # Check that all values are finite after normalization
-  expect_true(all(is.finite(result_exp$expr_mat)))
+  expect_true(all(is.finite(SummarizedExperiment::assay(result_exp))))
 })
 
 
@@ -179,13 +268,22 @@ test_that("normalize_rlrma works", {
   result_exp <- normalize_rlrma(test_exp)
 
   # Check that the function returns the correct structure
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(dim(result_exp$expr_mat), dim(original_exp$expr_mat))
-  expect_equal(rownames(result_exp$expr_mat), rownames(original_exp$expr_mat))
-  expect_equal(colnames(result_exp$expr_mat), colnames(original_exp$expr_mat))
+  expect_glyco_se(result_exp)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result_exp)),
+    dim(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    rownames(SummarizedExperiment::assay(result_exp)),
+    rownames(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    colnames(SummarizedExperiment::assay(result_exp)),
+    colnames(SummarizedExperiment::assay(original_exp))
+  )
 
   # Check that all values are finite after normalization
-  expect_true(all(is.finite(result_exp$expr_mat)))
+  expect_true(all(is.finite(SummarizedExperiment::assay(result_exp))))
 })
 
 
@@ -195,13 +293,22 @@ test_that("normalize_rlrmacyc works", {
   result_exp <- normalize_rlrmacyc(test_exp)
 
   # Check that the function returns the correct structure
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(dim(result_exp$expr_mat), dim(original_exp$expr_mat))
-  expect_equal(rownames(result_exp$expr_mat), rownames(original_exp$expr_mat))
-  expect_equal(colnames(result_exp$expr_mat), colnames(original_exp$expr_mat))
+  expect_glyco_se(result_exp)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result_exp)),
+    dim(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    rownames(SummarizedExperiment::assay(result_exp)),
+    rownames(SummarizedExperiment::assay(original_exp))
+  )
+  expect_equal(
+    colnames(SummarizedExperiment::assay(result_exp)),
+    colnames(SummarizedExperiment::assay(original_exp))
+  )
 
   # Check that all values are finite after normalization
-  expect_true(all(is.finite(result_exp$expr_mat)))
+  expect_true(all(is.finite(SummarizedExperiment::assay(result_exp))))
 })
 
 # Test new API functionality: factor/vector parameters
@@ -216,13 +323,22 @@ test_that("normalize_quantile works with factor by parameter", {
   result_exp <- normalize_quantile(test_exp, by = group_factor)
 
   # Check that the function returns the correct structure
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(dim(result_exp$expr_mat), dim(test_exp$expr_mat))
-  expect_equal(rownames(result_exp$expr_mat), rownames(test_exp$expr_mat))
-  expect_equal(colnames(result_exp$expr_mat), colnames(test_exp$expr_mat))
+  expect_glyco_se(result_exp)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result_exp)),
+    dim(SummarizedExperiment::assay(test_exp))
+  )
+  expect_equal(
+    rownames(SummarizedExperiment::assay(result_exp)),
+    rownames(SummarizedExperiment::assay(test_exp))
+  )
+  expect_equal(
+    colnames(SummarizedExperiment::assay(result_exp)),
+    colnames(SummarizedExperiment::assay(test_exp))
+  )
 
   # Check that all values are finite after normalization
-  expect_true(all(is.finite(result_exp$expr_mat)))
+  expect_true(all(is.finite(SummarizedExperiment::assay(result_exp))))
 })
 
 test_that("normalize_quantile works with character vector by parameter", {
@@ -235,13 +351,22 @@ test_that("normalize_quantile works with character vector by parameter", {
   result_exp <- normalize_quantile(test_exp, by = group_vector)
 
   # Check that the function returns the correct structure
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(dim(result_exp$expr_mat), dim(test_exp$expr_mat))
-  expect_equal(rownames(result_exp$expr_mat), rownames(test_exp$expr_mat))
-  expect_equal(colnames(result_exp$expr_mat), colnames(test_exp$expr_mat))
+  expect_glyco_se(result_exp)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result_exp)),
+    dim(SummarizedExperiment::assay(test_exp))
+  )
+  expect_equal(
+    rownames(SummarizedExperiment::assay(result_exp)),
+    rownames(SummarizedExperiment::assay(test_exp))
+  )
+  expect_equal(
+    colnames(SummarizedExperiment::assay(result_exp)),
+    colnames(SummarizedExperiment::assay(test_exp))
+  )
 
   # Check that all values are finite after normalization
-  expect_true(all(is.finite(result_exp$expr_mat)))
+  expect_true(all(is.finite(SummarizedExperiment::assay(result_exp))))
 })
 
 test_that("normalize_median_quotient works with factor by parameter", {
@@ -254,13 +379,22 @@ test_that("normalize_median_quotient works with factor by parameter", {
   result_exp <- normalize_median_quotient(test_exp, by = group_factor)
 
   # Check that the function returns the correct structure
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(dim(result_exp$expr_mat), dim(test_exp$expr_mat))
-  expect_equal(rownames(result_exp$expr_mat), rownames(test_exp$expr_mat))
-  expect_equal(colnames(result_exp$expr_mat), colnames(test_exp$expr_mat))
+  expect_glyco_se(result_exp)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result_exp)),
+    dim(SummarizedExperiment::assay(test_exp))
+  )
+  expect_equal(
+    rownames(SummarizedExperiment::assay(result_exp)),
+    rownames(SummarizedExperiment::assay(test_exp))
+  )
+  expect_equal(
+    colnames(SummarizedExperiment::assay(result_exp)),
+    colnames(SummarizedExperiment::assay(test_exp))
+  )
 
   # Check that all values are finite after normalization
-  expect_true(all(is.finite(result_exp$expr_mat)))
+  expect_true(all(is.finite(SummarizedExperiment::assay(result_exp))))
 })
 
 test_that("by parameter validation works correctly", {
@@ -276,13 +410,13 @@ test_that("by parameter validation works correctly", {
   # Test with numeric vector (should work)
   numeric_vector <- rep(c(1, 2), each = 3)
   result_exp <- normalize_quantile(test_exp, by = numeric_vector)
-  expect_s3_class(result_exp, "glyexp_experiment")
+  expect_glyco_se(result_exp)
 })
 
 test_that("by parameter comparison: column name vs factor", {
   # Create experiment with group column
   test_exp <- simple_exp(6, 6)
-  test_exp$sample_info$group <- rep(c("A", "B"), each = 3)
+  SummarizedExperiment::colData(test_exp)$group <- rep(c("A", "B"), each = 3)
 
   # Normalize using column name
   result_by_name <- normalize_quantile(test_exp, by = "group")
@@ -293,8 +427,8 @@ test_that("by parameter comparison: column name vs factor", {
 
   # Results should be identical (within numerical tolerance)
   expect_equal(
-    result_by_name$expr_mat,
-    result_by_factor$expr_mat,
+    SummarizedExperiment::assay(result_by_name),
+    SummarizedExperiment::assay(result_by_factor),
     tolerance = 1e-10
   )
 })
@@ -309,7 +443,7 @@ test_that("normalize_vsn requires enough variables or the package", {
   }
 })
 
-test_that("normalization functions require glyexp experiments", {
+test_that("normalization functions reject inputs outside supported containers", {
   funcs <- list(
     normalize_median,
     normalize_median_abs,

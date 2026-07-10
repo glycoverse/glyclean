@@ -1,22 +1,22 @@
 test_that("auto_aggregate works for glycoproteomics experiments", {
-  exp <- glyexp::real_experiment
+  exp <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
   suppressMessages(result_exp <- auto_aggregate(exp))
-  expect_s3_class(result_exp, "glyexp_experiment")
-  expect_equal(glyexp::get_exp_type(result_exp), "glycoproteomics")
+  expect_glyco_se(result_exp)
+  expect_true(glyexp::is_glycoproteomic_se(result_exp))
   expect_true(nrow(result_exp) < nrow(exp))
 })
 
 test_that("auto_aggregate rejects non-glycoproteomics experiments", {
-  exp <- glyexp::real_experiment2
+  exp <- glyexp::as_glycomic_se(glyexp::real_experiment2)
   expect_snapshot(auto_aggregate(exp), error = TRUE)
 })
 
 test_that("auto_aggregate works for experiments without glycan structure column", {
-  exp <- glyexp::real_experiment
-  exp$var_info$glycan_structure <- NULL
+  exp <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
+  SummarizedExperiment::rowData(exp)$glycan_structure <- NULL
   suppressMessages(result_exp <- auto_aggregate(exp))
   expect_setequal(
-    colnames(result_exp$var_info),
-    c("variable", "protein", "gene", "glycan_composition", "protein_site")
+    colnames(SummarizedExperiment::rowData(result_exp)),
+    c("protein", "gene", "glycan_composition", "protein_site")
   )
 })

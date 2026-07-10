@@ -31,7 +31,7 @@ auto_remove <- function(
   group_col = "group",
   qc_name = "QC"
 ) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
   checkmate::assert_choice(preset, c("simple", "discovery", "biomarker"))
   checkmate::assert_string(group_col, null.ok = TRUE)
 
@@ -43,13 +43,13 @@ auto_remove <- function(
     )
   }
 
-  has_group <- !is.null(group_col) && group_col %in% colnames(exp$sample_info)
+  sample_info <- .get_sample_info(exp)
+  has_group <- !is.null(group_col) && group_col %in% colnames(sample_info)
 
   exp_filtered <- exp
-  if (has_group && is.factor(exp_filtered$sample_info[[group_col]])) {
-    exp_filtered$sample_info[[group_col]] <- droplevels(exp_filtered$sample_info[[
-      group_col
-    ]])
+  if (has_group && is.factor(sample_info[[group_col]])) {
+    sample_info[[group_col]] <- droplevels(sample_info[[group_col]])
+    exp_filtered <- .rebuild_container(exp_filtered, sample_info = sample_info)
   }
 
   use_group_col <- if (has_group) group_col else NULL
@@ -57,9 +57,17 @@ auto_remove <- function(
   cli::cli_alert_info("Applying preset {.val {preset}}...")
 
   if (preset == "simple") {
-    exp_filtered <- suppressMessages(remove_rare(exp_filtered, prop = 0.5, min_n = 1))
+    exp_filtered <- suppressMessages(remove_rare(
+      exp_filtered,
+      prop = 0.5,
+      min_n = 1
+    ))
   } else if (preset == "discovery") {
-    exp_filtered <- suppressMessages(remove_rare(exp_filtered, prop = 0.8, min_n = 1))
+    exp_filtered <- suppressMessages(remove_rare(
+      exp_filtered,
+      prop = 0.8,
+      min_n = 1
+    ))
     exp_filtered <- suppressMessages(remove_rare(
       exp_filtered,
       prop = 0.5,
@@ -68,7 +76,11 @@ auto_remove <- function(
       min_n = 1
     ))
   } else if (preset == "biomarker") {
-    exp_filtered <- suppressMessages(remove_rare(exp_filtered, prop = 0.4, min_n = 1))
+    exp_filtered <- suppressMessages(remove_rare(
+      exp_filtered,
+      prop = 0.4,
+      min_n = 1
+    ))
     exp_filtered <- suppressMessages(remove_rare(
       exp_filtered,
       prop = 0.6,
@@ -78,14 +90,13 @@ auto_remove <- function(
     ))
   }
 
-  kept_vars <- rownames(exp_filtered$expr_mat)
-  n_before <- nrow(exp$expr_mat)
+  kept_vars <- rownames(.get_expr_mat(exp_filtered))
+  n_before <- nrow(.get_expr_mat(exp))
   n_after <- length(kept_vars)
   n_removed <- n_before - n_after
 
   if (n_removed > 0) {
-    exp$expr_mat <- exp$expr_mat[kept_vars, , drop = FALSE]
-    exp$var_info <- exp$var_info |> dplyr::filter(.data$variable %in% kept_vars)
+    exp <- .subset_container(exp, rows = kept_vars)
 
     prop_removed <- round(n_removed / n_before * 100, 2)
     cli::cli_alert_info(

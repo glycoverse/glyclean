@@ -89,6 +89,230 @@
   }
 }
 
+#' Check whether an object is a supported glyclean container
+#'
+#' @param x An object.
+#'
+#' @return A logical scalar.
+#' @noRd
+.is_glyclean_container <- function(x) {
+  inherits(x, "glyexp_experiment") ||
+    glyexp::is_glycomic_se(x) ||
+    glyexp::is_glycoproteomic_se(x)
+}
+
+#' Validate a glyclean container
+#'
+#' @param x An object.
+#'
+#' @return `x`, invisibly.
+#' @noRd
+.assert_glyclean_container <- function(x) {
+  if (!.is_glyclean_container(x)) {
+    cli::cli_abort(
+      "Must inherit from class 'glyexp_experiment', 'GlycomicSE', or 'GlycoproteomicSE'."
+    )
+  }
+  invisible(x)
+}
+
+#' Extract the abundance matrix from a glyclean container
+#'
+#' @param x A supported glyclean container.
+#'
+#' @return A matrix.
+#' @noRd
+.get_expr_mat <- function(x) {
+  .assert_glyclean_container(x)
+  if (inherits(x, "glyexp_experiment")) {
+    return(glyexp::get_expr_mat(x))
+  }
+  SummarizedExperiment::assay(x)
+}
+
+#' Extract sample information from a glyclean container
+#'
+#' @param x A supported glyclean container.
+#'
+#' @return A tibble with a `sample` identifier column.
+#' @noRd
+.get_sample_info <- function(x) {
+  .assert_glyclean_container(x)
+  if (inherits(x, "glyexp_experiment")) {
+    return(glyexp::get_sample_info(x))
+  }
+  tibble::as_tibble(
+    SummarizedExperiment::colData(x),
+    rownames = "sample"
+  )
+}
+
+#' Extract variable information from a glyclean container
+#'
+#' @param x A supported glyclean container.
+#'
+#' @return A tibble with a `variable` identifier column.
+#' @noRd
+.get_var_info <- function(x) {
+  .assert_glyclean_container(x)
+  if (inherits(x, "glyexp_experiment")) {
+    return(glyexp::get_var_info(x))
+  }
+  tibble::as_tibble(
+    SummarizedExperiment::rowData(x),
+    rownames = "variable"
+  )
+}
+
+#' Extract the experiment type from a glyclean container
+#'
+#' @param x A supported glyclean container.
+#'
+#' @return The experiment type.
+#' @noRd
+.get_exp_type <- function(x) {
+  .assert_glyclean_container(x)
+  if (glyexp::is_glycomic_se(x)) {
+    return("glycomics")
+  }
+  if (glyexp::is_glycoproteomic_se(x)) {
+    return("glycoproteomics")
+  }
+  glyexp::get_exp_type(x)
+}
+
+#' Extract container metadata
+#'
+#' @param x A supported glyclean container.
+#'
+#' @return A metadata list.
+#' @noRd
+.get_container_metadata <- function(x) {
+  .assert_glyclean_container(x)
+  if (inherits(x, "glyexp_experiment")) {
+    return(x$meta_data)
+  }
+  S4Vectors::metadata(x)
+}
+
+#' Rebuild a glyclean container with updated data
+#'
+#' @param x A supported glyclean container that supplies the output class.
+#' @param expr_mat The new abundance matrix.
+#' @param sample_info Sample information including a `sample` column.
+#' @param var_info Variable information including a `variable` column.
+#' @param metadata Container metadata.
+#'
+#' @return A container with the same class as `x`.
+#' @noRd
+.rebuild_container <- function(
+  x,
+  expr_mat = .get_expr_mat(x),
+  sample_info = .get_sample_info(x),
+  var_info = .get_var_info(x),
+  metadata = .get_container_metadata(x)
+) {
+  .assert_glyclean_container(x)
+
+  if (inherits(x, "glyexp_experiment")) {
+    x$expr_mat <- expr_mat
+    x$sample_info <- sample_info
+    x$var_info <- var_info
+    x$meta_data <- metadata
+    return(x)
+  }
+
+  sample_info <- tibble::as_tibble(sample_info)
+  var_info <- tibble::as_tibble(var_info)
+  sample_names <- sample_info$sample
+  variable_names <- var_info$variable
+  sample_info$sample <- NULL
+  var_info$variable <- NULL
+
+  col_data <- S4Vectors::DataFrame(sample_info, row.names = sample_names)
+  row_data <- S4Vectors::DataFrame(var_info, row.names = variable_names)
+  assay_name <- SummarizedExperiment::assayNames(x)[[1]]
+  se <- SummarizedExperiment::SummarizedExperiment(
+    assays = stats::setNames(list(expr_mat), assay_name),
+    rowData = row_data,
+    colData = col_data,
+    metadata = metadata
+  )
+
+  if (glyexp::is_glycomic_se(x)) {
+    glyexp::as_glycomic_se(se)
+  } else {
+    glyexp::as_glycoproteomic_se(se)
+  }
+}
+
+#' Subset a glyclean container
+#'
+#' @param x A supported glyclean container.
+#' @param rows Variable indices or names.
+#' @param cols Sample indices or names.
+#'
+#' @return A container with the same class as `x`.
+#' @noRd
+.subset_container <- function(x, rows = NULL, cols = NULL) {
+  mat <- .get_expr_mat(x)
+  if (is.null(rows)) {
+    rows <- seq_len(nrow(mat))
+  }
+  if (is.null(cols)) {
+    cols <- seq_len(ncol(mat))
+  }
+
+  new_mat <- mat[rows, cols, drop = FALSE]
+  sample_info <- .get_sample_info(x)
+  var_info <- .get_var_info(x)
+  sample_info <- sample_info[
+    match(colnames(new_mat), sample_info$sample),
+    ,
+    drop = FALSE
+  ]
+  var_info <- var_info[
+    match(rownames(new_mat), var_info$variable),
+    ,
+    drop = FALSE
+  ]
+  .rebuild_container(
+    x,
+    expr_mat = new_mat,
+    sample_info = sample_info,
+    var_info = var_info
+  )
+}
+
+#' Standardize variables while preserving the input container class
+#'
+#' `glyexp::standardize_variable()` currently operates on legacy experiments,
+#' so SE inputs cross that compatibility bridge only for this optional step.
+#'
+#' @param x A supported glyclean container.
+#'
+#' @return A container with the same class as `x`.
+#' @noRd
+.standardize_container_variable <- function(x) {
+  if (inherits(x, "glyexp_experiment")) {
+    return(glyexp::standardize_variable(x))
+  }
+
+  metadata <- .get_container_metadata(x)
+  standardized <- glyexp::standardize_variable(
+    glyexp::from_se(
+      x,
+      exp_type = .get_exp_type(x),
+      glycan_type = metadata$glycan_type
+    )
+  )
+  if (glyexp::is_glycomic_se(x)) {
+    glyexp::as_glycomic_se(standardized)
+  } else {
+    glyexp::as_glycoproteomic_se(standardized)
+  }
+}
+
 #' Update an experiment expression matrix
 #'
 #' @param exp A `glyexp_experiment` object.
@@ -100,14 +324,17 @@
 #' @keywords internal
 #' @noRd
 .update_expr_mat <- function(exp, matrix_func, by = NULL, ...) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
+
+  expr_mat <- .get_expr_mat(exp)
+  sample_info <- .get_sample_info(exp)
 
   # Resolve by parameter
   by_values <- .resolve_column_param(
     by,
-    sample_info = exp$sample_info,
+    sample_info = sample_info,
     param_name = "by",
-    n_samples = ncol(exp$expr_mat),
+    n_samples = ncol(expr_mat),
     allow_null = TRUE
   )
 
@@ -120,6 +347,6 @@
   }
 
   # Apply function with optional grouping
-  exp$expr_mat <- .apply_by_groups(exp$expr_mat, matrix_func, by_values, ...)
-  exp
+  new_expr_mat <- .apply_by_groups(expr_mat, matrix_func, by_values, ...)
+  .rebuild_container(exp, expr_mat = new_expr_mat)
 }

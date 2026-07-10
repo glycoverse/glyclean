@@ -36,11 +36,33 @@ add_site_seq.glyexp_experiment <- function(
   .add_site_seq_experiment(exp, fasta = fasta, n_aa = n_aa, taxid = taxid)
 }
 
+#' @export
+#' @noRd
+add_site_seq.GlycomicSE <- function(
+  exp,
+  fasta = NULL,
+  n_aa = 7,
+  taxid = 9606
+) {
+  .add_site_seq_experiment(exp, fasta = fasta, n_aa = n_aa, taxid = taxid)
+}
+
+#' @export
+#' @noRd
+add_site_seq.GlycoproteomicSE <- function(
+  exp,
+  fasta = NULL,
+  n_aa = 7,
+  taxid = 9606
+) {
+  .add_site_seq_experiment(exp, fasta = fasta, n_aa = n_aa, taxid = taxid)
+}
+
 #' @rdname add_site_seq
 #' @export
 add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   cli::cli_abort(c(
-    "{.arg exp} must be a {.cls glyexp_experiment} object.",
+    "{.arg exp} must be a {.cls glyexp_experiment} object or a {.cls GlycoproteomicSE} object.",
     "x" = "Got {.cls {class(exp)}}."
   ))
 }
@@ -52,20 +74,23 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   taxid = 9606
 ) {
   # Check arguments
-  checkmate::assert_class(exp, "glyexp_experiment")
-  if (glyexp::get_exp_type(exp) != "glycoproteomics") {
+  .assert_glyclean_container(exp)
+  exp_type <- .get_exp_type(exp)
+  if (exp_type != "glycoproteomics") {
     cli::cli_abort(c(
       "The experiment type must be {.val glycoproteomics}.",
-      "x" = "Got {.val {glyexp::get_exp_type(exp)}}."
+      "x" = "Got {.val {exp_type}}."
     ))
   }
+
+  var_info <- .get_var_info(exp)
 
   # Handle fasta: NULL -> fetch from UniProt
   if (is.null(fasta)) {
     cli::cli_alert_info(
       "Fetching protein sequences from UniProt (taxid: {taxid})"
     )
-    unique_proteins <- exp$var_info$protein %>%
+    unique_proteins <- var_info$protein %>%
       unique() %>%
       purrr::discard(is.na)
     protein_seqs <- .fetch_uniprot_sequences(unique_proteins, taxid)
@@ -88,16 +113,16 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   checkmate::assert_int(n_aa, lower = 1)
 
   # Check if required columns exist
-  if (!"protein" %in% colnames(exp$var_info)) {
+  if (!"protein" %in% colnames(var_info)) {
     cli::cli_abort("The {.field protein} column does not exist.")
   }
 
-  if (!"protein_site" %in% colnames(exp$var_info)) {
+  if (!"protein_site" %in% colnames(var_info)) {
     cli::cli_abort("The {.field protein_site} column does not exist.")
   }
 
   # Check protein matching and provide diagnostic information using purrr
-  unique_proteins <- exp$var_info$protein %>%
+  unique_proteins <- var_info$protein %>%
     unique() %>%
     purrr::discard(is.na)
 
@@ -149,7 +174,7 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   }
 
   # Extract site sequences
-  var_info <- exp$var_info %>%
+  var_info <- var_info %>%
     dplyr::mutate(
       site_sequence = purrr::map2_chr(
         .data$protein,
@@ -159,9 +184,7 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
     )
 
   # Update experiment
-  new_exp <- exp
-  new_exp$var_info <- var_info
-  new_exp
+  .rebuild_container(exp, var_info = var_info)
 }
 
 # Helper function to read FASTA file using seqinr

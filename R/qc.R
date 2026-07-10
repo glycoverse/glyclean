@@ -15,11 +15,11 @@
 #'
 #' @export
 plot_missing_heatmap <- function(exp, ...) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
   rlang::check_installed("pheatmap")
   rlang::check_installed("ggplotify")
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
 
   # Binarize: 1 = present, 0 = missing
   binary_mat <- ifelse(is.na(mat), 0L, 1L)
@@ -63,9 +63,9 @@ plot_missing_heatmap <- function(exp, ...) {
 #'
 #' @export
 plot_missing_bar <- function(exp, on = "sample") {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
 
   on <- match.arg(on, c("sample", "samples", "variable", "variables"))
   if (on %in% c("sample", "samples")) {
@@ -108,9 +108,9 @@ plot_missing_bar <- function(exp, on = "sample") {
 #'
 #' @export
 plot_tic_bar <- function(exp) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
   sample_names <- .get_sample_names(mat)
 
   tic <- colSums(mat, na.rm = TRUE)
@@ -142,14 +142,15 @@ plot_tic_bar <- function(exp) {
 #'
 #' @export
 plot_rank_abundance <- function(exp) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
+  var_info <- .get_var_info(exp)
   log_mat <- .log2_matrix(mat)
   var_names <- .get_var_names(mat)
 
-  protein_names <- if ("protein" %in% colnames(exp$var_info)) {
-    protein <- exp$var_info$protein[match(var_names, exp$var_info$variable)]
+  protein_names <- if ("protein" %in% colnames(var_info)) {
+    protein <- var_info$protein[match(var_names, var_info$variable)]
     missing_protein <- is.na(protein) | protein == ""
     protein[missing_protein] <- var_names[missing_protein]
     protein
@@ -208,15 +209,15 @@ plot_rank_abundance <- function(exp) {
 #'
 #' @export
 plot_int_boxplot <- function(exp, by = NULL) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
   sample_names <- .get_sample_names(mat)
   log_mat <- .log2_matrix(mat, sample_names = sample_names)
 
   by_values <- .resolve_column_param(
     by,
-    sample_info = exp$sample_info,
+    sample_info = .get_sample_info(exp),
     param_name = "by",
     n_samples = ncol(mat),
     allow_null = TRUE
@@ -260,9 +261,9 @@ plot_int_boxplot <- function(exp, by = NULL) {
 #'
 #' @export
 plot_rle <- function(exp, by = NULL) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
   sample_names <- .get_sample_names(mat)
   log_mat <- .log2_matrix(mat, sample_names = sample_names)
   row_medians <- matrixStats::rowMedians(log_mat, na.rm = TRUE)
@@ -270,7 +271,7 @@ plot_rle <- function(exp, by = NULL) {
 
   by_values <- .resolve_column_param(
     by,
-    sample_info = exp$sample_info,
+    sample_info = .get_sample_info(exp),
     param_name = "by",
     n_samples = ncol(mat),
     allow_null = TRUE
@@ -317,14 +318,14 @@ plot_rle <- function(exp, by = NULL) {
 #'
 #' @export
 plot_cv_dent <- function(exp, by = NULL) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
   var_names <- .get_var_names(mat)
 
   by_values <- .resolve_column_param(
     by,
-    sample_info = exp$sample_info,
+    sample_info = .get_sample_info(exp),
     param_name = "by",
     n_samples = ncol(mat),
     allow_null = TRUE
@@ -388,10 +389,10 @@ plot_cv_dent <- function(exp, by = NULL) {
 #'
 #' @export
 plot_batch_pca <- function(exp, batch_col = "batch") {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
   rlang::check_installed("factoextra", reason = "to use `plot_batch_pca()`")
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
   if (ncol(mat) < 2 || nrow(mat) < 2) {
     cli::cli_abort("PCA requires at least two samples and two variables.")
   }
@@ -400,7 +401,7 @@ plot_batch_pca <- function(exp, batch_col = "batch") {
 
   batch_values <- .resolve_column_param(
     batch_col,
-    sample_info = exp$sample_info,
+    sample_info = .get_sample_info(exp),
     param_name = "batch_col",
     n_samples = ncol(mat),
     allow_null = FALSE
@@ -468,12 +469,12 @@ plot_batch_pca <- function(exp, batch_col = "batch") {
 #'
 #' @export
 plot_rep_scatter <- function(exp, rep_col, n_pairs = 9) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
   checkmate::assert_string(rep_col)
   checkmate::assert_int(n_pairs, lower = 1)
   rlang::check_installed("patchwork", reason = "to use `plot_rep_scatter()`")
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
   if (ncol(mat) < 2 || nrow(mat) < 2) {
     cli::cli_abort(
       "Replicate scatter plots require at least two samples and two variables."
@@ -484,7 +485,7 @@ plot_rep_scatter <- function(exp, rep_col, n_pairs = 9) {
 
   rep_values <- .resolve_column_param(
     rep_col,
-    sample_info = exp$sample_info,
+    sample_info = .get_sample_info(exp),
     param_name = "rep_col",
     n_samples = ncol(mat),
     allow_null = FALSE

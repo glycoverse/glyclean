@@ -14,7 +14,7 @@ Description:
     functions. The automated pipeline intelligently selects appropriate methods 
     based on data characteristics and sample size, making it easy to prepare 
     clean, analysis-ready data for downstream statistical analysis within the 
-    glycoverse ecosystem. Works seamlessly with 'glyexp::experiment()' objects 
+    glycoverse ecosystem. Works seamlessly with 'glyexp::experiment()' objects
     to ensure data consistency and interoperability.
 License: MIT + file LICENSE
 Suggests:
@@ -41,7 +41,7 @@ Imports:
     checkmate,
     cli,
     dplyr,
-    glyexp (>= 0.12.1),
+    glyexp (>= 0.15.0),
     limma,
     magrittr,
     matrixStats,
@@ -60,7 +60,9 @@ Imports:
     stats,
     ggplot2,
     lifecycle,
-    sva
+    sva,
+    SummarizedExperiment,
+    S4Vectors
 Depends: 
     R (>= 4.1)
 VignetteBuilder: knitr

@@ -13,7 +13,7 @@ test_that("correct_batch_effect works with valid batch and group information", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -23,10 +23,38 @@ test_that("correct_batch_effect works with valid batch and group information", {
   # Should work without error
   suppressMessages(result <- correct_batch_effect(exp))
 
-  expect_s3_class(result, "glyexp_experiment")
-  expect_equal(dim(result$expr_mat), dim(exp$expr_mat))
-  expect_equal(colnames(result$expr_mat), colnames(exp$expr_mat))
-  expect_equal(rownames(result$expr_mat), rownames(exp$expr_mat))
+  expect_glyco_se(result)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result)),
+    dim(SummarizedExperiment::assay(exp))
+  )
+  expect_equal(
+    colnames(SummarizedExperiment::assay(result)),
+    colnames(SummarizedExperiment::assay(exp))
+  )
+  expect_equal(
+    rownames(SummarizedExperiment::assay(result)),
+    rownames(SummarizedExperiment::assay(exp))
+  )
+})
+
+test_that("correct_batch_effect keeps glyco SE abundance non-negative", {
+  exp <- glyexp::real_experiment |>
+    glyexp::slice_head_var(n = 50) |>
+    glyexp::as_glycoproteomic_se()
+  SummarizedExperiment::colData(exp)$batch <- factor(
+    rep(c("A", "B", "C"), each = 4)
+  )
+  exp <- suppressMessages(
+    aggregate(exp, to_level = "gf", standardize_variable = FALSE)
+  )
+  exp <- normalize_median(exp)
+
+  result <- suppressMessages(correct_batch_effect(exp))
+
+  expect_s4_class(result, "GlycoproteomicSE")
+  expect_true(all(SummarizedExperiment::assay(result) >= 0))
+  expect_true(methods::validObject(result, test = TRUE))
 })
 
 test_that("correct_batch_effect errors when no batch column exists", {
@@ -43,28 +71,48 @@ test_that("correct_batch_effect errors when no batch column exists", {
 test_that("correct_batch_effect warns and returns original when batch and group are confounded", {
   # Create experiment with confounded batch and group
   exp <- complex_exp()
-  exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
-  exp$sample_info$group <- c("Ctrl", "Ctrl", "Ctrl", "Treat", "Treat", "Treat")
+  SummarizedExperiment::colData(exp)$batch <- c("A", "A", "A", "B", "B", "B")
+  SummarizedExperiment::colData(exp)$group <- c(
+    "Ctrl",
+    "Ctrl",
+    "Ctrl",
+    "Treat",
+    "Treat",
+    "Treat"
+  )
 
   # Should warn and return original experiment when group_col is specified
   expect_snapshot(result <- correct_batch_effect(exp, group = "group"))
 
-  expect_identical(result, exp)
+  expect_equal(result, exp)
 })
 
 test_that("correct_batch_effect works when group column exists but group_col not specified", {
   # Create experiment with batch and group columns
   exp <- complex_exp()
-  exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
-  exp$sample_info$group <- c("Ctrl", "Ctrl", "Ctrl", "Treat", "Treat", "Treat")
+  SummarizedExperiment::colData(exp)$batch <- c("A", "A", "A", "B", "B", "B")
+  SummarizedExperiment::colData(exp)$group <- c(
+    "Ctrl",
+    "Ctrl",
+    "Ctrl",
+    "Treat",
+    "Treat",
+    "Treat"
+  )
 
   # Should work when group_col is not specified (ignores group column)
   suppressMessages(result <- correct_batch_effect(exp))
 
-  expect_s3_class(result, "glyexp_experiment")
-  expect_equal(dim(result$expr_mat), dim(exp$expr_mat))
+  expect_glyco_se(result)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result)),
+    dim(SummarizedExperiment::assay(exp))
+  )
   # Result should be different from original since batch correction was applied
-  expect_false(identical(result$expr_mat, exp$expr_mat))
+  expect_false(identical(
+    SummarizedExperiment::assay(result),
+    SummarizedExperiment::assay(exp)
+  ))
 })
 
 test_that("correct_batch_effect works with batch info but no group info", {
@@ -81,7 +129,7 @@ test_that("correct_batch_effect works with batch info but no group info", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -91,8 +139,11 @@ test_that("correct_batch_effect works with batch info but no group info", {
   # Should work without error
   suppressMessages(result <- correct_batch_effect(exp))
 
-  expect_s3_class(result, "glyexp_experiment")
-  expect_equal(dim(result$expr_mat), dim(exp$expr_mat))
+  expect_glyco_se(result)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result)),
+    dim(SummarizedExperiment::assay(exp))
+  )
 })
 
 test_that("correct_batch_effect validates input", {
@@ -115,7 +166,7 @@ test_that("correct_batch_effect handles insufficient samples per batch", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -128,7 +179,7 @@ test_that("correct_batch_effect handles insufficient samples per batch", {
   expect_identical(result, exp)
 })
 
-test_that("correct_batch_effect preserves experiment structure", {
+test_that("correct_batch_effect preserves GlycomicSE structure", {
   # Set seed for reproducible random data
   set.seed(321)
 
@@ -143,7 +194,7 @@ test_that("correct_batch_effect preserves experiment structure", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -154,9 +205,15 @@ test_that("correct_batch_effect preserves experiment structure", {
   suppressMessages(result <- correct_batch_effect(exp, group = "group"))
 
   # Check that sample_info and var_info are preserved
-  expect_identical(result$sample_info, exp$sample_info)
-  expect_identical(result$var_info, exp$var_info)
-  expect_identical(result$meta_data, exp$meta_data)
+  expect_identical(
+    SummarizedExperiment::colData(result),
+    SummarizedExperiment::colData(exp)
+  )
+  expect_identical(
+    SummarizedExperiment::rowData(result),
+    SummarizedExperiment::rowData(exp)
+  )
+  expect_identical(S4Vectors::metadata(result), S4Vectors::metadata(exp))
 })
 
 # Tests for detect_batch_effect function
@@ -185,7 +242,7 @@ test_that("detect_batch_effect works with valid batch information", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -196,8 +253,8 @@ test_that("detect_batch_effect works with valid batch information", {
   suppressMessages(p_values <- detect_batch_effect(exp))
 
   expect_type(p_values, "double")
-  expect_length(p_values, nrow(exp$expr_mat))
-  expect_named(p_values, rownames(exp$expr_mat))
+  expect_length(p_values, nrow(SummarizedExperiment::assay(exp)))
+  expect_named(p_values, rownames(SummarizedExperiment::assay(exp)))
   expect_true(all(p_values >= 0 & p_values <= 1))
 })
 
@@ -218,7 +275,7 @@ test_that("detect_batch_effect works with batch and group information", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -229,8 +286,8 @@ test_that("detect_batch_effect works with batch and group information", {
   suppressMessages(p_values <- detect_batch_effect(exp, group = "group"))
 
   expect_type(p_values, "double")
-  expect_length(p_values, nrow(exp$expr_mat))
-  expect_named(p_values, rownames(exp$expr_mat))
+  expect_length(p_values, nrow(SummarizedExperiment::assay(exp)))
+  expect_named(p_values, rownames(SummarizedExperiment::assay(exp)))
   expect_true(all(p_values >= 0 & p_values <= 1))
 })
 
@@ -244,20 +301,23 @@ test_that("detect_batch_effect validates input", {
   expect_error(detect_batch_effect(exp, batch_col = "nonexistent"))
 
   # Should error with non-existent group column
-  exp$sample_info$batch <- c("A", "A", "B", "B", "C", "C")
+  SummarizedExperiment::colData(exp)$batch <- c("A", "A", "B", "B", "C", "C")
   expect_error(detect_batch_effect(exp, group = "nonexistent"))
 })
 
 test_that("detect_batch_effect handles insufficient batches", {
   # Create experiment with only one batch
   exp <- complex_exp()
-  exp$sample_info$batch <- rep("A", nrow(exp$sample_info))
+  SummarizedExperiment::colData(exp)$batch <- rep(
+    "A",
+    nrow(SummarizedExperiment::colData(exp))
+  )
 
   # Should warn and return vector of 1s
   expect_warning(p_values <- detect_batch_effect(exp))
 
   expect_type(p_values, "double")
-  expect_length(p_values, nrow(exp$expr_mat))
+  expect_length(p_values, nrow(SummarizedExperiment::assay(exp)))
   expect_true(all(p_values == 1))
 })
 
@@ -275,7 +335,7 @@ test_that("detect_batch_effect returns correct structure", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -307,7 +367,7 @@ test_that("detect_batch_effect uses custom column names", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -320,8 +380,8 @@ test_that("detect_batch_effect uses custom column names", {
   )
 
   expect_type(p_values, "double")
-  expect_length(p_values, nrow(exp$expr_mat))
-  expect_named(p_values, rownames(exp$expr_mat))
+  expect_length(p_values, nrow(SummarizedExperiment::assay(exp)))
+  expect_named(p_values, rownames(SummarizedExperiment::assay(exp)))
   expect_true(all(p_values >= 0 & p_values <= 1))
 })
 
@@ -361,7 +421,7 @@ test_that("detect_batch_effect correctly identifies batch effects - mathematical
     expr_mat[i, ] <- rnorm(n_samples, mean = 8, sd = 1)
   }
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -425,7 +485,7 @@ test_that("detect_batch_effect with group covariate - mathematical validation", 
     }
   }
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -488,7 +548,7 @@ test_that("correct_batch_effect effectively removes batch effects - mathematical
     }
   }
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -579,7 +639,7 @@ test_that("correct_batch_effect preserves group differences - mathematical valid
     }
   }
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -591,16 +651,24 @@ test_that("correct_batch_effect preserves group differences - mathematical valid
   treat_samples <- sample_info$sample[sample_info$group == "Treat"]
 
   # Before correction
-  ctrl_means_before <- rowMeans(exp$expr_mat[, ctrl_samples])
-  treat_means_before <- rowMeans(exp$expr_mat[, treat_samples])
+  ctrl_means_before <- rowMeans(SummarizedExperiment::assay(exp)[,
+    ctrl_samples
+  ])
+  treat_means_before <- rowMeans(SummarizedExperiment::assay(exp)[,
+    treat_samples
+  ])
   group_diff_before <- treat_means_before - ctrl_means_before
 
   # Apply correction
   suppressMessages(corrected_exp <- correct_batch_effect(exp))
 
   # After correction
-  ctrl_means_after <- rowMeans(corrected_exp$expr_mat[, ctrl_samples])
-  treat_means_after <- rowMeans(corrected_exp$expr_mat[, treat_samples])
+  ctrl_means_after <- rowMeans(SummarizedExperiment::assay(corrected_exp)[,
+    ctrl_samples
+  ])
+  treat_means_after <- rowMeans(SummarizedExperiment::assay(corrected_exp)[,
+    treat_samples
+  ])
   group_diff_after <- treat_means_after - ctrl_means_after
 
   # Group differences should be preserved (correlation should be reasonable)
@@ -646,7 +714,7 @@ test_that("batch correction reduces batch-related variance", {
     }
   }
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -656,7 +724,7 @@ test_that("batch correction reduces batch-related variance", {
   # Calculate batch-related variance before correction
   batch_means_before <- sapply(1:n_batches, function(b) {
     batch_samples <- sample_info$sample[sample_info$batch == paste0("B", b)]
-    rowMeans(exp$expr_mat[, batch_samples])
+    rowMeans(SummarizedExperiment::assay(exp)[, batch_samples])
   })
 
   batch_variance_before <- apply(batch_means_before, 1, var)
@@ -667,7 +735,7 @@ test_that("batch correction reduces batch-related variance", {
   # Calculate batch-related variance after correction
   batch_means_after <- sapply(1:n_batches, function(b) {
     batch_samples <- sample_info$sample[sample_info$batch == paste0("B", b)]
-    rowMeans(corrected_exp$expr_mat[, batch_samples])
+    rowMeans(SummarizedExperiment::assay(corrected_exp)[, batch_samples])
   })
 
   batch_variance_after <- apply(batch_means_after, 1, var)
@@ -701,15 +769,18 @@ test_that("correct_batch_effect handles missing batch column gracefully", {
 test_that("correct_batch_effect handles single batch scenario", {
   # Create experiment with only one batch
   exp <- complex_exp()
-  exp$sample_info$batch <- rep("A", nrow(exp$sample_info))
+  SummarizedExperiment::colData(exp)$batch <- rep(
+    "A",
+    nrow(SummarizedExperiment::colData(exp))
+  )
 
   # Should handle single batch gracefully with warning
   expect_warning(
     result <- correct_batch_effect(exp, batch = "batch"),
     "Less than 2 batches found"
   )
-  expect_s3_class(result, "glyexp_experiment")
-  expect_identical(result, exp) # Should return original when correction fails
+  expect_glyco_se(result)
+  expect_equal(result, exp) # Should return equivalent data when correction fails
 })
 
 test_that("detect_batch_effect handles missing batch column gracefully", {
@@ -742,7 +813,10 @@ test_that("batch functions handle default batch column missing", {
 test_that("detect_batch_effect handles single batch scenario", {
   # Create experiment with only one batch
   exp <- complex_exp()
-  exp$sample_info$batch <- rep("A", nrow(exp$sample_info))
+  SummarizedExperiment::colData(exp)$batch <- rep(
+    "A",
+    nrow(SummarizedExperiment::colData(exp))
+  )
 
   # Should handle single batch with warning and return vector of 1s
   expect_warning(
@@ -750,18 +824,18 @@ test_that("detect_batch_effect handles single batch scenario", {
     "Less than 2 batches found"
   )
   expect_type(result, "double")
-  expect_length(result, nrow(exp$expr_mat))
+  expect_length(result, nrow(SummarizedExperiment::assay(exp)))
   expect_true(all(result == 1))
 })
 
-test_that("batch correction handles direct vector inputs for experiments", {
+test_that("batch correction handles direct vector inputs for glyco SE objects", {
   # Create experiment with batch column
   exp <- complex_exp()
-  exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
+  SummarizedExperiment::colData(exp)$batch <- c("A", "A", "A", "B", "B", "B")
 
   # Test with direct factor vector instead of column name
-  batch_vector <- factor(exp$sample_info$batch)
-  group_vector <- factor(exp$sample_info$group)
+  batch_vector <- factor(SummarizedExperiment::colData(exp)$batch)
+  group_vector <- factor(SummarizedExperiment::colData(exp)$group)
 
   suppressMessages(result1 <- correct_batch_effect(exp, batch = batch_vector))
 
@@ -775,8 +849,8 @@ test_that("batch correction handles direct vector inputs for experiments", {
     "Batch and group variables are highly confounded"
   )
 
-  expect_s3_class(result1, "glyexp_experiment")
-  expect_s3_class(result2, "glyexp_experiment")
+  expect_glyco_se(result1)
+  expect_glyco_se(result2)
 
   # Detect batch effect with direct vectors
   p_values1 <- suppressMessages(detect_batch_effect(exp, batch = batch_vector))
@@ -788,8 +862,8 @@ test_that("batch correction handles direct vector inputs for experiments", {
 
   expect_type(p_values1, "double")
   expect_type(p_values2, "double")
-  expect_length(p_values1, nrow(exp$expr_mat))
-  expect_length(p_values2, nrow(exp$expr_mat))
+  expect_length(p_values1, nrow(SummarizedExperiment::assay(exp)))
+  expect_length(p_values2, nrow(SummarizedExperiment::assay(exp)))
 })
 
 test_that("batch correction handles NULL batch parameter", {
@@ -826,7 +900,10 @@ test_that("batch correction handles vector length mismatch", {
   )
 
   # Test with correct batch but wrong group length
-  correct_batch <- factor(rep(c("A", "B"), length.out = ncol(exp$expr_mat)))
+  correct_batch <- factor(rep(
+    c("A", "B"),
+    length.out = ncol(SummarizedExperiment::assay(exp))
+  ))
   expect_error(
     correct_batch_effect(exp, batch = correct_batch, group = wrong_group),
     "vector must have length"
@@ -849,7 +926,7 @@ test_that("batch correction with extreme data values", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -858,8 +935,11 @@ test_that("batch correction with extreme data values", {
 
   # Should handle extreme cases gracefully (may return original or corrected)
   result <- suppressMessages(correct_batch_effect(exp))
-  expect_s3_class(result, "glyexp_experiment")
-  expect_equal(dim(result$expr_mat), dim(exp$expr_mat))
+  expect_glyco_se(result)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result)),
+    dim(SummarizedExperiment::assay(exp))
+  )
 })
 
 test_that("batch correction error handling for invalid inputs", {
@@ -888,7 +968,7 @@ test_that("correct_batch_effect works with limma method", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  exp <- glyexp::experiment(
+  exp <- test_glycomic_se(
     expr_mat,
     sample_info = sample_info,
     var_info = var_info,
@@ -898,17 +978,29 @@ test_that("correct_batch_effect works with limma method", {
   # Should work without error
   suppressMessages(result <- correct_batch_effect(exp, method = "limma"))
 
-  expect_s3_class(result, "glyexp_experiment")
-  expect_equal(dim(result$expr_mat), dim(exp$expr_mat))
-  expect_equal(colnames(result$expr_mat), colnames(exp$expr_mat))
-  expect_equal(rownames(result$expr_mat), rownames(exp$expr_mat))
+  expect_glyco_se(result)
+  expect_equal(
+    dim(SummarizedExperiment::assay(result)),
+    dim(SummarizedExperiment::assay(exp))
+  )
+  expect_equal(
+    colnames(SummarizedExperiment::assay(result)),
+    colnames(SummarizedExperiment::assay(exp))
+  )
+  expect_equal(
+    rownames(SummarizedExperiment::assay(result)),
+    rownames(SummarizedExperiment::assay(exp))
+  )
   # Result should be different from original since batch correction was applied
-  expect_false(identical(result$expr_mat, exp$expr_mat))
+  expect_false(identical(
+    SummarizedExperiment::assay(result),
+    SummarizedExperiment::assay(exp)
+  ))
 })
 
 test_that("correct_batch_effect validates method parameter", {
-  exp <- glyexp::toy_experiment
-  exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
+  exp <- simple_exp(4, 6)
+  SummarizedExperiment::colData(exp)$batch <- c("A", "A", "A", "B", "B", "B")
 
   # Should error with invalid method
   expect_error(
@@ -916,7 +1008,7 @@ test_that("correct_batch_effect validates method parameter", {
     "arg.*should be one of"
   )
 })
-test_that("batch correction functions require glyexp experiments", {
+test_that("batch correction functions reject unsupported inputs", {
   mat <- matrix(1:12, nrow = 3)
 
   expect_error(correct_batch_effect(mat), "glyexp_experiment")

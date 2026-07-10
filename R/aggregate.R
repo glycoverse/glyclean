@@ -71,13 +71,68 @@ glyclean_aggregate.glyexp_experiment <- function(
   to_level = c("gf", "gp", "gfs", "gps"),
   standardize_variable = TRUE
 ) {
+  .aggregate_container(
+    exp,
+    to_level = to_level,
+    standardize_variable = standardize_variable,
+    error_call = quote(glyclean_aggregate())
+  )
+}
+
+#' @export
+#' @noRd
+glyclean_aggregate.GlycomicSE <- function(
+  exp,
+  to_level = c("gf", "gp", "gfs", "gps"),
+  standardize_variable = TRUE
+) {
+  .aggregate_container(
+    exp,
+    to_level = to_level,
+    standardize_variable = standardize_variable,
+    error_call = quote(glyclean_aggregate())
+  )
+}
+
+#' @export
+#' @noRd
+glyclean_aggregate.GlycoproteomicSE <- function(
+  exp,
+  to_level = c("gf", "gp", "gfs", "gps"),
+  standardize_variable = TRUE
+) {
+  .aggregate_container(
+    exp,
+    to_level = to_level,
+    standardize_variable = standardize_variable,
+    error_call = quote(glyclean_aggregate())
+  )
+}
+
+#' Aggregate a supported glycoproteomics container
+#'
+#' @inheritParams aggregate
+#' @param error_call The call to use in error messages.
+#'
+#' @return A container with the same class as `exp`.
+#' @noRd
+.aggregate_container <- function(
+  exp,
+  to_level = c("gf", "gp", "gfs", "gps"),
+  standardize_variable = TRUE,
+  error_call = rlang::caller_call()
+) {
   # Check arguments
-  checkmate::assert_class(exp, "glyexp_experiment")
-  if (glyexp::get_exp_type(exp) != "glycoproteomics") {
-    cli::cli_abort(c(
-      "The experiment type must be {.val glycoproteomics}.",
-      "x" = "Got {.val {glyexp::get_exp_type(exp)}}."
-    ))
+  .assert_glyclean_container(exp)
+  exp_type <- .get_exp_type(exp)
+  if (exp_type != "glycoproteomics") {
+    cli::cli_abort(
+      c(
+        "The experiment type must be {.val glycoproteomics}.",
+        "x" = "Got {.val {exp_type}}."
+      ),
+      call = error_call
+    )
   }
   to_level <- rlang::arg_match(to_level)
 
@@ -107,26 +162,38 @@ glyclean_aggregate.glyexp_experiment <- function(
       "protein_site"
     )
   )
-  var_info <- exp$var_info
+  var_info <- .get_var_info(exp)
   missing_cols <- setdiff(var_info_cols, colnames(var_info))
   if (length(missing_cols) > 0) {
     if (length(missing_cols) == 1 && missing_cols == "glycan_structure") {
       # special case for missing "glycan_structure" column
-      cli::cli_abort(c(
+      cli::cli_abort(
+        c(
+          "All required columns must be present in `var_info`.",
+          "i" = "Required columns: {.field {var_info_cols}}.",
+          "x" = "Missing columns: {.field {missing_cols}}.",
+          "i" = "You might want to aggregate to {.val gp} or {.val gf} level."
+        ),
+        call = error_call
+      )
+    }
+    cli::cli_abort(
+      c(
         "All required columns must be present in `var_info`.",
         "i" = "Required columns: {.field {var_info_cols}}.",
-        "x" = "Missing columns: {.field {missing_cols}}.",
-        "i" = "You might want to aggregate to {.val gp} or {.val gf} level."
-      ))
-    }
-    cli::cli_abort(c(
-      "All required columns must be present in `var_info`.",
-      "i" = "Required columns: {.field {var_info_cols}}.",
-      "x" = "Missing columns: {.field {missing_cols}}."
-    ))
+        "x" = "Missing columns: {.field {missing_cols}}."
+      ),
+      call = error_call
+    )
   }
-  sample_info_df <- exp$sample_info
-  tb <- tibble::as_tibble(exp, sample_cols = NULL)
+  sample_info_df <- .get_sample_info(exp)
+  tb <- tibble::as_tibble(.get_expr_mat(exp), rownames = "variable") |>
+    tidyr::pivot_longer(
+      cols = -dplyr::all_of("variable"),
+      names_to = "sample",
+      values_to = "value"
+    ) |>
+    dplyr::left_join(var_info, by = "variable")
   new_tb <- dplyr::summarise(
     tb,
     value = sum(.data$value, na.rm = TRUE),
@@ -148,11 +215,13 @@ glyclean_aggregate.glyexp_experiment <- function(
     sample_info_df$sample,
     drop = FALSE
   ]
-  new_exp <- exp
-  new_exp$expr_mat <- expr_mat
-  new_exp$var_info <- var_info_df
+  new_exp <- .rebuild_container(
+    exp,
+    expr_mat = expr_mat,
+    var_info = var_info_df
+  )
   if (standardize_variable) {
-    suppressMessages(glyexp::standardize_variable(new_exp))
+    suppressMessages(.standardize_container_variable(new_exp))
   } else {
     new_exp
   }
@@ -166,7 +235,7 @@ glyclean_aggregate.default <- function(
   standardize_variable = TRUE
 ) {
   cli::cli_abort(c(
-    "{.arg exp} must be a {.cls glyexp_experiment} object.",
+    "{.arg exp} must be a {.cls glyexp_experiment} object or a {.cls GlycoproteomicSE} object.",
     "x" = "Got {.cls {class(exp)}}."
   ))
 }

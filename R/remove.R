@@ -587,20 +587,22 @@ remove_low_expr <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
 #' @returns A modified `glyexp_experiment` object.
 #' @noRd
 .filter_exp <- function(x, by = NULL, strict = FALSE, filter_mat_fun, ...) {
-  checkmate::assert_class(x, "glyexp_experiment")
+  .assert_glyclean_container(x)
+
+  expr_mat <- .get_expr_mat(x)
+  sample_info <- .get_sample_info(x)
 
   by_values <- .resolve_column_param(
     by,
-    sample_info = x$sample_info,
+    sample_info = sample_info,
     param_name = "by",
-    n_samples = ncol(x$expr_mat),
+    n_samples = ncol(expr_mat),
     allow_null = TRUE
   )
-  new_expr_mat <- filter_mat_fun(x$expr_mat, by_values, strict, ...)
-  x$expr_mat <- new_expr_mat
-  x$var_info <- x$var_info |>
+  new_expr_mat <- filter_mat_fun(expr_mat, by_values, strict, ...)
+  var_info <- .get_var_info(x) |>
     dplyr::filter(.data$variable %in% rownames(new_expr_mat))
-  x
+  .rebuild_container(x, expr_mat = new_expr_mat, var_info = var_info)
 }
 
 .inform_filter_result <- function(n_before, n_after) {

@@ -40,7 +40,7 @@ test_that("adjust_protein works with ratio method", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  exp <- glyexp::experiment(
+  exp <- test_glycoproteomic_se(
     expr_mat,
     sample_info,
     var_info,
@@ -77,28 +77,40 @@ test_that("adjust_protein works with ratio method", {
   result <- adjust_protein(exp, pro_expr_mat, method = "ratio")
 
   # Check that result is still an experiment
-  expect_s3_class(result, "glyexp_experiment")
+  expect_glyco_se(result)
 
   # Check dimensions
-  expect_equal(nrow(result$expr_mat), 4)
-  expect_equal(ncol(result$expr_mat), 4)
+  expect_equal(nrow(SummarizedExperiment::assay(result)), 4)
+  expect_equal(ncol(SummarizedExperiment::assay(result)), 4)
 
   # Check sample info is preserved
-  expect_equal(result$sample_info, exp$sample_info)
+  expect_equal(
+    SummarizedExperiment::colData(result),
+    SummarizedExperiment::colData(exp)
+  )
 
   # Check var info is preserved
-  expect_equal(result$var_info, exp$var_info)
+  expect_equal(
+    SummarizedExperiment::rowData(result),
+    SummarizedExperiment::rowData(exp)
+  )
 
   # Check that adjusted values are reasonable
   # For GP1 (PRO1): ratio should be (100,200,300,400) / (10,20,30,40) = (10,10,10,10)
   # Scaling factor should be median(GP1) / median(PRO1) = 250 / 25 = 10
   # Adjusted: (10,10,10,10) / 10 = (1,1,1,1)
-  expect_equal(as.numeric(result$expr_mat["GP1", ]), c(1, 1, 1, 1))
+  expect_equal(
+    as.numeric(SummarizedExperiment::assay(result)["GP1", ]),
+    c(1, 1, 1, 1)
+  )
 
   # For GP2 (PRO2): ratio should be (50,100,150,200) / (5,10,15,20) = (10,10,10,10)
   # Scaling factor should be median(GP2) / median(PRO2) = 125 / 12.5 = 10
   # Adjusted: (10,10,10,10) / 10 = (1,1,1,1)
-  expect_equal(as.numeric(result$expr_mat["GP2", ]), c(1, 1, 1, 1))
+  expect_equal(
+    as.numeric(SummarizedExperiment::assay(result)["GP2", ]),
+    c(1, 1, 1, 1)
+  )
 })
 
 test_that("adjust_protein works with reg method", {
@@ -132,7 +144,7 @@ test_that("adjust_protein works with reg method", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  exp <- glyexp::experiment(
+  exp <- test_glycoproteomic_se(
     expr_mat,
     sample_info,
     var_info,
@@ -159,23 +171,23 @@ test_that("adjust_protein works with reg method", {
   result <- adjust_protein(exp, pro_expr_mat, method = "reg")
 
   # Check that result is still an experiment
-  expect_s3_class(result, "glyexp_experiment")
+  expect_glyco_se(result)
 
   # Check dimensions
-  expect_equal(nrow(result$expr_mat), 2)
-  expect_equal(ncol(result$expr_mat), 6)
+  expect_equal(nrow(SummarizedExperiment::assay(result)), 2)
+  expect_equal(ncol(SummarizedExperiment::assay(result)), 6)
 
   # Check that adjusted values are close to 1 (since residuals should be close to 0, and 2^0 = 1)
-  expect_true(all(abs(result$expr_mat["GP1", ] - 1) < 0.5)) # Should be close to 1
-  expect_true(all(abs(result$expr_mat["GP2", ] - 1) < 0.5)) # Should be close to 1
+  expect_true(all(abs(SummarizedExperiment::assay(result)["GP1", ] - 1) < 0.5)) # Should be close to 1
+  expect_true(all(abs(SummarizedExperiment::assay(result)["GP2", ] - 1) < 0.5)) # Should be close to 1
 
   # Check that all adjusted values are positive (using 2^residuals ensures this)
-  expect_true(all(result$expr_mat > 0, na.rm = TRUE))
+  expect_true(all(SummarizedExperiment::assay(result) > 0, na.rm = TRUE))
 })
 
 test_that("adjust_protein handles missing protein column", {
-  exp <- simple_exp(3, 4)
-  exp$meta_data$exp_type <- "glycoproteomics"
+  exp <- simple_glycoproteomic_exp(3, 4)
+  SummarizedExperiment::rowData(exp)$protein <- NULL
   pro_expr_mat <- matrix(1:12, nrow = 3, ncol = 4)
   colnames(pro_expr_mat) <- paste0("S", 1:4)
   rownames(pro_expr_mat) <- c("PRO1", "PRO2", "PRO3")
@@ -187,9 +199,8 @@ test_that("adjust_protein handles missing protein column", {
 })
 
 test_that("adjust_protein handles no common proteins", {
-  exp <- simple_exp(3, 4)
-  exp$meta_data$exp_type <- "glycoproteomics"
-  exp$var_info$protein <- c("PRO1", "PRO2", "PRO3")
+  exp <- simple_glycoproteomic_exp(3, 4)
+  SummarizedExperiment::rowData(exp)$protein <- c("PRO1", "PRO2", "PRO3")
 
   pro_expr_mat <- matrix(1:12, nrow = 3, ncol = 4)
   rownames(pro_expr_mat) <- c("PRO4", "PRO5", "PRO6") # Different proteins
@@ -202,9 +213,8 @@ test_that("adjust_protein handles no common proteins", {
 })
 
 test_that("adjust_protein handles no common samples", {
-  exp <- simple_exp(3, 4)
-  exp$meta_data$exp_type <- "glycoproteomics"
-  exp$var_info$protein <- c("PRO1", "PRO2", "PRO3")
+  exp <- simple_glycoproteomic_exp(3, 4)
+  SummarizedExperiment::rowData(exp)$protein <- c("PRO1", "PRO2", "PRO3")
 
   pro_expr_mat <- matrix(1:12, nrow = 3, ncol = 4)
   rownames(pro_expr_mat) <- c("PRO1", "PRO2", "PRO3")
@@ -235,7 +245,7 @@ test_that("adjust_protein handles partial sample overlap", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  exp <- glyexp::experiment(
+  exp <- test_glycoproteomic_se(
     expr_mat,
     sample_info,
     var_info,
@@ -253,10 +263,10 @@ test_that("adjust_protein handles partial sample overlap", {
   result <- adjust_protein(exp, pro_expr_mat, method = "ratio")
 
   # Should only keep common samples (S1, S2, S3)
-  expect_equal(ncol(result$expr_mat), 3)
-  expect_equal(colnames(result$expr_mat), paste0("S", 1:3))
-  expect_equal(nrow(result$sample_info), 3)
-  expect_equal(result$sample_info$sample, paste0("S", 1:3))
+  expect_equal(ncol(SummarizedExperiment::assay(result)), 3)
+  expect_equal(colnames(SummarizedExperiment::assay(result)), paste0("S", 1:3))
+  expect_equal(nrow(SummarizedExperiment::colData(result)), 3)
+  expect_equal(colnames(result), paste0("S", 1:3))
 })
 
 test_that("adjust_protein handles regression with insufficient data", {
@@ -277,7 +287,7 @@ test_that("adjust_protein handles regression with insufficient data", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  exp <- glyexp::experiment(
+  exp <- test_glycoproteomic_se(
     expr_mat,
     sample_info,
     var_info,
@@ -298,7 +308,10 @@ test_that("adjust_protein handles regression with insufficient data", {
   )
 
   # Original values should be preserved
-  expect_equal(result$expr_mat, exp$expr_mat)
+  expect_equal(
+    SummarizedExperiment::assay(result),
+    SummarizedExperiment::assay(exp)
+  )
 })
 
 test_that("adjust_protein handles NA values correctly", {
@@ -319,7 +332,7 @@ test_that("adjust_protein handles NA values correctly", {
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  exp <- glyexp::experiment(
+  exp <- test_glycoproteomic_se(
     expr_mat,
     sample_info,
     var_info,
@@ -335,13 +348,13 @@ test_that("adjust_protein handles NA values correctly", {
 
   # Test ratio method - should handle NA values gracefully
   result_ratio <- adjust_protein(exp, pro_expr_mat, method = "ratio")
-  expect_true(is.na(result_ratio$expr_mat[1, 3])) # GP has NA
-  expect_true(is.na(result_ratio$expr_mat[1, 4])) # PRO has NA
+  expect_true(is.na(SummarizedExperiment::assay(result_ratio)[1, 3])) # GP has NA
+  expect_true(is.na(SummarizedExperiment::assay(result_ratio)[1, 4])) # PRO has NA
 
   # Test regression method - should only use valid samples
   result_reg <- adjust_protein(exp, pro_expr_mat, method = "reg")
-  expect_true(is.na(result_reg$expr_mat[1, 3])) # GP has NA
-  expect_true(is.na(result_reg$expr_mat[1, 4])) # PRO has NA
+  expect_true(is.na(SummarizedExperiment::assay(result_reg)[1, 3])) # GP has NA
+  expect_true(is.na(SummarizedExperiment::assay(result_reg)[1, 4])) # PRO has NA
 })
 
 test_that("adjust_protein handles glycopeptides not present in protein matrix", {
@@ -363,7 +376,7 @@ test_that("adjust_protein handles glycopeptides not present in protein matrix", 
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
 
-  exp <- glyexp::experiment(
+  exp <- test_glycoproteomic_se(
     expr_mat,
     sample_info,
     var_info,
@@ -385,13 +398,19 @@ test_that("adjust_protein handles glycopeptides not present in protein matrix", 
   )
 
   # Should only keep glycopeptides with proteins present in pro_expr_mat
-  expect_equal(nrow(result$expr_mat), 3) # GP1, GP3, GP5
-  expect_equal(nrow(result$var_info), 3)
-  expect_equal(result$var_info$variable, c("GP1", "GP3", "GP5"))
-  expect_equal(result$var_info$protein, c("PRO1", "PRO3", "PRO5"))
+  expect_equal(nrow(SummarizedExperiment::assay(result)), 3) # GP1, GP3, GP5
+  expect_equal(nrow(SummarizedExperiment::rowData(result)), 3)
+  expect_equal(rownames(result), c("GP1", "GP3", "GP5"))
+  expect_equal(
+    SummarizedExperiment::rowData(result)$protein,
+    c("PRO1", "PRO3", "PRO5")
+  )
 
   # Check that sample info is preserved
-  expect_equal(result$sample_info, exp$sample_info)
+  expect_equal(
+    SummarizedExperiment::colData(result),
+    SummarizedExperiment::colData(exp)
+  )
 
   # Test the same with regression method
   expect_message(
@@ -399,6 +418,6 @@ test_that("adjust_protein handles glycopeptides not present in protein matrix", 
     "Dropped 2 glycopeptides"
   )
 
-  expect_equal(nrow(result_reg$expr_mat), 3)
-  expect_equal(result_reg$var_info$variable, c("GP1", "GP3", "GP5"))
+  expect_equal(nrow(SummarizedExperiment::assay(result_reg)), 3)
+  expect_equal(rownames(result_reg), c("GP1", "GP3", "GP5"))
 })

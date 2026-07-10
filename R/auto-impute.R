@@ -38,7 +38,7 @@ auto_impute <- function(
   to_try = NULL
 ) {
   # Check arguments
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
   checkmate::assert_string(group_col, null.ok = TRUE)
 
   if (!identical(qc_name, "QC")) {
@@ -61,13 +61,13 @@ auto_impute <- function(
 
 #' Apply the deterministic automatic imputation strategy
 #'
-#' @param exp An [glyexp::experiment()].
+#' @param exp A supported glyclean container.
 #'
 #' @returns The imputed experiment.
 #' @noRd
 .auto_impute_default <- function(exp) {
   n_samples <- ncol(exp)
-  exp_type <- glyexp::get_exp_type(exp)
+  exp_type <- .get_exp_type(exp)
   strategy <- .choose_auto_impute_strategy(n_samples, exp_type)
 
   cli::cli_alert_info(

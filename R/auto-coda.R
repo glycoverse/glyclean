@@ -12,7 +12,7 @@
 #'   matrix (ALR if >50 variables, CLR otherwise).
 #' @export
 auto_coda <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
-  checkmate::assert_class(x, "glyexp_experiment")
+  .assert_glyclean_container(x)
 
   if (nrow(x) > 50) {
     cli::cli_alert_info(

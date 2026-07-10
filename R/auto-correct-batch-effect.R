@@ -38,11 +38,13 @@ auto_correct_batch_effect <- function(
   check_confounding = TRUE,
   confounding_threshold = 0.4
 ) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
   checkmate::assert_number(prop_threshold, lower = 0, upper = 1)
 
+  sample_info <- .get_sample_info(exp)
+
   # Check if batch column exists
-  if (is.null(batch_col) || !batch_col %in% colnames(exp$sample_info)) {
+  if (is.null(batch_col) || !batch_col %in% colnames(sample_info)) {
     cli::cli_alert_info(
       "Batch column {.field {batch_col}} not found in sample_info. Skipping batch correction."
     )
@@ -51,7 +53,7 @@ auto_correct_batch_effect <- function(
 
   # Check if group column exists
   actual_group_col <- NULL
-  if (!is.null(group_col) && group_col %in% colnames(exp$sample_info)) {
+  if (!is.null(group_col) && group_col %in% colnames(sample_info)) {
     actual_group_col <- group_col
   }
 
