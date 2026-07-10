@@ -52,13 +52,12 @@ following the same strategy in glycowork.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>Either a <code>glyexp_experiment</code> object or a matrix.
-If a matrix, rows should be variables and columns should be samples.</p></dd>
+<dd><p>A <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object.</p></dd>
 
 
 <dt id="arg-by">by<a class="anchor" aria-label="anchor" href="#arg-by"></a></dt>
-<dd><p>Either a column name in <code>sample_info</code> (for <code>glyexp_experiment</code>
-input) or a factor/vector with one value per sample.</p></dd>
+<dd><p>Either a column name in <code>sample_info</code> or a factor/vector with one
+value per sample.</p></dd>
 
 
 <dt id="arg-gamma">gamma<a class="anchor" aria-label="anchor" href="#arg-gamma"></a></dt>
@@ -75,9 +74,8 @@ multi-group data, provide a positive vector with one scale per group.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Returns the same type as the input. If <code>x</code> is a <code>glyexp_experiment</code>,
-returns a <code>glyexp_experiment</code> with a CoDA-transformed expression matrix
-(ALR if &gt;50 variables, CLR otherwise).</p>
+    <p>A <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object with a CoDA-transformed expression
+matrix (ALR if &gt;50 variables, CLR otherwise).</p>
     </div>
     <div class="section level2">
     <h2 id="algorithmic-details">Algorithmic details<a class="anchor" aria-label="anchor" href="#algorithmic-details"></a></h2>

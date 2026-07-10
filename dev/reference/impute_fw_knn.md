@@ -9,23 +9,15 @@ corresponding feature.
 
 ``` r
 impute_fw_knn(x, k = 5, by = NULL, ...)
-
-# S3 method for class 'glyexp_experiment'
-impute_fw_knn(x, k = 5, by = NULL, ...)
-
-# S3 method for class 'matrix'
-impute_fw_knn(x, k = 5, by = NULL, ...)
-
-# Default S3 method
-impute_fw_knn(x, k = 5, by = NULL, ...)
 ```
 
 ## Arguments
 
 - x:
 
-  Either a `glyexp_experiment` object or a matrix. If a matrix, rows
-  should be variables and columns should be samples.
+  A
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  object.
 
 - k:
 
@@ -44,6 +36,6 @@ impute_fw_knn(x, k = 5, by = NULL, ...)
 
 ## Value
 
-Returns the same type as the input. If `x` is a `glyexp_experiment`,
-returns a `glyexp_experiment` with missing values imputed. If `x` is a
-matrix, returns a matrix with missing values imputed.
+A
+[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+object with missing values imputed.

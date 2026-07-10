@@ -7,42 +7,33 @@ is provided, it will be used as a covariate in the ANOVA model.
 
 ``` r
 detect_batch_effect(x, batch = "batch", group = NULL)
-
-# S3 method for class 'glyexp_experiment'
-detect_batch_effect(x, batch = "batch", group = NULL)
-
-# S3 method for class 'matrix'
-detect_batch_effect(x, batch = "batch", group = NULL)
-
-# Default S3 method
-detect_batch_effect(x, batch = "batch", group = NULL)
 ```
 
 ## Arguments
 
 - x:
 
-  Either a `glyexp_experiment` object or a matrix. If a matrix, rows
-  should be variables and columns should be samples.
+  A
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  object.
 
 - batch:
 
   Either a factor/character vector specifying batch assignments for each
-  sample, or a string specifying the column name in sample_info (for
-  experiment input only). Default to "batch" for experiment input.
+  sample, or a string specifying the column name in `sample_info`.
+  Defaults to "batch".
 
 - group:
 
   Either a factor/character vector specifying group assignments for each
-  sample, or a string specifying the column name in sample_info (for
-  experiment input only). If provided, it will be used as a covariate in
-  the ANOVA model. This is useful when you have an unbalanced design.
-  Default to NULL.
+  sample, or a string specifying the column name in `sample_info`. If
+  provided, it will be used as a covariate in the ANOVA model. This is
+  useful when you have an unbalanced design. Default to NULL.
 
 ## Value
 
-A double vector of p-values for each variable, i.e., the same length as
-`nrow(x)` (for matrix) or `nrow(get_expr_mat(x))` (for experiment)
+A double vector of p-values for each variable, with the same length as
+`nrow(glyexp::get_expr_mat(x))`.
 
 ## Examples
 
@@ -54,12 +45,4 @@ exp$sample_info$group <- c("Ctrl", "Ctrl", "Treat", "Ctrl", "Treat", "Treat")
 p_values <- detect_batch_effect(exp, batch = "batch", group = "group")
 #> ℹ Detecting batch effects using ANOVA for 4 variables...
 #> ✔ Batch effect detection completed. 4 out of 4 variables show significant batch effects (p < 0.05).
-
-# With matrix and factor vectors
-mat <- matrix(rnorm(200), nrow = 20, ncol = 10)
-batch_factor <- factor(rep(c("A", "B"), each = 5))
-group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
-p_values <- detect_batch_effect(mat, batch = batch_factor, group = group_factor)
-#> ℹ Detecting batch effects using ANOVA for 20 variables...
-#> ✔ Batch effect detection completed. 1 out of 20 variables show significant batch effects (p < 0.05).
 ```

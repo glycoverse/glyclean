@@ -41,16 +41,7 @@ Default behavior is to remove variables with zero coefficient of variation.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">remove_low_cv</span><span class="op">(</span><span class="va">x</span>, cv_cutoff <span class="op">=</span> <span class="fl">0</span>, by <span class="op">=</span> <span class="cn">NULL</span>, strict <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S3 method for class 'glyexp_experiment'</span></span>
-<span><span class="fu">remove_low_cv</span><span class="op">(</span><span class="va">x</span>, cv_cutoff <span class="op">=</span> <span class="fl">0</span>, by <span class="op">=</span> <span class="cn">NULL</span>, strict <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S3 method for class 'matrix'</span></span>
-<span><span class="fu">remove_low_cv</span><span class="op">(</span><span class="va">x</span>, cv_cutoff <span class="op">=</span> <span class="fl">0</span>, by <span class="op">=</span> <span class="cn">NULL</span>, strict <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Default S3 method</span></span>
-<span><span class="fu">remove_low_cv</span><span class="op">(</span><span class="va">x</span>, cv_cutoff <span class="op">=</span> <span class="fl">0</span>, by <span class="op">=</span> <span class="cn">NULL</span>, strict <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">remove_low_cv</span><span class="op">(</span><span class="va">x</span>, cv_cutoff <span class="op">=</span> <span class="fl">0</span>, by <span class="op">=</span> <span class="cn">NULL</span>, strict <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -58,7 +49,7 @@ Default behavior is to remove variables with zero coefficient of variation.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>Either a <code>glyexp_experiment</code> object or a matrix.</p></dd>
+<dd><p>A <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object.</p></dd>
 
 
 <dt id="arg-cv-cutoff">cv_cutoff<a class="anchor" aria-label="anchor" href="#arg-cv-cutoff"></a></dt>
@@ -76,8 +67,7 @@ If <code>TRUE</code>, remove a variable if it passes the coefficient of variatio
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>For <code>glyexp_experiment</code> input, returns a modified <code>glyexp_experiment</code> object.
-For matrix input, returns a filtered matrix.</p>
+    <p>A <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object with filtered variables.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

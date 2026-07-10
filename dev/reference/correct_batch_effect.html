@@ -48,36 +48,6 @@ from the sva package or removeBatchEffect from the limma package.</p>
 <span>  check_confounding <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  confounding_threshold <span class="op">=</span> <span class="fl">0.4</span>,</span>
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"combat"</span>, <span class="st">"limma"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S3 method for class 'glyexp_experiment'</span></span>
-<span><span class="fu">correct_batch_effect</span><span class="op">(</span></span>
-<span>  <span class="va">x</span>,</span>
-<span>  batch <span class="op">=</span> <span class="st">"batch"</span>,</span>
-<span>  group <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  check_confounding <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  confounding_threshold <span class="op">=</span> <span class="fl">0.4</span>,</span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"combat"</span>, <span class="st">"limma"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S3 method for class 'matrix'</span></span>
-<span><span class="fu">correct_batch_effect</span><span class="op">(</span></span>
-<span>  <span class="va">x</span>,</span>
-<span>  batch <span class="op">=</span> <span class="st">"batch"</span>,</span>
-<span>  group <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  check_confounding <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  confounding_threshold <span class="op">=</span> <span class="fl">0.4</span>,</span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"combat"</span>, <span class="st">"limma"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Default S3 method</span></span>
-<span><span class="fu">correct_batch_effect</span><span class="op">(</span></span>
-<span>  <span class="va">x</span>,</span>
-<span>  batch <span class="op">=</span> <span class="st">"batch"</span>,</span>
-<span>  group <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  check_confounding <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  confounding_threshold <span class="op">=</span> <span class="fl">0.4</span>,</span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"combat"</span>, <span class="st">"limma"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -86,19 +56,17 @@ from the sva package or removeBatchEffect from the limma package.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>Either a <code>glyexp_experiment</code> object or a matrix.
-If a matrix, rows should be variables and columns should be samples.</p></dd>
+<dd><p>A <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object.</p></dd>
 
 
 <dt id="arg-batch">batch<a class="anchor" aria-label="anchor" href="#arg-batch"></a></dt>
 <dd><p>Either a factor/character vector specifying batch assignments for each sample,
-or a string specifying the column name in sample_info (for experiment input only).
-Default to "batch" for experiment input.</p></dd>
+or a string specifying the column name in <code>sample_info</code>. Defaults to "batch".</p></dd>
 
 
 <dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
 <dd><p>Either a factor/character vector specifying group assignments for each sample,
-or a string specifying the column name in sample_info (for experiment input only).
+or a string specifying the column name in <code>sample_info</code>.
 If provided, it will be used as a covariate in the batch correction model.
 This is useful when you have an unbalanced design.
 Default to NULL.</p></dd>
@@ -121,8 +89,7 @@ sva::ComBat) or "limma" (uses limma::removeBatchEffect). Default to "combat".</p
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>For <code>glyexp_experiment</code> input, returns a modified <code>glyexp_experiment</code> object.
-For matrix input, returns a batch-corrected matrix.</p>
+    <p>A <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object with batch effects corrected.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -154,21 +121,9 @@ while correcting for batch effects.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Finding parametric adjustments</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Adjusting the Data</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># With matrix and factor vectors</span></span></span>
-<span class="r-in"><span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">200</span><span class="op">)</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">20</span>, ncol <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">batch_factor</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">group_factor</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ctrl"</span>, <span class="st">"Treat"</span><span class="op">)</span>, times <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">corrected_mat</span> <span class="op">&lt;-</span> <span class="fu">correct_batch_effect</span><span class="op">(</span><span class="va">mat</span>, batch <span class="op">=</span> <span class="va">batch_factor</span>, group <span class="op">=</span> <span class="va">group_factor</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Found2batches</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Adjusting for1covariate(s) or covariate level(s)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Standardizing Data across genes</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Fitting L/S model and finding priors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Finding parametric adjustments</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Adjusting the Data</span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Using limma method</span></span></span>
-<span class="r-in"><span><span class="va">corrected_mat</span> <span class="op">&lt;-</span> <span class="fu">correct_batch_effect</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">mat</span>, batch <span class="op">=</span> <span class="va">batch_factor</span>, group <span class="op">=</span> <span class="va">group_factor</span>, method <span class="op">=</span> <span class="st">"limma"</span></span></span>
+<span class="r-in"><span><span class="va">corrected_exp</span> <span class="op">&lt;-</span> <span class="fu">correct_batch_effect</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">exp</span>, batch <span class="op">=</span> <span class="st">"batch"</span>, group <span class="op">=</span> <span class="st">"group"</span>, method <span class="op">=</span> <span class="st">"limma"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> design matrix of interest not specified. Assuming a one-group experiment.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Coefficients not estimable: (Intercept) </span>

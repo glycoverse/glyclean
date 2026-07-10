@@ -496,9 +496,10 @@ adjusted_exp <- adjust_protein(inferred_exp, pro_expr_mat)
   news: you can use `glyclean` functions for this too!)
 - Sample matching needs to be perfect – no mixing apples with oranges!
 
-**Pro Tip:** Most `glyclean` functions happily accept plain matrices as
-input, so you can preprocess your protein expression data using the same
-toolkit. Consistency is key!
+**Pro Tip:** Wrap protein expression data in a
+[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+object before using `glyclean` preprocessing functions. Consistency is
+key!
 
 ### 🎉 Mission Accomplished!
 
@@ -507,29 +508,7 @@ glycoproteomics data. Your data has been normalized, filtered, imputed,
 aggregated, and batch-corrected – it’s ready to reveal its biological
 secrets!
 
-## Advanced Usage: Beyond `glyexp::experiment()` Objects 🔧
-
-While this vignette focuses on
-[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-objects, `glyclean` is designed to be flexible and accommodating to
-different workflows and data formats.
-
-### Working with Plain Matrices
-
-Most `glyclean` functions also support plain matrices as input! This
-means you can use the package’s powerful preprocessing capabilities even
-if you’re working with traditional data formats. The functions
-intelligently detect your input type and handle it appropriately.
-
-``` r
-
-# Example: Using glyclean with a plain matrix
-my_matrix <- matrix(rnorm(100), nrow = 10)
-normalized_matrix <- normalize_median(my_matrix)
-imputed_matrix <- impute_sample_min(normalized_matrix)
-```
-
-### Flexible Grouping with Custom Vectors
+## Advanced Usage: Flexible Grouping with Custom Vectors 🔧
 
 Many functions in `glyclean` accept a `by` parameter for stratified
 processing. This parameter offers maximum flexibility – it accepts both
@@ -543,9 +522,6 @@ normalized_exp <- normalize_median(exp, by = "group")
 # Using custom vectors (advanced approach)
 custom_groups <- c("A", "A", "B", "B", "C", "C", "A", "A", "B", "B", "C", "C")
 normalized_exp <- normalize_median(exp, by = custom_groups)
-
-# This also works with matrices
-normalized_matrix <- normalize_median(my_matrix, by = custom_groups)
 ```
 
 This gives you complete control over grouping, even for custom groupings
@@ -588,7 +564,7 @@ library(patchwork)
 plot_missing_heatmap(exp) + plot_missing_heatmap(clean_exp)
 ```
 
-![](glyclean_files/figure-html/unnamed-chunk-17-1.png)
+![](glyclean_files/figure-html/unnamed-chunk-16-1.png)
 
 ## What’s Next?
 

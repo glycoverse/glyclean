@@ -2,6 +2,21 @@
 
 ## glyclean (development version)
 
+### Breaking changes
+
+- Normalization, imputation, filtering, CoDA, and batch-correction
+  functions now require a
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  object; matrix inputs error and should first be wrapped with
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html).
+  (#18)
+
+### Minor improvements and bug fixes
+
+- Preprocessing functions now expose a single consistent
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  interface. (#18)
+
 ## glyclean 0.14.1
 
 ### Minor improvements and bug fixes

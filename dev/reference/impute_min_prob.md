@@ -8,23 +8,15 @@ then transformed back to the original scale.
 
 ``` r
 impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
-
-# S3 method for class 'glyexp_experiment'
-impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
-
-# S3 method for class 'matrix'
-impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
-
-# Default S3 method
-impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
 ```
 
 ## Arguments
 
 - x:
 
-  Either a `glyexp_experiment` object or a matrix. If a matrix, rows
-  should be variables and columns should be samples.
+  A
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  object.
 
 - by:
 
@@ -49,6 +41,6 @@ impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
 
 ## Value
 
-Returns the same type as the input. If `x` is a `glyexp_experiment`,
-returns a `glyexp_experiment` with missing values imputed. If `x` is a
-matrix, returns a matrix with missing values imputed.
+A
+[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+object with missing values imputed.

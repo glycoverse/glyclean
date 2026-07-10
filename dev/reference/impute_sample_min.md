@@ -9,26 +9,18 @@ values are induced by an ion below the detection limit. See also
 
 ``` r
 impute_sample_min(x)
-
-# S3 method for class 'glyexp_experiment'
-impute_sample_min(x)
-
-# S3 method for class 'matrix'
-impute_sample_min(x)
-
-# Default S3 method
-impute_sample_min(x)
 ```
 
 ## Arguments
 
 - x:
 
-  Either a `glyexp_experiment` object or a matrix. If a matrix, rows
-  should be variables and columns should be samples.
+  A
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  object.
 
 ## Value
 
-Returns the same type as the input. If `x` is a `glyexp_experiment`,
-returns a `glyexp_experiment` with missing values imputed. If `x` is a
-matrix, returns a matrix with missing values imputed.
+A
+[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+object with missing values imputed.

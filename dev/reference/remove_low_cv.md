@@ -8,22 +8,15 @@ of variation.
 
 ``` r
 remove_low_cv(x, cv_cutoff = 0, by = NULL, strict = FALSE)
-
-# S3 method for class 'glyexp_experiment'
-remove_low_cv(x, cv_cutoff = 0, by = NULL, strict = FALSE)
-
-# S3 method for class 'matrix'
-remove_low_cv(x, cv_cutoff = 0, by = NULL, strict = FALSE)
-
-# Default S3 method
-remove_low_cv(x, cv_cutoff = 0, by = NULL, strict = FALSE)
 ```
 
 ## Arguments
 
 - x:
 
-  Either a `glyexp_experiment` object or a matrix.
+  A
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  object.
 
 - cv_cutoff:
 
@@ -41,8 +34,9 @@ remove_low_cv(x, cv_cutoff = 0, by = NULL, strict = FALSE)
 
 ## Value
 
-For `glyexp_experiment` input, returns a modified `glyexp_experiment`
-object. For matrix input, returns a filtered matrix.
+A
+[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+object with filtered variables.
 
 ## See also
 

@@ -15,58 +15,29 @@ correct_batch_effect(
   confounding_threshold = 0.4,
   method = c("combat", "limma")
 )
-
-# S3 method for class 'glyexp_experiment'
-correct_batch_effect(
-  x,
-  batch = "batch",
-  group = NULL,
-  check_confounding = TRUE,
-  confounding_threshold = 0.4,
-  method = c("combat", "limma")
-)
-
-# S3 method for class 'matrix'
-correct_batch_effect(
-  x,
-  batch = "batch",
-  group = NULL,
-  check_confounding = TRUE,
-  confounding_threshold = 0.4,
-  method = c("combat", "limma")
-)
-
-# Default S3 method
-correct_batch_effect(
-  x,
-  batch = "batch",
-  group = NULL,
-  check_confounding = TRUE,
-  confounding_threshold = 0.4,
-  method = c("combat", "limma")
-)
 ```
 
 ## Arguments
 
 - x:
 
-  Either a `glyexp_experiment` object or a matrix. If a matrix, rows
-  should be variables and columns should be samples.
+  A
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  object.
 
 - batch:
 
   Either a factor/character vector specifying batch assignments for each
-  sample, or a string specifying the column name in sample_info (for
-  experiment input only). Default to "batch" for experiment input.
+  sample, or a string specifying the column name in `sample_info`.
+  Defaults to "batch".
 
 - group:
 
   Either a factor/character vector specifying group assignments for each
-  sample, or a string specifying the column name in sample_info (for
-  experiment input only). If provided, it will be used as a covariate in
-  the batch correction model. This is useful when you have an unbalanced
-  design. Default to NULL.
+  sample, or a string specifying the column name in `sample_info`. If
+  provided, it will be used as a covariate in the batch correction
+  model. This is useful when you have an unbalanced design. Default to
+  NULL.
 
 - check_confounding:
 
@@ -87,8 +58,9 @@ correct_batch_effect(
 
 ## Value
 
-For `glyexp_experiment` input, returns a modified `glyexp_experiment`
-object. For matrix input, returns a batch-corrected matrix.
+A
+[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+object with batch effects corrected.
 
 ## Details
 
@@ -122,21 +94,9 @@ corrected_exp <- correct_batch_effect(exp, batch = "batch", group = "group")
 #> Finding parametric adjustments
 #> Adjusting the Data
 
-# With matrix and factor vectors
-mat <- matrix(abs(rnorm(200)), nrow = 20, ncol = 10)
-batch_factor <- factor(rep(c("A", "B"), each = 5))
-group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
-corrected_mat <- correct_batch_effect(mat, batch = batch_factor, group = group_factor)
-#> Found2batches
-#> Adjusting for1covariate(s) or covariate level(s)
-#> Standardizing Data across genes
-#> Fitting L/S model and finding priors
-#> Finding parametric adjustments
-#> Adjusting the Data
-
 # Using limma method
-corrected_mat <- correct_batch_effect(
-  mat, batch = batch_factor, group = group_factor, method = "limma"
+corrected_exp <- correct_batch_effect(
+  exp, batch = "batch", group = "group", method = "limma"
 )
 #> design matrix of interest not specified. Assuming a one-group experiment.
 #> Coefficients not estimable: (Intercept) 

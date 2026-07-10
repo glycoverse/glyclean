@@ -6,23 +6,15 @@ Remove Rare Variables with Too Many Missing Values
 
 ``` r
 remove_rare(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL)
-
-# S3 method for class 'glyexp_experiment'
-remove_rare(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL)
-
-# S3 method for class 'matrix'
-remove_rare(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL)
-
-# Default S3 method
-remove_rare(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL)
 ```
 
 ## Arguments
 
 - x:
 
-  Either a `glyexp_experiment` object or a matrix. If a matrix, rows
-  should be variables and columns should be samples.
+  A
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  object.
 
 - prop:
 
@@ -60,8 +52,9 @@ remove_rare(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL)
 
 ## Value
 
-For `glyexp_experiment` input, returns a modified `glyexp_experiment`
-object. For matrix input, returns a filtered matrix.
+A
+[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+object with filtered variables.
 
 ## Examples
 
@@ -111,9 +104,4 @@ remove_rare(exp, min_n = 4)$expr_mat
 #> ℹ Removed 3 of 4 (75%) variables.
 #>    S1 S2 S3 S4 S5 S6
 #> V1 NA  5  9 13 17 21
-
-# With matrix
-mat <- matrix(c(1, 2, NA, 4, 5, NA, 7, 8, 9), nrow = 3)
-mat_filtered <- remove_rare(mat, prop = 0.5)
-#> ℹ Removed 1 of 3 (33.33%) variables.
 ```

@@ -10,28 +10,20 @@ result.
 
 ``` r
 transform_alr(x, by = NULL, gamma = 0.1, group_scales = NULL)
-
-# S3 method for class 'glyexp_experiment'
-transform_alr(x, by = NULL, gamma = 0.1, group_scales = NULL)
-
-# S3 method for class 'matrix'
-transform_alr(x, by = NULL, gamma = 0.1, group_scales = NULL)
-
-# Default S3 method
-transform_alr(x, by = NULL, gamma = 0.1, group_scales = NULL)
 ```
 
 ## Arguments
 
 - x:
 
-  Either a `glyexp_experiment` object or a matrix. If a matrix, rows
-  should be variables and columns should be samples.
+  A
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  object.
 
 - by:
 
-  Either a column name in `sample_info` (for `glyexp_experiment` input)
-  or a factor/vector with one value per sample.
+  Either a column name in `sample_info` or a factor/vector with one
+  value per sample.
 
 - gamma:
 
@@ -47,14 +39,14 @@ transform_alr(x, by = NULL, gamma = 0.1, group_scales = NULL)
 
 ## Value
 
-Returns the same type as the input. If `x` is a `glyexp_experiment`,
-returns a `glyexp_experiment` with an ALR-transformed expression matrix.
-If `x` is a matrix, returns an ALR-transformed matrix. When ALR
-succeeds, the reference glycan is excluded from the result and the
-output therefore has one fewer row than the input. When ALR falls back
-to CLR, the returned object keeps the original dimensions. The returned
-values are back-transformed to the original ratio space, corresponding
-to `x / x_ref`.
+A
+[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+object with an ALR-transformed expression matrix. When ALR succeeds, the
+reference glycan is excluded from the result and the output therefore
+has one fewer row than the input. When ALR falls back to CLR, the
+returned object keeps the original dimensions. The returned values are
+back-transformed to the original ratio space, corresponding to
+`x / x_ref`.
 
 ## Algorithmic details
 

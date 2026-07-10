@@ -11,23 +11,15 @@ method.
 
 ``` r
 normalize_rlrma(x, by = NULL)
-
-# S3 method for class 'glyexp_experiment'
-normalize_rlrma(x, by = NULL)
-
-# S3 method for class 'matrix'
-normalize_rlrma(x, by = NULL)
-
-# Default S3 method
-normalize_rlrma(x, by = NULL)
 ```
 
 ## Arguments
 
 - x:
 
-  Either a `glyexp_experiment` object or a matrix. If a matrix, rows
-  should be variables and columns should be samples.
+  A
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  object.
 
 - by:
 
@@ -37,6 +29,6 @@ normalize_rlrma(x, by = NULL)
 
 ## Value
 
-Returns the same type as the input. If `x` is a `glyexp_experiment`,
-returns a `glyexp_experiment` with normalized expression matrix. If `x`
-is a matrix, returns a normalized matrix.
+A
+[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+object with a normalized expression matrix.
