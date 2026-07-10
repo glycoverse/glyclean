@@ -46,10 +46,9 @@
 #' dea_res <- glystats::gly_ttest(coda_motif_exp)
 #' ```
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
-#'   If a matrix, rows should be variables and columns should be samples.
-#' @param by Either a column name in `sample_info` (for `glyexp_experiment`
-#'   input) or a factor/vector with one value per sample.
+#' @param x A [glyexp::experiment()] object.
+#' @param by Either a column name in `sample_info` or a factor/vector with one
+#'   value per sample.
 #' @param gamma Standard deviation of the scale-uncertainty model on the `log2`
 #'   scale. Default is `0.1`. Set to `0` for deterministic transformation.
 #' @param group_scales Optional informed group scales. For binary comparisons,
@@ -57,57 +56,17 @@
 #'   first, or two positive scales from which that ratio is derived. For
 #'   multi-group data, provide a positive vector with one scale per group.
 #'
-#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
-#'   returns a `glyexp_experiment` with transformed expression matrix.
-#'   If `x` is a matrix, returns a transformed matrix.
+#' @return A [glyexp::experiment()] object with a transformed expression matrix.
 #'   The returned values are back-transformed to the original ratio space.
 #'   Zeros in the input therefore remain zeros in the output.
 #' @export
 transform_clr <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
-  UseMethod("transform_clr")
-}
-
-#' @rdname transform_clr
-#' @export
-transform_clr.glyexp_experiment <- function(
-  x,
-  by = NULL,
-  gamma = 0.1,
-  group_scales = NULL
-) {
-  .dispatch_on_input(
+  .transform_clr_exp(
     x,
-    .transform_clr_exp,
-    .transform_clr_mat,
     by = by,
     gamma = gamma,
     group_scales = group_scales
   )
-}
-
-#' @rdname transform_clr
-#' @export
-transform_clr.matrix <- function(
-  x,
-  by = NULL,
-  gamma = 0.1,
-  group_scales = NULL
-) {
-  .transform_clr_mat(x, by = by, gamma = gamma, group_scales = group_scales)
-}
-
-#' @rdname transform_clr
-#' @export
-transform_clr.default <- function(
-  x,
-  by = NULL,
-  gamma = 0.1,
-  group_scales = NULL
-) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
 }
 
 
@@ -123,9 +82,8 @@ transform_clr.default <- function(
 #'
 #' @inheritParams transform_clr
 #'
-#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
-#'   returns a `glyexp_experiment` with an ALR-transformed expression matrix.
-#'   If `x` is a matrix, returns an ALR-transformed matrix.
+#' @return A [glyexp::experiment()] object with an ALR-transformed expression
+#'   matrix.
 #'   When ALR succeeds, the reference glycan is excluded from the result and the
 #'   output therefore has one fewer row than the input. When ALR falls back to
 #'   CLR, the returned object keeps the original dimensions. The returned values
@@ -133,50 +91,12 @@ transform_clr.default <- function(
 #'   `x / x_ref`.
 #' @export
 transform_alr <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
-  UseMethod("transform_alr")
-}
-
-#' @rdname transform_alr
-#' @export
-transform_alr.glyexp_experiment <- function(
-  x,
-  by = NULL,
-  gamma = 0.1,
-  group_scales = NULL
-) {
-  .dispatch_on_input(
+  .transform_alr_exp(
     x,
-    .transform_alr_exp,
-    .transform_alr_mat,
     by = by,
     gamma = gamma,
     group_scales = group_scales
   )
-}
-
-#' @rdname transform_alr
-#' @export
-transform_alr.matrix <- function(
-  x,
-  by = NULL,
-  gamma = 0.1,
-  group_scales = NULL
-) {
-  .transform_alr_mat(x, by = by, gamma = gamma, group_scales = group_scales)
-}
-
-#' @rdname transform_alr
-#' @export
-transform_alr.default <- function(
-  x,
-  by = NULL,
-  gamma = 0.1,
-  group_scales = NULL
-) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
 }
 
 #' Validate compositional inputs used by CLR and ALR
@@ -515,6 +435,8 @@ transform_alr.default <- function(
   gamma = 0.1,
   group_scales = NULL
 ) {
+  checkmate::assert_class(exp, "glyexp_experiment")
+
   by_values <- .resolve_column_param(
     by,
     sample_info = exp$sample_info,
@@ -820,6 +742,8 @@ transform_alr.default <- function(
   gamma = 0.1,
   group_scales = NULL
 ) {
+  checkmate::assert_class(exp, "glyexp_experiment")
+
   by_values <- .resolve_column_param(
     by,
     sample_info = exp$sample_info,

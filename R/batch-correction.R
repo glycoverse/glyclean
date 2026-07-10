@@ -21,13 +21,11 @@
 #' the group information will be included in the model to preserve biological variation
 #' while correcting for batch effects.
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
-#'   If a matrix, rows should be variables and columns should be samples.
+#' @param x A [glyexp::experiment()] object.
 #' @param batch Either a factor/character vector specifying batch assignments for each sample,
-#'   or a string specifying the column name in sample_info (for experiment input only).
-#'   Default to "batch" for experiment input.
+#'   or a string specifying the column name in `sample_info`. Defaults to "batch".
 #' @param group Either a factor/character vector specifying group assignments for each sample,
-#'   or a string specifying the column name in sample_info (for experiment input only).
+#'   or a string specifying the column name in `sample_info`.
 #'   If provided, it will be used as a covariate in the batch correction model.
 #'   This is useful when you have an unbalanced design.
 #'   Default to NULL.
@@ -38,8 +36,7 @@
 #' @param method The batch correction method to use. Either "combat" (default, uses
 #'   sva::ComBat) or "limma" (uses limma::removeBatchEffect). Default to "combat".
 #'
-#' @return For `glyexp_experiment` input, returns a modified `glyexp_experiment` object.
-#'   For matrix input, returns a batch-corrected matrix.
+#' @return A [glyexp::experiment()] object with batch effects corrected.
 #'
 #' @examples
 #' # With glyexp_experiment and column names
@@ -48,15 +45,9 @@
 #' exp$sample_info$group <- c("Ctrl", "Ctrl", "Treat", "Ctrl", "Treat", "Treat")
 #' corrected_exp <- correct_batch_effect(exp, batch = "batch", group = "group")
 #'
-#' # With matrix and factor vectors
-#' mat <- matrix(abs(rnorm(200)), nrow = 20, ncol = 10)
-#' batch_factor <- factor(rep(c("A", "B"), each = 5))
-#' group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
-#' corrected_mat <- correct_batch_effect(mat, batch = batch_factor, group = group_factor)
-#'
 #' # Using limma method
-#' corrected_mat <- correct_batch_effect(
-#'   mat, batch = batch_factor, group = group_factor, method = "limma"
+#' corrected_exp <- correct_batch_effect(
+#'   exp, batch = "batch", group = "group", method = "limma"
 #' )
 #'
 #' @importFrom utils capture.output
@@ -69,23 +60,10 @@ correct_batch_effect <- function(
   confounding_threshold = 0.4,
   method = c("combat", "limma")
 ) {
+  checkmate::assert_class(x, "glyexp_experiment")
   rlang::check_installed("sva", reason = "to use `correct_batch_effect()`")
   method <- match.arg(method)
-  UseMethod("correct_batch_effect")
-}
 
-#' @rdname correct_batch_effect
-#' @export
-correct_batch_effect.glyexp_experiment <- function(
-  x,
-  batch = "batch",
-  group = NULL,
-  check_confounding = TRUE,
-  confounding_threshold = 0.4,
-  method = c("combat", "limma")
-) {
-  method <- match.arg(method)
-  # For experiment input, extract batch and group from sample_info
   batch_group_info <- .extract_batch_group_from_experiment(
     x,
     batch,
@@ -99,7 +77,6 @@ correct_batch_effect.glyexp_experiment <- function(
     return(x)
   }
 
-  # Apply batch correction to expression matrix
   corrected_expr_mat <- .apply_batch_correction(
     x$expr_mat,
     batch_group_info$batch,
@@ -109,82 +86,13 @@ correct_batch_effect.glyexp_experiment <- function(
     method = method
   )
 
-  # Return original if correction failed
   if (is.null(corrected_expr_mat)) {
     return(x)
   }
 
-  # Update experiment with corrected expression matrix
   new_exp <- x
   new_exp$expr_mat <- corrected_expr_mat
-
-  return(new_exp)
-}
-
-#' @rdname correct_batch_effect
-#' @export
-correct_batch_effect.matrix <- function(
-  x,
-  batch = "batch",
-  group = NULL,
-  check_confounding = TRUE,
-  confounding_threshold = 0.4,
-  method = c("combat", "limma")
-) {
-  method <- match.arg(method)
-  .correct_batch_effect_matrix(
-    x,
-    batch = batch,
-    group = group,
-    check_confounding = check_confounding,
-    confounding_threshold = confounding_threshold,
-    method = method
-  )
-}
-
-#' @rdname correct_batch_effect
-#' @export
-correct_batch_effect.default <- function(
-  x,
-  batch = "batch",
-  group = NULL,
-  check_confounding = TRUE,
-  confounding_threshold = 0.4,
-  method = c("combat", "limma")
-) {
-  method <- match.arg(method)
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
-}
-
-.correct_batch_effect_matrix <- function(
-  x,
-  batch,
-  group,
-  check_confounding,
-  confounding_threshold,
-  method
-) {
-  # Validate and prepare batch/group vectors
-  batch_group_info <- .validate_and_prepare_batch_group(x, batch, group)
-  if (is.null(batch_group_info)) {
-    return(x)
-  }
-
-  # Apply batch correction
-  corrected_expr_mat <- .apply_batch_correction(
-    x,
-    batch_group_info$batch,
-    batch_group_info$group,
-    check_confounding = check_confounding,
-    confounding_threshold = confounding_threshold,
-    method = method
-  )
-
-  # Return corrected matrix or original if correction failed
-  if (is.null(corrected_expr_mat)) x else corrected_expr_mat
+  new_exp
 }
 
 
@@ -193,19 +101,17 @@ correct_batch_effect.default <- function(
 #' Use ANOVA to detect if batch effect is present in the data.
 #' If `group` is provided, it will be used as a covariate in the ANOVA model.
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
-#'   If a matrix, rows should be variables and columns should be samples.
+#' @param x A [glyexp::experiment()] object.
 #' @param batch Either a factor/character vector specifying batch assignments for each sample,
-#'   or a string specifying the column name in sample_info (for experiment input only).
-#'   Default to "batch" for experiment input.
+#'   or a string specifying the column name in `sample_info`. Defaults to "batch".
 #' @param group Either a factor/character vector specifying group assignments for each sample,
-#'   or a string specifying the column name in sample_info (for experiment input only).
+#'   or a string specifying the column name in `sample_info`.
 #'   If provided, it will be used as a covariate in the ANOVA model.
 #'   This is useful when you have an unbalanced design.
 #'   Default to NULL.
 #'
-#' @returns A double vector of p-values for each variable,
-#'  i.e., the same length as `nrow(x)` (for matrix) or `nrow(get_expr_mat(x))` (for experiment)
+#' @returns A double vector of p-values for each variable, with the same length
+#'   as `nrow(glyexp::get_expr_mat(x))`.
 #'
 #' @examples
 #' # With glyexp_experiment and column names
@@ -214,25 +120,10 @@ correct_batch_effect.default <- function(
 #' exp$sample_info$group <- c("Ctrl", "Ctrl", "Treat", "Ctrl", "Treat", "Treat")
 #' p_values <- detect_batch_effect(exp, batch = "batch", group = "group")
 #'
-#' # With matrix and factor vectors
-#' mat <- matrix(rnorm(200), nrow = 20, ncol = 10)
-#' batch_factor <- factor(rep(c("A", "B"), each = 5))
-#' group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
-#' p_values <- detect_batch_effect(mat, batch = batch_factor, group = group_factor)
-#'
 #' @export
 detect_batch_effect <- function(x, batch = "batch", group = NULL) {
-  UseMethod("detect_batch_effect")
-}
+  checkmate::assert_class(x, "glyexp_experiment")
 
-#' @rdname detect_batch_effect
-#' @export
-detect_batch_effect.glyexp_experiment <- function(
-  x,
-  batch = "batch",
-  group = NULL
-) {
-  # For experiment input, extract batch and group from sample_info
   batch_group_info <- .extract_batch_group_from_experiment(
     x,
     batch,
@@ -243,43 +134,11 @@ detect_batch_effect.glyexp_experiment <- function(
     return(rep(1, nrow(x$expr_mat)))
   }
 
-  # Perform batch effect detection
-  return(.perform_batch_effect_detection(
+  .perform_batch_effect_detection(
     x$expr_mat,
     batch_group_info$batch,
     batch_group_info$group
-  ))
-}
-
-#' @rdname detect_batch_effect
-#' @export
-detect_batch_effect.matrix <- function(x, batch = "batch", group = NULL) {
-  # Validate and prepare batch/group vectors
-  batch_group_info <- .validate_and_prepare_batch_group(
-    x,
-    batch,
-    group,
-    require_batch = TRUE
   )
-  if (is.null(batch_group_info)) {
-    return(rep(1, nrow(x)))
-  }
-
-  # Perform batch effect detection
-  return(.perform_batch_effect_detection(
-    x,
-    batch_group_info$batch,
-    batch_group_info$group
-  ))
-}
-
-#' @rdname detect_batch_effect
-#' @export
-detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
 }
 
 # Helper functions for common business logic
@@ -352,51 +211,6 @@ detect_batch_effect.default <- function(x, batch = "batch", group = NULL) {
   }
 
   return(list(batch = batch_values, group = group_values))
-}
-
-.validate_and_prepare_batch_group <- function(
-  x,
-  batch,
-  group = NULL,
-  require_batch = FALSE
-) {
-  # Validate matrix input
-  checkmate::assert_matrix(x)
-
-  # Check for invalid string inputs for matrix
-  if (is.character(batch) && length(batch) == 1) {
-    cli::cli_abort(
-      "Column name '{batch}' provided for {.arg batch}, but no sample_info available for matrix input. Please provide a factor or vector instead."
-    )
-  }
-  if (is.character(group) && length(group) == 1) {
-    cli::cli_abort(
-      "Column name '{group}' provided for {.arg group}, but no sample_info available for matrix input. Please provide a factor or vector instead."
-    )
-  }
-
-  checkmate::assert_vector(batch, len = ncol(x))
-  if (!is.null(group)) {
-    checkmate::assert_vector(group, len = ncol(x))
-  }
-
-  # Convert to factors if needed
-  batch <- factor(batch)
-  if (!is.null(group)) {
-    group <- factor(group)
-  }
-
-  # Check if there are at least 2 batches
-  if (length(unique(batch)) < 2) {
-    if (require_batch) {
-      cli::cli_warn(
-        "Less than 2 batches found. Cannot perform batch effect detection."
-      )
-    }
-    return(NULL)
-  }
-
-  return(list(batch = batch, group = group))
 }
 
 .check_batch_group_confounding <- function(batch, group, threshold = 0.4) {

@@ -2,21 +2,12 @@
 % Please edit documentation in R/remove.R
 \name{remove_low_expr}
 \alias{remove_low_expr}
-\alias{remove_low_expr.glyexp_experiment}
-\alias{remove_low_expr.matrix}
-\alias{remove_low_expr.default}
 \title{Remove Variables with Low Expression}
 \usage{
 remove_low_expr(x, percentile = 0.05, by = NULL, strict = FALSE)
-
-\method{remove_low_expr}{glyexp_experiment}(x, percentile = 0.05, by = NULL, strict = FALSE)
-
-\method{remove_low_expr}{matrix}(x, percentile = 0.05, by = NULL, strict = FALSE)
-
-\method{remove_low_expr}{default}(x, percentile = 0.05, by = NULL, strict = FALSE)
 }
 \arguments{
-\item{x}{Either a \code{glyexp_experiment} object or a matrix.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{percentile}{The percentile for median expression values.
 Defaults to 0.05, i.e., the 5\% lowest median expression values will be removed.}
@@ -27,8 +18,7 @@ Defaults to 0.05, i.e., the 5\% lowest median expression values will be removed.
 If \code{TRUE}, remove a variable if it passes the abundance thresholds in any group. Defaults to FALSE.}
 }
 \value{
-For \code{glyexp_experiment} input, returns a modified \code{glyexp_experiment} object.
-For matrix input, returns a filtered matrix.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with filtered variables.
 }
 \description{
 Filters variables based on median expression values.

@@ -15,36 +15,12 @@
 #' It effectively and robustly removes the bias introduced by total protein abundance,
 #' and removes batch effects in part.
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
-#'   If a matrix, rows should be variables and columns should be samples.
+#' @param x A [glyexp::experiment()] object.
 #'
-#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
-#'   returns a `glyexp_experiment` with normalized expression matrix.
-#'   If `x` is a matrix, returns a normalized matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_median <- function(x) {
-  UseMethod("normalize_median")
-}
-
-#' @rdname normalize_median
-#' @export
-normalize_median.glyexp_experiment <- function(x) {
-  .dispatch_and_apply_by_group(x, .normalize_median, by = NULL)
-}
-
-#' @rdname normalize_median
-#' @export
-normalize_median.matrix <- function(x) {
-  .dispatch_and_apply_by_group(x, .normalize_median, by = NULL)
-}
-
-#' @rdname normalize_median
-#' @export
-normalize_median.default <- function(x) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
+  .update_expr_mat(x, .normalize_median)
 }
 
 
@@ -53,36 +29,12 @@ normalize_median.default <- function(x) {
 #' Normalize the expression matrix by dividing each column (sample) by the absolute
 #' median of that column (NA ignored), so that the absolute median of each column is 1.
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
-#'   If a matrix, rows should be variables and columns should be samples.
+#' @param x A [glyexp::experiment()] object.
 #'
-#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
-#'   returns a `glyexp_experiment` with normalized expression matrix.
-#'   If `x` is a matrix, returns a normalized matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_median_abs <- function(x) {
-  UseMethod("normalize_median_abs")
-}
-
-#' @rdname normalize_median_abs
-#' @export
-normalize_median_abs.glyexp_experiment <- function(x) {
-  .dispatch_and_apply_by_group(x, .normalize_median_abs, by = NULL)
-}
-
-#' @rdname normalize_median_abs
-#' @export
-normalize_median_abs.matrix <- function(x) {
-  .dispatch_and_apply_by_group(x, .normalize_median_abs, by = NULL)
-}
-
-#' @rdname normalize_median_abs
-#' @export
-normalize_median_abs.default <- function(x) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
+  .update_expr_mat(x, .normalize_median_abs)
 }
 
 
@@ -95,36 +47,12 @@ normalize_median_abs.default <- function(x) {
 #' However, it results in compositional data, which may result in unrealistic
 #' downstream analysis results.
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
-#'   If a matrix, rows should be variables and columns should be samples.
+#' @param x A [glyexp::experiment()] object.
 #'
-#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
-#'   returns a `glyexp_experiment` with normalized expression matrix.
-#'   If `x` is a matrix, returns a normalized matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_total_area <- function(x) {
-  UseMethod("normalize_total_area")
-}
-
-#' @rdname normalize_total_area
-#' @export
-normalize_total_area.glyexp_experiment <- function(x) {
-  .dispatch_and_apply_by_group(x, .normalize_total_area, by = NULL)
-}
-
-#' @rdname normalize_total_area
-#' @export
-normalize_total_area.matrix <- function(x) {
-  .dispatch_and_apply_by_group(x, .normalize_total_area, by = NULL)
-}
-
-#' @rdname normalize_total_area
-#' @export
-normalize_total_area.default <- function(x) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
+  .update_expr_mat(x, .normalize_total_area)
 }
 
 
@@ -137,40 +65,16 @@ normalize_total_area.default <- function(x) {
 #' See [wikipedia](https://en.wikipedia.org/wiki/Quantile_normalization)
 #' for more information.
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
-#'   If a matrix, rows should be variables and columns should be samples.
+#' @param x A [glyexp::experiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
 #' @param ... Additional arguments to pass to [limma::normalizeQuantiles()].
 #'
-#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
-#'   returns a `glyexp_experiment` with normalized expression matrix.
-#'   If `x` is a matrix, returns a normalized matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_quantile <- function(x, by = NULL, ...) {
-  UseMethod("normalize_quantile")
-}
-
-#' @rdname normalize_quantile
-#' @export
-normalize_quantile.glyexp_experiment <- function(x, by = NULL, ...) {
-  .dispatch_and_apply_by_group(x, .normalize_quantile, by = by, ...)
-}
-
-#' @rdname normalize_quantile
-#' @export
-normalize_quantile.matrix <- function(x, by = NULL, ...) {
-  .dispatch_and_apply_by_group(x, .normalize_quantile, by = by, ...)
-}
-
-#' @rdname normalize_quantile
-#' @export
-normalize_quantile.default <- function(x, by = NULL, ...) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
+  .update_expr_mat(x, .normalize_quantile, by = by, ...)
 }
 
 
@@ -183,40 +87,16 @@ normalize_quantile.default <- function(x, by = NULL, ...) {
 #' See [this paper](https://doi.org/10.1093/bib/bbw095) for more information.
 #' Also see [limma::normalizeCyclicLoess()].
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
-#'   If a matrix, rows should be variables and columns should be samples.
+#' @param x A [glyexp::experiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
 #' @param ... Additional arguments to pass to [limma::normalizeCyclicLoess()].
 #'
-#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
-#'   returns a `glyexp_experiment` with normalized expression matrix.
-#'   If `x` is a matrix, returns a normalized matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_loessf <- function(x, by = NULL, ...) {
-  UseMethod("normalize_loessf")
-}
-
-#' @rdname normalize_loessf
-#' @export
-normalize_loessf.glyexp_experiment <- function(x, by = NULL, ...) {
-  .dispatch_and_apply_by_group(x, .normalize_loessf, by = by, ...)
-}
-
-#' @rdname normalize_loessf
-#' @export
-normalize_loessf.matrix <- function(x, by = NULL, ...) {
-  .dispatch_and_apply_by_group(x, .normalize_loessf, by = by, ...)
-}
-
-#' @rdname normalize_loessf
-#' @export
-normalize_loessf.default <- function(x, by = NULL, ...) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
+  .update_expr_mat(x, .normalize_loessf, by = by, ...)
 }
 
 
@@ -228,40 +108,16 @@ normalize_loessf.default <- function(x, by = NULL, ...) {
 #' See [this paper](https://doi.org/10.1093/bib/bbw095) for more information.
 #' Also see [limma::normalizeCyclicLoess()].
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
-#'   If a matrix, rows should be variables and columns should be samples.
+#' @param x A [glyexp::experiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
 #' @param ... Additional arguments to pass to [limma::normalizeCyclicLoess()].
 #'
-#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
-#'   returns a `glyexp_experiment` with normalized expression matrix.
-#'   If `x` is a matrix, returns a normalized matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_loesscyc <- function(x, by = NULL, ...) {
-  UseMethod("normalize_loesscyc")
-}
-
-#' @rdname normalize_loesscyc
-#' @export
-normalize_loesscyc.glyexp_experiment <- function(x, by = NULL, ...) {
-  .dispatch_and_apply_by_group(x, .normalize_loesscyc, by = by, ...)
-}
-
-#' @rdname normalize_loesscyc
-#' @export
-normalize_loesscyc.matrix <- function(x, by = NULL, ...) {
-  .dispatch_and_apply_by_group(x, .normalize_loesscyc, by = by, ...)
-}
-
-#' @rdname normalize_loesscyc
-#' @export
-normalize_loesscyc.default <- function(x, by = NULL, ...) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
+  .update_expr_mat(x, .normalize_loesscyc, by = by, ...)
 }
 
 
@@ -280,40 +136,16 @@ normalize_loesscyc.default <- function(x, by = NULL, ...) {
 #' At least 42 variables should be provided for this method.
 #' This follows the convention of the `vsn` package.
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
-#'   If a matrix, rows should be variables and columns should be samples.
+#' @param x A [glyexp::experiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
 #' @param ... Additional arguments to pass to [limma::normalizeVSN()].
 #'
-#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
-#'   returns a `glyexp_experiment` with normalized expression matrix.
-#'   If `x` is a matrix, returns a normalized matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_vsn <- function(x, by = NULL, ...) {
-  UseMethod("normalize_vsn")
-}
-
-#' @rdname normalize_vsn
-#' @export
-normalize_vsn.glyexp_experiment <- function(x, by = NULL, ...) {
-  .dispatch_and_apply_by_group(x, .normalize_vsn, by = by, ...)
-}
-
-#' @rdname normalize_vsn
-#' @export
-normalize_vsn.matrix <- function(x, by = NULL, ...) {
-  .dispatch_and_apply_by_group(x, .normalize_vsn, by = by, ...)
-}
-
-#' @rdname normalize_vsn
-#' @export
-normalize_vsn.default <- function(x, by = NULL, ...) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
+  .update_expr_mat(x, .normalize_vsn, by = by, ...)
 }
 
 
@@ -331,39 +163,15 @@ normalize_vsn.default <- function(x, by = NULL, ...) {
 #' in the collected samples.
 #' See [this paper](https://dx.doi.org/10.1021/ac051632c) for more information.
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
-#'   If a matrix, rows should be variables and columns should be samples.
+#' @param x A [glyexp::experiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
 #'
-#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
-#'   returns a `glyexp_experiment` with normalized expression matrix.
-#'   If `x` is a matrix, returns a normalized matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_median_quotient <- function(x, by = NULL) {
-  UseMethod("normalize_median_quotient")
-}
-
-#' @rdname normalize_median_quotient
-#' @export
-normalize_median_quotient.glyexp_experiment <- function(x, by = NULL) {
-  .dispatch_and_apply_by_group(x, .normalize_median_quotient, by = by)
-}
-
-#' @rdname normalize_median_quotient
-#' @export
-normalize_median_quotient.matrix <- function(x, by = NULL) {
-  .dispatch_and_apply_by_group(x, .normalize_median_quotient, by = by)
-}
-
-#' @rdname normalize_median_quotient
-#' @export
-normalize_median_quotient.default <- function(x, by = NULL) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
+  .update_expr_mat(x, .normalize_median_quotient, by = by)
 }
 
 
@@ -378,39 +186,15 @@ normalize_median_quotient.default <- function(x, by = NULL) {
 #' observed across individuals are imputable to diﬀerent amounts of the biological
 #' material in the collected samples.
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
-#'   If a matrix, rows should be variables and columns should be samples.
+#' @param x A [glyexp::experiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
 #'
-#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
-#'   returns a `glyexp_experiment` with normalized expression matrix.
-#'   If `x` is a matrix, returns a normalized matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_rlr <- function(x, by = NULL) {
-  UseMethod("normalize_rlr")
-}
-
-#' @rdname normalize_rlr
-#' @export
-normalize_rlr.glyexp_experiment <- function(x, by = NULL) {
-  .dispatch_and_apply_by_group(x, .normalize_rlr, by = by)
-}
-
-#' @rdname normalize_rlr
-#' @export
-normalize_rlr.matrix <- function(x, by = NULL) {
-  .dispatch_and_apply_by_group(x, .normalize_rlr, by = by)
-}
-
-#' @rdname normalize_rlr
-#' @export
-normalize_rlr.default <- function(x, by = NULL) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
+  .update_expr_mat(x, .normalize_rlr, by = by)
 }
 
 
@@ -421,39 +205,15 @@ normalize_rlr.default <- function(x, by = NULL) {
 #' is subtracted from the sample's abundance values. Then, it's like the
 #' [normalize_rlr()] method.
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
-#'   If a matrix, rows should be variables and columns should be samples.
+#' @param x A [glyexp::experiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
 #'
-#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
-#'   returns a `glyexp_experiment` with normalized expression matrix.
-#'   If `x` is a matrix, returns a normalized matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_rlrma <- function(x, by = NULL) {
-  UseMethod("normalize_rlrma")
-}
-
-#' @rdname normalize_rlrma
-#' @export
-normalize_rlrma.glyexp_experiment <- function(x, by = NULL) {
-  .dispatch_and_apply_by_group(x, .normalize_rlrma, by = by)
-}
-
-#' @rdname normalize_rlrma
-#' @export
-normalize_rlrma.matrix <- function(x, by = NULL) {
-  .dispatch_and_apply_by_group(x, .normalize_rlrma, by = by)
-}
-
-#' @rdname normalize_rlrma
-#' @export
-normalize_rlrma.default <- function(x, by = NULL) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
+  .update_expr_mat(x, .normalize_rlrma, by = by)
 }
 
 
@@ -467,40 +227,16 @@ normalize_rlrma.default <- function(x, by = NULL) {
 #' is then used to normalize the two samples. The process is repeated for a
 #' number of iterations.
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
-#'   If a matrix, rows should be variables and columns should be samples.
+#' @param x A [glyexp::experiment()] object.
 #' @param n_iter The number of iterations to perform. Default is 3.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
 #'
-#' @return Returns the same type as the input. If `x` is a `glyexp_experiment`,
-#'   returns a `glyexp_experiment` with normalized expression matrix.
-#'   If `x` is a matrix, returns a normalized matrix.
+#' @return A [glyexp::experiment()] object with a normalized expression matrix.
 #' @export
 normalize_rlrmacyc <- function(x, n_iter = 3, by = NULL) {
-  UseMethod("normalize_rlrmacyc")
-}
-
-#' @rdname normalize_rlrmacyc
-#' @export
-normalize_rlrmacyc.glyexp_experiment <- function(x, n_iter = 3, by = NULL) {
-  .dispatch_and_apply_by_group(x, .normalize_rlrmacyc, by = by, n_iter = n_iter)
-}
-
-#' @rdname normalize_rlrmacyc
-#' @export
-normalize_rlrmacyc.matrix <- function(x, n_iter = 3, by = NULL) {
-  .dispatch_and_apply_by_group(x, .normalize_rlrmacyc, by = by, n_iter = n_iter)
-}
-
-#' @rdname normalize_rlrmacyc
-#' @export
-normalize_rlrmacyc.default <- function(x, n_iter = 3, by = NULL) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
+  .update_expr_mat(x, .normalize_rlrmacyc, by = by, n_iter = n_iter)
 }
 
 

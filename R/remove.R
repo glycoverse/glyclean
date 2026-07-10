@@ -2,8 +2,7 @@
 
 #' Remove Rare Variables with Too Many Missing Values
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
-#'   If a matrix, rows should be variables and columns should be samples.
+#' @param x A [glyexp::experiment()] object.
 #' @param prop The proportion of missing values to use as a threshold.
 #' Variables with missing values above this threshold will be removed.
 #' Defaults to 0.5.
@@ -48,29 +47,11 @@
 #' # Use custom min_n to require at least 4 non-missing values
 #' remove_rare(exp, min_n = 4)$expr_mat
 #'
-#' # With matrix
-#' mat <- matrix(c(1, 2, NA, 4, 5, NA, 7, 8, 9), nrow = 3)
-#' mat_filtered <- remove_rare(mat, prop = 0.5)
-#'
 #' @importFrom rlang .data
 #'
-#' @return For `glyexp_experiment` input, returns a modified `glyexp_experiment` object.
-#'   For matrix input, returns a filtered matrix.
+#' @return A [glyexp::experiment()] object with filtered variables.
 #' @export
 remove_rare <- function(
-  x,
-  prop = NULL,
-  n = NULL,
-  by = NULL,
-  strict = FALSE,
-  min_n = NULL
-) {
-  UseMethod("remove_rare")
-}
-
-#' @rdname remove_rare
-#' @export
-remove_rare.glyexp_experiment <- function(
   x,
   prop = NULL,
   n = NULL,
@@ -87,56 +68,6 @@ remove_rare.glyexp_experiment <- function(
     n = n,
     min_n = min_n
   )
-}
-
-#' @rdname remove_rare
-#' @export
-remove_rare.matrix <- function(
-  x,
-  prop = NULL,
-  n = NULL,
-  by = NULL,
-  strict = FALSE,
-  min_n = NULL
-) {
-  if (!is.null(by) && is.character(by) && length(by) == 1) {
-    cli::cli_abort(
-      "For matrix input, {.arg by} must be a vector, not a column name."
-    )
-  }
-
-  by_values <- .resolve_column_param(
-    by,
-    sample_info = NULL,
-    param_name = "by",
-    n_samples = ncol(x),
-    allow_null = TRUE
-  )
-
-  .filter_matrix_rare(
-    x,
-    by = by_values,
-    strict = strict,
-    prop = prop,
-    n = n,
-    min_n = min_n
-  )
-}
-
-#' @rdname remove_rare
-#' @export
-remove_rare.default <- function(
-  x,
-  prop = NULL,
-  n = NULL,
-  by = NULL,
-  strict = FALSE,
-  min_n = NULL
-) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
 }
 
 .filter_matrix_rare <- function(
@@ -353,55 +284,18 @@ remove_rare.default <- function(
 #' Filters variables whose variance falls below a threshold.
 #' Default behavior is to remove variables with zero variance.
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
+#' @param x A [glyexp::experiment()] object.
 #' @param var_cutoff The cutoff for variance. Defaults to 0.
 #' @param by A factor specifying the groupings. Defaults to NULL.
 #' @param strict If `FALSE`, remove a variable only if it passes the variance threshold in all groups.
 #'   If `TRUE`, remove a variable if it passes the variance threshold in any group.
 #'
-#' @returns For `glyexp_experiment` input, returns a modified `glyexp_experiment` object.
-#'   For matrix input, returns a filtered matrix.
+#' @returns A [glyexp::experiment()] object with filtered variables.
 #'
 #' @seealso [remove_low_cv()], [remove_constant()]
 #' @export
 remove_low_var <- function(x, var_cutoff = 0, by = NULL, strict = FALSE) {
-  UseMethod("remove_low_var")
-}
-
-#' @rdname remove_low_var
-#' @export
-remove_low_var.glyexp_experiment <- function(
-  x,
-  var_cutoff = 0,
-  by = NULL,
-  strict = FALSE
-) {
   .filter_exp(x, by, strict, .filter_matrix_low_var, var_cutoff = var_cutoff)
-}
-
-#' @rdname remove_low_var
-#' @export
-remove_low_var.matrix <- function(
-  x,
-  var_cutoff = 0,
-  by = NULL,
-  strict = FALSE
-) {
-  .filter_matrix_low_var(x, by = by, strict = strict, var_cutoff = var_cutoff)
-}
-
-#' @rdname remove_low_var
-#' @export
-remove_low_var.default <- function(
-  x,
-  var_cutoff = 0,
-  by = NULL,
-  strict = FALSE
-) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
 }
 
 .filter_matrix_low_var <- function(
@@ -445,45 +339,18 @@ remove_low_var.default <- function(
 #' Filters variables whose coefficient of variation falls below a threshold.
 #' Default behavior is to remove variables with zero coefficient of variation.
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
+#' @param x A [glyexp::experiment()] object.
 #' @param cv_cutoff The cutoff for coefficient of variation. Defaults to 0.
 #' @param by A factor specifying the groupings. Defaults to NULL.
 #' @param strict If `FALSE`, remove a variable only if it passes the coefficient of variation threshold in all groups.
 #'   If `TRUE`, remove a variable if it passes the coefficient of variation threshold in any group.
 #'
-#' @returns For `glyexp_experiment` input, returns a modified `glyexp_experiment` object.
-#'   For matrix input, returns a filtered matrix.
+#' @returns A [glyexp::experiment()] object with filtered variables.
 #'
 #' @seealso [remove_low_var()]
 #' @export
 remove_low_cv <- function(x, cv_cutoff = 0, by = NULL, strict = FALSE) {
-  UseMethod("remove_low_cv")
-}
-
-#' @rdname remove_low_cv
-#' @export
-remove_low_cv.glyexp_experiment <- function(
-  x,
-  cv_cutoff = 0,
-  by = NULL,
-  strict = FALSE
-) {
   .filter_exp(x, by, strict, .filter_matrix_low_cv, cv_cutoff = cv_cutoff)
-}
-
-#' @rdname remove_low_cv
-#' @export
-remove_low_cv.matrix <- function(x, cv_cutoff = 0, by = NULL, strict = FALSE) {
-  .filter_matrix_low_cv(x, by = by, strict = strict, cv_cutoff = cv_cutoff)
-}
-
-#' @rdname remove_low_cv
-#' @export
-remove_low_cv.default <- function(x, cv_cutoff = 0, by = NULL, strict = FALSE) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
 }
 
 .filter_matrix_low_cv <- function(x, by = NULL, strict = FALSE, cv_cutoff = 0) {
@@ -561,13 +428,12 @@ remove_low_cv.default <- function(x, cv_cutoff = 0, by = NULL, strict = FALSE) {
 #' Constant variables are variables with the same value in all samples.
 #' This function is equivalent to `remove_low_var(x, var_cutoff = 0, by = by, strict = strict)`.
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
+#' @param x A [glyexp::experiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a vector specifying group assignments for each sample.
 #' @param strict If `FALSE`, remove a variable only if it is constant in all groups.
 #'   If `TRUE`, remove a variable if it is constant in any group. Defaults to FALSE.
 #'
-#' @returns For `glyexp_experiment` input, returns a modified `glyexp_experiment` object.
-#'   For matrix input, returns a filtered matrix.
+#' @returns A [glyexp::experiment()] object with filtered variables.
 #'
 #' @seealso [remove_low_var()]
 #' @export
@@ -582,54 +448,17 @@ remove_constant <- function(x, by = NULL, strict = FALSE) {
 #' Filters variables based on median expression values.
 #' Variables with median expression values below certain percentile will be removed.
 #'
-#' @param x Either a `glyexp_experiment` object or a matrix.
+#' @param x A [glyexp::experiment()] object.
 #' @param percentile The percentile for median expression values.
 #'   Defaults to 0.05, i.e., the 5% lowest median expression values will be removed.
 #' @param by Either a column name in `sample_info` (string) or a vector specifying group assignments for each sample.
 #' @param strict If `FALSE`, remove a variable only if it passes the abundance thresholds in all groups.
 #'   If `TRUE`, remove a variable if it passes the abundance thresholds in any group. Defaults to FALSE.
 #'
-#' @returns For `glyexp_experiment` input, returns a modified `glyexp_experiment` object.
-#'   For matrix input, returns a filtered matrix.
+#' @returns A [glyexp::experiment()] object with filtered variables.
 #' @export
 remove_low_expr <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
-  UseMethod("remove_low_expr")
-}
-
-#' @rdname remove_low_expr
-#' @export
-remove_low_expr.glyexp_experiment <- function(
-  x,
-  percentile = 0.05,
-  by = NULL,
-  strict = FALSE
-) {
   .filter_exp(x, by, strict, .filter_matrix_low_expr, percentile = percentile)
-}
-
-#' @rdname remove_low_expr
-#' @export
-remove_low_expr.matrix <- function(
-  x,
-  percentile = 0.05,
-  by = NULL,
-  strict = FALSE
-) {
-  .filter_matrix_low_expr(x, percentile, by, strict)
-}
-
-#' @rdname remove_low_expr
-#' @export
-remove_low_expr.default <- function(
-  x,
-  percentile = 0.05,
-  by = NULL,
-  strict = FALSE
-) {
-  cli::cli_abort(c(
-    "{.arg x} must be a {.cls glyexp_experiment} object or a {.cls matrix}.",
-    "x" = "Got {.cls {class(x)}}."
-  ))
 }
 
 .filter_matrix_low_expr <- function(
@@ -758,6 +587,8 @@ remove_low_expr.default <- function(
 #' @returns A modified `glyexp_experiment` object.
 #' @noRd
 .filter_exp <- function(x, by = NULL, strict = FALSE, filter_mat_fun, ...) {
+  checkmate::assert_class(x, "glyexp_experiment")
+
   by_values <- .resolve_column_param(
     by,
     sample_info = x$sample_info,

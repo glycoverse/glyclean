@@ -1,5 +1,13 @@
 # glyclean (development version)
 
+## Breaking changes
+
+* Normalization, imputation, filtering, CoDA, and batch-correction functions now require a `glyexp::experiment()` object; matrix inputs error and should first be wrapped with `glyexp::experiment()`.
+
+## Minor improvements and bug fixes
+
+* Preprocessing functions now expose a single consistent `glyexp::experiment()` interface.
+
 # glyclean 0.14.1
 
 ## Minor improvements and bug fixes

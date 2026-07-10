@@ -299,100 +299,6 @@ test_that("by parameter comparison: column name vs factor", {
   )
 })
 
-test_that("normalize_median works with matrix input", {
-  # Create test matrix
-  test_mat <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9), nrow = 3, ncol = 3)
-  rownames(test_mat) <- paste0("V", 1:3)
-  colnames(test_mat) <- paste0("S", 1:3)
-
-  # Apply normalization
-  result_mat <- normalize_median(test_mat)
-
-  # Check that the function returns a matrix
-  expect_true(is.matrix(result_mat))
-  expect_equal(dim(result_mat), dim(test_mat))
-  expect_equal(rownames(result_mat), rownames(test_mat))
-  expect_equal(colnames(result_mat), colnames(test_mat))
-
-  # Check that median normalization has been applied correctly
-  # After median normalization, each column should have the same median
-  col_medians <- apply(result_mat, 2, median)
-  expect_true(all(abs(diff(col_medians)) < 1e-10))
-})
-
-# Test matrix input with by parameter (new functionality)
-
-test_that("normalize_quantile works with matrix input and by parameter", {
-  # Create test matrix
-  test_mat <- matrix(rnorm(20), nrow = 4, ncol = 5)
-  rownames(test_mat) <- paste0("V", 1:4)
-  colnames(test_mat) <- paste0("S", 1:5)
-
-  # Create grouping vector
-  by_vector <- factor(c("A", "A", "B", "B", "B"))
-
-  # Apply normalization with by parameter
-  result_mat <- normalize_quantile(test_mat, by = by_vector)
-
-  # Check that the function returns a matrix
-  expect_true(is.matrix(result_mat))
-  expect_equal(dim(result_mat), dim(test_mat))
-  expect_equal(rownames(result_mat), rownames(test_mat))
-  expect_equal(colnames(result_mat), colnames(test_mat))
-
-  # Check that all values are finite after normalization
-  expect_true(all(is.finite(result_mat)))
-})
-
-test_that("matrix input with by parameter: column name should error", {
-  # Create test matrix
-  test_mat <- matrix(rnorm(20), nrow = 4, ncol = 5)
-  rownames(test_mat) <- paste0("V", 1:4)
-  colnames(test_mat) <- paste0("S", 1:5)
-
-  # Test with column name (should error for matrix input)
-  expect_error(
-    normalize_quantile(test_mat, by = "group"),
-    "For matrix input.*must be a vector, not a column name"
-  )
-})
-
-test_that("matrix input with by parameter: wrong length vector should error", {
-  # Create test matrix
-  test_mat <- matrix(rnorm(20), nrow = 4, ncol = 5)
-  rownames(test_mat) <- paste0("V", 1:4)
-  colnames(test_mat) <- paste0("S", 1:5)
-
-  # Test with wrong length vector
-  wrong_length_vector <- c("A", "B", "A") # Should be length 5
-  expect_error(
-    normalize_quantile(test_mat, by = wrong_length_vector),
-    "vector must have length 5"
-  )
-})
-
-test_that("normalize_median_quotient works with matrix input and by parameter", {
-  # Create test matrix with more samples for better quotient calculation
-  test_mat <- matrix(rnorm(24), nrow = 4, ncol = 6)
-  rownames(test_mat) <- paste0("V", 1:4)
-  colnames(test_mat) <- paste0("S", 1:6)
-
-  # Create grouping vector
-  by_vector <- rep(c("Control", "Treatment"), each = 3)
-
-  # Apply normalization with by parameter
-  result_mat <- normalize_median_quotient(test_mat, by = by_vector)
-
-  # Check that the function returns a matrix
-  expect_true(is.matrix(result_mat))
-  expect_equal(dim(result_mat), dim(test_mat))
-  expect_equal(rownames(result_mat), rownames(test_mat))
-  expect_equal(colnames(result_mat), colnames(test_mat))
-
-  # Check that all values are finite after normalization
-  expect_true(all(is.finite(result_mat)))
-})
-
 test_that("normalize_vsn requires enough variables or the package", {
   test_exp <- simple_exp(10, 10)
 
@@ -403,7 +309,7 @@ test_that("normalize_vsn requires enough variables or the package", {
   }
 })
 
-test_that("normalize functions error on unsupported input", {
+test_that("normalization functions require glyexp experiments", {
   funcs <- list(
     normalize_median,
     normalize_median_abs,
@@ -419,6 +325,7 @@ test_that("normalize functions error on unsupported input", {
   )
 
   purrr::walk(funcs, function(fn) {
-    expect_error(fn(1), "glyexp_experiment|matrix")
+    expect_error(fn(matrix(1:6, nrow = 2)), "glyexp_experiment")
+    expect_error(fn(1), "glyexp_experiment")
   })
 })

@@ -687,121 +687,6 @@ test_that("batch correction reduces batch-related variance", {
   )
 })
 
-test_that("correct_batch_effect works with matrix input", {
-  # Set seed for reproducible results
-  set.seed(123)
-
-  # Create test matrix
-  test_mat <- matrix(rnorm(60, mean = 10, sd = 2), nrow = 6, ncol = 10)
-  rownames(test_mat) <- paste0("V", 1:6)
-  colnames(test_mat) <- paste0("S", 1:10)
-
-  # Create batch and group factors
-  batch_factor <- factor(rep(c("A", "B"), each = 5))
-  group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
-
-  # Apply batch correction
-  suppressMessages(
-    result_mat <- correct_batch_effect(
-      test_mat,
-      batch = batch_factor,
-      group = group_factor
-    )
-  )
-
-  # Check that the function returns a matrix
-  expect_true(is.matrix(result_mat))
-  expect_equal(dim(result_mat), dim(test_mat))
-  expect_equal(rownames(result_mat), rownames(test_mat))
-  expect_equal(colnames(result_mat), colnames(test_mat))
-
-  # Check that all values are finite
-  expect_true(all(is.finite(result_mat)))
-})
-
-test_that("detect_batch_effect works with matrix input", {
-  # Set seed for reproducible results
-  set.seed(456)
-
-  # Create test matrix with batch effects
-  test_mat <- matrix(nrow = 5, ncol = 8)
-  batch_factor <- factor(rep(c("A", "B"), each = 4))
-
-  # Add artificial batch effects to some variables
-  for (i in 1:5) {
-    batch_a_vals <- rnorm(4, mean = 10, sd = 1)
-    batch_b_vals <- rnorm(4, mean = 12, sd = 1) # Different mean for batch B
-    test_mat[i, ] <- c(batch_a_vals, batch_b_vals)
-  }
-
-  rownames(test_mat) <- paste0("V", 1:5)
-  colnames(test_mat) <- paste0("S", 1:8)
-
-  # Detect batch effects
-  suppressMessages(
-    p_values <- detect_batch_effect(test_mat, batch = batch_factor)
-  )
-
-  # Check that the function returns appropriate results
-  expect_type(p_values, "double")
-  expect_length(p_values, nrow(test_mat))
-  expect_named(p_values, rownames(test_mat))
-  expect_true(all(p_values >= 0 & p_values <= 1))
-})
-
-test_that("batch correction functions reject column names for matrix input", {
-  # Set seed for reproducible results
-  set.seed(789)
-
-  # Create test matrix with larger, more stable values
-  test_mat <- matrix(rnorm(60, mean = 100, sd = 10), nrow = 6, ncol = 10)
-  rownames(test_mat) <- paste0("V", 1:6)
-  colnames(test_mat) <- paste0("S", 1:10)
-
-  # Create valid factor vectors
-  batch_factor <- factor(rep(c("A", "B"), each = 5))
-  group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
-
-  # Test that column names are rejected for batch parameter
-  expect_error(
-    correct_batch_effect(test_mat, batch = "batch"),
-    "Column name 'batch' provided for.*batch.*but no sample_info available.*Please provide a factor or vector instead"
-  )
-
-  expect_error(
-    detect_batch_effect(test_mat, batch = "batch"),
-    "Column name 'batch' provided for.*batch.*but no sample_info available.*Please provide a factor or vector instead"
-  )
-
-  # Test that column names are rejected for group parameter
-  expect_error(
-    correct_batch_effect(test_mat, batch = batch_factor, group = "group"),
-    "Column name 'group' provided for.*group.*but no sample_info available.*Please provide a factor or vector instead"
-  )
-
-  expect_error(
-    detect_batch_effect(test_mat, batch = batch_factor, group = "group"),
-    "Column name 'group' provided for.*group.*but no sample_info available.*Please provide a factor or vector instead"
-  )
-
-  # Test that factor vectors work correctly (use expect_warning to capture NaN warnings if they occur)
-  expect_warning(
-    {
-      result1 <- suppressMessages(correct_batch_effect(
-        test_mat,
-        batch = batch_factor,
-        group = group_factor
-      ))
-      result2 <- suppressMessages(detect_batch_effect(
-        test_mat,
-        batch = batch_factor,
-        group = group_factor
-      ))
-    },
-    NA # Expect no warnings, but if NaN warnings occur they will be captured
-  )
-})
-
 test_that("correct_batch_effect handles missing batch column gracefully", {
   # Create experiment without batch column
   exp <- complex_exp()
@@ -825,23 +710,6 @@ test_that("correct_batch_effect handles single batch scenario", {
   )
   expect_s3_class(result, "glyexp_experiment")
   expect_identical(result, exp) # Should return original when correction fails
-})
-
-test_that("correct_batch_effect handles matrix with single batch", {
-  # Create test matrix
-  test_mat <- matrix(rnorm(30, mean = 10, sd = 2), nrow = 5, ncol = 6)
-  rownames(test_mat) <- paste0("V", 1:5)
-  colnames(test_mat) <- paste0("S", 1:6)
-
-  # Create single batch vector
-  single_batch <- factor(rep("A", 6))
-
-  # Should return original matrix for single batch
-  result <- suppressMessages(correct_batch_effect(
-    test_mat,
-    batch = single_batch
-  ))
-  expect_equal(result, test_mat)
 })
 
 test_that("detect_batch_effect handles missing batch column gracefully", {
@@ -883,25 +751,6 @@ test_that("detect_batch_effect handles single batch scenario", {
   )
   expect_type(result, "double")
   expect_length(result, nrow(exp$expr_mat))
-  expect_true(all(result == 1))
-})
-
-test_that("detect_batch_effect handles matrix with single batch", {
-  # Create test matrix
-  test_mat <- matrix(rnorm(30, mean = 10, sd = 2), nrow = 5, ncol = 6)
-  rownames(test_mat) <- paste0("V", 1:5)
-  colnames(test_mat) <- paste0("S", 1:6)
-
-  # Create single batch vector
-  single_batch <- factor(rep("A", 6))
-
-  # Should return vector of 1s for single batch with warning
-  expect_warning(
-    result <- detect_batch_effect(test_mat, batch = single_batch),
-    "Less than 2 batches found"
-  )
-  expect_type(result, "double")
-  expect_length(result, nrow(test_mat))
   expect_true(all(result == 1))
 })
 
@@ -1057,35 +906,6 @@ test_that("correct_batch_effect works with limma method", {
   expect_false(identical(result$expr_mat, exp$expr_mat))
 })
 
-test_that("correct_batch_effect works with limma method and matrix input", {
-  set.seed(456)
-
-  test_mat <- matrix(rnorm(60, mean = 10, sd = 2), nrow = 6, ncol = 10)
-  rownames(test_mat) <- paste0("V", 1:6)
-  colnames(test_mat) <- paste0("S", 1:10)
-
-  batch_factor <- factor(rep(c("A", "B"), each = 5))
-  group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
-
-  withr::with_output_sink(
-    nullfile(),
-    suppressMessages(
-      result_mat <- correct_batch_effect(
-        test_mat,
-        batch = batch_factor,
-        group = group_factor,
-        method = "limma"
-      )
-    )
-  )
-
-  expect_true(is.matrix(result_mat))
-  expect_equal(dim(result_mat), dim(test_mat))
-  expect_equal(rownames(result_mat), rownames(test_mat))
-  expect_equal(colnames(result_mat), colnames(test_mat))
-  expect_true(all(is.finite(result_mat)))
-})
-
 test_that("correct_batch_effect validates method parameter", {
   exp <- glyexp::toy_experiment
   exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
@@ -1095,4 +915,10 @@ test_that("correct_batch_effect validates method parameter", {
     correct_batch_effect(exp, method = "invalid"),
     "arg.*should be one of"
   )
+})
+test_that("batch correction functions require glyexp experiments", {
+  mat <- matrix(1:12, nrow = 3)
+
+  expect_error(correct_batch_effect(mat), "glyexp_experiment")
+  expect_error(detect_batch_effect(mat), "glyexp_experiment")
 })

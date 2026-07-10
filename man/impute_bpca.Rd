@@ -2,22 +2,12 @@
 % Please edit documentation in R/impute.R
 \name{impute_bpca}
 \alias{impute_bpca}
-\alias{impute_bpca.glyexp_experiment}
-\alias{impute_bpca.matrix}
-\alias{impute_bpca.default}
 \title{BPCA Imputation}
 \usage{
 impute_bpca(x, by = NULL, ...)
-
-\method{impute_bpca}{glyexp_experiment}(x, by = NULL, ...)
-
-\method{impute_bpca}{matrix}(x, by = NULL, ...)
-
-\method{impute_bpca}{default}(x, by = NULL, ...)
 }
 \arguments{
-\item{x}{Either a \code{glyexp_experiment} object or a matrix.
-If a matrix, rows should be variables and columns should be samples.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
 specifying group assignments for each sample. Used for grouping when imputing missing values.}
@@ -25,9 +15,7 @@ specifying group assignments for each sample. Used for grouping when imputing mi
 \item{...}{Additional arguments to pass to \code{pcaMethods::pca()}.}
 }
 \value{
-Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
-returns a \code{glyexp_experiment} with missing values imputed.
-If \code{x} is a matrix, returns a matrix with missing values imputed.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed.
 }
 \description{
 A wrapper around the \code{\link[pcaMethods:pca]{pcaMethods::pca()}}.

@@ -2,22 +2,12 @@
 % Please edit documentation in R/normalize.R
 \name{normalize_rlrmacyc}
 \alias{normalize_rlrmacyc}
-\alias{normalize_rlrmacyc.glyexp_experiment}
-\alias{normalize_rlrmacyc.matrix}
-\alias{normalize_rlrmacyc.default}
 \title{Robust Linear Regression with Median Adjustment and Cyclic Normalization}
 \usage{
 normalize_rlrmacyc(x, n_iter = 3, by = NULL)
-
-\method{normalize_rlrmacyc}{glyexp_experiment}(x, n_iter = 3, by = NULL)
-
-\method{normalize_rlrmacyc}{matrix}(x, n_iter = 3, by = NULL)
-
-\method{normalize_rlrmacyc}{default}(x, n_iter = 3, by = NULL)
 }
 \arguments{
-\item{x}{Either a \code{glyexp_experiment} object or a matrix.
-If a matrix, rows should be variables and columns should be samples.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{n_iter}{The number of iterations to perform. Default is 3.}
 
@@ -26,9 +16,7 @@ specifying group assignments for each sample. Optional.
 If provided, the normalization will be performed within each group.}
 }
 \value{
-Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
-returns a \code{glyexp_experiment} with normalized expression matrix.
-If \code{x} is a matrix, returns a normalized matrix.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with a normalized expression matrix.
 }
 \description{
 This method is based on robust linear regression with median adjustment

@@ -162,7 +162,7 @@ test_that("impute_min_prob uses left-censored log-scale draws", {
   })
 
   set.seed(42)
-  result <- impute_min_prob(test_mat, q = 0.1, tune.sigma = 0.25)
+  result <- .impute_min_prob(test_mat, q = 0.1, tune.sigma = 0.25)
 
   expect_equal(result, 2^expected)
   expect_equal(result[!is.na(test_mat)], test_mat[!is.na(test_mat)])
@@ -192,7 +192,7 @@ test_that("impute_min_prob falls back to global center for all-missing samples",
   colnames(test_mat) <- paste0("S", 1:3)
 
   set.seed(42)
-  result <- impute_min_prob(test_mat, q = 0.1, tune.sigma = 0)
+  result <- .impute_min_prob(test_mat, q = 0.1, tune.sigma = 0)
 
   expect_equal(sum(is.na(result)), 0)
   expect_equal(result[, c("S1", "S3")], test_mat[, c("S1", "S3")])
@@ -200,10 +200,11 @@ test_that("impute_min_prob falls back to global center for all-missing samples",
 })
 
 test_that("impute_min_prob validates unsupported dots clearly", {
-  test_mat <- matrix(c(1, NA, 3, 4), nrow = 2)
+  test_exp <- simple_exp(2, 2)
+  test_exp$expr_mat[2] <- NA
 
   expect_error(
-    impute_min_prob(test_mat, unsupported = TRUE),
+    impute_min_prob(test_exp, unsupported = TRUE),
     "Unsupported argument"
   )
 })
@@ -216,126 +217,7 @@ test_that("impute_miss_forest works", {
 })
 
 
-test_that("impute_zero works with matrix input", {
-  # Create test matrix with missing values
-  test_mat <- matrix(c(1, 2, NA, 4, 5, NA, 7, 8, 9), nrow = 3, ncol = 3)
-  rownames(test_mat) <- paste0("V", 1:3)
-  colnames(test_mat) <- paste0("S", 1:3)
-
-  # Apply imputation
-  result_mat <- impute_zero(test_mat)
-
-  # Check that the function returns a matrix
-  expect_true(is.matrix(result_mat))
-  expect_equal(dim(result_mat), dim(test_mat))
-  expect_equal(rownames(result_mat), rownames(test_mat))
-  expect_equal(colnames(result_mat), colnames(test_mat))
-
-  # Check that NA values were replaced with 0
-  expect_equal(sum(is.na(result_mat)), 0)
-  na_positions <- which(is.na(test_mat))
-  expect_true(all(result_mat[na_positions] == 0))
-})
-
-# Test matrix input with by parameter (new functionality)
-
-test_that("impute_sw_knn works with matrix input and by parameter", {
-  skip_if_not_installed("impute")
-
-  # Create test matrix with missing values (larger to reduce warnings)
-  test_mat <- matrix(runif(40, 1, 100), nrow = 8, ncol = 5)
-  test_mat[c(1, 9, 17)] <- NA # Add fewer missing values
-  rownames(test_mat) <- paste0("V", 1:8)
-  colnames(test_mat) <- paste0("S", 1:5)
-
-  # Create grouping vector
-  by_vector <- factor(c("A", "A", "B", "B", "B"))
-
-  # Apply imputation with by parameter (suppress technical warnings from impute.knn)
-  result_mat <- suppressWarnings(impute_sw_knn(test_mat, k = 2, by = by_vector))
-
-  # Check that the function returns a matrix
-  expect_true(is.matrix(result_mat))
-  expect_equal(dim(result_mat), dim(test_mat))
-  expect_equal(rownames(result_mat), rownames(test_mat))
-  expect_equal(colnames(result_mat), colnames(test_mat))
-
-  # Check that no NA values remain
-  expect_equal(sum(is.na(result_mat)), 0)
-})
-
-test_that("matrix input with by parameter: column name should error for impute functions", {
-  # Create test matrix with missing values
-  test_mat <- matrix(rnorm(20), nrow = 4, ncol = 5)
-  test_mat[c(1, 7, 13)] <- NA
-  rownames(test_mat) <- paste0("V", 1:4)
-  colnames(test_mat) <- paste0("S", 1:5)
-
-  # Test with column name (should error for matrix input)
-  expect_error(
-    impute_sw_knn(test_mat, by = "group"),
-    "For matrix input.*must be a vector, not a column name"
-  )
-})
-
-test_that("matrix input with by parameter: wrong length vector should error for impute functions", {
-  # Create test matrix with missing values
-  test_mat <- matrix(rnorm(20), nrow = 4, ncol = 5)
-  test_mat[c(1, 7, 13)] <- NA
-  rownames(test_mat) <- paste0("V", 1:4)
-  colnames(test_mat) <- paste0("S", 1:5)
-
-  # Test with wrong length vector
-  wrong_length_vector <- c("A", "B", "A") # Should be length 5
-  expect_error(
-    impute_sw_knn(test_mat, by = wrong_length_vector),
-    "vector must have length 5"
-  )
-})
-
-test_that("impute_min_prob works with matrix input and by parameter", {
-  # Create test matrix with missing values
-  test_mat <- matrix(rnorm(24, mean = 10, sd = 2), nrow = 4, ncol = 6)
-  test_mat[c(1, 7, 13, 19)] <- NA # Add some missing values
-  rownames(test_mat) <- paste0("V", 1:4)
-  colnames(test_mat) <- paste0("S", 1:6)
-
-  # Create grouping vector
-  by_vector <- rep(c("Control", "Treatment"), each = 3)
-
-  # Apply imputation with by parameter
-  result_mat <- impute_min_prob(test_mat, by = by_vector)
-
-  # Check that the function returns a matrix
-  expect_true(is.matrix(result_mat))
-  expect_equal(dim(result_mat), dim(test_mat))
-  expect_equal(rownames(result_mat), rownames(test_mat))
-  expect_equal(colnames(result_mat), colnames(test_mat))
-
-  # Check that no NA values remain
-  expect_equal(sum(is.na(result_mat)), 0)
-})
-
-test_that("impute_sample_min and impute_half_sample_min work with matrix input", {
-  test_mat <- matrix(c(1, NA, 3, 4, NA, 6), nrow = 2)
-  rownames(test_mat) <- paste0("V", 1:2)
-  colnames(test_mat) <- paste0("S", 1:3)
-
-  min_mat <- impute_sample_min(test_mat)
-  half_mat <- impute_half_sample_min(test_mat)
-
-  expect_true(is.matrix(min_mat))
-  expect_true(is.matrix(half_mat))
-  expect_equal(sum(is.na(min_mat)), 0)
-  expect_equal(sum(is.na(half_mat)), 0)
-
-  col_min <- apply(test_mat, 2, min, na.rm = TRUE)
-  expect_equal(min_mat[2, 1], unname(col_min[1]))
-  expect_equal(half_mat[2, 1], unname(col_min[1]) / 2)
-  expect_equal(half_mat[1, 3], unname(col_min[3]) / 2)
-})
-
-test_that("impute functions error on unsupported input", {
+test_that("imputation functions require glyexp experiments", {
   funcs <- list(
     impute_zero,
     impute_sample_min,
@@ -350,7 +232,8 @@ test_that("impute functions error on unsupported input", {
   )
 
   purrr::walk(funcs, function(fn) {
-    expect_error(fn(1), "glyexp_experiment|matrix")
+    expect_error(fn(matrix(1:6, nrow = 2)), "glyexp_experiment")
+    expect_error(fn(1), "glyexp_experiment")
   })
 })
 
@@ -362,10 +245,9 @@ test_that("impute_min_prob is self-contained", {
 })
 
 test_that("impute methods requiring suggested packages run or error cleanly", {
-  test_mat <- matrix(runif(36, 1, 100), nrow = 6)
-  test_mat[1, 2] <- NA
-  rownames(test_mat) <- paste0("V", 1:6)
-  colnames(test_mat) <- paste0("S", 1:6)
+  test_exp <- simple_exp(6, 6)
+  test_exp$expr_mat[] <- runif(36, 1, 100)
+  test_exp$expr_mat[1, 2] <- NA
 
   cases <- list(
     list(fn = impute_sw_knn, pkg = "impute", args = list(k = 2)),
@@ -378,11 +260,11 @@ test_that("impute methods requiring suggested packages run or error cleanly", {
 
   purrr::walk(cases, function(case) {
     if (rlang::is_installed(case$pkg)) {
-      result <- suppressWarnings(do.call(case$fn, c(list(test_mat), case$args)))
-      expect_true(is.matrix(result))
-      expect_equal(sum(is.na(result)), 0)
+      result <- suppressWarnings(do.call(case$fn, c(list(test_exp), case$args)))
+      expect_s3_class(result, "glyexp_experiment")
+      expect_equal(sum(is.na(result$expr_mat)), 0)
     } else {
-      expect_error(do.call(case$fn, c(list(test_mat), case$args)), case$pkg)
+      expect_error(do.call(case$fn, c(list(test_exp), case$args)), case$pkg)
     }
   })
 })

@@ -2,27 +2,15 @@
 % Please edit documentation in R/normalize.R
 \name{normalize_median}
 \alias{normalize_median}
-\alias{normalize_median.glyexp_experiment}
-\alias{normalize_median.matrix}
-\alias{normalize_median.default}
 \title{Median Normalization}
 \usage{
 normalize_median(x)
-
-\method{normalize_median}{glyexp_experiment}(x)
-
-\method{normalize_median}{matrix}(x)
-
-\method{normalize_median}{default}(x)
 }
 \arguments{
-\item{x}{Either a \code{glyexp_experiment} object or a matrix.
-If a matrix, rows should be variables and columns should be samples.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 }
 \value{
-Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
-returns a \code{glyexp_experiment} with normalized expression matrix.
-If \code{x} is a matrix, returns a normalized matrix.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with a normalized expression matrix.
 }
 \description{
 Normalize the expression matrix by dividing each column (sample) by the median

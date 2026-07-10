@@ -2,31 +2,19 @@
 % Please edit documentation in R/normalize.R
 \name{normalize_rlr}
 \alias{normalize_rlr}
-\alias{normalize_rlr.glyexp_experiment}
-\alias{normalize_rlr.matrix}
-\alias{normalize_rlr.default}
 \title{Robust Linear Regression Normalization}
 \usage{
 normalize_rlr(x, by = NULL)
-
-\method{normalize_rlr}{glyexp_experiment}(x, by = NULL)
-
-\method{normalize_rlr}{matrix}(x, by = NULL)
-
-\method{normalize_rlr}{default}(x, by = NULL)
 }
 \arguments{
-\item{x}{Either a \code{glyexp_experiment} object or a matrix.
-If a matrix, rows should be variables and columns should be samples.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
 specifying group assignments for each sample. Optional.
 If provided, the normalization will be performed within each group.}
 }
 \value{
-Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
-returns a \code{glyexp_experiment} with normalized expression matrix.
-If \code{x} is a matrix, returns a normalized matrix.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with a normalized expression matrix.
 }
 \description{
 This method is based on robust linear regression. The reference sample is

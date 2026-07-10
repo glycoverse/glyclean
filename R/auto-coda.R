@@ -8,11 +8,12 @@
 #' @inheritSection transform_clr Algorithmic details
 #' @inheritSection transform_clr Motif quantification
 #'
-#' @returns Returns the same type as the input. If `x` is a `glyexp_experiment`,
-#'  returns a `glyexp_experiment` with a CoDA-transformed expression matrix
-#'  (ALR if >50 variables, CLR otherwise).
+#' @returns A [glyexp::experiment()] object with a CoDA-transformed expression
+#'   matrix (ALR if >50 variables, CLR otherwise).
 #' @export
 auto_coda <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
+  checkmate::assert_class(x, "glyexp_experiment")
+
   if (nrow(x) > 50) {
     cli::cli_alert_info(
       "Data has more than 50 variables, using ALR transformation."
