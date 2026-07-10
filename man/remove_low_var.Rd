@@ -8,7 +8,7 @@ Remove Variables with Low Variance}
 remove_low_var(x, var_cutoff = 0, by = NULL, strict = FALSE)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{x}{A supported glyco SE or legacy experiment container.}
 
 \item{var_cutoff}{The cutoff for variance. Defaults to 0.}
 
@@ -18,7 +18,7 @@ remove_low_var(x, var_cutoff = 0, by = NULL, strict = FALSE)
 If \code{TRUE}, remove a variable if it passes the variance threshold in any group.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with filtered variables.
+The input container type with filtered variables.
 }
 \description{
 Filters variables whose variance falls below a threshold.

@@ -5,7 +5,8 @@
 #' Rows (variables) are sorted by missing value proportion from low to high.
 #' Columns (samples) are clustered using hierarchical clustering.
 #'
-#' @param exp A [glyexp::experiment()] object.
+#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
+#'   [glyexp::experiment()].
 #' @param ... Other arguments passed to `pheatmap::pheatmap()`.
 #'
 #' @returns A ggplot object of the missing value heatmap.
@@ -15,11 +16,11 @@
 #'
 #' @export
 plot_missing_heatmap <- function(exp, ...) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
   rlang::check_installed("pheatmap")
   rlang::check_installed("ggplotify")
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
 
   # Binarize: 1 = present, 0 = missing
   binary_mat <- ifelse(is.na(mat), 0L, 1L)
@@ -52,7 +53,7 @@ plot_missing_heatmap <- function(exp, ...) {
 #' Draw a bar plot of missing value proportions for each sample or variable.
 #' Items are ordered from low to high missing proportion.
 #'
-#' @param exp A [glyexp::experiment()] object.
+#' @param exp A supported glyco SE or legacy experiment container.
 #' @param on Whether to plot missingness by `"sample(s)"` or `"variable(s)"`.
 #'   Defaults to `"sample"`.
 #'
@@ -63,9 +64,9 @@ plot_missing_heatmap <- function(exp, ...) {
 #'
 #' @export
 plot_missing_bar <- function(exp, on = "sample") {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
 
   on <- match.arg(on, c("sample", "samples", "variable", "variables"))
   if (on %in% c("sample", "samples")) {
@@ -99,7 +100,7 @@ plot_missing_bar <- function(exp, on = "sample") {
 #' Draw a bar plot showing total intensity (TIC) for each sample. Samples are
 #' ordered from high to low TIC from left to right.
 #'
-#' @param exp A [glyexp::experiment()] object.
+#' @param exp A supported glyco SE or legacy experiment container.
 #'
 #' @returns A ggplot object of total intensity by sample.
 #'
@@ -108,9 +109,9 @@ plot_missing_bar <- function(exp, on = "sample") {
 #'
 #' @export
 plot_tic_bar <- function(exp) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
   sample_names <- .get_sample_names(mat)
 
   tic <- colSums(mat, na.rm = TRUE)
@@ -133,7 +134,7 @@ plot_tic_bar <- function(exp) {
 #' Draw a scatter plot of proteins ranked by mean log2 intensity.
 #' Proteins are ordered from high to low mean intensity along the x-axis.
 #'
-#' @param exp A [glyexp::experiment()] object.
+#' @param exp A supported glyco SE or legacy experiment container.
 #'
 #' @returns A ggplot object of protein rank abundance.
 #'
@@ -142,14 +143,15 @@ plot_tic_bar <- function(exp) {
 #'
 #' @export
 plot_rank_abundance <- function(exp) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
+  var_info <- .get_var_info(exp)
   log_mat <- .log2_matrix(mat)
   var_names <- .get_var_names(mat)
 
-  protein_names <- if ("protein" %in% colnames(exp$var_info)) {
-    protein <- exp$var_info$protein[match(var_names, exp$var_info$variable)]
+  protein_names <- if ("protein" %in% colnames(var_info)) {
+    protein <- var_info$protein[match(var_names, var_info$variable)]
     missing_protein <- is.na(protein) | protein == ""
     protein[missing_protein] <- var_names[missing_protein]
     protein
@@ -195,7 +197,7 @@ plot_rank_abundance <- function(exp) {
 #' Draw boxplots of log2-transformed intensities for each sample.
 #' Optionally color and group samples by a metadata variable.
 #'
-#' @param exp A [glyexp::experiment()] object.
+#' @param exp A supported glyco SE or legacy experiment container.
 #' @param by Grouping variable for samples. Can be a column name in `sample_info`
 #'   or a vector/factor with length equal to the number of samples. When provided,
 #'   samples are grouped along the x-axis and boxplots are colored by group.
@@ -208,15 +210,15 @@ plot_rank_abundance <- function(exp) {
 #'
 #' @export
 plot_int_boxplot <- function(exp, by = NULL) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
   sample_names <- .get_sample_names(mat)
   log_mat <- .log2_matrix(mat, sample_names = sample_names)
 
   by_values <- .resolve_column_param(
     by,
-    sample_info = exp$sample_info,
+    sample_info = .get_sample_info(exp),
     param_name = "by",
     n_samples = ncol(mat),
     allow_null = TRUE
@@ -247,7 +249,7 @@ plot_int_boxplot <- function(exp, by = NULL) {
 #' Draw boxplots of relative log expression (log2 intensity minus row median)
 #' for each sample. Optionally color and group samples by a metadata variable.
 #'
-#' @param exp A [glyexp::experiment()] object.
+#' @param exp A supported glyco SE or legacy experiment container.
 #' @param by Grouping variable for samples. Can be a column name in `sample_info`
 #'   or a vector/factor with length equal to the number of samples. When provided,
 #'   samples are grouped along the x-axis and boxplots are colored by group.
@@ -260,9 +262,9 @@ plot_int_boxplot <- function(exp, by = NULL) {
 #'
 #' @export
 plot_rle <- function(exp, by = NULL) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
   sample_names <- .get_sample_names(mat)
   log_mat <- .log2_matrix(mat, sample_names = sample_names)
   row_medians <- matrixStats::rowMedians(log_mat, na.rm = TRUE)
@@ -270,7 +272,7 @@ plot_rle <- function(exp, by = NULL) {
 
   by_values <- .resolve_column_param(
     by,
-    sample_info = exp$sample_info,
+    sample_info = .get_sample_info(exp),
     param_name = "by",
     n_samples = ncol(mat),
     allow_null = TRUE
@@ -302,7 +304,7 @@ plot_rle <- function(exp, by = NULL) {
 #' When `by` is provided, CVs are computed within each group and densities are
 #' shown with different fills.
 #'
-#' @param exp A [glyexp::experiment()] object.
+#' @param exp A supported glyco SE or legacy experiment container.
 #' @param by Grouping variable for samples. Can be a column name in `sample_info`
 #'   or a vector/factor with length equal to the number of samples. When provided,
 #'   CVs are computed within each group and densities are shown with different fills.
@@ -317,14 +319,14 @@ plot_rle <- function(exp, by = NULL) {
 #'
 #' @export
 plot_cv_dent <- function(exp, by = NULL) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
   var_names <- .get_var_names(mat)
 
   by_values <- .resolve_column_param(
     by,
-    sample_info = exp$sample_info,
+    sample_info = .get_sample_info(exp),
     param_name = "by",
     n_samples = ncol(mat),
     allow_null = TRUE
@@ -375,7 +377,7 @@ plot_cv_dent <- function(exp, by = NULL) {
 #' PCA is computed on log2-transformed intensities after removing variables
 #' with missing values.
 #'
-#' @param exp A [glyexp::experiment()] object.
+#' @param exp A supported glyco SE or legacy experiment container.
 #' @param batch_col Column name in `sample_info`, or a factor/vector with length
 #'   equal to the number of samples.
 #'
@@ -388,10 +390,10 @@ plot_cv_dent <- function(exp, by = NULL) {
 #'
 #' @export
 plot_batch_pca <- function(exp, batch_col = "batch") {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
   rlang::check_installed("factoextra", reason = "to use `plot_batch_pca()`")
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
   if (ncol(mat) < 2 || nrow(mat) < 2) {
     cli::cli_abort("PCA requires at least two samples and two variables.")
   }
@@ -400,7 +402,7 @@ plot_batch_pca <- function(exp, batch_col = "batch") {
 
   batch_values <- .resolve_column_param(
     batch_col,
-    sample_info = exp$sample_info,
+    sample_info = .get_sample_info(exp),
     param_name = "batch_col",
     n_samples = ncol(mat),
     allow_null = FALSE
@@ -452,7 +454,7 @@ plot_batch_pca <- function(exp, batch_col = "batch") {
 #' Randomly draw replicate sample pairs and plot log2 intensity scatter plots.
 #' The plot title shows sample names, and the subtitle reports the R2 value.
 #'
-#' @param exp A [glyexp::experiment()] object.
+#' @param exp A supported glyco SE or legacy experiment container.
 #' @param rep_col Column name in `sample_info` used to define replicate groups.
 #'   Samples with the same value in this column are treated as replicates
 #'   (e.g. `c("A", "A", "A", "B", "B", "B")` indicates three replicates for
@@ -468,12 +470,12 @@ plot_batch_pca <- function(exp, batch_col = "batch") {
 #'
 #' @export
 plot_rep_scatter <- function(exp, rep_col, n_pairs = 9) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
   checkmate::assert_string(rep_col)
   checkmate::assert_int(n_pairs, lower = 1)
   rlang::check_installed("patchwork", reason = "to use `plot_rep_scatter()`")
 
-  mat <- exp$expr_mat
+  mat <- .get_expr_mat(exp)
   if (ncol(mat) < 2 || nrow(mat) < 2) {
     cli::cli_abort(
       "Replicate scatter plots require at least two samples and two variables."
@@ -484,7 +486,7 @@ plot_rep_scatter <- function(exp, rep_col, n_pairs = 9) {
 
   rep_values <- .resolve_column_param(
     rep_col,
-    sample_info = exp$sample_info,
+    sample_info = .get_sample_info(exp),
     param_name = "rep_col",
     n_samples = ncol(mat),
     allow_null = FALSE

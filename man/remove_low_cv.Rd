@@ -7,7 +7,7 @@
 remove_low_cv(x, cv_cutoff = 0, by = NULL, strict = FALSE)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{x}{A supported glyco SE or legacy experiment container.}
 
 \item{cv_cutoff}{The cutoff for coefficient of variation. Defaults to 0.}
 
@@ -17,7 +17,7 @@ remove_low_cv(x, cv_cutoff = 0, by = NULL, strict = FALSE)
 If \code{TRUE}, remove a variable if it passes the coefficient of variation threshold in any group.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with filtered variables.
+The input container type with filtered variables.
 }
 \description{
 Filters variables whose coefficient of variation falls below a threshold.

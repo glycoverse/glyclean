@@ -3,6 +3,8 @@
 \name{adjust_protein}
 \alias{adjust_protein}
 \alias{adjust_protein.glyexp_experiment}
+\alias{adjust_protein.GlycomicSE}
+\alias{adjust_protein.GlycoproteomicSE}
 \alias{adjust_protein.default}
 \title{Adjust Protein Expression}
 \usage{
@@ -10,10 +12,15 @@ adjust_protein(exp, pro_expr_mat, method = c("ratio", "reg"))
 
 \method{adjust_protein}{glyexp_experiment}(exp, pro_expr_mat, method = c("ratio", "reg"))
 
+\method{adjust_protein}{GlycomicSE}(exp, pro_expr_mat, method = c("ratio", "reg"))
+
+\method{adjust_protein}{GlycoproteomicSE}(exp, pro_expr_mat, method = c("ratio", "reg"))
+
 \method{adjust_protein}{default}(exp, pro_expr_mat, method = c("ratio", "reg"))
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with "glycoproteomics" type.}
+\item{exp}{A \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} or a legacy
+glycoproteomics \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{pro_expr_mat}{A matrix of protein expression.
 Columns are samples, rows are uniprot protein accessions.}
@@ -22,7 +29,7 @@ Columns are samples, rows are uniprot protein accessions.}
 Either "ratio" or "reg". Default is "ratio".}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with adjusted protein expression.
+The input container type with adjusted protein expression.
 }
 \description{
 This function adjusts the glycopeptide expression by the protein expression.

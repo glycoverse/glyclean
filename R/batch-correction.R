@@ -21,7 +21,13 @@
 #' the group information will be included in the model to preserve biological variation
 #' while correcting for batch effects.
 #'
-#' @param x A [glyexp::experiment()] object.
+#' Because glyco SE abundance assays must be non-negative, negative corrected
+#' values are set to zero for [glyexp::GlycomicSE()] and
+#' [glyexp::GlycoproteomicSE()] inputs. Legacy [glyexp::experiment()] behavior
+#' is unchanged.
+#'
+#' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
+#'   [glyexp::experiment()].
 #' @param batch Either a factor/character vector specifying batch assignments for each sample,
 #'   or a string specifying the column name in `sample_info`. Defaults to "batch".
 #' @param group Either a factor/character vector specifying group assignments for each sample,
@@ -36,7 +42,7 @@
 #' @param method The batch correction method to use. Either "combat" (default, uses
 #'   sva::ComBat) or "limma" (uses limma::removeBatchEffect). Default to "combat".
 #'
-#' @return A [glyexp::experiment()] object with batch effects corrected.
+#' @return The input container type with batch effects corrected.
 #'
 #' @examples
 #' # With glyexp_experiment and column names
@@ -60,7 +66,7 @@ correct_batch_effect <- function(
   confounding_threshold = 0.4,
   method = c("combat", "limma")
 ) {
-  checkmate::assert_class(x, "glyexp_experiment")
+  .assert_glyclean_container(x)
   rlang::check_installed("sva", reason = "to use `correct_batch_effect()`")
   method <- match.arg(method)
 
@@ -78,7 +84,7 @@ correct_batch_effect <- function(
   }
 
   corrected_expr_mat <- .apply_batch_correction(
-    x$expr_mat,
+    .get_expr_mat(x),
     batch_group_info$batch,
     batch_group_info$group,
     check_confounding = check_confounding,
@@ -90,9 +96,11 @@ correct_batch_effect <- function(
     return(x)
   }
 
-  new_exp <- x
-  new_exp$expr_mat <- corrected_expr_mat
-  new_exp
+  if (!inherits(x, "glyexp_experiment")) {
+    corrected_expr_mat[corrected_expr_mat < 0] <- 0
+  }
+
+  .rebuild_container(x, expr_mat = corrected_expr_mat)
 }
 
 
@@ -101,7 +109,8 @@ correct_batch_effect <- function(
 #' Use ANOVA to detect if batch effect is present in the data.
 #' If `group` is provided, it will be used as a covariate in the ANOVA model.
 #'
-#' @param x A [glyexp::experiment()] object.
+#' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
+#'   [glyexp::experiment()].
 #' @param batch Either a factor/character vector specifying batch assignments for each sample,
 #'   or a string specifying the column name in `sample_info`. Defaults to "batch".
 #' @param group Either a factor/character vector specifying group assignments for each sample,
@@ -111,7 +120,7 @@ correct_batch_effect <- function(
 #'   Default to NULL.
 #'
 #' @returns A double vector of p-values for each variable, with the same length
-#'   as `nrow(glyexp::get_expr_mat(x))`.
+#'   as the number of rows in the input assay.
 #'
 #' @examples
 #' # With glyexp_experiment and column names
@@ -122,7 +131,7 @@ correct_batch_effect <- function(
 #'
 #' @export
 detect_batch_effect <- function(x, batch = "batch", group = NULL) {
-  checkmate::assert_class(x, "glyexp_experiment")
+  .assert_glyclean_container(x)
 
   batch_group_info <- .extract_batch_group_from_experiment(
     x,
@@ -131,11 +140,11 @@ detect_batch_effect <- function(x, batch = "batch", group = NULL) {
     require_batch = TRUE
   )
   if (is.null(batch_group_info)) {
-    return(rep(1, nrow(x$expr_mat)))
+    return(rep(1, nrow(.get_expr_mat(x))))
   }
 
   .perform_batch_effect_detection(
-    x$expr_mat,
+    .get_expr_mat(x),
     batch_group_info$batch,
     batch_group_info$group
   )
@@ -150,27 +159,29 @@ detect_batch_effect <- function(x, batch = "batch", group = NULL) {
   require_batch = FALSE
 ) {
   # Validate experiment input
-  checkmate::assert_class(x, "glyexp_experiment")
+  .assert_glyclean_container(x)
+  sample_info <- .get_sample_info(x)
+  expr_mat <- .get_expr_mat(x)
 
   # Handle batch parameter with special logic for non-required cases
   batch_values <- NULL
   if (is.character(batch) && length(batch) == 1) {
     # For string input, check if column exists first when not required
-    if (batch %in% colnames(x$sample_info)) {
+    if (batch %in% colnames(sample_info)) {
       batch_values <- .resolve_column_param(
         batch,
-        sample_info = x$sample_info,
+        sample_info = sample_info,
         param_name = "batch",
-        n_samples = ncol(x$expr_mat),
+        n_samples = ncol(expr_mat),
         allow_null = FALSE
       )
     } else if (require_batch) {
       # If batch is required but column doesn't exist, let resolve_column_param handle the error
       batch_values <- .resolve_column_param(
         batch,
-        sample_info = x$sample_info,
+        sample_info = sample_info,
         param_name = "batch",
-        n_samples = ncol(x$expr_mat),
+        n_samples = ncol(expr_mat),
         allow_null = FALSE
       )
     } else {
@@ -181,9 +192,9 @@ detect_batch_effect <- function(x, batch = "batch", group = NULL) {
     # Direct factor/vector input
     batch_values <- .resolve_column_param(
       batch,
-      sample_info = x$sample_info,
+      sample_info = sample_info,
       param_name = "batch",
-      n_samples = ncol(x$expr_mat),
+      n_samples = ncol(expr_mat),
       allow_null = FALSE
     )
   } else if (require_batch) {
@@ -195,9 +206,9 @@ detect_batch_effect <- function(x, batch = "batch", group = NULL) {
   # Resolve group parameter
   group_values <- .resolve_column_param(
     group,
-    sample_info = x$sample_info,
+    sample_info = sample_info,
     param_name = "group",
-    n_samples = ncol(x$expr_mat),
+    n_samples = ncol(expr_mat),
     allow_null = TRUE
   )
 

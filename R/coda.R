@@ -46,7 +46,8 @@
 #' dea_res <- glystats::gly_ttest(coda_motif_exp)
 #' ```
 #'
-#' @param x A [glyexp::experiment()] object.
+#' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
+#'   [glyexp::experiment()].
 #' @param by Either a column name in `sample_info` or a factor/vector with one
 #'   value per sample.
 #' @param gamma Standard deviation of the scale-uncertainty model on the `log2`
@@ -56,7 +57,7 @@
 #'   first, or two positive scales from which that ratio is derived. For
 #'   multi-group data, provide a positive vector with one scale per group.
 #'
-#' @return A [glyexp::experiment()] object with a transformed expression matrix.
+#' @return The input container type with a transformed expression matrix.
 #'   The returned values are back-transformed to the original ratio space.
 #'   Zeros in the input therefore remain zeros in the output.
 #' @export
@@ -82,7 +83,7 @@ transform_clr <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
 #'
 #' @inheritParams transform_clr
 #'
-#' @return A [glyexp::experiment()] object with an ALR-transformed expression
+#' @return The input container type with an ALR-transformed expression
 #'   matrix.
 #'   When ALR succeeds, the reference glycan is excluded from the result and the
 #'   output therefore has one fewer row than the input. When ALR falls back to
@@ -435,25 +436,29 @@ transform_alr <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
   gamma = 0.1,
   group_scales = NULL
 ) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
+
+  expr_mat <- .get_expr_mat(exp)
+  sample_info <- .get_sample_info(exp)
 
   by_values <- .resolve_column_param(
     by,
-    sample_info = exp$sample_info,
+    sample_info = sample_info,
     param_name = "by",
-    n_samples = ncol(exp$expr_mat),
+    n_samples = ncol(expr_mat),
     allow_null = TRUE
   )
 
-  exp$expr_mat <- .transform_clr_mat(
-    exp$expr_mat,
+  transformed <- .transform_clr_mat(
+    expr_mat,
     by = by_values,
     gamma = gamma,
     group_scales = group_scales
   )
-  exp$meta_data$coda_transform <- "clr"
-  exp$meta_data$coda_reference <- NULL
-  exp
+  metadata <- .get_container_metadata(exp)
+  metadata$coda_transform <- "clr"
+  metadata$coda_reference <- NULL
+  .rebuild_container(exp, expr_mat = transformed, metadata = metadata)
 }
 
 #' Compute between-group variance for a candidate ALR reference
@@ -742,37 +747,46 @@ transform_alr <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
   gamma = 0.1,
   group_scales = NULL
 ) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
+
+  expr_mat <- .get_expr_mat(exp)
+  sample_info <- .get_sample_info(exp)
 
   by_values <- .resolve_column_param(
     by,
-    sample_info = exp$sample_info,
+    sample_info = sample_info,
     param_name = "by",
-    n_samples = ncol(exp$expr_mat),
+    n_samples = ncol(expr_mat),
     allow_null = TRUE
   )
 
-  original_rows <- rownames(exp$expr_mat)
+  original_rows <- rownames(expr_mat)
   transformed <- .transform_alr_mat(
-    exp$expr_mat,
+    expr_mat,
     by = by_values,
     gamma = gamma,
     group_scales = group_scales
   )
 
-  if (nrow(transformed) < nrow(exp$expr_mat)) {
+  metadata <- .get_container_metadata(exp)
+  var_info <- .get_var_info(exp)
+  if (nrow(transformed) < nrow(expr_mat)) {
     keep_idx <- original_rows %in% rownames(transformed)
-    exp$var_info <- exp$var_info[keep_idx, , drop = FALSE]
-    exp$meta_data$coda_transform <- "alr"
-    exp$meta_data$coda_reference <- setdiff(
+    var_info <- var_info[keep_idx, , drop = FALSE]
+    metadata$coda_transform <- "alr"
+    metadata$coda_reference <- setdiff(
       original_rows,
       rownames(transformed)
     )
   } else {
-    exp$meta_data$coda_transform <- "clr"
-    exp$meta_data$coda_reference <- NULL
+    metadata$coda_transform <- "clr"
+    metadata$coda_reference <- NULL
   }
 
-  exp$expr_mat <- transformed
-  exp
+  .rebuild_container(
+    exp,
+    expr_mat = transformed,
+    var_info = var_info,
+    metadata = metadata
+  )
 }

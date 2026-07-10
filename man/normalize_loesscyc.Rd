@@ -7,7 +7,7 @@
 normalize_loesscyc(x, by = NULL, ...)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{x}{A supported glyco SE or legacy experiment container.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
 specifying group assignments for each sample. Optional.
@@ -16,7 +16,7 @@ If provided, the normalization will be performed within each group.}
 \item{...}{Additional arguments to pass to \code{\link[limma:normalizeCyclicLoess]{limma::normalizeCyclicLoess()}}.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with a normalized expression matrix.
+The input container type with a normalized expression matrix.
 }
 \description{
 This function is a wrapper around \code{\link[limma:normalizeCyclicLoess]{limma::normalizeCyclicLoess()}} with

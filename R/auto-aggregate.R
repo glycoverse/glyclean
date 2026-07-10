@@ -4,12 +4,13 @@
 #' if the glycan structure column exists,
 #' otherwise to "gf" (glycoforms with compositions) level.
 #'
-#' @param exp A [glyexp::experiment()] object with "glycoproteomics" type.
+#' @param exp A [glyexp::GlycoproteomicSE()] or a legacy
+#'   glycoproteomics [glyexp::experiment()] object.
 #' @param standardize_variable Whether to call [glyexp::standardize_variable()]
 #'   after aggregation. Set to `FALSE` to skip network calls for faster testing.
 #'   Default is `TRUE`.
 #'
-#' @returns A modified [glyexp::experiment()] object with aggregated expression matrix and
+#' @returns The input container type with an aggregated expression matrix and
 #'   updated variable information.
 #'
 #' @examples
@@ -19,26 +20,29 @@
 #'
 #' @export
 auto_aggregate <- function(exp, standardize_variable = TRUE) {
-  checkmate::assert_class(exp, "glyexp_experiment")
-  if (glyexp::get_exp_type(exp) != "glycoproteomics") {
+  .assert_glyclean_container(exp)
+  exp_type <- .get_exp_type(exp)
+  if (exp_type != "glycoproteomics") {
     cli::cli_abort(c(
       "The experiment type must be {.val glycoproteomics}.",
-      "x" = "Got {.val {glyexp::get_exp_type(exp)}}."
+      "x" = "Got {.val {exp_type}}."
     ))
   }
-  if ("glycan_structure" %in% colnames(glyexp::get_var_info(exp))) {
+  if ("glycan_structure" %in% colnames(.get_var_info(exp))) {
     cli::cli_alert_info("Aggregating to {.val gfs} level")
-    glyclean_aggregate.glyexp_experiment(
+    .aggregate_container(
       exp,
       to_level = "gfs",
-      standardize_variable = standardize_variable
+      standardize_variable = standardize_variable,
+      error_call = rlang::caller_call()
     )
   } else {
     cli::cli_alert_info("Aggregating to {.val gf} level")
-    glyclean_aggregate.glyexp_experiment(
+    .aggregate_container(
       exp,
       to_level = "gf",
-      standardize_variable = standardize_variable
+      standardize_variable = standardize_variable,
+      error_call = rlang::caller_call()
     )
   }
 }

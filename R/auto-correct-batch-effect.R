@@ -11,7 +11,8 @@
 #' If no batch information is available,
 #' the function will return the original experiment.
 #'
-#' @param exp A [glyexp::experiment()] object.
+#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
+#'   [glyexp::experiment()].
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
 #' @param batch_col The column name in sample_info for batches. Default is "batch".
@@ -23,7 +24,7 @@
 #' @param confounding_threshold The threshold for Cramer's V to consider batch and group variables highly confounded.
 #'   Only used when `check_confounding` is TRUE. Default to 0.4.
 #'
-#' @return A [glyexp::experiment()] object with batch effects corrected.
+#' @return The input container type with batch effects corrected.
 #'
 #' @examples
 #' exp <- glyexp::real_experiment
@@ -38,11 +39,13 @@ auto_correct_batch_effect <- function(
   check_confounding = TRUE,
   confounding_threshold = 0.4
 ) {
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
   checkmate::assert_number(prop_threshold, lower = 0, upper = 1)
 
+  sample_info <- .get_sample_info(exp)
+
   # Check if batch column exists
-  if (is.null(batch_col) || !batch_col %in% colnames(exp$sample_info)) {
+  if (is.null(batch_col) || !batch_col %in% colnames(sample_info)) {
     cli::cli_alert_info(
       "Batch column {.field {batch_col}} not found in sample_info. Skipping batch correction."
     )
@@ -51,7 +54,7 @@ auto_correct_batch_effect <- function(
 
   # Check if group column exists
   actual_group_col <- NULL
-  if (!is.null(group_col) && group_col %in% colnames(exp$sample_info)) {
+  if (!is.null(group_col) && group_col %in% colnames(sample_info)) {
     actual_group_col <- group_col
   }
 

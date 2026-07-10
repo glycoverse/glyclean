@@ -7,7 +7,8 @@
 transform_clr(x, by = NULL, gamma = 0.1, group_scales = NULL)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
+\code{\link[glyexp:experiment]{glyexp::experiment()}}.}
 
 \item{by}{Either a column name in \code{sample_info} or a factor/vector with one
 value per sample.}
@@ -21,7 +22,7 @@ first, or two positive scales from which that ratio is derived. For
 multi-group data, provide a positive vector with one scale per group.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with a transformed expression matrix.
+The input container type with a transformed expression matrix.
 The returned values are back-transformed to the original ratio space.
 Zeros in the input therefore remain zeros in the output.
 }

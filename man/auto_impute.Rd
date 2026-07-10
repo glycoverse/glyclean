@@ -7,7 +7,8 @@
 auto_impute(exp, group_col = "group", qc_name = "QC", to_try = NULL)
 }
 \arguments{
-\item{exp}{An \code{\link[glyexp:experiment]{glyexp::experiment()}}.}
+\item{exp}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
+\code{\link[glyexp:experiment]{glyexp::experiment()}}.}
 
 \item{group_col}{The column name in sample_info for groups. Default is "group".
 Can be NULL when no group information is available.}
@@ -20,7 +21,7 @@ This parameter is no longer used and will be removed in a future release.
 The automatic strategy is now deterministic and does not require user-specified methods to try.}
 }
 \value{
-The imputed experiment.
+The imputed object with the same container type as \code{exp}.
 }
 \description{
 This function automatically selects and applies a deterministic default

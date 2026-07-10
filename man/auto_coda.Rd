@@ -7,7 +7,8 @@
 auto_coda(x, by = NULL, gamma = 0.1, group_scales = NULL)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
+\code{\link[glyexp:experiment]{glyexp::experiment()}}.}
 
 \item{by}{Either a column name in \code{sample_info} or a factor/vector with one
 value per sample.}
@@ -21,8 +22,8 @@ first, or two positive scales from which that ratio is derived. For
 multi-group data, provide a positive vector with one scale per group.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with a CoDA-transformed expression
-matrix (ALR if >50 variables, CLR otherwise).
+The input container type with a CoDA-transformed expression matrix
+(ALR if >50 variables, CLR otherwise).
 }
 \description{
 If the data has more than 50 variables, call \code{\link[=transform_alr]{transform_alr()}}.

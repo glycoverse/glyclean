@@ -7,7 +7,7 @@
 plot_missing_bar(exp, on = "sample")
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{exp}{A supported glyco SE or legacy experiment container.}
 
 \item{on}{Whether to plot missingness by \code{"sample(s)"} or \code{"variable(s)"}.
 Defaults to \code{"sample"}.}

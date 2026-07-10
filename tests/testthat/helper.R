@@ -61,3 +61,36 @@ sanitize_cv_snapshot <- function(x) {
       "CV = CV_VALUE"
     )
 }
+
+simple_glycomic_se <- function(n_var = 4, n_samp = 6) {
+  abundance <- matrix(
+    seq_len(n_var * n_samp),
+    nrow = n_var,
+    dimnames = list(
+      paste0("V", seq_len(n_var)),
+      paste0("S", seq_len(n_samp))
+    )
+  )
+  row_data <- S4Vectors::DataFrame(
+    glycan_composition = glyrepr::as_glycan_composition(
+      rep("H5N2", n_var)
+    )
+  )
+  col_data <- S4Vectors::DataFrame(
+    group = factor(rep(c("A", "B"), length.out = n_samp)),
+    row.names = colnames(abundance)
+  )
+
+  glyexp::GlycomicSE(
+    abundance,
+    rowData = row_data,
+    colData = col_data,
+    metadata = list(glycan_type = "N")
+  )
+}
+
+simple_glycoproteomic_se <- function(n_var = 20) {
+  glyexp::real_experiment |>
+    glyexp::slice_head_var(n = n_var) |>
+    glyexp::as_glycoproteomic_se()
+}

@@ -29,6 +29,25 @@ test_that("correct_batch_effect works with valid batch and group information", {
   expect_equal(rownames(result$expr_mat), rownames(exp$expr_mat))
 })
 
+test_that("correct_batch_effect keeps glyco SE abundance non-negative", {
+  exp <- glyexp::real_experiment |>
+    glyexp::slice_head_var(n = 50) |>
+    glyexp::as_glycoproteomic_se()
+  SummarizedExperiment::colData(exp)$batch <- factor(
+    rep(c("A", "B", "C"), each = 4)
+  )
+  exp <- suppressMessages(
+    aggregate(exp, to_level = "gf", standardize_variable = FALSE)
+  )
+  exp <- normalize_median(exp)
+
+  result <- suppressMessages(correct_batch_effect(exp))
+
+  expect_s4_class(result, "GlycoproteomicSE")
+  expect_true(all(SummarizedExperiment::assay(result) >= 0))
+  expect_true(methods::validObject(result, test = TRUE))
+})
+
 test_that("correct_batch_effect errors when no batch column exists", {
   # Create experiment without batch info
   exp <- complex_exp()

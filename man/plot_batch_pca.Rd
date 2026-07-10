@@ -7,7 +7,7 @@
 plot_batch_pca(exp, batch_col = "batch")
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{exp}{A supported glyco SE or legacy experiment container.}
 
 \item{batch_col}{Column name in \code{sample_info}, or a factor/vector with length
 equal to the number of samples.}

@@ -7,10 +7,11 @@
 normalize_median(x)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
+\code{\link[glyexp:experiment]{glyexp::experiment()}}.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with a normalized expression matrix.
+The input container type with a normalized expression matrix.
 }
 \description{
 Normalize the expression matrix by dividing each column (sample) by the median

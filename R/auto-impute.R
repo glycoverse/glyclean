@@ -17,7 +17,8 @@
 #' fallback. [impute_sample_min()] and [impute_half_sample_min()] remain
 #' available for manual use, but they are not selected automatically.
 #'
-#' @param exp An [glyexp::experiment()].
+#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
+#'   [glyexp::experiment()].
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
 #' @param qc_name `r lifecycle::badge("deprecated")` This function no longer uses QC sample information.
@@ -26,7 +27,7 @@
 #'   This parameter is no longer used and will be removed in a future release.
 #'   The automatic strategy is now deterministic and does not require user-specified methods to try.
 #'
-#' @returns The imputed experiment.
+#' @returns The imputed object with the same container type as `exp`.
 #' @examples
 #' library(glyexp)
 #' exp_imputed <- auto_impute(real_experiment)
@@ -38,7 +39,7 @@ auto_impute <- function(
   to_try = NULL
 ) {
   # Check arguments
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_glyclean_container(exp)
   checkmate::assert_string(group_col, null.ok = TRUE)
 
   if (!identical(qc_name, "QC")) {
@@ -61,13 +62,13 @@ auto_impute <- function(
 
 #' Apply the deterministic automatic imputation strategy
 #'
-#' @param exp An [glyexp::experiment()].
+#' @param exp A supported glyclean container.
 #'
 #' @returns The imputed experiment.
 #' @noRd
 .auto_impute_default <- function(exp) {
   n_samples <- ncol(exp)
-  exp_type <- glyexp::get_exp_type(exp)
+  exp_type <- .get_exp_type(exp)
   strategy <- .choose_auto_impute_strategy(n_samples, exp_type)
 
   cli::cli_alert_info(

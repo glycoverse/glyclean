@@ -26,13 +26,14 @@
 #'
 #' In both methods, only glycoproteins identified in both `exp` and `pro_expr_mat` will be retained.
 #'
-#' @param exp A [glyexp::experiment()] object with "glycoproteomics" type.
+#' @param exp A [glyexp::GlycoproteomicSE()] or a legacy
+#'   glycoproteomics [glyexp::experiment()] object.
 #' @param pro_expr_mat A matrix of protein expression.
 #'  Columns are samples, rows are uniprot protein accessions.
 #' @param method The method to use for protein adjustment.
 #'  Either "ratio" or "reg". Default is "ratio".
 #'
-#' @return A [glyexp::experiment()] object with adjusted protein expression.
+#' @return The input container type with adjusted protein expression.
 #' @export
 #'
 #' @importFrom rlang .data
@@ -52,13 +53,33 @@ adjust_protein.glyexp_experiment <- function(
 
 #' @rdname adjust_protein
 #' @export
+adjust_protein.GlycomicSE <- function(
+  exp,
+  pro_expr_mat,
+  method = c("ratio", "reg")
+) {
+  .adjust_protein_experiment(exp, pro_expr_mat = pro_expr_mat, method = method)
+}
+
+#' @rdname adjust_protein
+#' @export
+adjust_protein.GlycoproteomicSE <- function(
+  exp,
+  pro_expr_mat,
+  method = c("ratio", "reg")
+) {
+  .adjust_protein_experiment(exp, pro_expr_mat = pro_expr_mat, method = method)
+}
+
+#' @rdname adjust_protein
+#' @export
 adjust_protein.default <- function(
   exp,
   pro_expr_mat,
   method = c("ratio", "reg")
 ) {
   cli::cli_abort(c(
-    "{.arg exp} must be a {.cls glyexp_experiment} object.",
+    "{.arg exp} must be a {.cls glyexp_experiment} object or a {.cls GlycoproteomicSE} object.",
     "x" = "Got {.cls {class(exp)}}."
   ))
 }
@@ -69,22 +90,24 @@ adjust_protein.default <- function(
   method = c("ratio", "reg")
 ) {
   # Check arguments
-  checkmate::assert_class(exp, "glyexp_experiment")
-  if (glyexp::get_exp_type(exp) != "glycoproteomics") {
+  .assert_glyclean_container(exp)
+  exp_type <- .get_exp_type(exp)
+  if (exp_type != "glycoproteomics") {
     cli::cli_abort(c(
       "The experiment type must be {.val glycoproteomics}.",
-      "x" = "Got {.val {glyexp::get_exp_type(exp)}}."
+      "x" = "Got {.val {exp_type}}."
     ))
   }
   method <- rlang::arg_match(method)
 
   # Check if the protein column exists
-  if (!"protein" %in% colnames(exp$var_info)) {
+  var_info <- .get_var_info(exp)
+  if (!"protein" %in% colnames(var_info)) {
     cli::cli_abort("The {.field protein} column does not exist.")
   }
 
   # Filter variables
-  common_pro <- intersect(exp$var_info$protein, rownames(pro_expr_mat))
+  common_pro <- intersect(var_info$protein, rownames(pro_expr_mat))
   if (length(common_pro) == 0) {
     cli::cli_abort(c(
       "No common proteins found between {.var exp} and {.var pro_expr_mat}.",
@@ -92,9 +115,9 @@ adjust_protein.default <- function(
     ))
   }
 
-  original_n_vars <- nrow(exp$var_info)
+  original_n_vars <- nrow(var_info)
 
-  exp <- glyexp::filter_var(exp, .data$protein %in% common_pro)
+  exp <- .subset_container(exp, rows = which(var_info$protein %in% common_pro))
   pro_expr_mat <- pro_expr_mat[common_pro, , drop = FALSE]
 
   new_exp <- switch(
@@ -103,7 +126,7 @@ adjust_protein.default <- function(
     reg = .adjust_protein_reg(exp, pro_expr_mat)
   )
 
-  n_dropped <- original_n_vars - nrow(new_exp$var_info)
+  n_dropped <- original_n_vars - nrow(.get_var_info(new_exp))
   if (n_dropped > 0) {
     cli::cli_alert_info(
       "Dropped {n_dropped} glycopeptides because they are not present in the protein expression matrix."
@@ -115,7 +138,8 @@ adjust_protein.default <- function(
 
 .adjust_protein_ratio <- function(exp, pro_expr_mat) {
   # Get the glycopeptide expression matrix
-  gp_expr_mat <- exp$expr_mat
+  gp_expr_mat <- .get_expr_mat(exp)
+  var_info <- .get_var_info(exp)
 
   # Ensure sample order consistency
   common_samples <- intersect(colnames(gp_expr_mat), colnames(pro_expr_mat))
@@ -133,7 +157,7 @@ adjust_protein.default <- function(
   # Apply ratio method for each glycopeptide using purrr
   adjusted_rows <- purrr::imap(seq_len(nrow(gp_expr_mat)), function(i, idx) {
     var_name <- rownames(gp_expr_mat)[i]
-    protein <- exp$var_info$protein[exp$var_info$variable == var_name]
+    protein <- var_info$protein[var_info$variable == var_name]
     gp_values <- gp_expr_mat[i, ]
     pro_values <- pro_expr_mat[protein, ]
     ratio_values <- gp_values / pro_values
@@ -148,20 +172,23 @@ adjust_protein.default <- function(
   colnames(adjusted_expr_mat) <- colnames(gp_expr_mat)
 
   # Update the expression matrix in the experiment object
-  new_exp <- exp
-  new_exp$expr_mat <- adjusted_expr_mat
-
-  # Update sample_info to keep only common samples
-  new_exp$sample_info <- exp$sample_info[
-    exp$sample_info$sample %in% common_samples,
+  sample_info <- .get_sample_info(exp)
+  sample_info <- sample_info[
+    match(common_samples, sample_info$sample),
+    ,
+    drop = FALSE
   ]
-
-  new_exp
+  .rebuild_container(
+    exp,
+    expr_mat = adjusted_expr_mat,
+    sample_info = sample_info
+  )
 }
 
 .adjust_protein_reg <- function(exp, pro_expr_mat) {
   # Get the glycopeptide expression matrix
-  gp_expr_mat <- exp$expr_mat
+  gp_expr_mat <- .get_expr_mat(exp)
+  var_info <- .get_var_info(exp)
 
   # Ensure sample order consistency
   common_samples <- intersect(colnames(gp_expr_mat), colnames(pro_expr_mat))
@@ -179,7 +206,7 @@ adjust_protein.default <- function(
   # Apply regression method for each glycopeptide using purrr
   adjusted_rows <- purrr::imap(seq_len(nrow(gp_expr_mat)), function(i, idx) {
     var_name <- rownames(gp_expr_mat)[i]
-    protein <- exp$var_info$protein[exp$var_info$variable == var_name]
+    protein <- var_info$protein[var_info$variable == var_name]
 
     gp_values <- gp_expr_mat[i, ]
     pro_values <- pro_expr_mat[protein, ]
@@ -240,13 +267,15 @@ adjust_protein.default <- function(
   colnames(adjusted_expr_mat) <- colnames(gp_expr_mat)
 
   # Update the expression matrix in the experiment object
-  new_exp <- exp
-  new_exp$expr_mat <- adjusted_expr_mat
-
-  # Update sample_info to keep only common samples
-  new_exp$sample_info <- exp$sample_info[
-    exp$sample_info$sample %in% common_samples,
+  sample_info <- .get_sample_info(exp)
+  sample_info <- sample_info[
+    match(common_samples, sample_info$sample),
+    ,
+    drop = FALSE
   ]
-
-  new_exp
+  .rebuild_container(
+    exp,
+    expr_mat = adjusted_expr_mat,
+    sample_info = sample_info
+  )
 }
