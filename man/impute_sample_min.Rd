@@ -2,27 +2,15 @@
 % Please edit documentation in R/impute.R
 \name{impute_sample_min}
 \alias{impute_sample_min}
-\alias{impute_sample_min.glyexp_experiment}
-\alias{impute_sample_min.matrix}
-\alias{impute_sample_min.default}
 \title{Sample Minimum Imputation}
 \usage{
 impute_sample_min(x)
-
-\method{impute_sample_min}{glyexp_experiment}(x)
-
-\method{impute_sample_min}{matrix}(x)
-
-\method{impute_sample_min}{default}(x)
 }
 \arguments{
-\item{x}{Either a \code{glyexp_experiment} object or a matrix.
-If a matrix, rows should be variables and columns should be samples.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 }
 \value{
-Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
-returns a \code{glyexp_experiment} with missing values imputed.
-If \code{x} is a matrix, returns a matrix with missing values imputed.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed.
 }
 \description{
 Impute missing values with the minimum value of the corresponding sample.

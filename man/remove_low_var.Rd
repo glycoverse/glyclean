@@ -2,22 +2,13 @@
 % Please edit documentation in R/remove.R
 \name{remove_low_var}
 \alias{remove_low_var}
-\alias{remove_low_var.glyexp_experiment}
-\alias{remove_low_var.matrix}
-\alias{remove_low_var.default}
 \title{Remove Variables with Low Variance
 Remove Variables with Low Variance}
 \usage{
 remove_low_var(x, var_cutoff = 0, by = NULL, strict = FALSE)
-
-\method{remove_low_var}{glyexp_experiment}(x, var_cutoff = 0, by = NULL, strict = FALSE)
-
-\method{remove_low_var}{matrix}(x, var_cutoff = 0, by = NULL, strict = FALSE)
-
-\method{remove_low_var}{default}(x, var_cutoff = 0, by = NULL, strict = FALSE)
 }
 \arguments{
-\item{x}{Either a \code{glyexp_experiment} object or a matrix.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{var_cutoff}{The cutoff for variance. Defaults to 0.}
 
@@ -27,8 +18,7 @@ remove_low_var(x, var_cutoff = 0, by = NULL, strict = FALSE)
 If \code{TRUE}, remove a variable if it passes the variance threshold in any group.}
 }
 \value{
-For \code{glyexp_experiment} input, returns a modified \code{glyexp_experiment} object.
-For matrix input, returns a filtered matrix.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with filtered variables.
 }
 \description{
 Filters variables whose variance falls below a threshold.

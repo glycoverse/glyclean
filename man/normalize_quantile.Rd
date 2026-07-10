@@ -2,22 +2,12 @@
 % Please edit documentation in R/normalize.R
 \name{normalize_quantile}
 \alias{normalize_quantile}
-\alias{normalize_quantile.glyexp_experiment}
-\alias{normalize_quantile.matrix}
-\alias{normalize_quantile.default}
 \title{Quantile Normalization}
 \usage{
 normalize_quantile(x, by = NULL, ...)
-
-\method{normalize_quantile}{glyexp_experiment}(x, by = NULL, ...)
-
-\method{normalize_quantile}{matrix}(x, by = NULL, ...)
-
-\method{normalize_quantile}{default}(x, by = NULL, ...)
 }
 \arguments{
-\item{x}{Either a \code{glyexp_experiment} object or a matrix.
-If a matrix, rows should be variables and columns should be samples.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
 specifying group assignments for each sample. Optional.
@@ -26,9 +16,7 @@ If provided, the normalization will be performed within each group.}
 \item{...}{Additional arguments to pass to \code{\link[limma:normalizequantiles]{limma::normalizeQuantiles()}}.}
 }
 \value{
-Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
-returns a \code{glyexp_experiment} with normalized expression matrix.
-If \code{x} is a matrix, returns a normalized matrix.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with a normalized expression matrix.
 }
 \description{
 This function is a wrapper around \code{\link[limma:normalizequantiles]{limma::normalizeQuantiles()}}.

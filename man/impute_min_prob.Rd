@@ -2,22 +2,12 @@
 % Please edit documentation in R/impute.R
 \name{impute_min_prob}
 \alias{impute_min_prob}
-\alias{impute_min_prob.glyexp_experiment}
-\alias{impute_min_prob.matrix}
-\alias{impute_min_prob.default}
 \title{Minimum Probability Imputation}
 \usage{
 impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
-
-\method{impute_min_prob}{glyexp_experiment}(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
-
-\method{impute_min_prob}{matrix}(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
-
-\method{impute_min_prob}{default}(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
 }
 \arguments{
-\item{x}{Either a \code{glyexp_experiment} object or a matrix.
-If a matrix, rows should be variables and columns should be samples.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
 specifying group assignments for each sample. Used for grouping when imputing missing values.}
@@ -32,9 +22,7 @@ left-censored draw distribution. Default is \code{1}.}
 supported.}
 }
 \value{
-Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
-returns a \code{glyexp_experiment} with missing values imputed.
-If \code{x} is a matrix, returns a matrix with missing values imputed.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed.
 }
 \description{
 Impute missing values using random draws from the left-censored

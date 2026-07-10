@@ -2,22 +2,12 @@
 % Please edit documentation in R/impute.R
 \name{impute_svd}
 \alias{impute_svd}
-\alias{impute_svd.glyexp_experiment}
-\alias{impute_svd.matrix}
-\alias{impute_svd.default}
 \title{SVD Imputation}
 \usage{
 impute_svd(x, by = NULL, ...)
-
-\method{impute_svd}{glyexp_experiment}(x, by = NULL, ...)
-
-\method{impute_svd}{matrix}(x, by = NULL, ...)
-
-\method{impute_svd}{default}(x, by = NULL, ...)
 }
 \arguments{
-\item{x}{Either a \code{glyexp_experiment} object or a matrix.
-If a matrix, rows should be variables and columns should be samples.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
 specifying group assignments for each sample. Used for grouping when imputing missing values.}
@@ -25,9 +15,7 @@ specifying group assignments for each sample. Used for grouping when imputing mi
 \item{...}{Additional arguments to pass to \code{pcaMethods::pca()}.}
 }
 \value{
-Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
-returns a \code{glyexp_experiment} with missing values imputed.
-If \code{x} is a matrix, returns a matrix with missing values imputed.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed.
 }
 \description{
 A wrapper around the \code{\link[pcaMethods:pca]{pcaMethods::pca()}}.

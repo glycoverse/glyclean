@@ -2,25 +2,15 @@
 % Please edit documentation in R/coda.R
 \name{transform_alr}
 \alias{transform_alr}
-\alias{transform_alr.glyexp_experiment}
-\alias{transform_alr.matrix}
-\alias{transform_alr.default}
 \title{Additive Log-Ratio Transformation}
 \usage{
 transform_alr(x, by = NULL, gamma = 0.1, group_scales = NULL)
-
-\method{transform_alr}{glyexp_experiment}(x, by = NULL, gamma = 0.1, group_scales = NULL)
-
-\method{transform_alr}{matrix}(x, by = NULL, gamma = 0.1, group_scales = NULL)
-
-\method{transform_alr}{default}(x, by = NULL, gamma = 0.1, group_scales = NULL)
 }
 \arguments{
-\item{x}{Either a \code{glyexp_experiment} object or a matrix.
-If a matrix, rows should be variables and columns should be samples.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
-\item{by}{Either a column name in \code{sample_info} (for \code{glyexp_experiment}
-input) or a factor/vector with one value per sample.}
+\item{by}{Either a column name in \code{sample_info} or a factor/vector with one
+value per sample.}
 
 \item{gamma}{Standard deviation of the scale-uncertainty model on the \code{log2}
 scale. Default is \code{0.1}. Set to \code{0} for deterministic transformation.}
@@ -31,9 +21,8 @@ first, or two positive scales from which that ratio is derived. For
 multi-group data, provide a positive vector with one scale per group.}
 }
 \value{
-Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
-returns a \code{glyexp_experiment} with an ALR-transformed expression matrix.
-If \code{x} is a matrix, returns an ALR-transformed matrix.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with an ALR-transformed expression
+matrix.
 When ALR succeeds, the reference glycan is excluded from the result and the
 output therefore has one fewer row than the input. When ALR falls back to
 CLR, the returned object keeps the original dimensions. The returned values

@@ -268,7 +268,7 @@ test_that("remove_rare: column name vs factor comparison", {
   expect_equal(result_by_name$var_info, result_by_factor$var_info)
 })
 
-test_that("remove_rare works with matrix input", {
+test_that("rare-variable matrix filter works", {
   # Create test matrix with missing values (5 samples to avoid min_n constraint)
   test_mat <- matrix(
     c(
@@ -301,7 +301,7 @@ test_that("remove_rare works with matrix input", {
   colnames(test_mat) <- paste0("S", 1:5)
 
   # Apply filtering
-  suppressMessages(result_mat <- remove_rare(test_mat, prop = 0.5))
+  suppressMessages(result_mat <- .filter_matrix_rare(test_mat, prop = 0.5))
 
   # Check that the function returns a matrix
   expect_true(is.matrix(result_mat))
@@ -311,7 +311,7 @@ test_that("remove_rare works with matrix input", {
   expect_equal(colnames(result_mat), colnames(test_mat))
 })
 
-test_that("remove_rare works with matrix input and by parameter", {
+test_that("rare-variable matrix filter works by group", {
   # Create test matrix with missing values
   test_mat <- matrix(
     c(
@@ -343,7 +343,7 @@ test_that("remove_rare works with matrix input and by parameter", {
 
   # Apply filtering with by parameter
   suppressMessages(
-    result_mat <- remove_rare(
+    result_mat <- .filter_matrix_rare(
       test_mat,
       by = by_vector,
       prop = 0.5,
@@ -357,37 +357,15 @@ test_that("remove_rare works with matrix input and by parameter", {
   expect_equal(colnames(result_mat), colnames(test_mat))
 })
 
-test_that("matrix input with by parameter: column name should error", {
-  # Create test matrix
-  test_mat <- matrix(c(1, 2, 3, 4, 5, 6), nrow = 2, ncol = 3)
-
-  # Should error when column name is provided for matrix input
-  expect_error(
-    remove_rare(test_mat, by = "group", prop = 0.5),
-    "For matrix input.*must be a vector, not a column name"
-  )
-})
-
-test_that("matrix input with by parameter: wrong length vector should error", {
-  # Create test matrix
-  test_mat <- matrix(c(1, 2, 3, 4, 5, 6), nrow = 2, ncol = 3)
-
-  # Should error when vector length doesn't match sample count
-  expect_error(
-    remove_rare(test_mat, by = c("A", "B"), prop = 0.5),
-    "vector must have length 3"
-  )
-})
-
 # Additional tests to improve coverage
 
-test_that("remove_rare with matrix input and small sample sizes", {
+test_that("rare-variable matrix filter handles small sample sizes", {
   # Test with 1 sample (min_n should be 1)
   mat1 <- matrix(c(1, NA, 3), nrow = 3, ncol = 1)
   rownames(mat1) <- paste0("V", 1:3)
   colnames(mat1) <- "S1"
 
-  suppressMessages(result <- remove_rare(mat1, prop = 1)) # No prop filtering
+  suppressMessages(result <- .filter_matrix_rare(mat1, prop = 1)) # No prop filtering
   expect_equal(nrow(result), 2) # V2 should be removed due to min_n
 
   # Test with 2 samples (min_n should be 2)
@@ -395,7 +373,7 @@ test_that("remove_rare with matrix input and small sample sizes", {
   rownames(mat2) <- paste0("V", 1:3)
   colnames(mat2) <- paste0("S", 1:2)
 
-  suppressMessages(result <- remove_rare(mat2, prop = 1))
+  suppressMessages(result <- .filter_matrix_rare(mat2, prop = 1))
   expect_equal(nrow(result), 2) # V2 should be removed due to min_n
 
   # Test with 3 samples (min_n should be 3)
@@ -403,11 +381,11 @@ test_that("remove_rare with matrix input and small sample sizes", {
   rownames(mat3) <- paste0("V", 1:3)
   colnames(mat3) <- paste0("S", 1:3)
 
-  suppressMessages(result <- remove_rare(mat3, prop = 1))
+  suppressMessages(result <- .filter_matrix_rare(mat3, prop = 1))
   expect_equal(nrow(result), 2) # V2 should be removed due to min_n
 })
 
-test_that("remove_rare with matrix input and grouping small sample sizes", {
+test_that("rare-variable matrix filter handles small groups", {
   # Test with small groups
   mat <- matrix(c(1, NA, 3, 4, NA, 6), nrow = 2, ncol = 3)
   rownames(mat) <- paste0("V", 1:2)
@@ -418,13 +396,13 @@ test_that("remove_rare with matrix input and grouping small sample sizes", {
 
   # Test with default min_n calculation
   suppressMessages(
-    result <- remove_rare(mat, by = by_vector, prop = 1, strict = FALSE)
+    result <- .filter_matrix_rare(mat, by = by_vector, prop = 1, strict = FALSE)
   )
   expect_true(is.matrix(result))
 
   # Test with strict = TRUE
   suppressMessages(
-    result <- remove_rare(mat, by = by_vector, prop = 1, strict = TRUE)
+    result <- .filter_matrix_rare(mat, by = by_vector, prop = 1, strict = TRUE)
   )
   expect_true(is.matrix(result))
 })
@@ -451,7 +429,7 @@ test_that("remove_rare handles edge cases with all missing or no missing", {
   rownames(mat) <- paste0("V", 1:2)
   colnames(mat) <- paste0("S", 1:5)
 
-  suppressMessages(result <- remove_rare(mat, prop = 0.5))
+  suppressMessages(result <- .filter_matrix_rare(mat, prop = 0.5))
   expect_equal(nrow(result), 1) # V2 should be removed
   expect_equal(rownames(result), "V1")
 
@@ -460,7 +438,7 @@ test_that("remove_rare handles edge cases with all missing or no missing", {
   rownames(mat_no_na) <- paste0("V", 1:2)
   colnames(mat_no_na) <- paste0("S", 1:5)
 
-  suppressMessages(result <- remove_rare(mat_no_na, prop = 0.5))
+  suppressMessages(result <- .filter_matrix_rare(mat_no_na, prop = 0.5))
   expect_equal(dim(result), dim(mat_no_na))
 })
 
@@ -512,28 +490,28 @@ test_that("remove_rare with complex grouping scenarios", {
   expect_s3_class(result3, "glyexp_experiment")
 })
 
-test_that("remove_rare with matrix and various invalid inputs", {
+test_that("rare-variable matrix filter validates inputs", {
   mat <- matrix(1:6, nrow = 2, ncol = 3)
 
   # Test with invalid prop values
-  expect_error(remove_rare(mat, prop = -0.1))
-  expect_error(remove_rare(mat, prop = 1.1))
+  expect_error(.filter_matrix_rare(mat, prop = -0.1))
+  expect_error(.filter_matrix_rare(mat, prop = 1.1))
 
   # Test with invalid n values
-  expect_error(remove_rare(mat, n = -1))
+  expect_error(.filter_matrix_rare(mat, n = -1))
 
   # Test with invalid min_n values
-  expect_error(remove_rare(mat, min_n = 0))
-  expect_error(remove_rare(mat, min_n = -1))
+  expect_error(.filter_matrix_rare(mat, min_n = 0))
+  expect_error(.filter_matrix_rare(mat, min_n = -1))
 })
 
-test_that("remove_low_var works with matrix input", {
+test_that("low-variance matrix filter works", {
   mat <- matrix(1:9, nrow = 3, byrow = TRUE)
   rownames(mat) <- paste0("V", 1:3)
   colnames(mat) <- paste0("S", 1:3)
   mat[1, ] <- 1 # the first variable has zero variance
 
-  suppressMessages(result <- remove_low_var(mat))
+  suppressMessages(result <- .filter_matrix_low_var(mat))
   expect_equal(rownames(result), c("V2", "V3"))
 })
 
@@ -553,7 +531,7 @@ test_that("remove_low_var respects var_cutoff", {
   rownames(mat) <- paste0("V", 1:2)
   colnames(mat) <- paste0("S", 1:3)
 
-  suppressMessages(result <- remove_low_var(mat, var_cutoff = 0.01))
+  suppressMessages(result <- .filter_matrix_low_var(mat, var_cutoff = 0.01))
   expect_equal(rownames(result), c("V2"))
 })
 
@@ -597,7 +575,12 @@ test_that("remove_low_var works with grouping: strict = FALSE (delete only if AL
   by_fac <- factor(c("A", "A", "A", "B", "B", "B"))
 
   suppressMessages(
-    res <- remove_low_var(mat, var_cutoff = 0, by = by_fac, strict = FALSE)
+    res <- .filter_matrix_low_var(
+      mat,
+      var_cutoff = 0,
+      by = by_fac,
+      strict = FALSE
+    )
   )
   # Only remove if all groups pass threshold -> V1 is removed, V2/V3/V4 are kept
   expect_equal(rownames(res), c("V2", "V3", "V4"))
@@ -644,7 +627,12 @@ test_that("remove_low_var works with grouping: strict = TRUE (delete if ANY grou
   by_fac <- factor(c("A", "A", "A", "B", "B", "B"))
 
   suppressMessages(
-    res <- remove_low_var(mat, var_cutoff = 0, by = by_fac, strict = TRUE)
+    res <- .filter_matrix_low_var(
+      mat,
+      var_cutoff = 0,
+      by = by_fac,
+      strict = TRUE
+    )
   )
   # Any group meets threshold -> V1 and V2 are removed, V3 and V4 are kept
   expect_equal(rownames(res), c("V3", "V4"))
@@ -683,7 +671,7 @@ test_that("remove_low_var grouping works for by types: factor / character / nume
   by_num <- c(1, 1, 1, 2, 2, 2)
 
   suppressMessages(
-    res_fac <- remove_low_var(
+    res_fac <- .filter_matrix_low_var(
       mat,
       var_cutoff = 0,
       by = by_factor,
@@ -691,10 +679,20 @@ test_that("remove_low_var grouping works for by types: factor / character / nume
     )
   )
   suppressMessages(
-    res_chr <- remove_low_var(mat, var_cutoff = 0, by = by_char, strict = TRUE)
+    res_chr <- .filter_matrix_low_var(
+      mat,
+      var_cutoff = 0,
+      by = by_char,
+      strict = TRUE
+    )
   )
   suppressMessages(
-    res_num <- remove_low_var(mat, var_cutoff = 0, by = by_num, strict = TRUE)
+    res_num <- .filter_matrix_low_var(
+      mat,
+      var_cutoff = 0,
+      by = by_num,
+      strict = TRUE
+    )
   )
 
   # Three by types should get the same result: only V3 is kept
@@ -708,7 +706,7 @@ test_that("remove_low_var errors when by length mismatches ncol(x)", {
   by_bad <- c("A", "A", "B") # less than 4
 
   expect_error(
-    remove_low_var(mat, var_cutoff = 0, by = by_bad),
+    .filter_matrix_low_var(mat, var_cutoff = 0, by = by_bad),
     regexp = "len|length|ncol", # tolerate different error messages
     fixed = FALSE
   )
@@ -719,7 +717,7 @@ test_that("remove_low_var errors when by contains NA for grouped summarization",
   by_na <- c("A", "A", NA, "B")
 
   expect_error(
-    remove_low_var(mat, var_cutoff = 0, by = by_na),
+    .filter_matrix_low_var(mat, var_cutoff = 0, by = by_na),
     regexp = "must not contain NA|NA", # match cli_abort in implementation
     fixed = FALSE
   )
@@ -748,7 +746,7 @@ test_that("remove_low_var handles rows with some NAs", {
   colnames(mat) <- c("S1", "S2", "S3")
 
   # Variance threshold: V1 has var=0 with na.rm=TRUE -> removed; V2/V3 stay.
-  suppressMessages(res <- remove_low_var(mat, var_cutoff = 0))
+  suppressMessages(res <- .filter_matrix_low_var(mat, var_cutoff = 0))
   expect_equal(rownames(res), c("V2", "V3"))
 })
 
@@ -770,7 +768,7 @@ test_that("remove_low_var keeps all-NA row and remains stable", {
   rownames(mat) <- c("V1", "V2")
   colnames(mat) <- c("S1", "S2", "S3")
 
-  suppressMessages(res <- remove_low_var(mat, var_cutoff = 0))
+  suppressMessages(res <- .filter_matrix_low_var(mat, var_cutoff = 0))
   expect_equal(rownames(res), c("V1", "V2"))
 })
 
@@ -800,7 +798,7 @@ test_that("rows containing NaN or Inf do not error and produce predictable filte
   # - V3 removed due to zero variance;
   # - V1 retained (var=0.5 > 0);
   # - V2 retained (var Inf), no errors thrown.
-  suppressMessages(res <- remove_low_var(mat, var_cutoff = 0))
+  suppressMessages(res <- .filter_matrix_low_var(mat, var_cutoff = 0))
   expect_equal(rownames(res), c("V1", "V2"))
 })
 
@@ -809,25 +807,25 @@ test_that("remove_low_var ignores unused levels of by", {
   rownames(mat) <- c("V1", "V2", "V3")
   colnames(mat) <- c("S1", "S2", "S3", "S4")
   by <- factor(c("A", "A", "B", "B"), levels = c("A", "B", "C"))
-  suppressMessages(res <- remove_low_var(mat, var_cutoff = 0, by = by))
+  suppressMessages(res <- .filter_matrix_low_var(mat, var_cutoff = 0, by = by))
   expect_equal(rownames(res), c("V1", "V2", "V3"))
 })
 
 test_that("remove_low_var works with one-row matrix", {
   mat <- matrix(1:4, nrow = 1)
   rownames(mat) <- c("V1")
-  suppressMessages(res <- remove_low_var(mat))
+  suppressMessages(res <- .filter_matrix_low_var(mat))
   expect_equal(rownames(res), c("V1"))
 })
 
 test_that("remove_low_var works with one-column matrix", {
   mat <- matrix(1:4, ncol = 1)
   rownames(mat) <- c("V1", "V2", "V3", "V4")
-  suppressMessages(res <- remove_low_var(mat))
+  suppressMessages(res <- .filter_matrix_low_var(mat))
   expect_equal(rownames(res), c("V1", "V2", "V3", "V4"))
 })
 
-test_that("remove_low_cv works with matrix input", {
+test_that("low-CV matrix filter works", {
   mat <- matrix(
     c(
       1,
@@ -846,7 +844,7 @@ test_that("remove_low_cv works with matrix input", {
   rownames(mat) <- paste0("V", 1:3)
   colnames(mat) <- paste0("S", 1:3)
 
-  suppressMessages(result <- remove_low_cv(mat))
+  suppressMessages(result <- .filter_matrix_low_cv(mat))
   expect_equal(rownames(result), c("V2", "V3"))
 })
 
@@ -866,7 +864,7 @@ test_that("remove_low_cv respects cv_cutoff", {
   rownames(mat) <- paste0("V", 1:2)
   colnames(mat) <- paste0("S", 1:3)
 
-  suppressMessages(result <- remove_low_cv(mat, cv_cutoff = 0.1))
+  suppressMessages(result <- .filter_matrix_low_cv(mat, cv_cutoff = 0.1))
   expect_equal(rownames(result), c("V2"))
 })
 
@@ -906,7 +904,12 @@ test_that("remove_low_cv works with grouping: strict = FALSE", {
   by_fac <- factor(c("A", "A", "A", "B", "B", "B"))
 
   suppressMessages(
-    res <- remove_low_cv(mat, cv_cutoff = 0, by = by_fac, strict = FALSE)
+    res <- .filter_matrix_low_cv(
+      mat,
+      cv_cutoff = 0,
+      by = by_fac,
+      strict = FALSE
+    )
   )
   expect_equal(rownames(res), c("V2", "V3", "V4"))
 })
@@ -947,7 +950,7 @@ test_that("remove_low_cv works with grouping: strict = TRUE", {
   by_fac <- factor(c("A", "A", "A", "B", "B", "B"))
 
   suppressMessages(
-    res <- remove_low_cv(mat, cv_cutoff = 0, by = by_fac, strict = TRUE)
+    res <- .filter_matrix_low_cv(mat, cv_cutoff = 0, by = by_fac, strict = TRUE)
   )
   expect_equal(rownames(res), c("V3", "V4"))
 })
@@ -971,7 +974,7 @@ test_that("remove_low_cv handles rows with some NAs", {
   rownames(mat) <- c("V1", "V2", "V3")
   colnames(mat) <- c("S1", "S2", "S3")
 
-  suppressMessages(res <- remove_low_cv(mat, cv_cutoff = 0))
+  suppressMessages(res <- .filter_matrix_low_cv(mat, cv_cutoff = 0))
   expect_equal(rownames(res), c("V2", "V3"))
 })
 
@@ -991,7 +994,7 @@ test_that("remove_low_cv keeps all-NA row and remains stable", {
   rownames(mat) <- c("V1", "V2")
   colnames(mat) <- c("S1", "S2", "S3")
 
-  suppressMessages(res <- remove_low_cv(mat, cv_cutoff = 0))
+  suppressMessages(res <- .filter_matrix_low_cv(mat, cv_cutoff = 0))
   expect_equal(rownames(res), c("V1", "V2"))
 })
 
@@ -1011,7 +1014,7 @@ test_that("remove_low_cv keeps zero-mean row because CV is infinite", {
   rownames(mat) <- c("V1", "V2")
   colnames(mat) <- c("S1", "S2", "S3")
 
-  suppressMessages(res <- remove_low_cv(mat, cv_cutoff = 0.5))
+  suppressMessages(res <- .filter_matrix_low_cv(mat, cv_cutoff = 0.5))
   expect_true("V1" %in% rownames(res))
 })
 
@@ -1031,7 +1034,7 @@ test_that("remove_low_cv removes low CV row even with negative mean", {
   rownames(mat) <- c("V1", "V2")
   colnames(mat) <- c("S1", "S2", "S3")
 
-  suppressMessages(res <- remove_low_cv(mat, cv_cutoff = 0.2))
+  suppressMessages(res <- .filter_matrix_low_cv(mat, cv_cutoff = 0.2))
   expect_equal(rownames(res), "V2")
 })
 
@@ -1054,20 +1057,36 @@ test_that("remove_low_cv handles NaN and Inf gracefully", {
   rownames(mat) <- c("V1", "V2", "V3")
   colnames(mat) <- c("S1", "S2", "S3")
 
-  suppressMessages(res <- remove_low_cv(mat, cv_cutoff = 0))
+  suppressMessages(res <- .filter_matrix_low_cv(mat, cv_cutoff = 0))
   expect_equal(rownames(res), c("V1", "V2"))
 })
 
 test_that("remove_constant works", {
-  mat <- matrix(1:9, nrow = 3)
-  rownames(mat) <- c("V1", "V2", "V3")
-  colnames(mat) <- c("S1", "S2", "S3")
-  mat[1, ] <- 1
-  suppressMessages(res <- remove_constant(mat))
-  expect_equal(rownames(res), c("V2", "V3"))
+  exp <- simple_exp(3, 3)
+  exp$expr_mat[1, ] <- 1
+
+  suppressMessages(res <- remove_constant(exp))
+
+  expect_s3_class(res, "glyexp_experiment")
+  expect_equal(rownames(res$expr_mat), c("V2", "V3"))
 })
 
-test_that("remove_low_expr matrix input retains matrix type and dimnames", {
+test_that("removal functions require glyexp experiments", {
+  funcs <- list(
+    remove_rare,
+    remove_low_var,
+    remove_low_cv,
+    remove_constant,
+    remove_low_expr
+  )
+
+  purrr::walk(funcs, function(fn) {
+    expect_error(fn(matrix(1:6, nrow = 2)), "glyexp_experiment")
+    expect_error(fn(1), "glyexp_experiment")
+  })
+})
+
+test_that("low-expression matrix filter retains type and dimnames", {
   mat <- matrix(
     c(
       1,
@@ -1089,7 +1108,7 @@ test_that("remove_low_expr matrix input retains matrix type and dimnames", {
   rownames(mat) <- paste0("r", 1:4)
   colnames(mat) <- paste0("c", 1:3)
 
-  suppressMessages(res <- remove_low_expr(mat, percentile = 0.5))
+  suppressMessages(res <- .filter_matrix_low_expr(mat, percentile = 0.5))
 
   expect_true(is.matrix(res))
   expect_identical(colnames(res), colnames(mat))
@@ -1141,28 +1160,25 @@ test_that("remove_low_expr by column name or vector gives identical results", {
 
 test_that("remove_low_expr errors on non-numeric inputs", {
   char_mat <- matrix(letters[1:6], nrow = 2)
-  expect_error(remove_low_expr(char_mat, percentile = 0.5), "numeric")
-
-  df_input <- data.frame(char_mat, stringsAsFactors = FALSE)
-  expect_error(remove_low_expr(df_input), "must be a .*matrix")
+  expect_error(.filter_matrix_low_expr(char_mat, percentile = 0.5), "numeric")
 })
 
 test_that("remove_low_expr validates percentile bounds", {
   mat <- matrix(1:9, nrow = 3)
 
-  expect_error(remove_low_expr(mat, percentile = -0.01), "percentile")
-  expect_error(remove_low_expr(mat, percentile = 1.01), "percentile")
+  expect_error(.filter_matrix_low_expr(mat, percentile = -0.01), "percentile")
+  expect_error(.filter_matrix_low_expr(mat, percentile = 1.01), "percentile")
 })
 
 test_that("remove_low_expr validates by length and NA content", {
   mat <- matrix(1:9, nrow = 3)
 
   expect_error(
-    remove_low_expr(mat, percentile = 0.5, by = c("A", "B")),
+    .filter_matrix_low_expr(mat, percentile = 0.5, by = c("A", "B")),
     "length 3"
   )
   expect_error(
-    remove_low_expr(mat, percentile = 0.5, by = c("A", NA, "B")),
+    .filter_matrix_low_expr(mat, percentile = 0.5, by = c("A", NA, "B")),
     "`by` must not contain NA"
   )
 })
@@ -1185,7 +1201,7 @@ test_that("remove_low_expr global filtering removes rows at or below threshold",
   )
   rownames(mat) <- paste0("V", 1:3)
 
-  suppressMessages(res <- remove_low_expr(mat, percentile = 0.5))
+  suppressMessages(res <- .filter_matrix_low_expr(mat, percentile = 0.5))
 
   expect_identical(rownames(res), "V3")
 })
@@ -1209,10 +1225,10 @@ test_that("remove_low_expr percentile extremes behave as expected", {
   rownames(mat) <- paste0("V", 1:3)
   colnames(mat) <- paste0("S", 1:3)
 
-  suppressMessages(res_min <- remove_low_expr(mat, percentile = 0))
+  suppressMessages(res_min <- .filter_matrix_low_expr(mat, percentile = 0))
   expect_identical(rownames(res_min), "V3")
 
-  suppressMessages(res_max <- remove_low_expr(mat, percentile = 1))
+  suppressMessages(res_max <- .filter_matrix_low_expr(mat, percentile = 1))
   expect_true(is.matrix(res_max))
   expect_equal(nrow(res_max), 0)
   expect_identical(colnames(res_max), colnames(mat))
@@ -1245,9 +1261,14 @@ test_that("remove_low_expr grouped filtering uses per-group thresholds", {
   by <- c("A", "A", "B", "B")
 
   suppressMessages(
-    res_group <- remove_low_expr(mat, percentile = 0.5, by = by, strict = FALSE)
+    res_group <- .filter_matrix_low_expr(
+      mat,
+      percentile = 0.5,
+      by = by,
+      strict = FALSE
+    )
   )
-  suppressMessages(res_global <- remove_low_expr(mat, percentile = 0.5))
+  suppressMessages(res_global <- .filter_matrix_low_expr(mat, percentile = 0.5))
 
   expect_identical(rownames(res_group), c("V1", "V3", "V4"))
   expect_identical(rownames(res_global), c("V1", "V4"))
@@ -1280,10 +1301,20 @@ test_that("remove_low_expr strict flag controls grouped filtering", {
   by <- c("A", "A", "B", "B")
 
   suppressMessages(
-    res_all <- remove_low_expr(mat, percentile = 0.5, by = by, strict = FALSE)
+    res_all <- .filter_matrix_low_expr(
+      mat,
+      percentile = 0.5,
+      by = by,
+      strict = FALSE
+    )
   )
   suppressMessages(
-    res_any <- remove_low_expr(mat, percentile = 0.5, by = by, strict = TRUE)
+    res_any <- .filter_matrix_low_expr(
+      mat,
+      percentile = 0.5,
+      by = by,
+      strict = TRUE
+    )
   )
 
   expect_identical(rownames(res_all), c("V1", "V3", "V4"))
@@ -1319,7 +1350,7 @@ test_that("remove_low_expr handles different by input types consistently", {
   by_num <- c(1, 1, 2, 2)
 
   suppressMessages(
-    res_factor <- remove_low_expr(
+    res_factor <- .filter_matrix_low_expr(
       mat,
       percentile = 0.4,
       by = by_factor,
@@ -1327,7 +1358,7 @@ test_that("remove_low_expr handles different by input types consistently", {
     )
   )
   suppressMessages(
-    res_char <- remove_low_expr(
+    res_char <- .filter_matrix_low_expr(
       mat,
       percentile = 0.4,
       by = by_char,
@@ -1335,7 +1366,7 @@ test_that("remove_low_expr handles different by input types consistently", {
     )
   )
   suppressMessages(
-    res_num <- remove_low_expr(
+    res_num <- .filter_matrix_low_expr(
       mat,
       percentile = 0.4,
       by = by_num,
@@ -1374,14 +1405,19 @@ test_that("remove_low_expr outcome is invariant to column order when by is align
   by <- c("A", "A", "B", "B")
 
   suppressMessages(
-    baseline <- remove_low_expr(mat, percentile = 0.5, by = by, strict = FALSE)
+    baseline <- .filter_matrix_low_expr(
+      mat,
+      percentile = 0.5,
+      by = by,
+      strict = FALSE
+    )
   )
 
   perm <- c(3, 4, 1, 2)
   mat_perm <- mat[, perm]
   by_perm <- by[perm]
   suppressMessages(
-    res_perm <- remove_low_expr(
+    res_perm <- .filter_matrix_low_expr(
       mat_perm,
       percentile = 0.5,
       by = by_perm,
@@ -1412,7 +1448,12 @@ test_that("remove_low_expr tolerates empty grouping levels", {
   by <- factor(c("A", "A", "B", "B"), levels = c("A", "B", "C"))
 
   suppressMessages(
-    res <- remove_low_expr(mat, percentile = 0.5, by = by, strict = TRUE)
+    res <- .filter_matrix_low_expr(
+      mat,
+      percentile = 0.5,
+      by = by,
+      strict = TRUE
+    )
   )
 
   expect_identical(rownames(res), "V2")
@@ -1439,7 +1480,7 @@ test_that("remove_low_expr handles NA, NaN, and Inf without dropping unexpectedl
   )
   rownames(mat) <- paste0("V", 1:4)
 
-  suppressMessages(res <- remove_low_expr(mat, percentile = 0.4))
+  suppressMessages(res <- .filter_matrix_low_expr(mat, percentile = 0.4))
 
   expect_true("V1" %in% rownames(res)) # all NA row kept
   expect_true("V3" %in% rownames(res)) # NaN-only row kept
@@ -1469,27 +1510,41 @@ test_that("remove_low_expr honours strict logic when some groups are entirely NA
   by <- c("A", "A", "B", "B")
 
   suppressMessages(
-    res_all <- remove_low_expr(mat, percentile = 0.5, by = by, strict = FALSE)
+    res_all <- .filter_matrix_low_expr(
+      mat,
+      percentile = 0.5,
+      by = by,
+      strict = FALSE
+    )
   )
   suppressMessages(
-    res_any <- remove_low_expr(mat, percentile = 0.5, by = by, strict = TRUE)
+    res_any <- .filter_matrix_low_expr(
+      mat,
+      percentile = 0.5,
+      by = by,
+      strict = TRUE
+    )
   )
 
   expect_identical(rownames(res_all), c("V1", "V3"))
   expect_identical(rownames(res_any), "V3")
 })
 
-test_that("remove_low_expr handles single row or single column matrices", {
+test_that("low expression filter handles single row or single column matrices", {
   single_row <- matrix(c(1, 2, 3), nrow = 1)
   colnames(single_row) <- paste0("S", 1:3)
-  suppressMessages(res_row <- remove_low_expr(single_row, percentile = 0.5))
+  suppressMessages(
+    res_row <- .filter_matrix_low_expr(single_row, percentile = 0.5)
+  )
   expect_true(is.matrix(res_row))
   expect_equal(nrow(res_row), 0)
   expect_identical(colnames(res_row), colnames(single_row))
 
   single_col <- matrix(c(1, 2, 3), nrow = 3)
   rownames(single_col) <- paste0("V", 1:3)
-  suppressMessages(res_col <- remove_low_expr(single_col, percentile = 0.2))
+  suppressMessages(
+    res_col <- .filter_matrix_low_expr(single_col, percentile = 0.2)
+  )
   expect_true(is.matrix(res_col))
   expect_true(all(rownames(res_col) %in% rownames(single_col)))
 })
@@ -1499,7 +1554,7 @@ test_that("remove_low_expr returns input unchanged when all medians are NA", {
   rownames(mat) <- paste0("V", 1:3)
   colnames(mat) <- paste0("S", 1:4)
 
-  suppressMessages(res <- remove_low_expr(mat, percentile = 0.75))
+  suppressMessages(res <- .filter_matrix_low_expr(mat, percentile = 0.75))
 
   expect_identical(res, mat)
 })
@@ -1530,10 +1585,20 @@ test_that("remove_low_expr is deterministic across repeated calls", {
   by <- c("A", "A", "B", "B")
 
   suppressMessages(
-    res1 <- remove_low_expr(mat, percentile = 0.4, by = by, strict = FALSE)
+    res1 <- .filter_matrix_low_expr(
+      mat,
+      percentile = 0.4,
+      by = by,
+      strict = FALSE
+    )
   )
   suppressMessages(
-    res2 <- remove_low_expr(mat, percentile = 0.4, by = by, strict = FALSE)
+    res2 <- .filter_matrix_low_expr(
+      mat,
+      percentile = 0.4,
+      by = by,
+      strict = FALSE
+    )
   )
 
   expect_identical(res1, res2)

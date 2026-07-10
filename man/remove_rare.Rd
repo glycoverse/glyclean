@@ -2,22 +2,12 @@
 % Please edit documentation in R/remove.R
 \name{remove_rare}
 \alias{remove_rare}
-\alias{remove_rare.glyexp_experiment}
-\alias{remove_rare.matrix}
-\alias{remove_rare.default}
 \title{Remove Rare Variables with Too Many Missing Values}
 \usage{
 remove_rare(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL)
-
-\method{remove_rare}{glyexp_experiment}(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL)
-
-\method{remove_rare}{matrix}(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL)
-
-\method{remove_rare}{default}(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL)
 }
 \arguments{
-\item{x}{Either a \code{glyexp_experiment} object or a matrix.
-If a matrix, rows should be variables and columns should be samples.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{prop}{The proportion of missing values to use as a threshold.
 Variables with missing values above this threshold will be removed.
@@ -44,8 +34,7 @@ to be kept. If \code{NULL} (default), it is calculated dynamically:
 }}
 }
 \value{
-For \code{glyexp_experiment} input, returns a modified \code{glyexp_experiment} object.
-For matrix input, returns a filtered matrix.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with filtered variables.
 }
 \description{
 Remove Rare Variables with Too Many Missing Values
@@ -75,9 +64,5 @@ remove_rare(exp, prop = 0)$expr_mat
 
 # Use custom min_n to require at least 4 non-missing values
 remove_rare(exp, min_n = 4)$expr_mat
-
-# With matrix
-mat <- matrix(c(1, 2, NA, 4, 5, NA, 7, 8, 9), nrow = 3)
-mat_filtered <- remove_rare(mat, prop = 0.5)
 
 }

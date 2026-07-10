@@ -2,9 +2,6 @@
 % Please edit documentation in R/batch-correction.R
 \name{correct_batch_effect}
 \alias{correct_batch_effect}
-\alias{correct_batch_effect.glyexp_experiment}
-\alias{correct_batch_effect.matrix}
-\alias{correct_batch_effect.default}
 \title{Correct Batch Effect}
 \usage{
 correct_batch_effect(
@@ -15,44 +12,15 @@ correct_batch_effect(
   confounding_threshold = 0.4,
   method = c("combat", "limma")
 )
-
-\method{correct_batch_effect}{glyexp_experiment}(
-  x,
-  batch = "batch",
-  group = NULL,
-  check_confounding = TRUE,
-  confounding_threshold = 0.4,
-  method = c("combat", "limma")
-)
-
-\method{correct_batch_effect}{matrix}(
-  x,
-  batch = "batch",
-  group = NULL,
-  check_confounding = TRUE,
-  confounding_threshold = 0.4,
-  method = c("combat", "limma")
-)
-
-\method{correct_batch_effect}{default}(
-  x,
-  batch = "batch",
-  group = NULL,
-  check_confounding = TRUE,
-  confounding_threshold = 0.4,
-  method = c("combat", "limma")
-)
 }
 \arguments{
-\item{x}{Either a \code{glyexp_experiment} object or a matrix.
-If a matrix, rows should be variables and columns should be samples.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{batch}{Either a factor/character vector specifying batch assignments for each sample,
-or a string specifying the column name in sample_info (for experiment input only).
-Default to "batch" for experiment input.}
+or a string specifying the column name in \code{sample_info}. Defaults to "batch".}
 
 \item{group}{Either a factor/character vector specifying group assignments for each sample,
-or a string specifying the column name in sample_info (for experiment input only).
+or a string specifying the column name in \code{sample_info}.
 If provided, it will be used as a covariate in the batch correction model.
 This is useful when you have an unbalanced design.
 Default to NULL.}
@@ -67,8 +35,7 @@ Only used when \code{check_confounding} is TRUE. Default to 0.4.}
 sva::ComBat) or "limma" (uses limma::removeBatchEffect). Default to "combat".}
 }
 \value{
-For \code{glyexp_experiment} input, returns a modified \code{glyexp_experiment} object.
-For matrix input, returns a batch-corrected matrix.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with batch effects corrected.
 }
 \description{
 Correct batch effects in glycoproteomics/glycomics data using ComBat algorithm
@@ -97,15 +64,9 @@ exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
 exp$sample_info$group <- c("Ctrl", "Ctrl", "Treat", "Ctrl", "Treat", "Treat")
 corrected_exp <- correct_batch_effect(exp, batch = "batch", group = "group")
 
-# With matrix and factor vectors
-mat <- matrix(abs(rnorm(200)), nrow = 20, ncol = 10)
-batch_factor <- factor(rep(c("A", "B"), each = 5))
-group_factor <- factor(rep(c("Ctrl", "Treat"), times = 5))
-corrected_mat <- correct_batch_effect(mat, batch = batch_factor, group = group_factor)
-
 # Using limma method
-corrected_mat <- correct_batch_effect(
-  mat, batch = batch_factor, group = group_factor, method = "limma"
+corrected_exp <- correct_batch_effect(
+  exp, batch = "batch", group = "group", method = "limma"
 )
 
 }

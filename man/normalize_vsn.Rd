@@ -2,22 +2,12 @@
 % Please edit documentation in R/normalize.R
 \name{normalize_vsn}
 \alias{normalize_vsn}
-\alias{normalize_vsn.glyexp_experiment}
-\alias{normalize_vsn.matrix}
-\alias{normalize_vsn.default}
 \title{Variance Stabilizing Normalization}
 \usage{
 normalize_vsn(x, by = NULL, ...)
-
-\method{normalize_vsn}{glyexp_experiment}(x, by = NULL, ...)
-
-\method{normalize_vsn}{matrix}(x, by = NULL, ...)
-
-\method{normalize_vsn}{default}(x, by = NULL, ...)
 }
 \arguments{
-\item{x}{Either a \code{glyexp_experiment} object or a matrix.
-If a matrix, rows should be variables and columns should be samples.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
 specifying group assignments for each sample. Optional.
@@ -26,9 +16,7 @@ If provided, the normalization will be performed within each group.}
 \item{...}{Additional arguments to pass to \code{\link[limma:normalizeVSN]{limma::normalizeVSN()}}.}
 }
 \value{
-Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
-returns a \code{glyexp_experiment} with normalized expression matrix.
-If \code{x} is a matrix, returns a normalized matrix.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with a normalized expression matrix.
 }
 \description{
 This function is a wrapper around \code{\link[limma:normalizeVSN]{limma::normalizeVSN()}}.

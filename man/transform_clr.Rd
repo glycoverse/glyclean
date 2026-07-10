@@ -2,25 +2,15 @@
 % Please edit documentation in R/coda.R
 \name{transform_clr}
 \alias{transform_clr}
-\alias{transform_clr.glyexp_experiment}
-\alias{transform_clr.matrix}
-\alias{transform_clr.default}
 \title{Centered Log-Ratio Transformation}
 \usage{
 transform_clr(x, by = NULL, gamma = 0.1, group_scales = NULL)
-
-\method{transform_clr}{glyexp_experiment}(x, by = NULL, gamma = 0.1, group_scales = NULL)
-
-\method{transform_clr}{matrix}(x, by = NULL, gamma = 0.1, group_scales = NULL)
-
-\method{transform_clr}{default}(x, by = NULL, gamma = 0.1, group_scales = NULL)
 }
 \arguments{
-\item{x}{Either a \code{glyexp_experiment} object or a matrix.
-If a matrix, rows should be variables and columns should be samples.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
 
-\item{by}{Either a column name in \code{sample_info} (for \code{glyexp_experiment}
-input) or a factor/vector with one value per sample.}
+\item{by}{Either a column name in \code{sample_info} or a factor/vector with one
+value per sample.}
 
 \item{gamma}{Standard deviation of the scale-uncertainty model on the \code{log2}
 scale. Default is \code{0.1}. Set to \code{0} for deterministic transformation.}
@@ -31,9 +21,7 @@ first, or two positive scales from which that ratio is derived. For
 multi-group data, provide a positive vector with one scale per group.}
 }
 \value{
-Returns the same type as the input. If \code{x} is a \code{glyexp_experiment},
-returns a \code{glyexp_experiment} with transformed expression matrix.
-If \code{x} is a matrix, returns a transformed matrix.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with a transformed expression matrix.
 The returned values are back-transformed to the original ratio space.
 Zeros in the input therefore remain zeros in the output.
 }
