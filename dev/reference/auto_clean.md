@@ -9,11 +9,9 @@ For glycomics data, this function calls these functions in sequence:
 
 - [`auto_remove()`](https://glycoverse.github.io/glyclean/dev/reference/auto_remove.md)
 
-- [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
-
-- [`normalize_total_area()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_total_area.md)
-
 - [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
+
+- [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
 
 - [`auto_correct_batch_effect()`](https://glycoverse.github.io/glyclean/dev/reference/auto_correct_batch_effect.md)
 
