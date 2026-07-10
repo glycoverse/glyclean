@@ -4,7 +4,7 @@
 
 * Normalization, imputation, filtering, CoDA, and batch-correction functions now require a `glyexp::GlycomicSE`, `glyexp::GlycoproteomicSE`, or legacy `glyexp::experiment()` object; matrix inputs error and should first be wrapped in a supported container. (#18, #19)
 
-## Minor improvements and bug fixes
+## New features
 
 * All preprocessing and QC functions now natively accept `glyexp::GlycomicSE` and `glyexp::GlycoproteomicSE`, preserve the input subclass, and continue to support `glyexp::experiment()` objects. (#19)
 
