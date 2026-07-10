@@ -6,16 +6,22 @@
 
 - Normalization, imputation, filtering, CoDA, and batch-correction
   functions now require a
+  [`glyexp::GlycomicSE`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
+  [`glyexp::GlycoproteomicSE`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
+  or legacy
   [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-  object; matrix inputs error and should first be wrapped with
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html).
-  (#18)
+  object; matrix inputs error and should first be wrapped in a supported
+  container. (#18, \#19)
 
-### Minor improvements and bug fixes
+### New features
 
-- Preprocessing functions now expose a single consistent
+- All preprocessing and QC functions now natively accept
+  [`glyexp::GlycomicSE`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
+  and
+  [`glyexp::GlycoproteomicSE`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
+  preserve the input subclass, and continue to support
   [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-  interface. (#18)
+  objects. (#19)
 
 ## glyclean 0.14.1
 

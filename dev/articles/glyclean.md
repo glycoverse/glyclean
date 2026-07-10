@@ -32,6 +32,8 @@ library(glyclean)
 #> 
 #>     aggregate
 library(glyexp)
+#> Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by
+#> 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'
 library(glyrepr)  # for printing glycan compositions and structures
 ```
 
