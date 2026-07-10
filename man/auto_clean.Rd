@@ -8,9 +8,6 @@ auto_clean(
   exp,
   group_col = "group",
   batch_col = "batch",
-  qc_name = "QC",
-  normalize_to_try = NULL,
-  impute_to_try = NULL,
   remove_preset = "discovery",
   batch_prop_threshold = 0.3,
   check_batch_confounding = TRUE,
@@ -27,18 +24,6 @@ Can be NULL when no group information is available.}
 
 \item{batch_col}{The column name in sample_info for batches. Default is "batch".
 Can be NULL when no batch information is available.}
-
-\item{qc_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This function no longer
-uses QC sample information.
-This parameter is ignored and will be removed in a future release.}
-
-\item{normalize_to_try}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
-This parameter is no longer used and will be removed in a future release.
-The automatic normalization strategy is now deterministic and does not
-require user-specified methods to try.}
-
-\item{impute_to_try}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
-This parameter is no longer used and will be removed in a future release.}
 
 \item{remove_preset}{The preset for removing variables. Default is "discovery".
 Available presets:

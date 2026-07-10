@@ -4,7 +4,7 @@
 \alias{auto_remove}
 \title{Automatic Removing Variables}
 \usage{
-auto_remove(exp, preset = "discovery", group_col = "group", qc_name = "QC")
+auto_remove(exp, preset = "discovery", group_col = "group")
 }
 \arguments{
 \item{exp}{A glyexp_experiment object.}
@@ -14,9 +14,6 @@ Default "discovery" if group information is available, otherwise "simple".}
 
 \item{group_col}{The column name in sample_info for groups. Default is "group".
 Can be NULL when no group information is available.}
-
-\item{qc_name}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This function no longer uses QC sample information.
-This parameter is ignored and will be removed in a future release.}
 }
 \value{
 A modified \code{\link[glyexp:experiment]{glyexp::experiment()}} object.

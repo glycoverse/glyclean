@@ -20,38 +20,10 @@ test_that("auto_impute uses deterministic defaults with QC samples", {
   expect_snapshot(
     imputed <- auto_impute(
       exp,
-      group_col = "group",
-      qc_name = "QC",
-      to_try = list(impute_sample_min = function(x) stop("must not be called"))
+      group_col = "group"
     )
   )
   expect_equal(called, "impute_min_prob")
-  expect_false(any(is.na(SummarizedExperiment::assay(imputed))))
-})
-
-test_that("auto_impute handles NULL qc_name", {
-  exp <- simple_exp(10, 10)
-  S4Vectors::metadata(exp)$exp_type <- "glycomics"
-  SummarizedExperiment::assay(exp)[1, 1] <- NA
-  SummarizedExperiment::assay(exp)[3, 5] <- NA
-  SummarizedExperiment::colData(exp)$group <- c(
-    rep("A", 4),
-    rep("B", 4),
-    rep("QC", 2)
-  )
-
-  testthat::local_mocked_bindings(
-    impute_min_prob = function(x, ...) {
-      SummarizedExperiment::assay(x)[is.na(SummarizedExperiment::assay(x))] <- 0
-      x
-    },
-    .package = "glyclean"
-  )
-
-  expect_snapshot(
-    imputed <- auto_impute(exp, group_col = "group", qc_name = NULL)
-  )
-  expect_glyco_se(imputed)
   expect_false(any(is.na(SummarizedExperiment::assay(imputed))))
 })
 
@@ -164,7 +136,7 @@ test_that("auto_impute handles non-existent group_col gracefully", {
   expect_false(any(is.na(SummarizedExperiment::assay(result))))
 })
 
-test_that("auto_impute validates input and ignores deprecated arguments", {
+test_that("auto_impute validates input", {
   exp <- simple_glycoproteomic_exp(10, 10)
   SummarizedExperiment::assay(exp)[1, 1] <- NA
 
@@ -179,13 +151,7 @@ test_that("auto_impute validates input and ignores deprecated arguments", {
   # Test invalid exp
   expect_error(auto_impute("not_an_experiment"), "glyexp_experiment")
 
-  expect_snapshot(
-    result <- auto_impute(
-      exp,
-      qc_name = NULL,
-      to_try = "not_a_list"
-    )
-  )
+  expect_snapshot(result <- auto_impute(exp))
   expect_glyco_se(result)
   expect_false(any(is.na(SummarizedExperiment::assay(result))))
 })
