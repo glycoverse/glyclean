@@ -29,6 +29,8 @@
 
 ### New features
 
+- Non-automatic preprocessing and QC functions now accept plain
+  `SummarizedExperiment` objects and preserve their class.
 - All preprocessing and QC functions now natively accept
   [`glyexp::GlycomicSE`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
   and

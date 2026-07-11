@@ -23,11 +23,9 @@ correct_batch_effect(
 
   A
   [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  or
+  [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
   object.
-  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
-  and
-  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-  objects are also supported.
 
 - batch:
 
@@ -64,8 +62,8 @@ correct_batch_effect(
 
 A
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object with batch effects corrected. Glyco SE inputs return the same
-subclass.
+object with batch effects corrected. SummarizedExperiment inputs return
+the same class.
 
 ## Details
 

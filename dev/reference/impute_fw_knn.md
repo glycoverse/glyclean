@@ -17,11 +17,9 @@ impute_fw_knn(x, k = 5, by = NULL, ...)
 
   A
   [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  or
+  [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
   object.
-  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
-  and
-  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-  objects are also supported.
 
 - k:
 
@@ -42,5 +40,5 @@ impute_fw_knn(x, k = 5, by = NULL, ...)
 
 A
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object with missing values imputed. Glyco SE inputs return the same
-subclass.
+object with missing values imputed. SummarizedExperiment inputs return
+the same class.

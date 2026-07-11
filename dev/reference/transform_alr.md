@@ -18,11 +18,9 @@ transform_alr(x, by = NULL, gamma = 0.1, group_scales = NULL)
 
   A
   [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  or
+  [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
   object.
-  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
-  and
-  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-  objects are also supported.
 
 - by:
 
@@ -45,10 +43,10 @@ transform_alr(x, by = NULL, gamma = 0.1, group_scales = NULL)
 
 A
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object with an ALR-transformed expression matrix. Glyco SE inputs return
-the same subclass. When ALR succeeds, the reference glycan is excluded
-from the result and the output therefore has one fewer row than the
-input. When ALR falls back to CLR, the returned object keeps the
+object with an ALR-transformed expression matrix. SummarizedExperiment
+inputs return the same class. When ALR succeeds, the reference glycan is
+excluded from the result and the output therefore has one fewer row than
+the input. When ALR falls back to CLR, the returned object keeps the
 original dimensions. The returned values are back-transformed to the
 original ratio space, corresponding to `x / x_ref`.
 
