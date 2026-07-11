@@ -16,8 +16,13 @@ analysis.
 
 **Important Note:** This package is primarily designed for
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-objects. If you’re new to this data structure, we highly recommend
-checking out [its
+objects.
+[`glyexp::GlycomicSE`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
+and
+[`glyexp::GlycoproteomicSE`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
+objects are also supported, and preprocessing functions return the same
+subclass they receive. If you’re new to this data structure, we highly
+recommend checking out [its
 introduction](https://glycoverse.github.io/glyexp/articles/glyexp.html)
 first. We’ll also be using the
 [glyread](https://github.com/glycoverse/glyread) package to load our
@@ -552,6 +557,10 @@ various stages of the preprocessing pipeline.
 
 These functions are designed to work seamlessly with
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+objects. They also accept
+[`glyexp::GlycomicSE`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
+and
+[`glyexp::GlycoproteomicSE`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
 objects and provide consistent, high-quality visualizations using
 `ggplot2`.
 

@@ -52,6 +52,10 @@ auto_clean(
   A
   [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
   containing glycoproteomics or glycomics data.
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
+  and
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
+  objects are also supported.
 
 - group_col:
 
@@ -105,7 +109,7 @@ auto_clean(
 
 A modified
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object.
+object. Glyco SE inputs return the same subclass.
 
 ## See also
 

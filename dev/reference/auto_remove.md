@@ -22,7 +22,13 @@ auto_remove(exp, preset = "discovery", group_col = "group")
 
 - exp:
 
-  A glyexp_experiment object.
+  A
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  object.
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
+  and
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
+  objects are also supported.
 
 - preset:
 
@@ -38,7 +44,7 @@ auto_remove(exp, preset = "discovery", group_col = "group")
 
 A modified
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object.
+object. Glyco SE inputs return the same subclass.
 
 ## Examples
 

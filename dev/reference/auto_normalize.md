@@ -15,8 +15,13 @@ auto_normalize(exp, group_col = "group")
 
 - exp:
 
-  An
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html).
+  A
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  object.
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
+  and
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
+  objects are also supported.
 
 - group_col:
 
@@ -25,7 +30,9 @@ auto_normalize(exp, group_col = "group")
 
 ## Value
 
-The normalized experiment.
+The normalized
+[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+object. Glyco SE inputs return the same subclass.
 
 ## Details
 

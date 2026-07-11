@@ -56,7 +56,8 @@ from the sva package or removeBatchEffect from the limma package.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>A <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object.</p></dd>
+<dd><p>A <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object. <code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE()</a></code> and
+<code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE()</a></code> objects are also supported.</p></dd>
 
 
 <dt id="arg-batch">batch<a class="anchor" aria-label="anchor" href="#arg-batch"></a></dt>
@@ -89,7 +90,8 @@ sva::ComBat) or "limma" (uses limma::removeBatchEffect). Default to "combat".</p
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object with batch effects corrected.</p>
+    <p>A <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object with batch effects corrected. Glyco
+SE inputs return the same subclass.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>

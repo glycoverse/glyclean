@@ -16,6 +16,10 @@ remove_low_var(x, var_cutoff = 0, by = NULL, strict = FALSE)
   A
   [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
   object.
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
+  and
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
+  objects are also supported.
 
 - var_cutoff:
 
@@ -35,7 +39,8 @@ remove_low_var(x, var_cutoff = 0, by = NULL, strict = FALSE)
 
 A
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object with filtered variables.
+object with filtered variables. Glyco SE inputs return the same
+subclass.
 
 ## See also
 

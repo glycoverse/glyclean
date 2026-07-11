@@ -20,9 +20,14 @@ impute_half_sample_min(x)
   A
   [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
   object.
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
+  and
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
+  objects are also supported.
 
 ## Value
 
 A
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object with missing values imputed.
+object with missing values imputed. Glyco SE inputs return the same
+subclass.

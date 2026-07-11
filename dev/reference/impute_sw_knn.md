@@ -20,6 +20,10 @@ impute_sw_knn(x, k = 5, by = NULL, ...)
   A
   [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
   object.
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
+  and
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
+  objects are also supported.
 
 - k:
 
@@ -40,4 +44,5 @@ impute_sw_knn(x, k = 5, by = NULL, ...)
 
 A
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object with missing values imputed.
+object with missing values imputed. Glyco SE inputs return the same
+subclass.

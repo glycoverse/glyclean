@@ -17,6 +17,10 @@ impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
   A
   [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
   object.
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
+  and
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
+  objects are also supported.
 
 - by:
 
@@ -43,4 +47,5 @@ impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
 
 A
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object with missing values imputed.
+object with missing values imputed. Glyco SE inputs return the same
+subclass.

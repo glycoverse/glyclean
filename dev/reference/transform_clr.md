@@ -18,6 +18,10 @@ transform_clr(x, by = NULL, gamma = 0.1, group_scales = NULL)
   A
   [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
   object.
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
+  and
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
+  objects are also supported.
 
 - by:
 
@@ -40,9 +44,9 @@ transform_clr(x, by = NULL, gamma = 0.1, group_scales = NULL)
 
 A
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object with a transformed expression matrix. The returned values are
-back-transformed to the original ratio space. Zeros in the input
-therefore remain zeros in the output.
+object with a transformed expression matrix. Glyco SE inputs return the
+same subclass. The returned values are back-transformed to the original
+ratio space. Zeros in the input therefore remain zeros in the output.
 
 ## Algorithmic details
 

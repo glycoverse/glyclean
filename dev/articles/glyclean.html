@@ -73,8 +73,11 @@ a comprehensive toolkit that takes the guesswork out of data cleaning,
 with specialized methods designed specifically for the unique challenges
 of glycan analysis.</p>
 <p><strong>Important Note:</strong> This package is primarily designed
-for <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> objects. If you’re new to this
-data structure, we highly recommend checking out <a href="https://glycoverse.github.io/glyexp/articles/glyexp.html" class="external-link">its
+for <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> objects.
+<code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE</a></code> and
+<code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code> objects are also supported, and
+preprocessing functions return the same subclass they receive. If you’re
+new to this data structure, we highly recommend checking out <a href="https://glycoverse.github.io/glyexp/articles/glyexp.html" class="external-link">its
 introduction</a> first. We’ll also be using the <a href="https://github.com/glycoverse/glyread" class="external-link">glyread</a> package to load
 our data – it’s the go-to tool in the <code>glycoverse</code>
 ecosystem.</p>
@@ -755,7 +758,9 @@ of your data at various stages of the preprocessing pipeline.</p>
 </tbody>
 </table>
 <p>These functions are designed to work seamlessly with
-<code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> objects and provide consistent,
+<code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> objects. They also accept
+<code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE</a></code> and
+<code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code> objects and provide consistent,
 high-quality visualizations using <code>ggplot2</code>.</p>
 <p>For example, you can use <code><a href="../reference/plot_missing_heatmap.html">plot_missing_heatmap()</a></code> to
 visualize the missing values in your data before and after cleaning:</p>
