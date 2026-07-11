@@ -110,7 +110,6 @@ test_that("automatic preprocessing preserves glyco SE subclasses", {
 
 test_that("automatic preprocessing for others accepts plain SummarizedExperiment", {
   x <- plain_se(simple_glycomic_se())
-  S4Vectors::metadata(x)$exp_type <- "others"
 
   normalized <- suppressMessages(auto_normalize(x))
 
@@ -132,14 +131,24 @@ test_that("automatic preprocessing for others accepts plain SummarizedExperiment
     corrected
   )) {
     expect_identical(as.character(class(result)), "SummarizedExperiment")
-    expect_identical(S4Vectors::metadata(result)$exp_type, "others")
+    expect_identical(glyclean:::.get_exp_type(result), "others")
   }
   expect_false(anyNA(SummarizedExperiment::assay(imputed)))
 })
 
+test_that("plain SummarizedExperiment is always treated as others", {
+  glycomic <- plain_se(simple_glycomic_se())
+  S4Vectors::metadata(glycomic)$exp_type <- "glycomics"
+
+  glycoproteomic <- plain_se(simple_glycoproteomic_se())
+  S4Vectors::metadata(glycoproteomic)$exp_type <- "glycoproteomics"
+
+  expect_identical(glyclean:::.get_exp_type(glycomic), "others")
+  expect_identical(glyclean:::.get_exp_type(glycoproteomic), "others")
+})
+
 test_that("type-specific automatic preprocessing rejects plain others SE", {
   x <- plain_se(simple_glycomic_se())
-  S4Vectors::metadata(x)$exp_type <- "others"
 
   expect_error(
     auto_clean(x),
