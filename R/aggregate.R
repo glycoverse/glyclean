@@ -255,8 +255,12 @@ glyclean_aggregate.default <- function(
   group_col <- make.unique(c(colnames(var_info), ".aggregate_group"))[[
     ncol(var_info) + 1L
   ]]
-  distinct_counts <- var_info |>
-    dplyr::mutate(!!group_col := .env$group_id) |>
+  distinct_data <- dplyr::select(
+    var_info,
+    tidyselect::all_of(descriptive_cols)
+  )
+  distinct_data[[group_col]] <- group_id
+  distinct_counts <- distinct_data |>
     dplyr::summarise(
       dplyr::across(tidyselect::all_of(descriptive_cols), dplyr::n_distinct),
       .by = tidyselect::all_of(group_col)
@@ -265,7 +269,6 @@ glyclean_aggregate.default <- function(
     descriptive_cols,
     ~ all(distinct_counts[[.x]] == 1L)
   )
-  var_info |>
-    dplyr::filter(!duplicated(.env$group_id)) |>
+  var_info[!duplicated(group_id), , drop = FALSE] |>
     dplyr::select(tidyselect::all_of(c(aggr_cols, kept_cols)))
 }
