@@ -62,7 +62,8 @@ Imports:
     ggplot2,
     sva,
     SummarizedExperiment,
-    S4Vectors
+    S4Vectors,
+    methods
 Depends: 
     R (>= 4.1)
 VignetteBuilder: knitr
