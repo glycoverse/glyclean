@@ -11,8 +11,8 @@
 #' If no batch information is available,
 #' the function will return the original experiment.
 #'
-#' @param exp A [glyexp::experiment()] object. [glyexp::GlycomicSE()] and
-#'   [glyexp::GlycoproteomicSE()] objects are also supported.
+#' @param exp A [glyexp::experiment()] or
+#'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
 #' @param batch_col The column name in sample_info for batches. Default is "batch".
@@ -24,8 +24,8 @@
 #' @param confounding_threshold The threshold for Cramer's V to consider batch and group variables highly confounded.
 #'   Only used when `check_confounding` is TRUE. Default to 0.4.
 #'
-#' @return A [glyexp::experiment()] object with batch effects corrected. Glyco
-#'   SE inputs return the same subclass.
+#' @return The input container with batch effects corrected.
+#'   SummarizedExperiment inputs return the same class.
 #'
 #' @examples
 #' exp <- glyexp::real_experiment
@@ -40,7 +40,7 @@ auto_correct_batch_effect <- function(
   check_confounding = TRUE,
   confounding_threshold = 0.4
 ) {
-  .assert_auto_container(exp)
+  .assert_glyclean_container(exp)
   checkmate::assert_number(prop_threshold, lower = 0, upper = 1)
 
   sample_info <- .get_sample_info(exp)

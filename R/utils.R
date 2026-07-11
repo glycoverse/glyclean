@@ -187,6 +187,10 @@
 
 #' Extract the experiment type from a glyclean container
 #'
+#' Plain `SummarizedExperiment` objects are always treated as `"others"`.
+#' Glyco experiment types require either an explicit legacy experiment type or
+#' a validated `GlycomicSE` or `GlycoproteomicSE` subclass.
+#'
 #' @param x A supported glyclean container.
 #'
 #' @return The experiment type.
@@ -201,19 +205,6 @@
   }
   if (inherits(x, "glyexp_experiment")) {
     return(glyexp::get_exp_type(x))
-  }
-
-  metadata <- S4Vectors::metadata(x)
-  if (!is.null(metadata$exp_type)) {
-    return(metadata$exp_type)
-  }
-
-  var_cols <- colnames(SummarizedExperiment::rowData(x))
-  if (all(c("protein", "protein_site") %in% var_cols)) {
-    return("glycoproteomics")
-  }
-  if (any(c("glycan_composition", "glycan_structure") %in% var_cols)) {
-    return("glycomics")
   }
   "others"
 }
