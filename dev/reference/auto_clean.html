@@ -11,8 +11,8 @@ auto_correct_batch_effect()
 
 
 For glycoproteomics data, this function calls these functions in sequence:
-auto_normalize()
 auto_remove()
+auto_normalize()
 auto_impute()
 auto_aggregate()
 auto_normalize()
@@ -30,8 +30,8 @@ auto_correct_batch_effect()
 
 
 For glycoproteomics data, this function calls these functions in sequence:
-auto_normalize()
 auto_remove()
+auto_normalize()
 auto_impute()
 auto_aggregate()
 auto_normalize()
@@ -79,8 +79,8 @@ glycoproteomics data), and batch effect correction.</p>
 <li><p><code><a href="auto_impute.html">auto_impute()</a></code></p></li>
 <li><p><code><a href="auto_normalize.html">auto_normalize()</a></code></p></li>
 <li><p><code><a href="auto_correct_batch_effect.html">auto_correct_batch_effect()</a></code></p></li>
-</ul><p>For glycoproteomics data, this function calls these functions in sequence:</p><ul><li><p><code><a href="auto_normalize.html">auto_normalize()</a></code></p></li>
-<li><p><code><a href="auto_remove.html">auto_remove()</a></code></p></li>
+</ul><p>For glycoproteomics data, this function calls these functions in sequence:</p><ul><li><p><code><a href="auto_remove.html">auto_remove()</a></code></p></li>
+<li><p><code><a href="auto_normalize.html">auto_normalize()</a></code></p></li>
 <li><p><code><a href="auto_impute.html">auto_impute()</a></code></p></li>
 <li><p><code><a href="auto_aggregate.html">auto_aggregate()</a></code></p></li>
 <li><p><code><a href="auto_normalize.html">auto_normalize()</a></code></p></li>
@@ -168,17 +168,17 @@ same subclass.</p>
 <span class="r-in"><span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="va">real_experiment</span></span></span>
 <span class="r-in"><span><span class="fu">auto_clean</span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Normalizing data</span> ──</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Normalization method: `normalize_median()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Reason: default for <span style="color: #0000BB;">"glycoproteomics"</span>.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Normalization completed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Removing variables with too many missing values</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Applying preset <span style="color: #0000BB;">"discovery"</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Total removed: <span style="color: #0000BB;">24</span> (<span style="color: #0000BB;">0.56</span>%) variables.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Variable removal completed.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Normalizing data</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Normalization method: `normalize_median()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Reason: default for <span style="color: #0000BB;">"glycoproteomics"</span>.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Normalization completed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Imputing missing values</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>

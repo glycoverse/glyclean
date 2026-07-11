@@ -18,9 +18,9 @@ For glycomics data, this function calls these functions in sequence:
 For glycoproteomics data, this function calls these functions in
 sequence:
 
-- [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
-
 - [`auto_remove()`](https://glycoverse.github.io/glyclean/dev/reference/auto_remove.md)
+
+- [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
 
 - [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
 
@@ -126,17 +126,17 @@ library(glyexp)
 exp <- real_experiment
 auto_clean(exp)
 #> 
-#> ── Normalizing data ──
-#> 
-#> ℹ Normalization method: `normalize_median()`
-#> ℹ Reason: default for "glycoproteomics".
-#> ✔ Normalization completed.
-#> 
 #> ── Removing variables with too many missing values ──
 #> 
 #> ℹ Applying preset "discovery"...
 #> ℹ Total removed: 24 (0.56%) variables.
 #> ✔ Variable removal completed.
+#> 
+#> ── Normalizing data ──
+#> 
+#> ℹ Normalization method: `normalize_median()`
+#> ℹ Reason: default for "glycoproteomics".
+#> ✔ Normalization completed.
 #> 
 #> ── Imputing missing values ──
 #> 

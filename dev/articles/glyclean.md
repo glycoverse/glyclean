@@ -118,17 +118,17 @@ Ready for some magic? Watch this:
 
 clean_exp <- auto_clean(exp)
 #> 
-#> ── Normalizing data ──
-#> 
-#> ℹ Normalization method: `normalize_median()`
-#> ℹ Reason: default for "glycoproteomics".
-#> ✔ Normalization completed.
-#> 
 #> ── Removing variables with too many missing values ──
 #> 
 #> ℹ Applying preset "discovery"...
 #> ℹ Total removed: 24 (0.56%) variables.
 #> ✔ Variable removal completed.
+#> 
+#> ── Normalizing data ──
+#> 
+#> ℹ Normalization method: `normalize_median()`
+#> ℹ Reason: default for "glycoproteomics".
+#> ✔ Normalization completed.
 #> 
 #> ── Imputing missing values ──
 #> 
