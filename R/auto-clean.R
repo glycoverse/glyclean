@@ -13,8 +13,8 @@
 #' - [auto_correct_batch_effect()]
 #'
 #' For glycoproteomics data, this function calls these functions in sequence:
-#' - [auto_normalize()]
 #' - [auto_remove()]
+#' - [auto_normalize()]
 #' - [auto_impute()]
 #' - [auto_aggregate()]
 #' - [auto_normalize()]
@@ -96,12 +96,6 @@ auto_clean <- function(
 }
 
 .auto_clean_glycoproteomics <- function(exp, params) {
-  cli::cli_h2("Normalizing data")
-  exp <- auto_normalize(
-    exp,
-    group_col = params$group_col
-  )
-  cli::cli_alert_success("Normalization completed.")
   cli::cli_h2("Removing variables with too many missing values")
   exp <- auto_remove(
     exp,
@@ -109,21 +103,32 @@ auto_clean <- function(
     group_col = params$group_col
   )
   cli::cli_alert_success("Variable removal completed.")
+
+  cli::cli_h2("Normalizing data")
+  exp <- auto_normalize(
+    exp,
+    group_col = params$group_col
+  )
+  cli::cli_alert_success("Normalization completed.")
+
   cli::cli_h2("Imputing missing values")
   exp <- auto_impute(
     exp,
     params$group_col
   )
   cli::cli_alert_success("Imputation completed.")
+
   cli::cli_h2("Aggregating data")
   exp <- auto_aggregate(exp, standardize_variable = params$standardize_variable)
   cli::cli_alert_success("Aggregation completed.")
+
   cli::cli_h2("Normalizing data again")
   exp <- auto_normalize(
     exp,
     group_col = params$group_col
   )
   cli::cli_alert_success("Normalization completed.")
+
   cli::cli_h2("Correcting batch effects")
   exp <- auto_correct_batch_effect(
     exp,
@@ -145,18 +150,21 @@ auto_clean <- function(
     group_col = params$group_col
   )
   cli::cli_alert_success("Variable removal completed.")
+
   cli::cli_h2("Imputing missing values")
   exp <- auto_impute(
     exp,
     params$group_col
   )
   cli::cli_alert_success("Imputation completed.")
+
   cli::cli_h2("Normalizing data")
   exp <- auto_normalize(
     exp,
     group_col = params$group_col
   )
   cli::cli_alert_success("Normalization completed.")
+
   cli::cli_h2("Correcting batch effects")
   exp <- auto_correct_batch_effect(
     exp,
