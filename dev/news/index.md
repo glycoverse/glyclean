@@ -39,6 +39,12 @@
   [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
   objects. (#19)
 
+### Minor improvements and bug fixes
+
+- [`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md)
+  now processes large glycoproteomics experiments substantially faster
+  while preserving group order and metadata. (#21)
+
 ## glyclean 0.14.1
 
 ### Minor improvements and bug fixes
