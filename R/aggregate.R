@@ -178,30 +178,17 @@ glyclean_aggregate.GlycoproteomicSE <- function(
       call = error_call
     )
   }
-  sample_info_df <- .get_sample_info(exp)
-  tb <- tibble::as_tibble(.get_expr_mat(exp), rownames = "variable") |>
-    tidyr::pivot_longer(
-      cols = -dplyr::all_of("variable"),
-      names_to = "sample",
-      values_to = "value"
-    ) |>
-    dplyr::left_join(var_info, by = "variable")
-  new_tb <- dplyr::summarise(
-    tb,
-    value = sum(.data$value, na.rm = TRUE),
-    .by = tidyselect::all_of(c(var_info_cols, "sample")),
+  group_id <- .get_aggregation_group_id(var_info, var_info_cols)
+  var_info_df <- .get_aggr_var_info(var_info, var_info_cols, group_id) |>
+    dplyr::mutate(variable = paste0("V", dplyr::row_number()), .before = 1)
+  expr_mat <- rowsum(
+    .get_expr_mat(exp),
+    group = group_id,
+    reorder = FALSE,
+    na.rm = TRUE
   )
-  add_cols <- .get_aggr_var_info(var_info, var_info_cols)
-  var_info_df <- new_tb %>%
-    dplyr::distinct(dplyr::across(tidyselect::all_of(var_info_cols))) %>%
-    dplyr::mutate(variable = paste0("V", dplyr::row_number()), .before = 1) %>%
-    dplyr::left_join(add_cols, by = var_info_cols)
-  expr_mat <- new_tb %>%
-    dplyr::left_join(var_info_df, by = var_info_cols) %>%
-    dplyr::select(tidyselect::all_of(c("sample", "variable", "value"))) %>%
-    tidyr::pivot_wider(names_from = "sample", values_from = "value") %>%
-    tibble::column_to_rownames("variable") %>%
-    as.matrix()
+  rownames(expr_mat) <- var_info_df$variable
+  sample_info_df <- .get_sample_info(exp)
   expr_mat <- expr_mat[
     var_info_df$variable,
     sample_info_df$sample,
@@ -217,6 +204,24 @@ glyclean_aggregate.GlycoproteomicSE <- function(
   } else {
     new_exp
   }
+}
+
+#' Get aggregation group identifiers
+#'
+#' Create integer group identifiers in the order that combinations of
+#' aggregation columns first occur in the variable information.
+#'
+#' @param var_info A tibble with the variable information.
+#' @param aggr_cols Column names used for aggregation.
+#'
+#' @returns An integer vector with one group identifier per variable.
+#'
+#' @noRd
+.get_aggregation_group_id <- function(var_info, aggr_cols) {
+  group_id <- var_info |>
+    dplyr::group_by(dplyr::across(tidyselect::all_of(aggr_cols))) |>
+    dplyr::group_indices()
+  match(group_id, unique(group_id))
 }
 
 #' @rdname aggregate
@@ -239,21 +244,28 @@ glyclean_aggregate.default <- function(
 #'
 #' @param var_info A tibble with the variable information.
 #' @param aggr_cols Column names used for aggregation.
+#' @param group_id Integer aggregation group identifiers in first-occurrence
+#'   order.
 #'
 #' @returns A tibble with the distinct values of the descriptive columns.
 #'
 #' @noRd
-.get_aggr_var_info <- function(var_info, aggr_cols) {
-  cols <- var_info |>
-    dplyr::select(-dplyr::all_of("variable")) |>
+.get_aggr_var_info <- function(var_info, aggr_cols, group_id) {
+  descriptive_cols <- setdiff(colnames(var_info), c("variable", aggr_cols))
+  group_col <- make.unique(c(colnames(var_info), ".aggregate_group"))[[
+    ncol(var_info) + 1L
+  ]]
+  distinct_counts <- var_info |>
+    dplyr::mutate(!!group_col := .env$group_id) |>
     dplyr::summarise(
-      dplyr::across(dplyr::everything(), dplyr::n_distinct),
-      .by = dplyr::all_of(aggr_cols)
-    ) |>
-    dplyr::select(-dplyr::all_of(aggr_cols)) |>
-    dplyr::select(dplyr::where(~ all(.x == 1))) |>
-    colnames()
+      dplyr::across(tidyselect::all_of(descriptive_cols), dplyr::n_distinct),
+      .by = tidyselect::all_of(group_col)
+    )
+  kept_cols <- purrr::keep(
+    descriptive_cols,
+    ~ all(distinct_counts[[.x]] == 1L)
+  )
   var_info |>
-    dplyr::select(dplyr::all_of(c(aggr_cols, cols))) |>
-    dplyr::distinct()
+    dplyr::filter(!duplicated(.env$group_id)) |>
+    dplyr::select(tidyselect::all_of(c(aggr_cols, kept_cols)))
 }

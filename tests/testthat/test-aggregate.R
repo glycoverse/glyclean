@@ -23,6 +23,43 @@ test_that("aggregating to glycoforms works", {
   )
 })
 
+test_that("aggregation preserves group order, missing-value sums, and metadata", {
+  exp <- complex_exp()
+  input_mat <- SummarizedExperiment::assay(exp)
+  first_group <- c(1, 2, 4, 5, 6, 7)
+  input_mat[first_group, 1] <- NA_real_
+  input_mat[1, 2] <- NA_real_
+  SummarizedExperiment::assay(exp) <- input_mat
+
+  res <- aggregate(exp, to_level = "gf", standardize_variable = FALSE)
+  result_mat <- SummarizedExperiment::assay(res)
+  result_var_info <- SummarizedExperiment::rowData(res)
+  expected_mat <- rbind(
+    colSums(input_mat[first_group, , drop = FALSE], na.rm = TRUE),
+    input_mat[3, ],
+    input_mat[8, ]
+  )
+  rownames(expected_mat) <- paste0("V", seq_len(nrow(expected_mat)))
+
+  expect_equal(result_mat, expected_mat)
+  expect_equal(result_var_info$protein_site, c(24L, 25L, 24L))
+  expected_compositions <- SummarizedExperiment::rowData(
+    exp
+  )$glycan_composition[
+    c(1, 3, 8)
+  ]
+  expect_equal(
+    as.character(result_var_info$glycan_composition),
+    as.character(expected_compositions)
+  )
+  expect_true(
+    glyrepr::is_glycan_composition(result_var_info$glycan_composition)
+  )
+  expect_true("gene" %in% colnames(result_var_info))
+  expect_false("peptide" %in% colnames(result_var_info))
+  expect_false("charge" %in% colnames(result_var_info))
+})
+
 test_that("aggregating to glycopeptides (with structures) works", {
   exp <- real_exp()
   res <- aggregate(exp, to_level = "gps", standardize_variable = FALSE)
