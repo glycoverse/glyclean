@@ -2,6 +2,8 @@
 
 ## glyclean (development version)
 
+## glyclean 0.15.0
+
 ### Breaking changes
 
 - Deprecated automatic-preprocessing arguments have been removed:
@@ -29,19 +31,13 @@
 
 ### New features
 
-- Automatic normalization, imputation, filtering, CoDA, and
-  batch-correction helpers now accept plain `SummarizedExperiment`
-  objects when the experiment type is `"others"`, while preserving the
-  input class and metadata. (#24)
-- Non-automatic preprocessing and QC functions now accept plain
-  `SummarizedExperiment` objects and preserve their class.
-- All preprocessing and QC functions now natively accept
-  [`glyexp::GlycomicSE`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
-  and
+- All preprocessing and QC functions now accept
+  [`glyexp::GlycomicSE`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
   [`glyexp::GlycoproteomicSE`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
-  preserve the input subclass, and continue to support
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-  objects. (#19)
+  legacy
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html),
+  and plain `SummarizedExperiment` objects (for experiment type
+  `"others"`), while preserving their class and metadata. (#19, \#24)
 
 ### Minor improvements and bug fixes
 

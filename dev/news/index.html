@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.14.1.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.15.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,19 +33,20 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="glyclean-development-version">glyclean (development version)<a class="anchor" aria-label="anchor" href="#glyclean-development-version"></a></h2>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.15.0" id="glyclean-0150">glyclean 0.15.0<a class="anchor" aria-label="anchor" href="#glyclean-0150"></a></h2>
 <div class="section level3">
-<h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
+<h3 id="breaking-changes-0-15-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-15-0"></a></h3>
 <ul><li>Deprecated automatic-preprocessing arguments have been removed: <code>qc_name</code> from <code><a href="../reference/auto_clean.html">auto_clean()</a></code>, <code><a href="../reference/auto_impute.html">auto_impute()</a></code>, <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code>, and <code><a href="../reference/auto_remove.html">auto_remove()</a></code>; <code>to_try</code> from <code><a href="../reference/auto_impute.html">auto_impute()</a></code> and <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code>; and <code>impute_to_try</code> and <code>normalize_to_try</code> from <code><a href="../reference/auto_clean.html">auto_clean()</a></code>. (#20)</li>
 <li>Normalization, imputation, filtering, CoDA, and batch-correction functions now require a <code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE</a></code>, <code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code>, or legacy <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object; matrix inputs error and should first be wrapped in a supported container. (#18, #19)</li>
 </ul></div>
 <div class="section level3">
-<h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
-<ul><li>Automatic normalization, imputation, filtering, CoDA, and batch-correction helpers now accept plain <code>SummarizedExperiment</code> objects when the experiment type is <code>"others"</code>, while preserving the input class and metadata. (#24)</li>
-<li>Non-automatic preprocessing and QC functions now accept plain <code>SummarizedExperiment</code> objects and preserve their class.</li>
-<li>All preprocessing and QC functions now natively accept <code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE</a></code> and <code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code>, preserve the input subclass, and continue to support <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> objects. (#19)</li>
+<h3 id="new-features-0-15-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-15-0"></a></h3>
+<ul><li>All preprocessing and QC functions now accept <code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE</a></code>, <code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code>, legacy <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code>, and plain <code>SummarizedExperiment</code> objects (for experiment type <code>"others"</code>), while preserving their class and metadata. (#19, #24)</li>
 </ul></div>
 <div class="section level3">
-<h3 id="minor-improvements-and-bug-fixes-development-version">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-development-version"></a></h3>
+<h3 id="minor-improvements-and-bug-fixes-0-15-0">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-0-15-0"></a></h3>
 <ul><li>
 <code><a href="../reference/aggregate.html">aggregate()</a></code> now processes large glycoproteomics experiments substantially faster while preserving group order and metadata. (#21)</li>
 <li>
