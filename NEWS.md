@@ -13,6 +13,7 @@
 ## Minor improvements and bug fixes
 
 * `aggregate()` now processes large glycoproteomics experiments substantially faster while preserving group order and metadata. (#21)
+* `auto_clean()` now removes glycoproteomics variables with excessive missingness before the first normalization step. (#23)
 
 # glyclean 0.14.1
 
