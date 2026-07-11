@@ -7,8 +7,8 @@
 plot_missing_bar(exp, on = "sample")
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
-\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{on}{Whether to plot missingness by \code{"sample(s)"} or \code{"variable(s)"}.
 Defaults to \code{"sample"}.}

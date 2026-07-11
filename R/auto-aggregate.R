@@ -21,7 +21,7 @@
 #'
 #' @export
 auto_aggregate <- function(exp, standardize_variable = TRUE) {
-  .assert_glyclean_container(exp)
+  .assert_auto_container(exp)
   exp_type <- .get_exp_type(exp)
   if (exp_type != "glycoproteomics") {
     cli::cli_abort(c(

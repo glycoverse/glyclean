@@ -7,8 +7,8 @@
 plot_batch_pca(exp, batch_col = "batch")
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
-\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{batch_col}{Column name in \code{sample_info}, or a factor/vector with length
 equal to the number of samples.}

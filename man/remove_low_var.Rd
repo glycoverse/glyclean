@@ -8,8 +8,8 @@ Remove Variables with Low Variance}
 remove_low_var(x, var_cutoff = 0, by = NULL, strict = FALSE)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
-\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{var_cutoff}{The cutoff for variance. Defaults to 0.}
 
@@ -19,8 +19,8 @@ remove_low_var(x, var_cutoff = 0, by = NULL, strict = FALSE)
 If \code{TRUE}, remove a variable if it passes the variance threshold in any group.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with filtered variables. Glyco SE
-inputs return the same subclass.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with filtered variables. SummarizedExperiment inputs
+return the same class.
 }
 \description{
 Filters variables whose variance falls below a threshold.

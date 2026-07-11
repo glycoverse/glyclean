@@ -7,8 +7,8 @@
 normalize_loesscyc(x, by = NULL, ...)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
-\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
 specifying group assignments for each sample. Optional.
@@ -18,7 +18,7 @@ If provided, the normalization will be performed within each group.}
 }
 \value{
 A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with a normalized expression matrix.
-Glyco SE inputs return the same subclass.
+SummarizedExperiment inputs return the same class.
 }
 \description{
 This function is a wrapper around \code{\link[limma:normalizeCyclicLoess]{limma::normalizeCyclicLoess()}} with

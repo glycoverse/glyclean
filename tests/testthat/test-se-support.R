@@ -16,6 +16,33 @@ test_that("assay preprocessing preserves glyco SE subclasses", {
   }
 })
 
+test_that("non-auto preprocessing accepts plain SummarizedExperiment objects", {
+  x <- plain_se(simple_glycomic_se())
+  SummarizedExperiment::assay(x)[1, 1] <- NA_real_
+  SummarizedExperiment::colData(x)$batch <- factor(c(
+    "A",
+    "A",
+    "A",
+    "B",
+    "B",
+    "B"
+  ))
+
+  normalized <- normalize_median(x)
+  imputed <- impute_zero(x)
+  filtered <- suppressMessages(remove_rare(x))
+  transformed <- transform_clr(imputed, gamma = 0)
+  corrected <- suppressMessages(
+    correct_batch_effect(x, batch = "batch", group = "group")
+  )
+
+  for (result in list(normalized, imputed, filtered, transformed, corrected)) {
+    expect_identical(as.character(class(result)), "SummarizedExperiment")
+  }
+  expect_false(anyNA(SummarizedExperiment::assay(imputed)))
+  expect_identical(S4Vectors::metadata(normalized), S4Vectors::metadata(x))
+})
+
 test_that("assay preprocessing preserves a nonstandard assay name", {
   x <- simple_glycomic_se()
   SummarizedExperiment::assayNames(x) <- "signal"
@@ -81,6 +108,16 @@ test_that("automatic preprocessing preserves glyco SE subclasses", {
   )
 })
 
+test_that("automatic preprocessing still requires a typed container", {
+  x <- plain_se(simple_glycomic_se())
+
+  expect_error(
+    auto_normalize(x),
+    "Must inherit from class 'glyexp_experiment', 'GlycomicSE', or 'GlycoproteomicSE'",
+    fixed = TRUE
+  )
+})
+
 test_that("CoDA transformations preserve class and store SE metadata", {
   x <- simple_glycomic_se()
 
@@ -135,6 +172,27 @@ test_that("glycoproteomics operations preserve GlycoproteomicSE", {
   )
 })
 
+test_that("specialized glycoproteomics operations reject plain SummarizedExperiment", {
+  x <- plain_se(simple_glycoproteomic_se())
+  message <- "must be a <glyexp_experiment> object or a <GlycoproteomicSE> object"
+
+  expect_error(
+    aggregate(x, standardize_variable = FALSE),
+    message,
+    fixed = TRUE
+  )
+  expect_error(
+    adjust_protein(x, matrix(1)),
+    message,
+    fixed = TRUE
+  )
+  expect_error(
+    add_site_seq(x),
+    message,
+    fixed = TRUE
+  )
+})
+
 test_that("standardization bridges subclasses without exp_type metadata", {
   testthat::local_mocked_bindings(
     standardize_variable = function(exp) exp,
@@ -159,6 +217,17 @@ test_that("standardization bridges subclasses without exp_type metadata", {
 
 test_that("QC functions accept glyco SE subclasses", {
   x <- simple_glycomic_se()
+
+  expect_s3_class(plot_missing_bar(x), "ggplot")
+  expect_s3_class(plot_tic_bar(x), "ggplot")
+  expect_s3_class(plot_rank_abundance(x), "ggplot")
+  expect_s3_class(plot_int_boxplot(x, by = "group"), "ggplot")
+  expect_s3_class(plot_rle(x, by = "group"), "ggplot")
+  expect_s3_class(plot_cv_dent(x, by = "group"), "ggplot")
+})
+
+test_that("QC functions accept plain SummarizedExperiment objects", {
+  x <- plain_se(simple_glycomic_se())
 
   expect_s3_class(plot_missing_bar(x), "ggplot")
   expect_s3_class(plot_tic_bar(x), "ggplot")

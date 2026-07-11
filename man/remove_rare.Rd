@@ -7,8 +7,8 @@
 remove_rare(x, prop = NULL, n = NULL, by = NULL, strict = FALSE, min_n = NULL)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
-\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{prop}{The proportion of missing values to use as a threshold.
 Variables with missing values above this threshold will be removed.
@@ -35,8 +35,8 @@ to be kept. If \code{NULL} (default), it is calculated dynamically:
 }}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with filtered variables. Glyco SE
-inputs return the same subclass.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with filtered variables. SummarizedExperiment inputs
+return the same class.
 }
 \description{
 Remove Rare Variables with Too Many Missing Values

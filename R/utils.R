@@ -97,8 +97,7 @@
 #' @noRd
 .is_glyclean_container <- function(x) {
   inherits(x, "glyexp_experiment") ||
-    glyexp::is_glycomic_se(x) ||
-    glyexp::is_glycoproteomic_se(x)
+    methods::is(x, "SummarizedExperiment")
 }
 
 #' Validate a glyclean container
@@ -109,6 +108,28 @@
 #' @noRd
 .assert_glyclean_container <- function(x) {
   if (!.is_glyclean_container(x)) {
+    cli::cli_abort(
+      "Must inherit from class 'glyexp_experiment' or 'SummarizedExperiment'."
+    )
+  }
+  invisible(x)
+}
+
+#' Validate a container for automatic preprocessing
+#'
+#' Automatic preprocessing depends on the explicit experiment type supplied by
+#' `glyexp_experiment`, `GlycomicSE`, and `GlycoproteomicSE` containers.
+#'
+#' @param x An object.
+#'
+#' @return `x`, invisibly.
+#' @noRd
+.assert_auto_container <- function(x) {
+  if (
+    !inherits(x, "glyexp_experiment") &&
+      !methods::is(x, "GlycomicSE") &&
+      !methods::is(x, "GlycoproteomicSE")
+  ) {
     cli::cli_abort(
       "Must inherit from class 'glyexp_experiment', 'GlycomicSE', or 'GlycoproteomicSE'."
     )
@@ -178,7 +199,23 @@
   if (glyexp::is_glycoproteomic_se(x)) {
     return("glycoproteomics")
   }
-  glyexp::get_exp_type(x)
+  if (inherits(x, "glyexp_experiment")) {
+    return(glyexp::get_exp_type(x))
+  }
+
+  metadata <- S4Vectors::metadata(x)
+  if (!is.null(metadata$exp_type)) {
+    return(metadata$exp_type)
+  }
+
+  var_cols <- colnames(SummarizedExperiment::rowData(x))
+  if (all(c("protein", "protein_site") %in% var_cols)) {
+    return("glycoproteomics")
+  }
+  if (any(c("glycan_composition", "glycan_structure") %in% var_cols)) {
+    return("glycomics")
+  }
+  "others"
 }
 
 #' Extract container metadata
@@ -239,10 +276,12 @@
     metadata = metadata
   )
 
-  if (glyexp::is_glycomic_se(x)) {
+  if (methods::is(x, "GlycomicSE")) {
     glyexp::as_glycomic_se(se)
-  } else {
+  } else if (methods::is(x, "GlycoproteomicSE")) {
     glyexp::as_glycoproteomic_se(se)
+  } else {
+    se
   }
 }
 
@@ -306,11 +345,13 @@
       glycan_type = metadata$glycan_type
     )
   )
-  if (glyexp::is_glycomic_se(x)) {
-    glyexp::as_glycomic_se(standardized)
-  } else {
-    glyexp::as_glycoproteomic_se(standardized)
-  }
+  .rebuild_container(
+    x,
+    expr_mat = glyexp::get_expr_mat(standardized),
+    sample_info = glyexp::get_sample_info(standardized),
+    var_info = glyexp::get_var_info(standardized),
+    metadata = metadata
+  )
 }
 
 #' Update an experiment expression matrix

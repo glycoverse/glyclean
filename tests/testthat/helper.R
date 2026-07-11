@@ -212,6 +212,15 @@ simple_glycoproteomic_se <- function(n_var = 20) {
     glyexp::as_glycoproteomic_se()
 }
 
+plain_se <- function(x) {
+  SummarizedExperiment::SummarizedExperiment(
+    assays = SummarizedExperiment::assays(x),
+    rowData = SummarizedExperiment::rowData(x),
+    colData = SummarizedExperiment::colData(x),
+    metadata = S4Vectors::metadata(x)
+  )
+}
+
 simple_glycoproteomic_exp <- function(n_var, n_samp) {
   sample_info <- tibble::tibble(sample = paste0("S", seq_len(n_samp)))
   var_info <- tibble::tibble(variable = paste0("V", seq_len(n_var)))

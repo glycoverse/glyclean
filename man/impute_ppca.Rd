@@ -7,8 +7,8 @@
 impute_ppca(x, by = NULL, ...)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
-\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
 specifying group assignments for each sample. Used for grouping when imputing missing values.}
@@ -16,8 +16,8 @@ specifying group assignments for each sample. Used for grouping when imputing mi
 \item{...}{Additional arguments to pass to \code{pcaMethods::pca()}.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed. Glyco
-SE inputs return the same subclass.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed. SummarizedExperiment
+inputs return the same class.
 }
 \description{
 A wrapper around the \code{\link[pcaMethods:pca]{pcaMethods::pca()}}.

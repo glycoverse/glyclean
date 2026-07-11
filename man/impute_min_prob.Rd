@@ -7,8 +7,8 @@
 impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
-\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
 specifying group assignments for each sample. Used for grouping when imputing missing values.}
@@ -23,8 +23,8 @@ left-censored draw distribution. Default is \code{1}.}
 supported.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed. Glyco
-SE inputs return the same subclass.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed. SummarizedExperiment
+inputs return the same class.
 }
 \description{
 Impute missing values using random draws from the left-censored

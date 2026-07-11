@@ -46,8 +46,8 @@
 #' dea_res <- glystats::gly_ttest(coda_motif_exp)
 #' ```
 #'
-#' @param x A [glyexp::experiment()] object. [glyexp::GlycomicSE()] and
-#'   [glyexp::GlycoproteomicSE()] objects are also supported.
+#' @param x A [glyexp::experiment()] or
+#'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param by Either a column name in `sample_info` or a factor/vector with one
 #'   value per sample.
 #' @param gamma Standard deviation of the scale-uncertainty model on the `log2`
@@ -58,7 +58,7 @@
 #'   multi-group data, provide a positive vector with one scale per group.
 #'
 #' @return A [glyexp::experiment()] object with a transformed expression matrix.
-#'   Glyco SE inputs return the same subclass.
+#'   SummarizedExperiment inputs return the same class.
 #'   The returned values are back-transformed to the original ratio space.
 #'   Zeros in the input therefore remain zeros in the output.
 #' @export
@@ -85,7 +85,7 @@ transform_clr <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
 #' @inheritParams transform_clr
 #'
 #' @return A [glyexp::experiment()] object with an ALR-transformed expression
-#'   matrix. Glyco SE inputs return the same subclass.
+#'   matrix. SummarizedExperiment inputs return the same class.
 #'   When ALR succeeds, the reference glycan is excluded from the result and the
 #'   output therefore has one fewer row than the input. When ALR falls back to
 #'   CLR, the returned object keeps the original dimensions. The returned values

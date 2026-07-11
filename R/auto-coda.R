@@ -7,13 +7,15 @@
 #' @inheritParams transform_clr
 #' @inheritSection transform_clr Algorithmic details
 #' @inheritSection transform_clr Motif quantification
+#' @param x A [glyexp::experiment()] object. [glyexp::GlycomicSE()] and
+#'   [glyexp::GlycoproteomicSE()] objects are also supported.
 #'
 #' @returns A [glyexp::experiment()] object with a CoDA-transformed expression
 #'   matrix (ALR if >50 variables, CLR otherwise). Glyco SE inputs return the
 #'   same subclass.
 #' @export
 auto_coda <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
-  .assert_glyclean_container(x)
+  .assert_auto_container(x)
 
   if (nrow(x) > 50) {
     cli::cli_alert_info(

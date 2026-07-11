@@ -7,6 +7,7 @@
 
 ## New features
 
+* Non-automatic preprocessing and QC functions now accept plain `SummarizedExperiment` objects and preserve their class.
 * All preprocessing and QC functions now natively accept `glyexp::GlycomicSE` and `glyexp::GlycoproteomicSE`, preserve the input subclass, and continue to support `glyexp::experiment()` objects. (#19)
 
 # glyclean 0.14.1

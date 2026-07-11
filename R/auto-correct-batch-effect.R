@@ -40,7 +40,7 @@ auto_correct_batch_effect <- function(
   check_confounding = TRUE,
   confounding_threshold = 0.4
 ) {
-  .assert_glyclean_container(exp)
+  .assert_auto_container(exp)
   checkmate::assert_number(prop_threshold, lower = 0, upper = 1)
 
   sample_info <- .get_sample_info(exp)

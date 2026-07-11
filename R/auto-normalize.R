@@ -26,7 +26,7 @@ auto_normalize <- function(
   group_col = "group"
 ) {
   # Check arguments
-  .assert_glyclean_container(exp)
+  .assert_auto_container(exp)
   checkmate::assert_string(group_col, null.ok = TRUE)
 
   .auto_normalize_default(exp)

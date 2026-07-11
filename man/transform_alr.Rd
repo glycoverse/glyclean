@@ -7,8 +7,8 @@
 transform_alr(x, by = NULL, gamma = 0.1, group_scales = NULL)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
-\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} or a factor/vector with one
 value per sample.}
@@ -23,7 +23,7 @@ multi-group data, provide a positive vector with one scale per group.}
 }
 \value{
 A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with an ALR-transformed expression
-matrix. Glyco SE inputs return the same subclass.
+matrix. SummarizedExperiment inputs return the same class.
 When ALR succeeds, the reference glycan is excluded from the result and the
 output therefore has one fewer row than the input. When ALR falls back to
 CLR, the returned object keeps the original dimensions. The returned values

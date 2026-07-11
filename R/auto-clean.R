@@ -64,7 +64,7 @@ auto_clean <- function(
   batch_confounding_threshold = 0.4,
   standardize_variable = TRUE
 ) {
-  .assert_glyclean_container(exp)
+  .assert_auto_container(exp)
   checkmate::assert_string(group_col, null.ok = TRUE)
   checkmate::assert_string(batch_col, null.ok = TRUE)
   checkmate::assert_choice(remove_preset, c("simple", "discovery", "biomarker"))
