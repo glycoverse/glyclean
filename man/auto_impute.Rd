@@ -7,13 +7,15 @@
 auto_impute(exp, group_col = "group")
 }
 \arguments{
-\item{exp}{An \code{\link[glyexp:experiment]{glyexp::experiment()}}.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
+\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
 
 \item{group_col}{The column name in sample_info for groups. Default is "group".
 Can be NULL when no group information is available.}
 }
 \value{
-The imputed experiment.
+The imputed \code{\link[glyexp:experiment]{glyexp::experiment()}} object. Glyco SE inputs return the
+same subclass.
 }
 \description{
 This function automatically selects and applies a deterministic default

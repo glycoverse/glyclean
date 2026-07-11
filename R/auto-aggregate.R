@@ -5,12 +5,14 @@
 #' otherwise to "gf" (glycoforms with compositions) level.
 #'
 #' @param exp A [glyexp::experiment()] object with "glycoproteomics" type.
+#'   [glyexp::GlycoproteomicSE()] objects are also supported.
 #' @param standardize_variable Whether to call [glyexp::standardize_variable()]
 #'   after aggregation. Set to `FALSE` to skip network calls for faster testing.
 #'   Default is `TRUE`.
 #'
-#' @returns A modified [glyexp::experiment()] object with aggregated expression matrix and
-#'   updated variable information.
+#' @returns A modified [glyexp::experiment()] object with an aggregated
+#'   expression matrix and updated variable information. A
+#'   [glyexp::GlycoproteomicSE()] input returns the same subclass.
 #'
 #' @examples
 #' library(glyexp)

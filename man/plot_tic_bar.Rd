@@ -7,7 +7,8 @@
 plot_tic_bar(exp)
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
+\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
 }
 \value{
 A ggplot object of total intensity by sample.

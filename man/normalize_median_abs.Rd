@@ -7,10 +7,12 @@
 normalize_median_abs(x)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
+\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
 }
 \value{
 A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with a normalized expression matrix.
+Glyco SE inputs return the same subclass.
 }
 \description{
 Normalize the expression matrix by dividing each column (sample) by the absolute

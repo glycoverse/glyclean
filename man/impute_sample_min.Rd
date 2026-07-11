@@ -7,10 +7,12 @@
 impute_sample_min(x)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
+\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed. Glyco
+SE inputs return the same subclass.
 }
 \description{
 Impute missing values with the minimum value of the corresponding sample.

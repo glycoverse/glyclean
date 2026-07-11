@@ -10,6 +10,7 @@
 #' - "protein_site": The site on the protein sequence.
 #'
 #' @param exp A [glyexp::experiment()] object with "glycoproteomics" type.
+#'   [glyexp::GlycoproteomicSE()] objects are also supported.
 #' @param fasta Either a file path to a FASTA file, a named character vector
 #'   with protein IDs as names and sequences as value, or `NULL` to fetch from UniProt.
 #' @param n_aa The number of amino acids to the left and right of the glycosylation site.
@@ -17,6 +18,7 @@
 #' @param taxid NCBI taxonomy ID for UniProt lookup. Default: `9606` (human).
 #'
 #' @returns A [glyexp::experiment()] object with the new "site_sequence" column.
+#'   A [glyexp::GlycoproteomicSE()] input returns the same subclass.
 #' @export
 #'
 #' @importFrom magrittr %>%

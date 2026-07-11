@@ -32,6 +32,8 @@ This package provides a comprehensive toolkit that takes the guesswork out of da
 with specialized methods designed specifically for the unique challenges of glycan analysis.
 
 **Important Note:** This package is primarily designed for `glyexp::experiment()` objects.
+`glyexp::GlycomicSE` and `glyexp::GlycoproteomicSE` objects are also supported,
+and preprocessing functions return the same subclass they receive.
 If you're new to this data structure,
 we highly recommend checking out [its introduction](https://glycoverse.github.io/glyexp/articles/glyexp.html) first.
 We'll also be using the [glyread](https://github.com/glycoverse/glyread) package to load our data – 
@@ -398,8 +400,9 @@ Perfect for complex experimental designs or external grouping criteria!
 | `plot_batch_pca()` | PCA score plot by batch | Visualizing batch effects and sample clustering |
 | `plot_rep_scatter()` | Replicate scatter plots | Checking concordance between replicate samples |
 
-These functions are designed to work seamlessly with `glyexp::experiment()` objects and provide consistent,
-high-quality visualizations using `ggplot2`.
+These functions are designed to work seamlessly with `glyexp::experiment()` objects.
+They also accept `glyexp::GlycomicSE` and `glyexp::GlycoproteomicSE` objects and
+provide consistent, high-quality visualizations using `ggplot2`.
 
 For example, you can use `plot_missing_heatmap()` to visualize the missing values in your data before and after cleaning:
 

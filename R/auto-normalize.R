@@ -10,11 +10,13 @@
 #' - `glycoproteomics`: [normalize_median()].
 #' - missing or other experiment types: [normalize_median()].
 #'
-#' @param exp An [glyexp::experiment()].
+#' @param exp A [glyexp::experiment()] object. [glyexp::GlycomicSE()] and
+#'   [glyexp::GlycoproteomicSE()] objects are also supported.
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
 #'
-#' @returns The normalized experiment.
+#' @returns The normalized [glyexp::experiment()] object. Glyco SE inputs return
+#'   the same subclass.
 #' @examples
 #' library(glyexp)
 #' exp_normed <- auto_normalize(real_experiment)

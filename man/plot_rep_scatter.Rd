@@ -7,7 +7,8 @@
 plot_rep_scatter(exp, rep_col, n_pairs = 9)
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
+\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
 
 \item{rep_col}{Column name in \code{sample_info} used to define replicate groups.
 Samples with the same value in this column are treated as replicates

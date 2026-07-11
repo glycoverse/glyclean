@@ -7,7 +7,8 @@
 plot_int_boxplot(exp, by = NULL)
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
+\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
 
 \item{by}{Grouping variable for samples. Can be a column name in \code{sample_info}
 or a vector/factor with length equal to the number of samples. When provided,

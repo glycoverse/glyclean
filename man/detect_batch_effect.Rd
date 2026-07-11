@@ -7,7 +7,8 @@
 detect_batch_effect(x, batch = "batch", group = NULL)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
+\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
 
 \item{batch}{Either a factor/character vector specifying batch assignments for each sample,
 or a string specifying the column name in \code{sample_info}. Defaults to "batch".}

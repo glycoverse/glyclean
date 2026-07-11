@@ -7,7 +7,8 @@
 impute_miss_forest(x, by = NULL, seed = 123, ...)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
+\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
 specifying group assignments for each sample. Used for grouping when imputing missing values.}
@@ -17,7 +18,8 @@ specifying group assignments for each sample. Used for grouping when imputing mi
 \item{...}{Additional arguments to pass to \code{missForest::missForest()}.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed. Glyco
+SE inputs return the same subclass.
 }
 \description{
 A wrapper around the \code{\link[missForest:missForest]{missForest::missForest()}}.

@@ -9,13 +9,15 @@
 #' - "biomarker": more strict, remove variables with more than 40% missing values,
 #'   and ensure less than 60% of missing values in all groups.
 #'
-#' @param exp A glyexp_experiment object.
+#' @param exp A [glyexp::experiment()] object. [glyexp::GlycomicSE()] and
+#'   [glyexp::GlycoproteomicSE()] objects are also supported.
 #' @param preset One of "simple", "discovery", or "biomarker".
 #'   Default "discovery" if group information is available, otherwise "simple".
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
 #'
-#' @returns A modified [glyexp::experiment()] object.
+#' @returns A modified [glyexp::experiment()] object. Glyco SE inputs return the
+#'   same subclass.
 #'
 #' @examples
 #' library(glyexp)

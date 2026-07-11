@@ -7,7 +7,8 @@
 auto_remove(exp, preset = "discovery", group_col = "group")
 }
 \arguments{
-\item{exp}{A glyexp_experiment object.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
+\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
 
 \item{preset}{One of "simple", "discovery", or "biomarker".
 Default "discovery" if group information is available, otherwise "simple".}
@@ -16,7 +17,8 @@ Default "discovery" if group information is available, otherwise "simple".}
 Can be NULL when no group information is available.}
 }
 \value{
-A modified \code{\link[glyexp:experiment]{glyexp::experiment()}} object.
+A modified \code{\link[glyexp:experiment]{glyexp::experiment()}} object. Glyco SE inputs return the
+same subclass.
 }
 \description{
 This function uses preset rules to remove variables with low quality.

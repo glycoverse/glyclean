@@ -14,7 +14,8 @@ correct_batch_effect(
 )
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
+\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
 
 \item{batch}{Either a factor/character vector specifying batch assignments for each sample,
 or a string specifying the column name in \code{sample_info}. Defaults to "batch".}
@@ -35,7 +36,8 @@ Only used when \code{check_confounding} is TRUE. Default to 0.4.}
 sva::ComBat) or "limma" (uses limma::removeBatchEffect). Default to "combat".}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with batch effects corrected.
+A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with batch effects corrected. Glyco
+SE inputs return the same subclass.
 }
 \description{
 Correct batch effects in glycoproteomics/glycomics data using ComBat algorithm

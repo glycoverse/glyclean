@@ -13,7 +13,8 @@ add_site_seq(exp, fasta = NULL, n_aa = 7, taxid = 9606)
 \method{add_site_seq}{default}(exp, fasta = NULL, n_aa = 7, taxid = 9606)
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with "glycoproteomics" type.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with "glycoproteomics" type.
+\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
 
 \item{fasta}{Either a file path to a FASTA file, a named character vector
 with protein IDs as names and sequences as value, or \code{NULL} to fetch from UniProt.}
@@ -25,6 +26,7 @@ For example, if \code{n_aa = 5}, the resulting sequence will contain 11 amino ac
 }
 \value{
 A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with the new "site_sequence" column.
+A \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} input returns the same subclass.
 }
 \description{
 This function adds a new "site_sequence" column to the variable information table.

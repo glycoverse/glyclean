@@ -25,7 +25,8 @@ aggregate(
 )
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with "glycoproteomics" type.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with "glycoproteomics" type.
+\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
 
 \item{to_level}{The aggregation level,
 one of: "gf" (glycoforms), "gp" (glycopeptides),
@@ -38,8 +39,9 @@ after aggregation. Set to \code{FALSE} to skip network calls for faster testing.
 Default is \code{TRUE}.}
 }
 \value{
-A modified \code{\link[glyexp:experiment]{glyexp::experiment()}} object with aggregated expression matrix and
-updated variable information.
+A modified \code{\link[glyexp:experiment]{glyexp::experiment()}} object with an aggregated
+expression matrix and updated variable information. A
+\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} input returns the same subclass.
 }
 \description{
 Aggregate glycoproteomics data to different levels

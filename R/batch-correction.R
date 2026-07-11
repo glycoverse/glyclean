@@ -21,7 +21,8 @@
 #' the group information will be included in the model to preserve biological variation
 #' while correcting for batch effects.
 #'
-#' @param x A [glyexp::experiment()] object.
+#' @param x A [glyexp::experiment()] object. [glyexp::GlycomicSE()] and
+#'   [glyexp::GlycoproteomicSE()] objects are also supported.
 #' @param batch Either a factor/character vector specifying batch assignments for each sample,
 #'   or a string specifying the column name in `sample_info`. Defaults to "batch".
 #' @param group Either a factor/character vector specifying group assignments for each sample,
@@ -36,7 +37,8 @@
 #' @param method The batch correction method to use. Either "combat" (default, uses
 #'   sva::ComBat) or "limma" (uses limma::removeBatchEffect). Default to "combat".
 #'
-#' @return A [glyexp::experiment()] object with batch effects corrected.
+#' @return A [glyexp::experiment()] object with batch effects corrected. Glyco
+#'   SE inputs return the same subclass.
 #'
 #' @examples
 #' # With glyexp_experiment and column names
@@ -103,7 +105,8 @@ correct_batch_effect <- function(
 #' Use ANOVA to detect if batch effect is present in the data.
 #' If `group` is provided, it will be used as a covariate in the ANOVA model.
 #'
-#' @param x A [glyexp::experiment()] object.
+#' @param x A [glyexp::experiment()] object. [glyexp::GlycomicSE()] and
+#'   [glyexp::GlycoproteomicSE()] objects are also supported.
 #' @param batch Either a factor/character vector specifying batch assignments for each sample,
 #'   or a string specifying the column name in `sample_info`. Defaults to "batch".
 #' @param group Either a factor/character vector specifying group assignments for each sample,

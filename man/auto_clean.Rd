@@ -16,8 +16,9 @@ auto_clean(
 )
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} containing glycoproteomics or
-glycomics data.}
+\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} containing glycoproteomics or glycomics
+data. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are
+also supported.}
 
 \item{group_col}{The column name in sample_info for groups. Default is "group".
 Can be NULL when no group information is available.}
@@ -49,7 +50,8 @@ after aggregation. Set to \code{FALSE} to skip network calls for faster testing.
 Default is \code{TRUE}.}
 }
 \value{
-A modified \code{glyexp::experiment()} object.
+A modified \code{\link[glyexp:experiment]{glyexp::experiment()}} object. Glyco SE inputs return the
+same subclass.
 }
 \description{
 Perform automatic data preprocessing on glycoproteomics or glycomics data.

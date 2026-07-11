@@ -33,6 +33,7 @@
 #' as one "glycoform" can contain multiple "peptides".
 #'
 #' @param exp A [glyexp::experiment()] object with "glycoproteomics" type.
+#'   [glyexp::GlycoproteomicSE()] objects are also supported.
 #' @param to_level The aggregation level,
 #'   one of: "gf" (glycoforms), "gp" (glycopeptides),
 #'   "gfs" (glycoforms with structures),
@@ -41,8 +42,9 @@
 #' @param standardize_variable Whether to call [glyexp::standardize_variable()]
 #'   after aggregation. Set to `FALSE` to skip network calls for faster testing.
 #'   Default is `TRUE`.
-#' @returns A modified [glyexp::experiment()] object with aggregated expression matrix and
-#'   updated variable information.
+#' @returns A modified [glyexp::experiment()] object with an aggregated
+#'   expression matrix and updated variable information. A
+#'   [glyexp::GlycoproteomicSE()] input returns the same subclass.
 #' @export
 aggregate <- function(
   exp,

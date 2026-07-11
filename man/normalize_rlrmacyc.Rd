@@ -7,7 +7,8 @@
 normalize_rlrmacyc(x, n_iter = 3, by = NULL)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object.}
+\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} object. \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} and
+\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} objects are also supported.}
 
 \item{n_iter}{The number of iterations to perform. Default is 3.}
 
@@ -17,6 +18,7 @@ If provided, the normalization will be performed within each group.}
 }
 \value{
 A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with a normalized expression matrix.
+Glyco SE inputs return the same subclass.
 }
 \description{
 This method is based on robust linear regression with median adjustment
