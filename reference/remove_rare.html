@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.14.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.15.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,16 +38,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">remove_rare</span><span class="op">(</span><span class="va">x</span>, prop <span class="op">=</span> <span class="cn">NULL</span>, n <span class="op">=</span> <span class="cn">NULL</span>, by <span class="op">=</span> <span class="cn">NULL</span>, strict <span class="op">=</span> <span class="cn">FALSE</span>, min_n <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S3 method for class 'glyexp_experiment'</span></span>
-<span><span class="fu">remove_rare</span><span class="op">(</span><span class="va">x</span>, prop <span class="op">=</span> <span class="cn">NULL</span>, n <span class="op">=</span> <span class="cn">NULL</span>, by <span class="op">=</span> <span class="cn">NULL</span>, strict <span class="op">=</span> <span class="cn">FALSE</span>, min_n <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S3 method for class 'matrix'</span></span>
-<span><span class="fu">remove_rare</span><span class="op">(</span><span class="va">x</span>, prop <span class="op">=</span> <span class="cn">NULL</span>, n <span class="op">=</span> <span class="cn">NULL</span>, by <span class="op">=</span> <span class="cn">NULL</span>, strict <span class="op">=</span> <span class="cn">FALSE</span>, min_n <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Default S3 method</span></span>
-<span><span class="fu">remove_rare</span><span class="op">(</span><span class="va">x</span>, prop <span class="op">=</span> <span class="cn">NULL</span>, n <span class="op">=</span> <span class="cn">NULL</span>, by <span class="op">=</span> <span class="cn">NULL</span>, strict <span class="op">=</span> <span class="cn">FALSE</span>, min_n <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">remove_rare</span><span class="op">(</span><span class="va">x</span>, prop <span class="op">=</span> <span class="cn">NULL</span>, n <span class="op">=</span> <span class="cn">NULL</span>, by <span class="op">=</span> <span class="cn">NULL</span>, strict <span class="op">=</span> <span class="cn">FALSE</span>, min_n <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -55,8 +46,8 @@
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>Either a <code>glyexp_experiment</code> object or a matrix.
-If a matrix, rows should be variables and columns should be samples.</p></dd>
+<dd><p>A <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> or
+<code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment::SummarizedExperiment()</a></code> object.</p></dd>
 
 
 <dt id="arg-prop">prop<a class="anchor" aria-label="anchor" href="#arg-prop"></a></dt>
@@ -93,8 +84,8 @@ to be kept. If <code>NULL</code> (default), it is calculated dynamically:</p><ul
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>For <code>glyexp_experiment</code> input, returns a modified <code>glyexp_experiment</code> object.
-For matrix input, returns a filtered matrix.</p>
+    <p>A <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object with filtered variables. SummarizedExperiment inputs
+return the same class.</p>
     </div>
 
     <div class="section level2">
@@ -145,11 +136,6 @@ For matrix input, returns a filtered matrix.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    S1 S2 S3 S4 S5 S6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> V1 NA  5  9 13 17 21</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># With matrix</span></span></span>
-<span class="r-in"><span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="cn">NA</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="cn">NA</span>, <span class="fl">7</span>, <span class="fl">8</span>, <span class="fl">9</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">mat_filtered</span> <span class="op">&lt;-</span> <span class="fu">remove_rare</span><span class="op">(</span><span class="va">mat</span>, prop <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Removed <span style="color: #0000BB;">1</span> of <span style="color: #0000BB;">3</span> (<span style="color: #0000BB;">33.33</span>%) variables.</span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -161,7 +147,7 @@ For matrix input, returns a filtered matrix.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

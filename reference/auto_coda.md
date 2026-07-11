@@ -16,13 +16,16 @@ auto_coda(x, by = NULL, gamma = 0.1, group_scales = NULL)
 
 - x:
 
-  Either a `glyexp_experiment` object or a matrix. If a matrix, rows
-  should be variables and columns should be samples.
+  A
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  or
+  [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
+  object.
 
 - by:
 
-  Either a column name in `sample_info` (for `glyexp_experiment` input)
-  or a factor/vector with one value per sample.
+  Either a column name in `sample_info` or a factor/vector with one
+  value per sample.
 
 - gamma:
 
@@ -38,9 +41,9 @@ auto_coda(x, by = NULL, gamma = 0.1, group_scales = NULL)
 
 ## Value
 
-Returns the same type as the input. If `x` is a `glyexp_experiment`,
-returns a `glyexp_experiment` with a CoDA-transformed expression matrix
-(ALR if \>50 variables, CLR otherwise).
+The input container with a CoDA-transformed expression matrix (ALR if
+\>50 variables, CLR otherwise). SummarizedExperiment inputs return the
+same class.
 
 ## Algorithmic details
 

@@ -8,35 +8,28 @@ behavior.
 ## Usage
 
 ``` r
-auto_normalize(exp, group_col = "group", qc_name = "QC", to_try = NULL)
+auto_normalize(exp, group_col = "group")
 ```
 
 ## Arguments
 
 - exp:
 
-  An
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html).
+  A
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  or
+  [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
+  object.
 
 - group_col:
 
   The column name in sample_info for groups. Default is "group". Can be
   NULL when no group information is available.
 
-- qc_name:
-
-  **\[deprecated\]** This function no longer uses this argument. This
-  parameter is ignored and will be removed in a future release.
-
-- to_try:
-
-  **\[deprecated\]** This parameter is no longer used and will be
-  removed in a future release. The automatic strategy is now
-  deterministic and does not require user-specified methods to try.
-
 ## Value
 
-The normalized experiment.
+The normalized input container. SummarizedExperiment inputs return the
+same class.
 
 ## Details
 

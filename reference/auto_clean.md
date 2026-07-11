@@ -9,20 +9,18 @@ For glycomics data, this function calls these functions in sequence:
 
 - [`auto_remove()`](https://glycoverse.github.io/glyclean/reference/auto_remove.md)
 
-- [`auto_normalize()`](https://glycoverse.github.io/glyclean/reference/auto_normalize.md)
-
-- [`normalize_total_area()`](https://glycoverse.github.io/glyclean/reference/normalize_total_area.md)
-
 - [`auto_impute()`](https://glycoverse.github.io/glyclean/reference/auto_impute.md)
+
+- [`auto_normalize()`](https://glycoverse.github.io/glyclean/reference/auto_normalize.md)
 
 - [`auto_correct_batch_effect()`](https://glycoverse.github.io/glyclean/reference/auto_correct_batch_effect.md)
 
 For glycoproteomics data, this function calls these functions in
 sequence:
 
-- [`auto_normalize()`](https://glycoverse.github.io/glyclean/reference/auto_normalize.md)
-
 - [`auto_remove()`](https://glycoverse.github.io/glyclean/reference/auto_remove.md)
+
+- [`auto_normalize()`](https://glycoverse.github.io/glyclean/reference/auto_normalize.md)
 
 - [`auto_impute()`](https://glycoverse.github.io/glyclean/reference/auto_impute.md)
 
@@ -39,9 +37,6 @@ auto_clean(
   exp,
   group_col = "group",
   batch_col = "batch",
-  qc_name = "QC",
-  normalize_to_try = NULL,
-  impute_to_try = NULL,
   remove_preset = "discovery",
   batch_prop_threshold = 0.3,
   check_batch_confounding = TRUE,
@@ -57,6 +52,10 @@ auto_clean(
   A
   [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
   containing glycoproteomics or glycomics data.
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
+  and
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
+  objects are also supported.
 
 - group_col:
 
@@ -67,22 +66,6 @@ auto_clean(
 
   The column name in sample_info for batches. Default is "batch". Can be
   NULL when no batch information is available.
-
-- qc_name:
-
-  **\[deprecated\]** This function no longer uses QC sample information.
-  This parameter is ignored and will be removed in a future release.
-
-- normalize_to_try:
-
-  **\[deprecated\]** This parameter is no longer used and will be
-  removed in a future release. The automatic normalization strategy is
-  now deterministic and does not require user-specified methods to try.
-
-- impute_to_try:
-
-  **\[deprecated\]** This parameter is no longer used and will be
-  removed in a future release.
 
 - remove_preset:
 
@@ -126,7 +109,7 @@ auto_clean(
 
 A modified
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object.
+object. Glyco SE inputs return the same subclass.
 
 ## See also
 
@@ -143,17 +126,17 @@ library(glyexp)
 exp <- real_experiment
 auto_clean(exp)
 #> 
-#> ── Normalizing data ──
-#> 
-#> ℹ Normalization method: `normalize_median()`
-#> ℹ Reason: default for "glycoproteomics".
-#> ✔ Normalization completed.
-#> 
 #> ── Removing variables with too many missing values ──
 #> 
 #> ℹ Applying preset "discovery"...
 #> ℹ Total removed: 24 (0.56%) variables.
 #> ✔ Variable removal completed.
+#> 
+#> ── Normalizing data ──
+#> 
+#> ℹ Normalization method: `normalize_median()`
+#> ℹ Reason: default for "glycoproteomics".
+#> ✔ Normalization completed.
 #> 
 #> ── Imputing missing values ──
 #> 

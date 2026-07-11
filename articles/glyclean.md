@@ -16,8 +16,13 @@ analysis.
 
 **Important Note:** This package is primarily designed for
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-objects. If you’re new to this data structure, we highly recommend
-checking out [its
+objects.
+[`glyexp::GlycomicSE`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
+and
+[`glyexp::GlycoproteomicSE`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
+objects are also supported, and preprocessing functions return the same
+subclass they receive. If you’re new to this data structure, we highly
+recommend checking out [its
 introduction](https://glycoverse.github.io/glyexp/articles/glyexp.html)
 first. We’ll also be using the
 [glyread](https://github.com/glycoverse/glyread) package to load our
@@ -32,6 +37,8 @@ library(glyclean)
 #> 
 #>     aggregate
 library(glyexp)
+#> Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by
+#> 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'
 library(glyrepr)  # for printing glycan compositions and structures
 ```
 
@@ -64,16 +71,16 @@ get_var_info(exp)
 #> # A tibble: 4,262 × 8
 #>    variable   peptide peptide_site protein protein_site gene  glycan_composition
 #>    <chr>      <chr>          <int> <chr>          <int> <chr> <comp>            
-#>  1 P08185-N1… NKTQGK             1 P08185           176 SERP… Hex(5)HexNAc(4)Ne…
-#>  2 P04196-N3… HSHNNN…            5 P04196           344 HRG   Hex(5)HexNAc(4)Ne…
-#>  3 P04196-N3… HSHNNN…            5 P04196           344 HRG   Hex(5)HexNAc(4)   
-#>  4 P04196-N3… HSHNNN…            5 P04196           344 HRG   Hex(5)HexNAc(4)Ne…
-#>  5 P10909-N2… HNSTGC…            2 P10909           291 CLU   Hex(6)HexNAc(5)   
-#>  6 P04196-N3… HSHNNN…            5 P04196           344 HRG   Hex(5)HexNAc(4)Ne…
-#>  7 P04196-N3… HSHNNN…            6 P04196           345 HRG   Hex(5)HexNAc(4)   
-#>  8 P04196-N3… HSHNNN…            5 P04196           344 HRG   Hex(5)HexNAc(4)dH…
-#>  9 P04196-N3… HSHNNN…            5 P04196           344 HRG   Hex(4)HexNAc(3)   
-#> 10 P04196-N3… HSHNNN…            5 P04196           344 HRG   Hex(4)HexNAc(4)Ne…
+#>  1 P08185-17… NKTQGK             1 P08185           176 SERP… Hex(5)HexNAc(4)Ne…
+#>  2 P04196-34… HSHNNN…            5 P04196           344 HRG   Hex(5)HexNAc(4)Ne…
+#>  3 P04196-34… HSHNNN…            5 P04196           344 HRG   Hex(5)HexNAc(4)   
+#>  4 P04196-34… HSHNNN…            5 P04196           344 HRG   Hex(5)HexNAc(4)Ne…
+#>  5 P10909-29… HNSTGC…            2 P10909           291 CLU   Hex(6)HexNAc(5)   
+#>  6 P04196-34… HSHNNN…            5 P04196           344 HRG   Hex(5)HexNAc(4)Ne…
+#>  7 P04196-34… HSHNNN…            6 P04196           345 HRG   Hex(5)HexNAc(4)   
+#>  8 P04196-34… HSHNNN…            5 P04196           344 HRG   Hex(5)HexNAc(4)dH…
+#>  9 P04196-34… HSHNNN…            5 P04196           344 HRG   Hex(4)HexNAc(3)   
+#> 10 P04196-34… HSHNNN…            5 P04196           344 HRG   Hex(4)HexNAc(4)Ne…
 #> # ℹ 4,252 more rows
 #> # ℹ 1 more variable: glycan_structure <struct>
 ```
@@ -111,17 +118,17 @@ Ready for some magic? Watch this:
 
 clean_exp <- auto_clean(exp)
 #> 
-#> ── Normalizing data ──
-#> 
-#> ℹ Normalization method: `normalize_median()`
-#> ℹ Reason: default for "glycoproteomics".
-#> ✔ Normalization completed.
-#> 
 #> ── Removing variables with too many missing values ──
 #> 
 #> ℹ Applying preset "discovery"...
 #> ℹ Total removed: 24 (0.56%) variables.
 #> ✔ Variable removal completed.
+#> 
+#> ── Normalizing data ──
+#> 
+#> ℹ Normalization method: `normalize_median()`
+#> ℹ Reason: default for "glycoproteomics".
+#> ✔ Normalization completed.
 #> 
 #> ── Imputing missing values ──
 #> 
@@ -178,9 +185,8 @@ auto_clean <- function(exp, ...) {
     exp <- auto_correct_batch_effect(exp, ...)
   } else if (glyexp::get_exp_type(exp) == "glycomics") {
     exp <- auto_remove(exp, ...)
-    exp <- auto_normalize(exp, ...)
-    exp <- normalize_total_area(exp)
     exp <- auto_impute(exp, ...)
+    exp <- auto_normalize(exp, ...)
     exp <- auto_correct_batch_effect(exp, ...)
   } else {
     stop("The experiment type must be 'glycoproteomics' or 'glycomics'.")
@@ -497,9 +503,10 @@ adjusted_exp <- adjust_protein(inferred_exp, pro_expr_mat)
   news: you can use `glyclean` functions for this too!)
 - Sample matching needs to be perfect – no mixing apples with oranges!
 
-**Pro Tip:** Most `glyclean` functions happily accept plain matrices as
-input, so you can preprocess your protein expression data using the same
-toolkit. Consistency is key!
+**Pro Tip:** Wrap protein expression data in a
+[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+object before using `glyclean` preprocessing functions. Consistency is
+key!
 
 ### 🎉 Mission Accomplished!
 
@@ -508,29 +515,7 @@ glycoproteomics data. Your data has been normalized, filtered, imputed,
 aggregated, and batch-corrected – it’s ready to reveal its biological
 secrets!
 
-## Advanced Usage: Beyond `glyexp::experiment()` Objects 🔧
-
-While this vignette focuses on
-[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-objects, `glyclean` is designed to be flexible and accommodating to
-different workflows and data formats.
-
-### Working with Plain Matrices
-
-Most `glyclean` functions also support plain matrices as input! This
-means you can use the package’s powerful preprocessing capabilities even
-if you’re working with traditional data formats. The functions
-intelligently detect your input type and handle it appropriately.
-
-``` r
-
-# Example: Using glyclean with a plain matrix
-my_matrix <- matrix(rnorm(100), nrow = 10)
-normalized_matrix <- normalize_median(my_matrix)
-imputed_matrix <- impute_sample_min(normalized_matrix)
-```
-
-### Flexible Grouping with Custom Vectors
+## Advanced Usage: Flexible Grouping with Custom Vectors 🔧
 
 Many functions in `glyclean` accept a `by` parameter for stratified
 processing. This parameter offers maximum flexibility – it accepts both
@@ -544,9 +529,6 @@ normalized_exp <- normalize_median(exp, by = "group")
 # Using custom vectors (advanced approach)
 custom_groups <- c("A", "A", "B", "B", "C", "C", "A", "A", "B", "B", "C", "C")
 normalized_exp <- normalize_median(exp, by = custom_groups)
-
-# This also works with matrices
-normalized_matrix <- normalize_median(my_matrix, by = custom_groups)
 ```
 
 This gives you complete control over grouping, even for custom groupings
@@ -575,6 +557,10 @@ various stages of the preprocessing pipeline.
 
 These functions are designed to work seamlessly with
 [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+objects. They also accept
+[`glyexp::GlycomicSE`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
+and
+[`glyexp::GlycoproteomicSE`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
 objects and provide consistent, high-quality visualizations using
 `ggplot2`.
 
@@ -589,7 +575,7 @@ library(patchwork)
 plot_missing_heatmap(exp) + plot_missing_heatmap(clean_exp)
 ```
 
-![](glyclean_files/figure-html/unnamed-chunk-17-1.png)
+![](glyclean_files/figure-html/unnamed-chunk-16-1.png)
 
 ## What’s Next?
 

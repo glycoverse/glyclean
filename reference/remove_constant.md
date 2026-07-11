@@ -14,7 +14,11 @@ remove_constant(x, by = NULL, strict = FALSE)
 
 - x:
 
-  Either a `glyexp_experiment` object or a matrix.
+  A
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  or
+  [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
+  object.
 
 - by:
 
@@ -29,8 +33,10 @@ remove_constant(x, by = NULL, strict = FALSE)
 
 ## Value
 
-For `glyexp_experiment` input, returns a modified `glyexp_experiment`
-object. For matrix input, returns a filtered matrix.
+A
+[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+object with filtered variables. SummarizedExperiment inputs return the
+same class.
 
 ## See also
 

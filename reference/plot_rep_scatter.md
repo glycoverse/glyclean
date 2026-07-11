@@ -16,6 +16,8 @@ plot_rep_scatter(exp, rep_col, n_pairs = 9)
 
   A
   [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  or
+  [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
   object.
 
 - rep_col:

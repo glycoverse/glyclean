@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.14.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.15.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,6 +31,25 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.15.0" id="glyclean-0150">glyclean 0.15.0<a class="anchor" aria-label="anchor" href="#glyclean-0150"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-15-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-15-0"></a></h3>
+<ul><li>Deprecated automatic-preprocessing arguments have been removed: <code>qc_name</code> from <code><a href="../reference/auto_clean.html">auto_clean()</a></code>, <code><a href="../reference/auto_impute.html">auto_impute()</a></code>, <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code>, and <code><a href="../reference/auto_remove.html">auto_remove()</a></code>; <code>to_try</code> from <code><a href="../reference/auto_impute.html">auto_impute()</a></code> and <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code>; and <code>impute_to_try</code> and <code>normalize_to_try</code> from <code><a href="../reference/auto_clean.html">auto_clean()</a></code>. (#20)</li>
+<li>Normalization, imputation, filtering, CoDA, and batch-correction functions now require a <code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE</a></code>, <code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code>, or legacy <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object; matrix inputs error and should first be wrapped in a supported container. (#18, #19)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-0-15-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-15-0"></a></h3>
+<ul><li>All preprocessing and QC functions now accept <code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE</a></code>, <code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code>, legacy <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code>, and plain <code>SummarizedExperiment</code> objects (for experiment type <code>"others"</code>), while preserving their class and metadata. (#19, #24)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-and-bug-fixes-0-15-0">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-0-15-0"></a></h3>
+<ul><li>
+<code><a href="../reference/aggregate.html">aggregate()</a></code> now processes large glycoproteomics experiments substantially faster while preserving group order and metadata. (#21)</li>
+<li>
+<code><a href="../reference/auto_clean.html">auto_clean()</a></code> now removes glycoproteomics variables with excessive missingness before the first normalization step. (#23)</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.14.1" id="glyclean-0141">glyclean 0.14.1<a class="anchor" aria-label="anchor" href="#glyclean-0141"></a></h2>
 <div class="section level3">
@@ -326,7 +345,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

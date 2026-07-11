@@ -1,5 +1,51 @@
 # Changelog
 
+## glyclean 0.15.0
+
+### Breaking changes
+
+- Deprecated automatic-preprocessing arguments have been removed:
+  `qc_name` from
+  [`auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.md),
+  [`auto_impute()`](https://glycoverse.github.io/glyclean/reference/auto_impute.md),
+  [`auto_normalize()`](https://glycoverse.github.io/glyclean/reference/auto_normalize.md),
+  and
+  [`auto_remove()`](https://glycoverse.github.io/glyclean/reference/auto_remove.md);
+  `to_try` from
+  [`auto_impute()`](https://glycoverse.github.io/glyclean/reference/auto_impute.md)
+  and
+  [`auto_normalize()`](https://glycoverse.github.io/glyclean/reference/auto_normalize.md);
+  and `impute_to_try` and `normalize_to_try` from
+  [`auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.md).
+  (#20)
+- Normalization, imputation, filtering, CoDA, and batch-correction
+  functions now require a
+  [`glyexp::GlycomicSE`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
+  [`glyexp::GlycoproteomicSE`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
+  or legacy
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  object; matrix inputs error and should first be wrapped in a supported
+  container. (#18, \#19)
+
+### New features
+
+- All preprocessing and QC functions now accept
+  [`glyexp::GlycomicSE`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
+  [`glyexp::GlycoproteomicSE`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
+  legacy
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html),
+  and plain `SummarizedExperiment` objects (for experiment type
+  `"others"`), while preserving their class and metadata. (#19, \#24)
+
+### Minor improvements and bug fixes
+
+- [`aggregate()`](https://glycoverse.github.io/glyclean/reference/aggregate.md)
+  now processes large glycoproteomics experiments substantially faster
+  while preserving group order and metadata. (#21)
+- [`auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.md)
+  now removes glycoproteomics variables with excessive missingness
+  before the first normalization step. (#23)
+
 ## glyclean 0.14.1
 
 ### Minor improvements and bug fixes

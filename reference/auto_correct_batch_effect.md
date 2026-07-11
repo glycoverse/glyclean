@@ -28,6 +28,8 @@ auto_correct_batch_effect(
 
   A
   [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  or
+  [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
   object.
 
 - group_col:
@@ -58,9 +60,8 @@ auto_correct_batch_effect(
 
 ## Value
 
-A
-[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object with batch effects corrected.
+The input container with batch effects corrected. SummarizedExperiment
+inputs return the same class.
 
 ## Examples
 

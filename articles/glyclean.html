@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.14.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.15.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,8 +72,11 @@ a comprehensive toolkit that takes the guesswork out of data cleaning,
 with specialized methods designed specifically for the unique challenges
 of glycan analysis.</p>
 <p><strong>Important Note:</strong> This package is primarily designed
-for <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> objects. If you’re new to this
-data structure, we highly recommend checking out <a href="https://glycoverse.github.io/glyexp/articles/glyexp.html" class="external-link">its
+for <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> objects.
+<code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE</a></code> and
+<code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code> objects are also supported, and
+preprocessing functions return the same subclass they receive. If you’re
+new to this data structure, we highly recommend checking out <a href="https://glycoverse.github.io/glyexp/articles/glyexp.html" class="external-link">its
 introduction</a> first. We’ll also be using the <a href="https://github.com/glycoverse/glyread" class="external-link">glyread</a> package to load
 our data – it’s the go-to tool in the <code>glycoverse</code>
 ecosystem.</p>
@@ -85,6 +88,8 @@ ecosystem.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;     aggregate</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glycoverse.github.io/glyexp/" class="external-link">glyexp</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by</span></span>
+<span><span class="co">#&gt; 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glycoverse.github.io/glyrepr/" class="external-link">glyrepr</a></span><span class="op">)</span>  <span class="co"># for printing glycan compositions and structures</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -109,16 +114,16 @@ proper <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.h
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4,262 × 8</span></span></span>
 <span><span class="co">#&gt;    variable   peptide peptide_site protein protein_site gene  glycan_composition</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;comp&gt;</span>            </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> P08185-N1… NKTQGK             1 P08185           176 SERP… <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> P04196-N3… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> P04196-N3… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> P04196-N3… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> P10909-N2… HNSTGC…            2 P10909           291 CLU   <span style="color: #000000;">Hex</span>(6)<span style="color: #000000;">HexNAc</span>(5)   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> P04196-N3… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> P04196-N3… HSHNNN…            6 P04196           345 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> P04196-N3… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">dH</span>…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> P04196-N3… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(4)<span style="color: #000000;">HexNAc</span>(3)   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> P04196-N3… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(4)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> P08185-17… NKTQGK             1 P08185           176 SERP… <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> P04196-34… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> P04196-34… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> P04196-34… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> P10909-29… HNSTGC…            2 P10909           291 CLU   <span style="color: #000000;">Hex</span>(6)<span style="color: #000000;">HexNAc</span>(5)   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> P04196-34… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> P04196-34… HSHNNN…            6 P04196           345 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> P04196-34… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(5)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">dH</span>…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> P04196-34… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(4)<span style="color: #000000;">HexNAc</span>(3)   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> P04196-34… HSHNNN…            5 P04196           344 HRG   <span style="color: #000000;">Hex</span>(4)<span style="color: #000000;">HexNAc</span>(4)<span style="color: #000000;">Ne</span>…</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4,252 more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: glycan_structure &lt;struct&gt;</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -150,17 +155,17 @@ come from 3 different batches and represent 4 distinct biological groups
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clean_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_clean.html">auto_clean</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── <span style="font-weight: bold;">Normalizing data</span> ──</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalization method: `normalize_median()`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reason: default for <span style="color: #0000BB;">"glycoproteomics"</span>.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalization completed.</span></span>
-<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Removing variables with too many missing values</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Applying preset <span style="color: #0000BB;">"discovery"</span>...</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Total removed: <span style="color: #0000BB;">24</span> (<span style="color: #0000BB;">0.56</span>%) variables.</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Variable removal completed.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">Normalizing data</span> ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalization method: `normalize_median()`</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reason: default for <span style="color: #0000BB;">"glycoproteomics"</span>.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalization completed.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Imputing missing values</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -217,9 +222,8 @@ Here is a simplified version of the function:</p>
 <span>    <span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_correct_batch_effect.html">auto_correct_batch_effect</a></span><span class="op">(</span><span class="va">exp</span>, <span class="va">...</span><span class="op">)</span></span>
 <span>  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="fu">glyexp</span><span class="fu">::</span><span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/get_meta_data.html" class="external-link">get_exp_type</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span> <span class="op">==</span> <span class="st">"glycomics"</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_remove.html">auto_remove</a></span><span class="op">(</span><span class="va">exp</span>, <span class="va">...</span><span class="op">)</span></span>
-<span>    <span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_normalize.html">auto_normalize</a></span><span class="op">(</span><span class="va">exp</span>, <span class="va">...</span><span class="op">)</span></span>
-<span>    <span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_total_area.html">normalize_total_area</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
 <span>    <span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_impute.html">auto_impute</a></span><span class="op">(</span><span class="va">exp</span>, <span class="va">...</span><span class="op">)</span></span>
+<span>    <span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_normalize.html">auto_normalize</a></span><span class="op">(</span><span class="va">exp</span>, <span class="va">...</span><span class="op">)</span></span>
 <span>    <span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_correct_batch_effect.html">auto_correct_batch_effect</a></span><span class="op">(</span><span class="va">exp</span>, <span class="va">...</span><span class="op">)</span></span>
 <span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
 <span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"The experiment type must be 'glycoproteomics' or 'glycomics'."</span><span class="op">)</span></span>
@@ -654,9 +658,9 @@ news: you can use <code>glyclean</code> functions for this too!)</li>
 <li>Sample matching needs to be perfect – no mixing apples with
 oranges!</li>
 </ul>
-<p><strong>Pro Tip:</strong> Most <code>glyclean</code> functions
-happily accept plain matrices as input, so you can preprocess your
-protein expression data using the same toolkit. Consistency is key!</p>
+<p><strong>Pro Tip:</strong> Wrap protein expression data in a
+<code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object before using
+<code>glyclean</code> preprocessing functions. Consistency is key!</p>
 </div>
 <div class="section level3">
 <h3 id="mission-accomplished">🎉 Mission Accomplished!<a class="anchor" aria-label="anchor" href="#mission-accomplished"></a>
@@ -668,47 +672,22 @@ reveal its biological secrets!</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="advanced-usage-beyond-glyexpexperiment-objects">Advanced Usage: Beyond <code>glyexp::experiment()</code> Objects
-🔧<a class="anchor" aria-label="anchor" href="#advanced-usage-beyond-glyexpexperiment-objects"></a>
+<h2 id="advanced-usage-flexible-grouping-with-custom-vectors">Advanced Usage: Flexible Grouping with Custom Vectors 🔧<a class="anchor" aria-label="anchor" href="#advanced-usage-flexible-grouping-with-custom-vectors"></a>
 </h2>
-<p>While this vignette focuses on <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code>
-objects, <code>glyclean</code> is designed to be flexible and
-accommodating to different workflows and data formats.</p>
-<div class="section level3">
-<h3 id="working-with-plain-matrices">Working with Plain Matrices<a class="anchor" aria-label="anchor" href="#working-with-plain-matrices"></a>
-</h3>
-<p>Most <code>glyclean</code> functions also support plain matrices as
-input! This means you can use the package’s powerful preprocessing
-capabilities even if you’re working with traditional data formats. The
-functions intelligently detect your input type and handle it
-appropriately.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Example: Using glyclean with a plain matrix</span></span>
-<span><span class="va">my_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="va">normalized_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">my_matrix</span><span class="op">)</span></span>
-<span><span class="va">imputed_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/impute_sample_min.html">impute_sample_min</a></span><span class="op">(</span><span class="va">normalized_matrix</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="flexible-grouping-with-custom-vectors">Flexible Grouping with Custom Vectors<a class="anchor" aria-label="anchor" href="#flexible-grouping-with-custom-vectors"></a>
-</h3>
 <p>Many functions in <code>glyclean</code> accept a <code>by</code>
 parameter for stratified processing. This parameter offers maximum
 flexibility – it accepts both column names from your sample metadata and
 direct vectors!</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Using column names (standard approach)</span></span>
 <span><span class="va">normalized_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">exp</span>, by <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Using custom vectors (advanced approach)</span></span>
 <span><span class="va">custom_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"C"</span>, <span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"C"</span><span class="op">)</span></span>
-<span><span class="va">normalized_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">exp</span>, by <span class="op">=</span> <span class="va">custom_groups</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># This also works with matrices</span></span>
-<span><span class="va">normalized_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">my_matrix</span>, by <span class="op">=</span> <span class="va">custom_groups</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">normalized_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">exp</span>, by <span class="op">=</span> <span class="va">custom_groups</span><span class="op">)</span></span></code></pre></div>
 <p>This gives you complete control over grouping, even for custom
 groupings that aren’t stored in your experiment object. Perfect for
 complex experimental designs or external grouping criteria!</p>
-</div>
 </div>
 <div class="section level2">
 <h2 id="quality-control-qc">Quality Control (QC) 📊<a class="anchor" aria-label="anchor" href="#quality-control-qc"></a>
@@ -778,15 +757,17 @@ of your data at various stages of the preprocessing pipeline.</p>
 </tbody>
 </table>
 <p>These functions are designed to work seamlessly with
-<code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> objects and provide consistent,
+<code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> objects. They also accept
+<code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE</a></code> and
+<code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code> objects and provide consistent,
 high-quality visualizations using <code>ggplot2</code>.</p>
 <p>For example, you can use <code><a href="../reference/plot_missing_heatmap.html">plot_missing_heatmap()</a></code> to
 visualize the missing values in your data before and after cleaning:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plot_missing_heatmap.html">plot_missing_heatmap</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/plot_missing_heatmap.html">plot_missing_heatmap</a></span><span class="op">(</span><span class="va">clean_exp</span><span class="op">)</span></span></code></pre></div>
-<p><img src="glyclean_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="" width="576"></p>
+<p><img src="glyclean_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level2">
 <h2 id="whats-next">What’s Next?<a class="anchor" aria-label="anchor" href="#whats-next"></a>
@@ -820,7 +801,7 @@ more!</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

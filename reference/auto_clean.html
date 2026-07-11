@@ -5,15 +5,14 @@ normalization, missing value handling, imputation, aggregation (for
 glycoproteomics data), and batch effect correction.
 For glycomics data, this function calls these functions in sequence:
 auto_remove()
-auto_normalize()
-normalize_total_area()
 auto_impute()
+auto_normalize()
 auto_correct_batch_effect()
 
 
 For glycoproteomics data, this function calls these functions in sequence:
-auto_normalize()
 auto_remove()
+auto_normalize()
 auto_impute()
 auto_aggregate()
 auto_normalize()
@@ -25,15 +24,14 @@ normalization, missing value handling, imputation, aggregation (for
 glycoproteomics data), and batch effect correction.
 For glycomics data, this function calls these functions in sequence:
 auto_remove()
-auto_normalize()
-normalize_total_area()
 auto_impute()
+auto_normalize()
 auto_correct_batch_effect()
 
 
 For glycoproteomics data, this function calls these functions in sequence:
-auto_normalize()
 auto_remove()
+auto_normalize()
 auto_impute()
 auto_aggregate()
 auto_normalize()
@@ -47,7 +45,7 @@ auto_correct_batch_effect()
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.14.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.15.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,12 +76,11 @@ This function applies an intelligent preprocessing pipeline that includes
 normalization, missing value handling, imputation, aggregation (for
 glycoproteomics data), and batch effect correction.</p>
 <p>For glycomics data, this function calls these functions in sequence:</p><ul><li><p><code><a href="auto_remove.html">auto_remove()</a></code></p></li>
-<li><p><code><a href="auto_normalize.html">auto_normalize()</a></code></p></li>
-<li><p><code><a href="normalize_total_area.html">normalize_total_area()</a></code></p></li>
 <li><p><code><a href="auto_impute.html">auto_impute()</a></code></p></li>
+<li><p><code><a href="auto_normalize.html">auto_normalize()</a></code></p></li>
 <li><p><code><a href="auto_correct_batch_effect.html">auto_correct_batch_effect()</a></code></p></li>
-</ul><p>For glycoproteomics data, this function calls these functions in sequence:</p><ul><li><p><code><a href="auto_normalize.html">auto_normalize()</a></code></p></li>
-<li><p><code><a href="auto_remove.html">auto_remove()</a></code></p></li>
+</ul><p>For glycoproteomics data, this function calls these functions in sequence:</p><ul><li><p><code><a href="auto_remove.html">auto_remove()</a></code></p></li>
+<li><p><code><a href="auto_normalize.html">auto_normalize()</a></code></p></li>
 <li><p><code><a href="auto_impute.html">auto_impute()</a></code></p></li>
 <li><p><code><a href="auto_aggregate.html">auto_aggregate()</a></code></p></li>
 <li><p><code><a href="auto_normalize.html">auto_normalize()</a></code></p></li>
@@ -96,9 +93,6 @@ glycoproteomics data), and batch effect correction.</p>
 <span>  <span class="va">exp</span>,</span>
 <span>  group_col <span class="op">=</span> <span class="st">"group"</span>,</span>
 <span>  batch_col <span class="op">=</span> <span class="st">"batch"</span>,</span>
-<span>  qc_name <span class="op">=</span> <span class="st">"QC"</span>,</span>
-<span>  normalize_to_try <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  impute_to_try <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  remove_preset <span class="op">=</span> <span class="st">"discovery"</span>,</span>
 <span>  batch_prop_threshold <span class="op">=</span> <span class="fl">0.3</span>,</span>
 <span>  check_batch_confounding <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -112,8 +106,9 @@ glycoproteomics data), and batch effect correction.</p>
 
 
 <dl><dt id="arg-exp">exp<a class="anchor" aria-label="anchor" href="#arg-exp"></a></dt>
-<dd><p>A <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> containing glycoproteomics or
-glycomics data.</p></dd>
+<dd><p>A <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> containing glycoproteomics or glycomics
+data. <code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE()</a></code> and <code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE()</a></code> objects are
+also supported.</p></dd>
 
 
 <dt id="arg-group-col">group_col<a class="anchor" aria-label="anchor" href="#arg-group-col"></a></dt>
@@ -124,24 +119,6 @@ Can be NULL when no group information is available.</p></dd>
 <dt id="arg-batch-col">batch_col<a class="anchor" aria-label="anchor" href="#arg-batch-col"></a></dt>
 <dd><p>The column name in sample_info for batches. Default is "batch".
 Can be NULL when no batch information is available.</p></dd>
-
-
-<dt id="arg-qc-name">qc_name<a class="anchor" aria-label="anchor" href="#arg-qc-name"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> This function no longer
-uses QC sample information.
-This parameter is ignored and will be removed in a future release.</p></dd>
-
-
-<dt id="arg-normalize-to-try">normalize_to_try<a class="anchor" aria-label="anchor" href="#arg-normalize-to-try"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a>
-This parameter is no longer used and will be removed in a future release.
-The automatic normalization strategy is now deterministic and does not
-require user-specified methods to try.</p></dd>
-
-
-<dt id="arg-impute-to-try">impute_to_try<a class="anchor" aria-label="anchor" href="#arg-impute-to-try"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a>
-This parameter is no longer used and will be removed in a future release.</p></dd>
 
 
 <dt id="arg-remove-preset">remove_preset<a class="anchor" aria-label="anchor" href="#arg-remove-preset"></a></dt>
@@ -177,7 +154,8 @@ Default is <code>TRUE</code>.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A modified <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object.</p>
+    <p>A modified <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object. Glyco SE inputs return the
+same subclass.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -190,17 +168,17 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="va">real_experiment</span></span></span>
 <span class="r-in"><span><span class="fu">auto_clean</span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Normalizing data</span> ──</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Normalization method: `normalize_median()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Reason: default for <span style="color: #0000BB;">"glycoproteomics"</span>.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Normalization completed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Removing variables with too many missing values</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Applying preset <span style="color: #0000BB;">"discovery"</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Total removed: <span style="color: #0000BB;">24</span> (<span style="color: #0000BB;">0.56</span>%) variables.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Variable removal completed.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Normalizing data</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Normalization method: `normalize_median()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Reason: default for <span style="color: #0000BB;">"glycoproteomics"</span>.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Normalization completed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Imputing missing values</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -240,7 +218,7 @@ Default is <code>TRUE</code>.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

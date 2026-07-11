@@ -9,28 +9,22 @@ the original ratio space before returning the result.
 
 ``` r
 transform_clr(x, by = NULL, gamma = 0.1, group_scales = NULL)
-
-# S3 method for class 'glyexp_experiment'
-transform_clr(x, by = NULL, gamma = 0.1, group_scales = NULL)
-
-# S3 method for class 'matrix'
-transform_clr(x, by = NULL, gamma = 0.1, group_scales = NULL)
-
-# Default S3 method
-transform_clr(x, by = NULL, gamma = 0.1, group_scales = NULL)
 ```
 
 ## Arguments
 
 - x:
 
-  Either a `glyexp_experiment` object or a matrix. If a matrix, rows
-  should be variables and columns should be samples.
+  A
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  or
+  [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
+  object.
 
 - by:
 
-  Either a column name in `sample_info` (for `glyexp_experiment` input)
-  or a factor/vector with one value per sample.
+  Either a column name in `sample_info` or a factor/vector with one
+  value per sample.
 
 - gamma:
 
@@ -46,11 +40,12 @@ transform_clr(x, by = NULL, gamma = 0.1, group_scales = NULL)
 
 ## Value
 
-Returns the same type as the input. If `x` is a `glyexp_experiment`,
-returns a `glyexp_experiment` with transformed expression matrix. If `x`
-is a matrix, returns a transformed matrix. The returned values are
-back-transformed to the original ratio space. Zeros in the input
-therefore remain zeros in the output.
+A
+[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+object with a transformed expression matrix. SummarizedExperiment inputs
+return the same class. The returned values are back-transformed to the
+original ratio space. Zeros in the input therefore remain zeros in the
+output.
 
 ## Algorithmic details
 

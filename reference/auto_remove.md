@@ -15,14 +15,18 @@ Available presets:
 ## Usage
 
 ``` r
-auto_remove(exp, preset = "discovery", group_col = "group", qc_name = "QC")
+auto_remove(exp, preset = "discovery", group_col = "group")
 ```
 
 ## Arguments
 
 - exp:
 
-  A glyexp_experiment object.
+  A
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  or
+  [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
+  object.
 
 - preset:
 
@@ -34,16 +38,10 @@ auto_remove(exp, preset = "discovery", group_col = "group", qc_name = "QC")
   The column name in sample_info for groups. Default is "group". Can be
   NULL when no group information is available.
 
-- qc_name:
-
-  **\[deprecated\]** This function no longer uses QC sample information.
-  This parameter is ignored and will be removed in a future release.
-
 ## Value
 
-A modified
-[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object.
+The filtered input container. SummarizedExperiment inputs return the
+same class.
 
 ## Examples
 

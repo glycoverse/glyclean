@@ -11,7 +11,7 @@ following the same strategy in glycowork."><meta property="og:image" content="ht
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.14.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.15.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,13 +52,13 @@ following the same strategy in glycowork.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>Either a <code>glyexp_experiment</code> object or a matrix.
-If a matrix, rows should be variables and columns should be samples.</p></dd>
+<dd><p>A <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> or
+<code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment::SummarizedExperiment()</a></code> object.</p></dd>
 
 
 <dt id="arg-by">by<a class="anchor" aria-label="anchor" href="#arg-by"></a></dt>
-<dd><p>Either a column name in <code>sample_info</code> (for <code>glyexp_experiment</code>
-input) or a factor/vector with one value per sample.</p></dd>
+<dd><p>Either a column name in <code>sample_info</code> or a factor/vector with one
+value per sample.</p></dd>
 
 
 <dt id="arg-gamma">gamma<a class="anchor" aria-label="anchor" href="#arg-gamma"></a></dt>
@@ -75,9 +75,9 @@ multi-group data, provide a positive vector with one scale per group.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Returns the same type as the input. If <code>x</code> is a <code>glyexp_experiment</code>,
-returns a <code>glyexp_experiment</code> with a CoDA-transformed expression matrix
-(ALR if &gt;50 variables, CLR otherwise).</p>
+    <p>The input container with a CoDA-transformed expression matrix (ALR
+if &gt;50 variables, CLR otherwise). SummarizedExperiment inputs return the
+same class.</p>
     </div>
     <div class="section level2">
     <h2 id="algorithmic-details">Algorithmic details<a class="anchor" aria-label="anchor" href="#algorithmic-details"></a></h2>
@@ -112,7 +112,7 @@ In another words, the recommended workflow is:</p><ol><li><p>Perform data prepro
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>
