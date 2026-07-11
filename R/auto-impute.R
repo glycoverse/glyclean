@@ -17,13 +17,13 @@
 #' fallback. [impute_sample_min()] and [impute_half_sample_min()] remain
 #' available for manual use, but they are not selected automatically.
 #'
-#' @param exp A [glyexp::experiment()] object. [glyexp::GlycomicSE()] and
-#'   [glyexp::GlycoproteomicSE()] objects are also supported.
+#' @param exp A [glyexp::experiment()] or
+#'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
 #'
-#' @returns The imputed [glyexp::experiment()] object. Glyco SE inputs return the
-#'   same subclass.
+#' @returns The imputed input container. SummarizedExperiment inputs return the
+#'   same class.
 #' @examples
 #' library(glyexp)
 #' exp_imputed <- auto_impute(real_experiment)
@@ -33,7 +33,7 @@ auto_impute <- function(
   group_col = "group"
 ) {
   # Check arguments
-  .assert_auto_container(exp)
+  .assert_glyclean_container(exp)
   checkmate::assert_string(group_col, null.ok = TRUE)
 
   .auto_impute_default(exp)
