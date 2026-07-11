@@ -17,11 +17,9 @@ auto_impute(exp, group_col = "group")
 
   A
   [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  or
+  [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
   object.
-  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
-  and
-  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-  objects are also supported.
 
 - group_col:
 
@@ -30,9 +28,8 @@ auto_impute(exp, group_col = "group")
 
 ## Value
 
-The imputed
-[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object. Glyco SE inputs return the same subclass.
+The imputed input container. SummarizedExperiment inputs return the same
+class.
 
 ## Details
 

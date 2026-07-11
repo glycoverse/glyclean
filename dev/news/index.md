@@ -29,6 +29,10 @@
 
 ### New features
 
+- Automatic normalization, imputation, filtering, CoDA, and
+  batch-correction helpers now accept plain `SummarizedExperiment`
+  objects when the experiment type is `"others"`, while preserving the
+  input class and metadata. (#24)
 - Non-automatic preprocessing and QC functions now accept plain
   `SummarizedExperiment` objects and preserve their class.
 - All preprocessing and QC functions now natively accept
