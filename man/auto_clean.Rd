@@ -69,8 +69,8 @@ For glycomics data, this function calls these functions in sequence:
 
 For glycoproteomics data, this function calls these functions in sequence:
 \itemize{
-\item \code{\link[=auto_normalize]{auto_normalize()}}
 \item \code{\link[=auto_remove]{auto_remove()}}
+\item \code{\link[=auto_normalize]{auto_normalize()}}
 \item \code{\link[=auto_impute]{auto_impute()}}
 \item \code{\link[=auto_aggregate]{auto_aggregate()}}
 \item \code{\link[=auto_normalize]{auto_normalize()}}

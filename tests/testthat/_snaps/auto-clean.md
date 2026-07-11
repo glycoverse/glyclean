@@ -4,17 +4,17 @@
       result_exp <- auto_clean(test_exp, standardize_variable = FALSE)
     Message
       
-      -- Normalizing data --
-      
-      i Normalization method: `normalize_median()`
-      i Reason: default for "glycoproteomics".
-      v Normalization completed.
-      
       -- Removing variables with too many missing values --
       
       i Applying preset "discovery"...
       i No variables removed.
       v Variable removal completed.
+      
+      -- Normalizing data --
+      
+      i Normalization method: `normalize_median()`
+      i Reason: default for "glycoproteomics".
+      v Normalization completed.
       
       -- Imputing missing values --
       
@@ -44,17 +44,17 @@
       result_exp <- auto_clean(test_exp, standardize_variable = FALSE)
     Message
       
-      -- Normalizing data --
-      
-      i Normalization method: `normalize_median()`
-      i Reason: default for "glycoproteomics".
-      v Normalization completed.
-      
       -- Removing variables with too many missing values --
       
       i Applying preset "discovery"...
       i No variables removed.
       v Variable removal completed.
+      
+      -- Normalizing data --
+      
+      i Normalization method: `normalize_median()`
+      i Reason: default for "glycoproteomics".
+      v Normalization completed.
       
       -- Imputing missing values --
       
