@@ -10,6 +10,10 @@
 * Non-automatic preprocessing and QC functions now accept plain `SummarizedExperiment` objects and preserve their class.
 * All preprocessing and QC functions now natively accept `glyexp::GlycomicSE` and `glyexp::GlycoproteomicSE`, preserve the input subclass, and continue to support `glyexp::experiment()` objects. (#19)
 
+## Minor improvements and bug fixes
+
+* `aggregate()` now processes large glycoproteomics experiments substantially faster while preserving group order and metadata. (#21)
+
 # glyclean 0.14.1
 
 ## Minor improvements and bug fixes
