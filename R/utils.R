@@ -218,6 +218,46 @@
   "others"
 }
 
+#' Require a glycoproteomics container
+#'
+#' Validate specialized glycoproteomics inputs while preserving the distinction
+#' between legacy experiment types and `SummarizedExperiment` subclasses.
+#'
+#' @param x A supported glyclean container.
+#' @param error_call The call to use in error messages.
+#'
+#' @return `x`, invisibly.
+#' @noRd
+.assert_glycoproteomics_container <- function(
+  x,
+  error_call = rlang::caller_call()
+) {
+  .assert_glyclean_container(x)
+
+  if (glyexp::is_glycomic_se(x)) {
+    cli::cli_abort(
+      c(
+        "The SummarizedExperiment subclass must be {.cls GlycoproteomicSE}.",
+        "x" = "Got {.cls GlycomicSE}."
+      ),
+      call = error_call
+    )
+  }
+
+  exp_type <- .get_exp_type(x)
+  if (exp_type != "glycoproteomics") {
+    cli::cli_abort(
+      c(
+        "The experiment type must be {.val glycoproteomics}.",
+        "x" = "Got {.val {exp_type}}."
+      ),
+      call = error_call
+    )
+  }
+
+  invisible(x)
+}
+
 #' Extract container metadata
 #'
 #' @param x A supported glyclean container.

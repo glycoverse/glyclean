@@ -125,17 +125,7 @@ glyclean_aggregate.GlycoproteomicSE <- function(
   error_call = rlang::caller_call()
 ) {
   # Check arguments
-  .assert_glyclean_container(exp)
-  exp_type <- .get_exp_type(exp)
-  if (exp_type != "glycoproteomics") {
-    cli::cli_abort(
-      c(
-        "The experiment type must be {.val glycoproteomics}.",
-        "x" = "Got {.val {exp_type}}."
-      ),
-      call = error_call
-    )
-  }
+  .assert_glycoproteomics_container(exp, error_call = error_call)
   to_level <- rlang::arg_match(to_level)
 
   # Perform aggregation

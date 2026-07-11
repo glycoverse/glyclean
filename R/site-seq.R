@@ -35,7 +35,13 @@ add_site_seq.glyexp_experiment <- function(
   n_aa = 7,
   taxid = 9606
 ) {
-  .add_site_seq_experiment(exp, fasta = fasta, n_aa = n_aa, taxid = taxid)
+  .add_site_seq_experiment(
+    exp,
+    fasta = fasta,
+    n_aa = n_aa,
+    taxid = taxid,
+    error_call = quote(add_site_seq())
+  )
 }
 
 #' @export
@@ -46,7 +52,13 @@ add_site_seq.GlycomicSE <- function(
   n_aa = 7,
   taxid = 9606
 ) {
-  .add_site_seq_experiment(exp, fasta = fasta, n_aa = n_aa, taxid = taxid)
+  .add_site_seq_experiment(
+    exp,
+    fasta = fasta,
+    n_aa = n_aa,
+    taxid = taxid,
+    error_call = quote(add_site_seq())
+  )
 }
 
 #' @export
@@ -57,7 +69,13 @@ add_site_seq.GlycoproteomicSE <- function(
   n_aa = 7,
   taxid = 9606
 ) {
-  .add_site_seq_experiment(exp, fasta = fasta, n_aa = n_aa, taxid = taxid)
+  .add_site_seq_experiment(
+    exp,
+    fasta = fasta,
+    n_aa = n_aa,
+    taxid = taxid,
+    error_call = quote(add_site_seq())
+  )
 }
 
 #' @rdname add_site_seq
@@ -73,17 +91,11 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   exp,
   fasta = NULL,
   n_aa = 7,
-  taxid = 9606
+  taxid = 9606,
+  error_call = rlang::caller_call()
 ) {
   # Check arguments
-  .assert_glyclean_container(exp)
-  exp_type <- .get_exp_type(exp)
-  if (exp_type != "glycoproteomics") {
-    cli::cli_abort(c(
-      "The experiment type must be {.val glycoproteomics}.",
-      "x" = "Got {.val {exp_type}}."
-    ))
-  }
+  .assert_glycoproteomics_container(exp, error_call = error_call)
 
   var_info <- .get_var_info(exp)
 

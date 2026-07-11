@@ -49,7 +49,12 @@ adjust_protein.glyexp_experiment <- function(
   pro_expr_mat,
   method = c("ratio", "reg")
 ) {
-  .adjust_protein_experiment(exp, pro_expr_mat = pro_expr_mat, method = method)
+  .adjust_protein_experiment(
+    exp,
+    pro_expr_mat = pro_expr_mat,
+    method = method,
+    error_call = quote(adjust_protein())
+  )
 }
 
 #' @export
@@ -59,7 +64,12 @@ adjust_protein.GlycomicSE <- function(
   pro_expr_mat,
   method = c("ratio", "reg")
 ) {
-  .adjust_protein_experiment(exp, pro_expr_mat = pro_expr_mat, method = method)
+  .adjust_protein_experiment(
+    exp,
+    pro_expr_mat = pro_expr_mat,
+    method = method,
+    error_call = quote(adjust_protein())
+  )
 }
 
 #' @export
@@ -69,7 +79,12 @@ adjust_protein.GlycoproteomicSE <- function(
   pro_expr_mat,
   method = c("ratio", "reg")
 ) {
-  .adjust_protein_experiment(exp, pro_expr_mat = pro_expr_mat, method = method)
+  .adjust_protein_experiment(
+    exp,
+    pro_expr_mat = pro_expr_mat,
+    method = method,
+    error_call = quote(adjust_protein())
+  )
 }
 
 #' @rdname adjust_protein
@@ -88,17 +103,11 @@ adjust_protein.default <- function(
 .adjust_protein_experiment <- function(
   exp,
   pro_expr_mat,
-  method = c("ratio", "reg")
+  method = c("ratio", "reg"),
+  error_call = rlang::caller_call()
 ) {
   # Check arguments
-  .assert_glyclean_container(exp)
-  exp_type <- .get_exp_type(exp)
-  if (exp_type != "glycoproteomics") {
-    cli::cli_abort(c(
-      "The experiment type must be {.val glycoproteomics}.",
-      "x" = "Got {.val {exp_type}}."
-    ))
-  }
+  .assert_glycoproteomics_container(exp, error_call = error_call)
   method <- rlang::arg_match(method)
 
   # Check if the protein column exists

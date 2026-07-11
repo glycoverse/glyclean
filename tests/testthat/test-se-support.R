@@ -193,6 +193,48 @@ test_that("specialized glycoproteomics operations reject plain SummarizedExperim
   )
 })
 
+test_that("specialized glycoproteomics operations distinguish glyco SE subclasses", {
+  x <- simple_glycomic_se()
+  message <- "Got <GlycomicSE>."
+
+  expect_error(
+    aggregate(x, standardize_variable = FALSE),
+    message,
+    fixed = TRUE
+  )
+  expect_error(
+    adjust_protein(x, matrix(1)),
+    message,
+    fixed = TRUE
+  )
+  expect_error(
+    add_site_seq(x),
+    message,
+    fixed = TRUE
+  )
+})
+
+test_that("specialized glycoproteomics operations retain experiment type errors", {
+  x <- glyexp::real_experiment2
+  message <- 'Got "glycomics".'
+
+  expect_error(
+    aggregate(x, standardize_variable = FALSE),
+    message,
+    fixed = TRUE
+  )
+  expect_error(
+    adjust_protein(x, matrix(1)),
+    message,
+    fixed = TRUE
+  )
+  expect_error(
+    add_site_seq(x),
+    message,
+    fixed = TRUE
+  )
+})
+
 test_that("standardization bridges subclasses without exp_type metadata", {
   testthat::local_mocked_bindings(
     standardize_variable = function(exp) exp,
