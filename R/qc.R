@@ -12,7 +12,7 @@
 #' @returns A ggplot object of the missing value heatmap.
 #'
 #' @examples
-#' plot_missing_heatmap(glyexp::toy_experiment)
+#' plot_missing_heatmap(glyexp::real_experiment)
 #'
 #' @export
 plot_missing_heatmap <- function(exp, ...) {
@@ -61,7 +61,7 @@ plot_missing_heatmap <- function(exp, ...) {
 #' @returns A ggplot object of missing value proportions by item.
 #'
 #' @examples
-#' plot_missing_bar(glyexp::toy_experiment)
+#' plot_missing_bar(glyexp::real_experiment)
 #'
 #' @export
 plot_missing_bar <- function(exp, on = "sample") {
@@ -107,7 +107,7 @@ plot_missing_bar <- function(exp, on = "sample") {
 #' @returns A ggplot object of total intensity by sample.
 #'
 #' @examples
-#' plot_tic_bar(glyexp::toy_experiment)
+#' plot_tic_bar(glyexp::real_experiment)
 #'
 #' @export
 plot_tic_bar <- function(exp) {
@@ -142,7 +142,7 @@ plot_tic_bar <- function(exp) {
 #' @returns A ggplot object of protein rank abundance.
 #'
 #' @examples
-#' plot_rank_abundance(glyexp::toy_experiment)
+#' plot_rank_abundance(glyexp::real_experiment)
 #'
 #' @export
 plot_rank_abundance <- function(exp) {
@@ -209,8 +209,8 @@ plot_rank_abundance <- function(exp) {
 #' @returns A ggplot object of log-intensity boxplots.
 #'
 #' @examples
-#' plot_int_boxplot(glyexp::toy_experiment)
-#' plot_int_boxplot(glyexp::toy_experiment, by = "group")
+#' plot_int_boxplot(glyexp::real_experiment)
+#' plot_int_boxplot(glyexp::real_experiment, by = "group")
 #'
 #' @export
 plot_int_boxplot <- function(exp, by = NULL) {
@@ -262,8 +262,8 @@ plot_int_boxplot <- function(exp, by = NULL) {
 #' @returns A ggplot object of RLE boxplots.
 #'
 #' @examples
-#' plot_rle(glyexp::toy_experiment)
-#' plot_rle(glyexp::toy_experiment, by = "group")
+#' plot_rle(glyexp::real_experiment)
+#' plot_rle(glyexp::real_experiment, by = "group")
 #'
 #' @export
 plot_rle <- function(exp, by = NULL) {
@@ -318,9 +318,16 @@ plot_rle <- function(exp, by = NULL) {
 #' @returns A ggplot object of CV density.
 #'
 #' @examples
-#' plot_cv_dent(glyexp::toy_experiment)
-#' exp <- glyexp::toy_experiment
-#' exp$sample_info$group <- rep(c("A", "B"), length.out = ncol(exp$expr_mat))
+#' plot_cv_dent(glyexp::real_experiment)
+#' library(SummarizedExperiment)
+#'
+#' exp <- glyexp::real_experiment
+#' group <- rep(c("A", "B"), length.out = ncol(exp))
+#' if (inherits(exp, "glyexp_experiment")) {
+#'   exp$sample_info$group <- group
+#' } else {
+#'   colData(exp)$group <- group
+#' }
 #' plot_cv_dent(exp, by = "group")
 #'
 #' @export
@@ -391,8 +398,15 @@ plot_cv_dent <- function(exp, by = NULL) {
 #' @returns A ggplot object of PCA scores.
 #'
 #' @examples
-#' exp <- glyexp::toy_experiment
-#' exp$sample_info$batch <- rep(c("A", "B"), each = 3)
+#' library(SummarizedExperiment)
+#'
+#' exp <- glyexp::real_experiment
+#' batch <- rep(c("A", "B"), length.out = ncol(exp))
+#' if (inherits(exp, "glyexp_experiment")) {
+#'   exp$sample_info$batch <- batch
+#' } else {
+#'   colData(exp)$batch <- batch
+#' }
 #' plot_batch_pca(exp, batch_col = "batch")
 #'
 #' @export
@@ -472,8 +486,15 @@ plot_batch_pca <- function(exp, batch_col = "batch") {
 #' @returns A patchwork object containing replicate scatter plots.
 #'
 #' @examples
-#' exp <- glyexp::toy_experiment
-#' exp$sample_info$replicate <- rep(c("A", "B"), length.out = ncol(exp$expr_mat))
+#' library(SummarizedExperiment)
+#'
+#' exp <- glyexp::real_experiment
+#' replicate <- rep(c("A", "B"), length.out = ncol(exp))
+#' if (inherits(exp, "glyexp_experiment")) {
+#'   exp$sample_info$replicate <- replicate
+#' } else {
+#'   colData(exp)$replicate <- replicate
+#' }
 #' plot_rep_scatter(exp, rep_col = "replicate", n_pairs = 4)
 #'
 #' @export

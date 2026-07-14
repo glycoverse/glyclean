@@ -22,7 +22,7 @@ Draw boxplots of relative log expression (log2 intensity minus row median)
 for each sample. Optionally color and group samples by a metadata variable.
 }
 \examples{
-plot_rle(glyexp::toy_experiment)
-plot_rle(glyexp::toy_experiment, by = "group")
+plot_rle(glyexp::real_experiment)
+plot_rle(glyexp::real_experiment, by = "group")
 
 }

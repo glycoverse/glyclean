@@ -22,6 +22,6 @@ Rows (variables) are sorted by missing value proportion from low to high.
 Columns (samples) are clustered using hierarchical clustering.
 }
 \examples{
-plot_missing_heatmap(glyexp::toy_experiment)
+plot_missing_heatmap(glyexp::real_experiment)
 
 }

@@ -23,30 +23,40 @@
 #' - When using `by`, the rule is applied within each group
 #'
 #' @examples
-#' # With glyexp_experiment
-#' exp <- glyexp::toy_experiment
-#' exp$expr_mat[1, 1] <- NA    # V1: 1/6 missing
-#' exp$expr_mat[2, 1:3] <- NA  # V2: 3/6 missing
-#' exp$expr_mat[3, 1:5] <- NA  # V3: 5/6 missing
-#' exp$expr_mat[4, 1:6] <- NA  # V4: 6/6 missing
-#' exp$expr_mat
+#' library(SummarizedExperiment)
+#'
+#' exp <- glyexp::real_experiment
+#' abundance <- function(x) {
+#'   if (inherits(x, "glyexp_experiment")) x$expr_mat else assay(x)
+#' }
+#' mat <- abundance(exp)
+#' mat[1, 1] <- NA
+#' mat[2, 1:3] <- NA
+#' mat[3, 1:5] <- NA
+#' mat[4, 1:6] <- NA
+#' if (inherits(exp, "glyexp_experiment")) {
+#'   exp$expr_mat <- mat
+#' } else {
+#'   assay(exp) <- mat
+#' }
+#' abundance(exp)
 #'
 #' # Remove variables with more than 50% missing values.
-#' remove_rare(exp, prop = 0.5)$expr_mat
+#' abundance(remove_rare(exp, prop = 0.5))
 #'
 #' # Remove variables with more than 2 missing values.
-#' remove_rare(exp, n = 2)$expr_mat
+#' abundance(remove_rare(exp, n = 2))
 #'
 #' # Remove variables if they have more than 1 missing value in all groups.
 #' # In another word, keep variables as long as they have 1 or 0 missing value
 #' # in any group.
-#' remove_rare(exp, by = "group", strict = FALSE)$expr_mat
+#' abundance(remove_rare(exp, by = "group", strict = FALSE))
 #'
 #' # Keep only variables with no missing values.
-#' remove_rare(exp, prop = 0)$expr_mat
+#' abundance(remove_rare(exp, prop = 0))
 #'
 #' # Use custom min_n to require at least 4 non-missing values
-#' remove_rare(exp, min_n = 4)$expr_mat
+#' abundance(remove_rare(exp, min_n = 4))
 #'
 #' @importFrom rlang .data
 #'

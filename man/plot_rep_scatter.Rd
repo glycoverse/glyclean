@@ -25,8 +25,15 @@ Randomly draw replicate sample pairs and plot log2 intensity scatter plots.
 The plot title shows sample names, and the subtitle reports the R2 value.
 }
 \examples{
-exp <- glyexp::toy_experiment
-exp$sample_info$replicate <- rep(c("A", "B"), length.out = ncol(exp$expr_mat))
+library(SummarizedExperiment)
+
+exp <- glyexp::real_experiment
+replicate <- rep(c("A", "B"), length.out = ncol(exp))
+if (inherits(exp, "glyexp_experiment")) {
+  exp$sample_info$replicate <- replicate
+} else {
+  colData(exp)$replicate <- replicate
+}
 plot_rep_scatter(exp, rep_col = "replicate", n_pairs = 4)
 
 }

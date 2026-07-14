@@ -146,7 +146,7 @@
 .get_expr_mat <- function(x) {
   .assert_glyclean_container(x)
   if (inherits(x, "glyexp_experiment")) {
-    return(glyexp::get_expr_mat(x))
+    return(x$expr_mat)
   }
   SummarizedExperiment::assay(x)
 }
@@ -160,7 +160,7 @@
 .get_sample_info <- function(x) {
   .assert_glyclean_container(x)
   if (inherits(x, "glyexp_experiment")) {
-    return(glyexp::get_sample_info(x))
+    return(x$sample_info)
   }
   tibble::as_tibble(
     SummarizedExperiment::colData(x),
@@ -177,7 +177,7 @@
 .get_var_info <- function(x) {
   .assert_glyclean_container(x)
   if (inherits(x, "glyexp_experiment")) {
-    return(glyexp::get_var_info(x))
+    return(x$var_info)
   }
   tibble::as_tibble(
     SummarizedExperiment::rowData(x),
@@ -204,7 +204,7 @@
     return("glycoproteomics")
   }
   if (inherits(x, "glyexp_experiment")) {
-    return(glyexp::get_exp_type(x))
+    return(x$meta_data$exp_type)
   }
   "others"
 }
@@ -356,15 +356,15 @@
 
 #' Standardize variables while preserving the input container class
 #'
-#' `glyexp::standardize_variable()` currently operates on legacy experiments,
-#' so SE inputs cross that compatibility bridge only for this optional step.
-#'
 #' @param x A supported glyclean container.
 #'
 #' @return A container with the same class as `x`.
 #' @noRd
 .standardize_container_variable <- function(x) {
-  if (inherits(x, "glyexp_experiment")) {
+  if (
+    inherits(x, "glyexp_experiment") ||
+      utils::packageVersion("glyexp") > "0.15.0"
+  ) {
     return(glyexp::standardize_variable(x))
   }
 
@@ -378,9 +378,9 @@
   )
   .rebuild_container(
     x,
-    expr_mat = glyexp::get_expr_mat(standardized),
-    sample_info = glyexp::get_sample_info(standardized),
-    var_info = glyexp::get_var_info(standardized),
+    expr_mat = standardized$expr_mat,
+    sample_info = standardized$sample_info,
+    var_info = standardized$var_info,
     metadata = metadata
   )
 }

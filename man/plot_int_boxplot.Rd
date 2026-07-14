@@ -22,7 +22,7 @@ Draw boxplots of log2-transformed intensities for each sample.
 Optionally color and group samples by a metadata variable.
 }
 \examples{
-plot_int_boxplot(glyexp::toy_experiment)
-plot_int_boxplot(glyexp::toy_experiment, by = "group")
+plot_int_boxplot(glyexp::real_experiment)
+plot_int_boxplot(glyexp::real_experiment, by = "group")
 
 }

@@ -21,6 +21,6 @@ Draw a bar plot of missing value proportions for each sample or variable.
 Items are ordered from low to high missing proportion.
 }
 \examples{
-plot_missing_bar(glyexp::toy_experiment)
+plot_missing_bar(glyexp::real_experiment)
 
 }

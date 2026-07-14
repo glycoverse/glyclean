@@ -42,6 +42,7 @@ it's the go-to tool in the `glycoverse` ecosystem.
 ```{r setup}
 library(glyclean)
 library(glyexp)
+library(SummarizedExperiment)
 library(glyrepr)  # for printing glycan compositions and structures
 ```
 
@@ -51,19 +52,31 @@ Let's dive in with a real-world dataset that will showcase what `glyclean` can d
 We'll use `glyread::read_pglyco3_pglycoquant()` to load our data into a proper `glyexp::experiment()` object.
 
 ```{r}
-exp <- real_experiment |>
-  mutate_obs(batch = factor(rep(c("A", "B", "C"), 4)))
+exp <- real_experiment
+if (inherits(exp, "glyexp_experiment")) {
+  exp <- mutate_obs(exp, batch = factor(rep(c("A", "B", "C"), 4)))
+} else {
+  exp <- mutate_col(exp, batch = factor(rep(c("A", "B", "C"), 4)))
+}
 exp
 ```
 
 Let's peek under the hood and see what we're working with:
 
 ```{r}
-get_var_info(exp)
+if (inherits(exp, "glyexp_experiment")) {
+  get_var_info(exp)
+} else {
+  tibble::as_tibble(rowData(exp), rownames = "variable")
+}
 ```
 
 ```{r}
-get_sample_info(exp)
+if (inherits(exp, "glyexp_experiment")) {
+  get_sample_info(exp)
+} else {
+  tibble::as_tibble(colData(exp), rownames = "sample")
+}
 ```
 
 What we have here is a beautiful N-glycoproteomics dataset featuring 500 PSMs (Peptide Spectrum Matches) across 12 samples.
@@ -98,14 +111,14 @@ Here is a simplified version of the function:
 ```r
 auto_clean <- function(exp, ...) {
   # ... are other arguments, see documentation for more details
-  if (glyexp::get_exp_type(exp) == "glycoproteomics") {
+  if (glyexp::is_glycoproteomic_se(exp)) {
     exp <- auto_normalize(exp, ...)
     exp <- auto_remove(exp, ...)
     exp <- auto_impute(exp, ...)
     exp <- auto_aggregate(exp)
     exp <- auto_normalize(exp, ...)
     exp <- auto_correct_batch_effect(exp, ...)
-  } else if (glyexp::get_exp_type(exp) == "glycomics") {
+  } else if (glyexp::is_glycomic_se(exp)) {
     exp <- auto_remove(exp, ...)
     exp <- auto_impute(exp, ...)
     exp <- auto_normalize(exp, ...)
@@ -288,7 +301,7 @@ the specific glycan structures attached to specific protein sites.
 - **"gf"**: Glycoforms with compositions (most condensed)
 
 ```{r}
-aggregated_exp <- aggregate(imputed_exp, to_level = "gf")
+aggregated_exp <- glyclean::aggregate(imputed_exp, to_level = "gf")
 ```
 
 **Pro move:** Re-normalize after aggregation to account for the new intensity distributions:

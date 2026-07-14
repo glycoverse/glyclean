@@ -60,10 +60,19 @@ the group information will be included in the model to preserve biological varia
 while correcting for batch effects.
 }
 \examples{
-# With glyexp_experiment and column names
-exp <- glyexp::toy_experiment
-exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
-exp$sample_info$group <- c("Ctrl", "Ctrl", "Treat", "Ctrl", "Treat", "Treat")
+library(SummarizedExperiment)
+
+# With a SummarizedExperiment and column names
+exp <- glyexp::real_experiment
+batch <- rep(c("A", "B"), length.out = ncol(exp))
+group <- rep(c("Ctrl", "Ctrl", "Treat", "Treat"), length.out = ncol(exp))
+if (inherits(exp, "glyexp_experiment")) {
+  exp$sample_info$batch <- batch
+  exp$sample_info$group <- group
+} else {
+  SummarizedExperiment::colData(exp)$batch <- batch
+  SummarizedExperiment::colData(exp)$group <- group
+}
 corrected_exp <- correct_batch_effect(exp, batch = "batch", group = "group")
 
 # Using limma method

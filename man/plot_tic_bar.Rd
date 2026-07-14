@@ -18,6 +18,6 @@ Draw a bar plot showing total intensity (TIC) for each sample. Samples are
 ordered from high to low TIC from left to right.
 }
 \examples{
-plot_tic_bar(glyexp::toy_experiment)
+plot_tic_bar(glyexp::real_experiment)
 
 }

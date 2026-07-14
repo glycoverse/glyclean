@@ -18,6 +18,6 @@ Draw a scatter plot of proteins ranked by mean log2 intensity.
 Proteins are ordered from high to low mean intensity along the x-axis.
 }
 \examples{
-plot_rank_abundance(glyexp::toy_experiment)
+plot_rank_abundance(glyexp::real_experiment)
 
 }

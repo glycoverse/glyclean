@@ -156,9 +156,8 @@ complex_exp <- function() {
 }
 
 real_exp <- function() {
-  glyexp::real_experiment |>
-    glyexp::slice_head_var(n = 100) |>
-    glyexp::as_glycoproteomic_se()
+  exp <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
+  exp[seq_len(min(100, nrow(exp))), ]
 }
 
 real_glycomic_exp <- function() {
