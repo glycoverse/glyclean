@@ -26,6 +26,6 @@ A ggplot object of total intensity by sample.
 ## Examples
 
 ``` r
-plot_tic_bar(glyexp::toy_experiment)
+plot_tic_bar(glyexp::real_experiment)
 
 ```

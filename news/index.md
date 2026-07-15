@@ -1,5 +1,11 @@
 # Changelog
 
+## glyclean 0.15.1
+
+- Preprocessing and QC functions now work consistently across legacy
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  and current `SummarizedExperiment` containers.
+
 ## glyclean 0.15.0
 
 ### Breaking changes

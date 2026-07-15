@@ -9,7 +9,7 @@ If group is provided, it will be used as a covariate in the ANOVA model."><meta 
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.15.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.15.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,13 +74,50 @@ as <code>nrow(glyexp::get_expr_mat(x))</code>.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># With glyexp_experiment and column names</span></span></span>
-<span class="r-in"><span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu">glyexp</span><span class="fu">::</span><span class="va"><a href="https://glycoverse.github.io/glyexp/reference/toy_experiment.html" class="external-link">toy_experiment</a></span></span></span>
-<span class="r-in"><span><span class="va">exp</span><span class="op">$</span><span class="va">sample_info</span><span class="op">$</span><span class="va">batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"B"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">exp</span><span class="op">$</span><span class="va">sample_info</span><span class="op">$</span><span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ctrl"</span>, <span class="st">"Ctrl"</span>, <span class="st">"Treat"</span>, <span class="st">"Ctrl"</span>, <span class="st">"Treat"</span>, <span class="st">"Treat"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/SummarizedExperiment" class="external-link">SummarizedExperiment</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># With a SummarizedExperiment and column names</span></span></span>
+<span class="r-in"><span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu">glyexp</span><span class="fu">::</span><span class="va"><a href="https://glycoverse.github.io/glyexp/reference/real_experiment.html" class="external-link">real_experiment</a></span></span></span>
+<span class="r-in"><span><span class="va">batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ctrl"</span>, <span class="st">"Ctrl"</span>, <span class="st">"Treat"</span>, <span class="st">"Treat"</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">exp</span>, <span class="st">"glyexp_experiment"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">exp</span><span class="op">$</span><span class="va">sample_info</span><span class="op">$</span><span class="va">batch</span> <span class="op">&lt;-</span> <span class="va">batch</span></span></span>
+<span class="r-in"><span>  <span class="va">exp</span><span class="op">$</span><span class="va">sample_info</span><span class="op">$</span><span class="va">group</span> <span class="op">&lt;-</span> <span class="va">group</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu">SummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span><span class="op">$</span><span class="va">batch</span> <span class="op">&lt;-</span> <span class="va">batch</span></span></span>
+<span class="r-in"><span>  <span class="fu">SummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span><span class="op">$</span><span class="va">group</span> <span class="op">&lt;-</span> <span class="va">group</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span><span class="va">p_values</span> <span class="op">&lt;-</span> <span class="fu">detect_batch_effect</span><span class="op">(</span><span class="va">exp</span>, batch <span class="op">=</span> <span class="st">"batch"</span>, group <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Detecting batch effects using ANOVA for 4 variables...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Batch effect detection completed. 4 out of 4 variables show significant batch effects (p &lt; 0.05).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Detecting batch effects using ANOVA for 4262 variables...</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ANOVA F-tests on an essentially perfect fit are unreliable</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Batch effect detection completed. 65 out of 4262 variables show significant batch effects (p &lt; 0.05).</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

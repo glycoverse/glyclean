@@ -34,10 +34,17 @@ A ggplot object of CV density.
 ## Examples
 
 ``` r
-plot_cv_dent(glyexp::toy_experiment)
+plot_cv_dent(glyexp::real_experiment)
 
-exp <- glyexp::toy_experiment
-exp$sample_info$group <- rep(c("A", "B"), length.out = ncol(exp$expr_mat))
+library(SummarizedExperiment)
+
+exp <- glyexp::real_experiment
+group <- rep(c("A", "B"), length.out = ncol(exp))
+if (inherits(exp, "glyexp_experiment")) {
+  exp$sample_info$group <- group
+} else {
+  colData(exp)$group <- group
+}
 plot_cv_dent(exp, by = "group")
 
 ```

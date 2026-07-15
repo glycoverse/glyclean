@@ -38,8 +38,15 @@ A patchwork object containing replicate scatter plots.
 ## Examples
 
 ``` r
-exp <- glyexp::toy_experiment
-exp$sample_info$replicate <- rep(c("A", "B"), length.out = ncol(exp$expr_mat))
+library(SummarizedExperiment)
+
+exp <- glyexp::real_experiment
+replicate <- rep(c("A", "B"), length.out = ncol(exp))
+if (inherits(exp, "glyexp_experiment")) {
+  exp$sample_info$replicate <- replicate
+} else {
+  colData(exp)$replicate <- replicate
+}
 plot_rep_scatter(exp, rep_col = "replicate", n_pairs = 4)
 
 ```

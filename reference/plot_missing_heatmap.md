@@ -33,6 +33,6 @@ A ggplot object of the missing value heatmap.
 ## Examples
 
 ``` r
-plot_missing_heatmap(glyexp::toy_experiment)
+plot_missing_heatmap(glyexp::real_experiment)
 
 ```
