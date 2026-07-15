@@ -34,8 +34,12 @@ A ggplot object of RLE boxplots.
 ## Examples
 
 ``` r
-plot_rle(glyexp::toy_experiment)
+plot_rle(glyexp::real_experiment)
+#> Warning: Removed 4063 rows containing non-finite outside the scale range
+#> (`stat_boxplot()`).
 
-plot_rle(glyexp::toy_experiment, by = "group")
+plot_rle(glyexp::real_experiment, by = "group")
+#> Warning: Removed 4063 rows containing non-finite outside the scale range
+#> (`stat_boxplot()`).
 
 ```

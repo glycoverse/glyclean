@@ -32,8 +32,15 @@ A ggplot object of PCA scores.
 ## Examples
 
 ``` r
-exp <- glyexp::toy_experiment
-exp$sample_info$batch <- rep(c("A", "B"), each = 3)
+library(SummarizedExperiment)
+
+exp <- glyexp::real_experiment
+batch <- rep(c("A", "B"), length.out = ncol(exp))
+if (inherits(exp, "glyexp_experiment")) {
+  exp$sample_info$batch <- batch
+} else {
+  colData(exp)$batch <- batch
+}
 plot_batch_pca(exp, batch_col = "batch")
 
 ```

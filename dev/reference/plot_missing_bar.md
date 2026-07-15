@@ -31,6 +31,6 @@ A ggplot object of missing value proportions by item.
 ## Examples
 
 ``` r
-plot_missing_bar(glyexp::toy_experiment)
+plot_missing_bar(glyexp::real_experiment)
 
 ```

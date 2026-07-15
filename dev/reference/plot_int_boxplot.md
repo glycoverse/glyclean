@@ -33,8 +33,12 @@ A ggplot object of log-intensity boxplots.
 ## Examples
 
 ``` r
-plot_int_boxplot(glyexp::toy_experiment)
+plot_int_boxplot(glyexp::real_experiment)
+#> Warning: Removed 4063 rows containing non-finite outside the scale range
+#> (`stat_boxplot()`).
 
-plot_int_boxplot(glyexp::toy_experiment, by = "group")
+plot_int_boxplot(glyexp::real_experiment, by = "group")
+#> Warning: Removed 4063 rows containing non-finite outside the scale range
+#> (`stat_boxplot()`).
 
 ```

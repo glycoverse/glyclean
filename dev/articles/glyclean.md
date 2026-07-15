@@ -39,6 +39,79 @@ library(glyclean)
 library(glyexp)
 #> Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by
 #> 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'
+library(SummarizedExperiment)
+#> Loading required package: MatrixGenerics
+#> Loading required package: matrixStats
+#> 
+#> Attaching package: 'MatrixGenerics'
+#> The following objects are masked from 'package:matrixStats':
+#> 
+#>     colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,
+#>     colCounts, colCummaxs, colCummins, colCumprods, colCumsums,
+#>     colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,
+#>     colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,
+#>     colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,
+#>     colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,
+#>     colWeightedMeans, colWeightedMedians, colWeightedSds,
+#>     colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,
+#>     rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,
+#>     rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,
+#>     rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,
+#>     rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,
+#>     rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,
+#>     rowWeightedMads, rowWeightedMeans, rowWeightedMedians,
+#>     rowWeightedSds, rowWeightedVars
+#> Loading required package: GenomicRanges
+#> Loading required package: stats4
+#> Loading required package: BiocGenerics
+#> Loading required package: generics
+#> 
+#> Attaching package: 'generics'
+#> The following objects are masked from 'package:base':
+#> 
+#>     as.difftime, as.factor, as.ordered, intersect, is.element, setdiff,
+#>     setequal, union
+#> 
+#> Attaching package: 'BiocGenerics'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     IQR, mad, sd, var, xtabs
+#> The following objects are masked from 'package:base':
+#> 
+#>     anyDuplicated, aperm, append, as.data.frame, basename, cbind,
+#>     colnames, dirname, do.call, duplicated, eval, evalq, Filter, Find,
+#>     get, grep, grepl, is.unsorted, lapply, Map, mapply, match, mget,
+#>     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
+#>     rbind, Reduce, rownames, sapply, saveRDS, table, tapply, unique,
+#>     unsplit, which.max, which.min
+#> Loading required package: S4Vectors
+#> 
+#> Attaching package: 'S4Vectors'
+#> The following object is masked from 'package:utils':
+#> 
+#>     findMatches
+#> The following objects are masked from 'package:base':
+#> 
+#>     expand.grid, I, unname
+#> Loading required package: IRanges
+#> Loading required package: Seqinfo
+#> Loading required package: Biobase
+#> Welcome to Bioconductor
+#> 
+#>     Vignettes contain introductory material; view with
+#>     'browseVignettes()'. To cite Bioconductor, see
+#>     'citation("Biobase")', and for packages 'citation("pkgname")'.
+#> 
+#> Attaching package: 'Biobase'
+#> The following object is masked from 'package:MatrixGenerics':
+#> 
+#>     rowMedians
+#> The following objects are masked from 'package:matrixStats':
+#> 
+#>     anyMissing, rowMedians
+#> The following object is masked from 'package:glyexp':
+#> 
+#>     samples
 library(glyrepr)  # for printing glycan compositions and structures
 ```
 
@@ -53,8 +126,12 @@ object.
 
 ``` r
 
-exp <- real_experiment |>
-  mutate_obs(batch = factor(rep(c("A", "B", "C"), 4)))
+exp <- real_experiment
+if (inherits(exp, "glyexp_experiment")) {
+  exp <- mutate_obs(exp, batch = factor(rep(c("A", "B", "C"), 4)))
+} else {
+  exp <- mutate_col(exp, batch = factor(rep(c("A", "B", "C"), 4)))
+}
 exp
 #> 
 #> ── Glycoproteomics Experiment ──────────────────────────────────────────────────
@@ -67,7 +144,11 @@ Let’s peek under the hood and see what we’re working with:
 
 ``` r
 
-get_var_info(exp)
+if (inherits(exp, "glyexp_experiment")) {
+  get_var_info(exp)
+} else {
+  tibble::as_tibble(rowData(exp), rownames = "variable")
+}
 #> # A tibble: 4,262 × 8
 #>    variable   peptide peptide_site protein protein_site gene  glycan_composition
 #>    <chr>      <chr>          <int> <chr>          <int> <chr> <comp>            
@@ -87,7 +168,11 @@ get_var_info(exp)
 
 ``` r
 
-get_sample_info(exp)
+if (inherits(exp, "glyexp_experiment")) {
+  get_sample_info(exp)
+} else {
+  tibble::as_tibble(colData(exp), rownames = "sample")
+}
 #> # A tibble: 12 × 3
 #>    sample group batch
 #>    <chr>  <fct> <fct>
@@ -176,14 +261,14 @@ does. Here is a simplified version of the function:
 
 auto_clean <- function(exp, ...) {
   # ... are other arguments, see documentation for more details
-  if (glyexp::get_exp_type(exp) == "glycoproteomics") {
+  if (glyexp::is_glycoproteomic_se(exp)) {
     exp <- auto_normalize(exp, ...)
     exp <- auto_remove(exp, ...)
     exp <- auto_impute(exp, ...)
     exp <- auto_aggregate(exp)
     exp <- auto_normalize(exp, ...)
     exp <- auto_correct_batch_effect(exp, ...)
-  } else if (glyexp::get_exp_type(exp) == "glycomics") {
+  } else if (glyexp::is_glycomic_se(exp)) {
     exp <- auto_remove(exp, ...)
     exp <- auto_impute(exp, ...)
     exp <- auto_normalize(exp, ...)
@@ -417,7 +502,7 @@ due to:
 
 ``` r
 
-aggregated_exp <- aggregate(imputed_exp, to_level = "gf")
+aggregated_exp <- glyclean::aggregate(imputed_exp, to_level = "gf")
 ```
 
 **Pro move:** Re-normalize after aggregation to account for the new

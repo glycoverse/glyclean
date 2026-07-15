@@ -40,11 +40,48 @@ A double vector of p-values for each variable, with the same length as
 ## Examples
 
 ``` r
-# With glyexp_experiment and column names
-exp <- glyexp::toy_experiment
-exp$sample_info$batch <- c("A", "A", "A", "B", "B", "B")
-exp$sample_info$group <- c("Ctrl", "Ctrl", "Treat", "Ctrl", "Treat", "Treat")
+library(SummarizedExperiment)
+
+# With a SummarizedExperiment and column names
+exp <- glyexp::real_experiment
+batch <- rep(c("A", "B"), length.out = ncol(exp))
+group <- rep(c("Ctrl", "Ctrl", "Treat", "Treat"), length.out = ncol(exp))
+if (inherits(exp, "glyexp_experiment")) {
+  exp$sample_info$batch <- batch
+  exp$sample_info$group <- group
+} else {
+  SummarizedExperiment::colData(exp)$batch <- batch
+  SummarizedExperiment::colData(exp)$group <- group
+}
 p_values <- detect_batch_effect(exp, batch = "batch", group = "group")
-#> ℹ Detecting batch effects using ANOVA for 4 variables...
-#> ✔ Batch effect detection completed. 4 out of 4 variables show significant batch effects (p < 0.05).
+#> ℹ Detecting batch effects using ANOVA for 4262 variables...
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
+#> ✔ Batch effect detection completed. 65 out of 4262 variables show significant batch effects (p < 0.05).
 ```

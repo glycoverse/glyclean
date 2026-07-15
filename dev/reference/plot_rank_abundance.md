@@ -26,6 +26,6 @@ A ggplot object of protein rank abundance.
 ## Examples
 
 ``` r
-plot_rank_abundance(glyexp::toy_experiment)
+plot_rank_abundance(glyexp::real_experiment)
 
 ```
