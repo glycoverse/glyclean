@@ -1,4 +1,6 @@
-# glyclean (development version)
+# glyclean 0.15.1
+
+* Preprocessing and QC functions now work consistently across legacy `glyexp::experiment()` and current `SummarizedExperiment` containers.
 
 # glyclean 0.15.0
 
