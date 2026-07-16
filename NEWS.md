@@ -1,6 +1,6 @@
 # glyclean (development version)
 
-* Documentation and vignettes now recommend `GlycomicSE` and `GlycoproteomicSE` containers with `SummarizedExperiment` accessors for Stage II of glycoverse/glyexp#15.
+* Documentation and vignettes now recommend `GlycomicSE` and `GlycoproteomicSE` containers with `SummarizedExperiment` accessors for Stage II of glycoverse/glyexp#15. (#26)
 
 # glyclean 0.15.1
 
