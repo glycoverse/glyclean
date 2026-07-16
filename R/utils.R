@@ -354,37 +354,6 @@
   )
 }
 
-#' Standardize variables while preserving the input container class
-#'
-#' @param x A supported glyclean container.
-#'
-#' @return A container with the same class as `x`.
-#' @noRd
-.standardize_container_variable <- function(x) {
-  if (
-    inherits(x, "glyexp_experiment") ||
-      utils::packageVersion("glyexp") > "0.15.0"
-  ) {
-    return(glyexp::standardize_variable(x))
-  }
-
-  metadata <- .get_container_metadata(x)
-  standardized <- glyexp::standardize_variable(
-    glyexp::from_se(
-      x,
-      exp_type = .get_exp_type(x),
-      glycan_type = metadata$glycan_type
-    )
-  )
-  .rebuild_container(
-    x,
-    expr_mat = standardized$expr_mat,
-    sample_info = standardized$sample_info,
-    var_info = standardized$var_info,
-    metadata = metadata
-  )
-}
-
 #' Update an experiment expression matrix
 #'
 #' @param exp A `glyexp_experiment` object.

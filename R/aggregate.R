@@ -198,7 +198,7 @@ glyclean_aggregate.GlycoproteomicSE <- function(
     var_info = var_info_df
   )
   if (standardize_variable) {
-    suppressMessages(.standardize_container_variable(new_exp))
+    suppressMessages(glyexp::standardize_variable(new_exp))
   } else {
     new_exp
   }

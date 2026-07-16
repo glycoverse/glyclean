@@ -279,28 +279,6 @@ test_that("specialized glycoproteomics operations retain experiment type errors"
   )
 })
 
-test_that("standardization bridges subclasses without exp_type metadata", {
-  testthat::local_mocked_bindings(
-    standardize_variable = function(exp) exp,
-    .package = "glyexp"
-  )
-
-  inputs <- list(
-    GlycomicSE = simple_glycomic_se(),
-    GlycoproteomicSE = complex_exp()
-  )
-
-  for (class_name in names(inputs)) {
-    x <- inputs[[class_name]]
-    expect_null(S4Vectors::metadata(x)$exp_type)
-
-    result <- glyclean:::.standardize_container_variable(x)
-
-    expect_s4_class(result, class_name)
-    expect_identical(S4Vectors::metadata(result)$glycan_type, "N")
-  }
-})
-
 test_that("QC functions accept glyco SE subclasses", {
   x <- simple_glycomic_se()
 
