@@ -17,7 +17,8 @@ auto_coda(x, by = NULL, gamma = 0.1, group_scales = NULL)
 - x:
 
   A
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
   or
   [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
   object.
@@ -42,8 +43,7 @@ auto_coda(x, by = NULL, gamma = 0.1, group_scales = NULL)
 ## Value
 
 The input container with a CoDA-transformed expression matrix (ALR if
-\>50 variables, CLR otherwise). SummarizedExperiment inputs return the
-same class.
+\>50 variables, CLR otherwise) and its class preserved.
 
 ## Algorithmic details
 

@@ -20,7 +20,8 @@ normalize_rlr(x, by = NULL)
 - x:
 
   A
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
   or
   [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
   object.
@@ -33,7 +34,5 @@ normalize_rlr(x, by = NULL)
 
 ## Value
 
-A
-[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object with a normalized expression matrix. SummarizedExperiment inputs
-return the same class.
+A container of the same class as `x`, with a normalized expression
+matrix.

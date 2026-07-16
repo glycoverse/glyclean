@@ -14,7 +14,8 @@ plot_missing_bar(exp, on = "sample")
 - exp:
 
   A
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
   or
   [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
   object.

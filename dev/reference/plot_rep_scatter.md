@@ -15,7 +15,8 @@ plot_rep_scatter(exp, rep_col, n_pairs = 9)
 - exp:
 
   A
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
   or
   [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
   object.
@@ -42,11 +43,7 @@ library(SummarizedExperiment)
 
 exp <- glyexp::real_experiment
 replicate <- rep(c("A", "B"), length.out = ncol(exp))
-if (inherits(exp, "glyexp_experiment")) {
-  exp$sample_info$replicate <- replicate
-} else {
-  colData(exp)$replicate <- replicate
-}
+colData(exp)$replicate <- replicate
 plot_rep_scatter(exp, rep_col = "replicate", n_pairs = 4)
 
 ```

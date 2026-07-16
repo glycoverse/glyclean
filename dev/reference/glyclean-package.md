@@ -10,8 +10,8 @@ level), and quality control functions. The automated pipeline
 intelligently selects appropriate methods based on data characteristics
 and sample size, making it easy to prepare clean, analysis-ready data
 for downstream statistical analysis within the glycoverse ecosystem.
-Works seamlessly with 'glyexp::experiment()' and
-'SummarizedExperiment::SummarizedExperiment' objects to ensure data
+Works seamlessly with 'glyexp::GlycomicSE', 'glyexp::GlycoproteomicSE',
+and 'SummarizedExperiment::SummarizedExperiment' objects to ensure data
 consistency and interoperability.
 
 ## See also

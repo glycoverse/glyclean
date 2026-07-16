@@ -72,12 +72,11 @@ glycoproteomics and glycomics data preprocessing! This package provides
 a comprehensive toolkit that takes the guesswork out of data cleaning,
 with specialized methods designed specifically for the unique challenges
 of glycan analysis.</p>
-<p><strong>Important Note:</strong> This package is primarily designed
-for <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> objects.
+<p><strong>Important Note:</strong> This package is designed for
 <code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE</a></code> and
-<code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code> objects are also supported, and
-preprocessing functions return the same subclass they receive. If you’re
-new to this data structure, we highly recommend checking out <a href="https://glycoverse.github.io/glyexp/articles/glyexp.html" class="external-link">its
+<code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code> objects. Preprocessing functions
+return the same subclass they receive. If you’re new to this data
+structure, we highly recommend checking out <a href="https://glycoverse.github.io/glyexp/articles/glyexp.html" class="external-link">its
 introduction</a> first. We’ll also be using the <a href="https://github.com/glycoverse/glyread" class="external-link">glyread</a> package to load
 our data – it’s the go-to tool in the <code>glycoverse</code>
 ecosystem.</p>
@@ -170,29 +169,23 @@ ecosystem.</p>
 <h2 id="meet-our-star-player-real-glycoproteomics-data">Meet Our Star Player: Real Glycoproteomics Data 🌟<a class="anchor" aria-label="anchor" href="#meet-our-star-player-real-glycoproteomics-data"></a>
 </h2>
 <p>Let’s dive in with a real-world dataset that will showcase what
-<code>glyclean</code> can do. We’ll use
-<code><a href="https://glycoverse.github.io/glyread/reference/read_pglyco3_pglycoquant.html" class="external-link">glyread::read_pglyco3_pglycoquant()</a></code> to load our data into a
-proper <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object.</p>
+<code>glyclean</code> can do. We’ll use the bundled
+<code><a href="https://glycoverse.github.io/glyexp/reference/real_experiment.html" class="external-link">glyexp::real_experiment</a></code> dataset, which is a
+<code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code> object.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="va">real_experiment</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">exp</span>, <span class="st">"glyexp_experiment"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/mutate_obs.html" class="external-link">mutate_obs</a></span><span class="op">(</span><span class="va">exp</span>, batch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>  <span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu">mutate_col</span><span class="op">(</span><span class="va">exp</span>, batch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
+<span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/mutate_col.html" class="external-link">mutate_col</a></span><span class="op">(</span><span class="va">exp</span>, batch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">exp</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Glycoproteomics Experiment</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Expression matrix: <span style="color: #0000BB;">12</span> samples, <span style="color: #0000BB;">4262</span> variables</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Sample information fields: <span style="color: #00BB00;">group</span> <span style="color: #0000BB;">&lt;fct&gt;</span>, <span style="color: #00BB00;">batch</span> <span style="color: #0000BB;">&lt;fct&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Variable information fields: <span style="color: #00BB00;">peptide</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">peptide_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">protein</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">protein_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">gene</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">glycan_composition</span> <span style="color: #0000BB;">&lt;comp&gt;</span>, <span style="color: #00BB00;">glycan_structure</span> <span style="color: #0000BB;">&lt;struct&gt;</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">GlycoproteomicSE</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Abundance assay: <span style="color: #0000BB;">12</span> samples, <span style="color: #0000BB;">4262</span> variables</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Glycan type: N</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Row data fields: <span style="color: #00BB00;">peptide</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">peptide_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">protein</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">protein_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">gene</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">glycan_composition</span> <span style="color: #0000BB;">&lt;comp&gt;</span>, <span style="color: #00BB00;">glycan_structure</span> <span style="color: #0000BB;">&lt;struct&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Column data fields: <span style="color: #00BB00;">group</span> <span style="color: #0000BB;">&lt;fct&gt;</span>, <span style="color: #00BB00;">batch</span> <span style="color: #0000BB;">&lt;fct&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Metadata fields: <span style="color: #00BB00;">exp_type</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">glycan_type</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">quant_method</span> <span style="color: #0000BB;">&lt;chr&gt;</span></span></span></code></pre></div>
 <p>Let’s peek under the hood and see what we’re working with:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">exp</span>, <span class="st">"glyexp_experiment"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/get_var_info.html" class="external-link">get_var_info</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
-<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span>, rownames <span class="op">=</span> <span class="st">"variable"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
+<code class="sourceCode R"><span><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span>, rownames <span class="op">=</span> <span class="st">"variable"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4,262 × 8</span></span></span>
 <span><span class="co">#&gt;    variable   peptide peptide_site protein protein_site gene  glycan_composition</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;comp&gt;</span>            </span></span>
@@ -209,11 +202,7 @@ proper <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.h
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4,252 more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: glycan_structure &lt;struct&gt;</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">exp</span>, <span class="st">"glyexp_experiment"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/get_sample_info.html" class="external-link">get_sample_info</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
-<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span>, rownames <span class="op">=</span> <span class="st">"sample"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
+<code class="sourceCode R"><span><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span>, rownames <span class="op">=</span> <span class="st">"sample"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 12 × 3</span></span></span>
 <span><span class="co">#&gt;    sample group batch</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span></span>
@@ -745,7 +734,7 @@ news: you can use <code>glyclean</code> functions for this too!)</li>
 oranges!</li>
 </ul>
 <p><strong>Pro Tip:</strong> Wrap protein expression data in a
-<code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object before using
+<code>SummarizedExperiment</code> object before using
 <code>glyclean</code> preprocessing functions. Consistency is key!</p>
 </div>
 <div class="section level3">
@@ -842,11 +831,9 @@ of your data at various stages of the preprocessing pipeline.</p>
 </tr>
 </tbody>
 </table>
-<p>These functions are designed to work seamlessly with
-<code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> objects. They also accept
-<code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE</a></code> and
-<code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code> objects and provide consistent,
-high-quality visualizations using <code>ggplot2</code>.</p>
+<p>These functions work seamlessly with <code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE</a></code>
+and <code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code> objects and provide
+consistent, high-quality visualizations using <code>ggplot2</code>.</p>
 <p>For example, you can use <code><a href="../reference/plot_missing_heatmap.html">plot_missing_heatmap()</a></code> to
 visualize the missing values in your data before and after cleaning:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">

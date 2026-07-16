@@ -15,10 +15,8 @@ auto_aggregate(exp, standardize_variable = TRUE)
 - exp:
 
   A
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-  object with "glycoproteomics" type.
   [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-  objects are also supported.
+  object.
 
 - standardize_variable:
 
@@ -29,12 +27,8 @@ auto_aggregate(exp, standardize_variable = TRUE)
 
 ## Value
 
-A modified
-[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object with an aggregated expression matrix and updated variable
-information. A
-[`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-input returns the same subclass.
+A modified container with the same class as `exp`, an aggregated
+expression matrix, and updated variable information.
 
 ## Examples
 
@@ -44,8 +38,10 @@ exp <- real_experiment
 auto_aggregate(exp)
 #> ℹ Aggregating to "gfs" level
 #> 
-#> ── Glycoproteomics Experiment ──────────────────────────────────────────────────
-#> ℹ Expression matrix: 12 samples, 4001 variables
-#> ℹ Sample information fields: group <fct>
-#> ℹ Variable information fields: protein <chr>, glycan_composition <comp>, glycan_structure <struct>, protein_site <int>, gene <chr>
+#> ── GlycoproteomicSE ────────────────────────────────────────────────────────────
+#> ℹ Abundance assay: 12 samples, 4001 variables
+#> ℹ Glycan type: N
+#> ℹ Row data fields: protein <chr>, glycan_composition <comp>, glycan_structure <struct>, protein_site <int>, gene <chr>
+#> ℹ Column data fields: group <fct>
+#> ℹ Metadata fields: exp_type <chr>, glycan_type <chr>, quant_method <chr>
 ```

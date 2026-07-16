@@ -22,7 +22,8 @@ correct_batch_effect(
 - x:
 
   A
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
   or
   [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
   object.
@@ -60,10 +61,7 @@ correct_batch_effect(
 
 ## Value
 
-A
-[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object with batch effects corrected. SummarizedExperiment inputs return
-the same class.
+A container of the same class as `x`, with batch effects corrected.
 
 ## Details
 
@@ -163,13 +161,8 @@ library(SummarizedExperiment)
 exp <- glyexp::real_experiment
 batch <- rep(c("A", "B"), length.out = ncol(exp))
 group <- rep(c("Ctrl", "Ctrl", "Treat", "Treat"), length.out = ncol(exp))
-if (inherits(exp, "glyexp_experiment")) {
-  exp$sample_info$batch <- batch
-  exp$sample_info$group <- group
-} else {
-  SummarizedExperiment::colData(exp)$batch <- batch
-  SummarizedExperiment::colData(exp)$group <- group
-}
+colData(exp)$batch <- batch
+colData(exp)$group <- group
 corrected_exp <- correct_batch_effect(exp, batch = "batch", group = "group")
 #> Found2batches
 #> Adjusting for1covariate(s) or covariate level(s)

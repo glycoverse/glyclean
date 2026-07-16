@@ -15,7 +15,8 @@ remove_low_cv(x, cv_cutoff = 0, by = NULL, strict = FALSE)
 - x:
 
   A
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
   or
   [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
   object.
@@ -36,10 +37,7 @@ remove_low_cv(x, cv_cutoff = 0, by = NULL, strict = FALSE)
 
 ## Value
 
-A
-[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object with filtered variables. SummarizedExperiment inputs return the
-same class.
+A container of the same class as `x`, with filtered variables.
 
 ## See also
 

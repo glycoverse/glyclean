@@ -52,7 +52,7 @@ following the same strategy in glycowork.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>A <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> or
+<dd><p>A <code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE()</a></code>, <code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE()</a></code>, or
 <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment::SummarizedExperiment()</a></code> object.</p></dd>
 
 
@@ -76,8 +76,7 @@ multi-group data, provide a positive vector with one scale per group.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>The input container with a CoDA-transformed expression matrix (ALR
-if &gt;50 variables, CLR otherwise). SummarizedExperiment inputs return the
-same class.</p>
+if &gt;50 variables, CLR otherwise) and its class preserved.</p>
     </div>
     <div class="section level2">
     <h2 id="algorithmic-details">Algorithmic details<a class="anchor" aria-label="anchor" href="#algorithmic-details"></a></h2>

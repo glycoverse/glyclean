@@ -29,10 +29,8 @@ add_site_seq(exp, fasta = NULL, n_aa = 7, taxid = 9606)
 - exp:
 
   A
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-  object with "glycoproteomics" type.
   [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-  objects are also supported.
+  object.
 
 - fasta:
 
@@ -53,7 +51,5 @@ add_site_seq(exp, fasta = NULL, n_aa = 7, taxid = 9606)
 ## Value
 
 A
-[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object with the new "site_sequence" column. A
 [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-input returns the same subclass.
+object with the new `site_sequence` column in its row data.

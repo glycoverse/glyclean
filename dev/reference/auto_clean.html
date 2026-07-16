@@ -106,9 +106,7 @@ glycoproteomics data), and batch effect correction.</p>
 
 
 <dl><dt id="arg-exp">exp<a class="anchor" aria-label="anchor" href="#arg-exp"></a></dt>
-<dd><p>A <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> containing glycoproteomics or glycomics
-data. <code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE()</a></code> and <code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE()</a></code> objects are
-also supported.</p></dd>
+<dd><p>A <code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE()</a></code> or <code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE()</a></code> object.</p></dd>
 
 
 <dt id="arg-group-col">group_col<a class="anchor" aria-label="anchor" href="#arg-group-col"></a></dt>
@@ -154,8 +152,7 @@ Default is <code>TRUE</code>.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A modified <code><a href="https://glycoverse.github.io/glyexp/reference/experiment.html" class="external-link">glyexp::experiment()</a></code> object. Glyco SE inputs return the
-same subclass.</p>
+    <p>A modified container with the same subclass as <code>exp</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -202,10 +199,12 @@ same subclass.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Batch column <span style="color: #00BB00;">batch</span> not found in sample_info. Skipping batch correction.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Batch correction completed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Glycoproteomics Experiment</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Expression matrix: <span style="color: #0000BB;">12</span> samples, <span style="color: #0000BB;">3979</span> variables</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Sample information fields: <span style="color: #00BB00;">group</span> <span style="color: #0000BB;">&lt;fct&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Variable information fields: <span style="color: #00BB00;">protein</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">glycan_composition</span> <span style="color: #0000BB;">&lt;comp&gt;</span>, <span style="color: #00BB00;">glycan_structure</span> <span style="color: #0000BB;">&lt;struct&gt;</span>, <span style="color: #00BB00;">protein_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">gene</span> <span style="color: #0000BB;">&lt;chr&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">GlycoproteomicSE</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Abundance assay: <span style="color: #0000BB;">12</span> samples, <span style="color: #0000BB;">3979</span> variables</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Glycan type: N</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Row data fields: <span style="color: #00BB00;">protein</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">glycan_composition</span> <span style="color: #0000BB;">&lt;comp&gt;</span>, <span style="color: #00BB00;">glycan_structure</span> <span style="color: #0000BB;">&lt;struct&gt;</span>, <span style="color: #00BB00;">protein_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">gene</span> <span style="color: #0000BB;">&lt;chr&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Column data fields: <span style="color: #00BB00;">group</span> <span style="color: #0000BB;">&lt;fct&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Metadata fields: <span style="color: #00BB00;">exp_type</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">glycan_type</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">quant_method</span> <span style="color: #0000BB;">&lt;chr&gt;</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
