@@ -7,7 +7,7 @@
 plot_batch_pca(exp, batch_col = "batch")
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\item{exp}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{batch_col}{Column name in \code{sample_info}, or a factor/vector with length
@@ -26,11 +26,7 @@ library(SummarizedExperiment)
 
 exp <- glyexp::real_experiment
 batch <- rep(c("A", "B"), length.out = ncol(exp))
-if (inherits(exp, "glyexp_experiment")) {
-  exp$sample_info$batch <- batch
-} else {
-  colData(exp)$batch <- batch
-}
+colData(exp)$batch <- batch
 plot_batch_pca(exp, batch_col = "batch")
 
 }

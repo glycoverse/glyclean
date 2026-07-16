@@ -17,13 +17,12 @@
 #' fallback. [impute_sample_min()] and [impute_half_sample_min()] remain
 #' available for manual use, but they are not selected automatically.
 #'
-#' @param exp A [glyexp::experiment()] or
+#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
 #'
-#' @returns The imputed input container. SummarizedExperiment inputs return the
-#'   same class.
+#' @returns The imputed input container, with its class preserved.
 #' @examples
 #' library(glyexp)
 #' exp_imputed <- auto_impute(real_experiment)

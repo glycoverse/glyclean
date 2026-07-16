@@ -14,7 +14,7 @@ correct_batch_effect(
 )
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{batch}{Either a factor/character vector specifying batch assignments for each sample,
@@ -36,8 +36,7 @@ Only used when \code{check_confounding} is TRUE. Default to 0.4.}
 sva::ComBat) or "limma" (uses limma::removeBatchEffect). Default to "combat".}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with batch effects corrected. SummarizedExperiment
-inputs return the same class.
+A container of the same class as \code{x}, with batch effects corrected.
 }
 \description{
 Correct batch effects in glycoproteomics/glycomics data using ComBat algorithm
@@ -66,13 +65,8 @@ library(SummarizedExperiment)
 exp <- glyexp::real_experiment
 batch <- rep(c("A", "B"), length.out = ncol(exp))
 group <- rep(c("Ctrl", "Ctrl", "Treat", "Treat"), length.out = ncol(exp))
-if (inherits(exp, "glyexp_experiment")) {
-  exp$sample_info$batch <- batch
-  exp$sample_info$group <- group
-} else {
-  SummarizedExperiment::colData(exp)$batch <- batch
-  SummarizedExperiment::colData(exp)$group <- group
-}
+colData(exp)$batch <- batch
+colData(exp)$group <- group
 corrected_exp <- correct_batch_effect(exp, batch = "batch", group = "group")
 
 # Using limma method

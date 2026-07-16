@@ -5,7 +5,7 @@
 #' Rows (variables) are sorted by missing value proportion from low to high.
 #' Columns (samples) are clustered using hierarchical clustering.
 #'
-#' @param exp A [glyexp::experiment()] or
+#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param ... Other arguments passed to `pheatmap::pheatmap()`.
 #'
@@ -53,7 +53,7 @@ plot_missing_heatmap <- function(exp, ...) {
 #' Draw a bar plot of missing value proportions for each sample or variable.
 #' Items are ordered from low to high missing proportion.
 #'
-#' @param exp A [glyexp::experiment()] or
+#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param on Whether to plot missingness by `"sample(s)"` or `"variable(s)"`.
 #'   Defaults to `"sample"`.
@@ -101,7 +101,7 @@ plot_missing_bar <- function(exp, on = "sample") {
 #' Draw a bar plot showing total intensity (TIC) for each sample. Samples are
 #' ordered from high to low TIC from left to right.
 #'
-#' @param exp A [glyexp::experiment()] or
+#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #'
 #' @returns A ggplot object of total intensity by sample.
@@ -136,7 +136,7 @@ plot_tic_bar <- function(exp) {
 #' Draw a scatter plot of proteins ranked by mean log2 intensity.
 #' Proteins are ordered from high to low mean intensity along the x-axis.
 #'
-#' @param exp A [glyexp::experiment()] or
+#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #'
 #' @returns A ggplot object of protein rank abundance.
@@ -200,7 +200,7 @@ plot_rank_abundance <- function(exp) {
 #' Draw boxplots of log2-transformed intensities for each sample.
 #' Optionally color and group samples by a metadata variable.
 #'
-#' @param exp A [glyexp::experiment()] or
+#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param by Grouping variable for samples. Can be a column name in `sample_info`
 #'   or a vector/factor with length equal to the number of samples. When provided,
@@ -253,7 +253,7 @@ plot_int_boxplot <- function(exp, by = NULL) {
 #' Draw boxplots of relative log expression (log2 intensity minus row median)
 #' for each sample. Optionally color and group samples by a metadata variable.
 #'
-#' @param exp A [glyexp::experiment()] or
+#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param by Grouping variable for samples. Can be a column name in `sample_info`
 #'   or a vector/factor with length equal to the number of samples. When provided,
@@ -309,7 +309,7 @@ plot_rle <- function(exp, by = NULL) {
 #' When `by` is provided, CVs are computed within each group and densities are
 #' shown with different fills.
 #'
-#' @param exp A [glyexp::experiment()] or
+#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param by Grouping variable for samples. Can be a column name in `sample_info`
 #'   or a vector/factor with length equal to the number of samples. When provided,
@@ -323,11 +323,7 @@ plot_rle <- function(exp, by = NULL) {
 #'
 #' exp <- glyexp::real_experiment
 #' group <- rep(c("A", "B"), length.out = ncol(exp))
-#' if (inherits(exp, "glyexp_experiment")) {
-#'   exp$sample_info$group <- group
-#' } else {
-#'   colData(exp)$group <- group
-#' }
+#' colData(exp)$group <- group
 #' plot_cv_dent(exp, by = "group")
 #'
 #' @export
@@ -390,7 +386,7 @@ plot_cv_dent <- function(exp, by = NULL) {
 #' PCA is computed on log2-transformed intensities after removing variables
 #' with missing values.
 #'
-#' @param exp A [glyexp::experiment()] or
+#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param batch_col Column name in `sample_info`, or a factor/vector with length
 #'   equal to the number of samples.
@@ -402,11 +398,7 @@ plot_cv_dent <- function(exp, by = NULL) {
 #'
 #' exp <- glyexp::real_experiment
 #' batch <- rep(c("A", "B"), length.out = ncol(exp))
-#' if (inherits(exp, "glyexp_experiment")) {
-#'   exp$sample_info$batch <- batch
-#' } else {
-#'   colData(exp)$batch <- batch
-#' }
+#' colData(exp)$batch <- batch
 #' plot_batch_pca(exp, batch_col = "batch")
 #'
 #' @export
@@ -475,7 +467,7 @@ plot_batch_pca <- function(exp, batch_col = "batch") {
 #' Randomly draw replicate sample pairs and plot log2 intensity scatter plots.
 #' The plot title shows sample names, and the subtitle reports the R2 value.
 #'
-#' @param exp A [glyexp::experiment()] or
+#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param rep_col Column name in `sample_info` used to define replicate groups.
 #'   Samples with the same value in this column are treated as replicates
@@ -490,11 +482,7 @@ plot_batch_pca <- function(exp, batch_col = "batch") {
 #'
 #' exp <- glyexp::real_experiment
 #' replicate <- rep(c("A", "B"), length.out = ncol(exp))
-#' if (inherits(exp, "glyexp_experiment")) {
-#'   exp$sample_info$replicate <- replicate
-#' } else {
-#'   colData(exp)$replicate <- replicate
-#' }
+#' colData(exp)$replicate <- replicate
 #' plot_rep_scatter(exp, rep_col = "replicate", n_pairs = 4)
 #'
 #' @export

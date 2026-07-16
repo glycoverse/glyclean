@@ -7,7 +7,7 @@
 remove_constant(x, by = NULL, strict = FALSE)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a vector specifying group assignments for each sample.}
@@ -16,8 +16,7 @@ remove_constant(x, by = NULL, strict = FALSE)
 If \code{TRUE}, remove a variable if it is constant in any group. Defaults to FALSE.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with filtered variables. SummarizedExperiment inputs
-return the same class.
+A container of the same class as \code{x}, with filtered variables.
 }
 \description{
 Constant variables are variables with the same value in all samples.

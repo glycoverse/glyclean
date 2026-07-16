@@ -21,7 +21,7 @@
 #' the group information will be included in the model to preserve biological variation
 #' while correcting for batch effects.
 #'
-#' @param x A [glyexp::experiment()] or
+#' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param batch Either a factor/character vector specifying batch assignments for each sample,
 #'   or a string specifying the column name in `sample_info`. Defaults to "batch".
@@ -37,8 +37,7 @@
 #' @param method The batch correction method to use. Either "combat" (default, uses
 #'   sva::ComBat) or "limma" (uses limma::removeBatchEffect). Default to "combat".
 #'
-#' @return A [glyexp::experiment()] object with batch effects corrected. SummarizedExperiment
-#'   inputs return the same class.
+#' @return A container of the same class as `x`, with batch effects corrected.
 #'
 #' @examples
 #' library(SummarizedExperiment)
@@ -47,13 +46,8 @@
 #' exp <- glyexp::real_experiment
 #' batch <- rep(c("A", "B"), length.out = ncol(exp))
 #' group <- rep(c("Ctrl", "Ctrl", "Treat", "Treat"), length.out = ncol(exp))
-#' if (inherits(exp, "glyexp_experiment")) {
-#'   exp$sample_info$batch <- batch
-#'   exp$sample_info$group <- group
-#' } else {
-#'   SummarizedExperiment::colData(exp)$batch <- batch
-#'   SummarizedExperiment::colData(exp)$group <- group
-#' }
+#' colData(exp)$batch <- batch
+#' colData(exp)$group <- group
 #' corrected_exp <- correct_batch_effect(exp, batch = "batch", group = "group")
 #'
 #' # Using limma method
@@ -114,7 +108,7 @@ correct_batch_effect <- function(
 #' Use ANOVA to detect if batch effect is present in the data.
 #' If `group` is provided, it will be used as a covariate in the ANOVA model.
 #'
-#' @param x A [glyexp::experiment()] or
+#' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param batch Either a factor/character vector specifying batch assignments for each sample,
 #'   or a string specifying the column name in `sample_info`. Defaults to "batch".
@@ -125,7 +119,7 @@ correct_batch_effect <- function(
 #'   Default to NULL.
 #'
 #' @returns A double vector of p-values for each variable, with the same length
-#'   as `nrow(glyexp::get_expr_mat(x))`.
+#'   as `nrow(x)`.
 #'
 #' @examples
 #' library(SummarizedExperiment)
@@ -134,13 +128,8 @@ correct_batch_effect <- function(
 #' exp <- glyexp::real_experiment
 #' batch <- rep(c("A", "B"), length.out = ncol(exp))
 #' group <- rep(c("Ctrl", "Ctrl", "Treat", "Treat"), length.out = ncol(exp))
-#' if (inherits(exp, "glyexp_experiment")) {
-#'   exp$sample_info$batch <- batch
-#'   exp$sample_info$group <- group
-#' } else {
-#'   SummarizedExperiment::colData(exp)$batch <- batch
-#'   SummarizedExperiment::colData(exp)$group <- group
-#' }
+#' colData(exp)$batch <- batch
+#' colData(exp)$group <- group
 #' p_values <- detect_batch_effect(exp, batch = "batch", group = "group")
 #'
 #' @export

@@ -7,7 +7,7 @@
 normalize_rlr(x, by = NULL)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
@@ -15,8 +15,8 @@ specifying group assignments for each sample. Optional.
 If provided, the normalization will be performed within each group.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with a normalized expression matrix.
-SummarizedExperiment inputs return the same class.
+A container of the same class as \code{x}, with a normalized expression
+matrix.
 }
 \description{
 This method is based on robust linear regression. The reference sample is

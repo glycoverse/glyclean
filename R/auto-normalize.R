@@ -10,13 +10,12 @@
 #' - `glycoproteomics`: [normalize_median()].
 #' - missing or other experiment types: [normalize_median()].
 #'
-#' @param exp A [glyexp::experiment()] or
+#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
 #'
-#' @returns The normalized input container. SummarizedExperiment inputs return
-#'   the same class.
+#' @returns The normalized input container, with its class preserved.
 #' @examples
 #' library(glyexp)
 #' exp_normed <- auto_normalize(real_experiment)

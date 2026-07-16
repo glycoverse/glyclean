@@ -7,7 +7,7 @@
 detect_batch_effect(x, batch = "batch", group = NULL)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{batch}{Either a factor/character vector specifying batch assignments for each sample,
@@ -21,7 +21,7 @@ Default to NULL.}
 }
 \value{
 A double vector of p-values for each variable, with the same length
-as \code{nrow(glyexp::get_expr_mat(x))}.
+as \code{nrow(x)}.
 }
 \description{
 Use ANOVA to detect if batch effect is present in the data.
@@ -34,13 +34,8 @@ library(SummarizedExperiment)
 exp <- glyexp::real_experiment
 batch <- rep(c("A", "B"), length.out = ncol(exp))
 group <- rep(c("Ctrl", "Ctrl", "Treat", "Treat"), length.out = ncol(exp))
-if (inherits(exp, "glyexp_experiment")) {
-  exp$sample_info$batch <- batch
-  exp$sample_info$group <- group
-} else {
-  SummarizedExperiment::colData(exp)$batch <- batch
-  SummarizedExperiment::colData(exp)$group <- group
-}
+colData(exp)$batch <- batch
+colData(exp)$group <- group
 p_values <- detect_batch_effect(exp, batch = "batch", group = "group")
 
 }

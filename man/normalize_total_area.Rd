@@ -7,12 +7,12 @@
 normalize_total_area(x)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with a normalized expression matrix.
-SummarizedExperiment inputs return the same class.
+A container of the same class as \code{x}, with a normalized expression
+matrix.
 }
 \description{
 Normalize the expression matrix by dividing each column (sample) by the sum of
