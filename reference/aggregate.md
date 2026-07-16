@@ -72,10 +72,8 @@ glyclean_aggregate(
 - exp:
 
   A
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-  object with "glycoproteomics" type.
   [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-  objects are also supported.
+  object.
 
 - to_level:
 
@@ -92,9 +90,5 @@ glyclean_aggregate(
 
 ## Value
 
-A modified
-[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object with an aggregated expression matrix and updated variable
-information. A
-[`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-input returns the same subclass.
+A modified container with the same class as `exp`, an aggregated
+expression matrix, and updated variable information.

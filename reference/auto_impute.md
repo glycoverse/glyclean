@@ -16,7 +16,8 @@ auto_impute(exp, group_col = "group")
 - exp:
 
   A
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
   or
   [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
   object.
@@ -28,8 +29,7 @@ auto_impute(exp, group_col = "group")
 
 ## Value
 
-The imputed input container. SummarizedExperiment inputs return the same
-class.
+The imputed input container, with its class preserved.
 
 ## Details
 

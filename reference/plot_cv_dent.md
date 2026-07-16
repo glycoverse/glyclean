@@ -15,7 +15,8 @@ plot_cv_dent(exp, by = NULL)
 - exp:
 
   A
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
   or
   [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
   object.
@@ -40,11 +41,7 @@ library(SummarizedExperiment)
 
 exp <- glyexp::real_experiment
 group <- rep(c("A", "B"), length.out = ncol(exp))
-if (inherits(exp, "glyexp_experiment")) {
-  exp$sample_info$group <- group
-} else {
-  colData(exp)$group <- group
-}
+colData(exp)$group <- group
 plot_cv_dent(exp, by = "group")
 
 ```

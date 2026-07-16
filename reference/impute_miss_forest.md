@@ -17,7 +17,8 @@ impute_miss_forest(x, by = NULL, seed = 123, ...)
 - x:
 
   A
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
   or
   [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
   object.
@@ -39,7 +40,4 @@ impute_miss_forest(x, by = NULL, seed = 123, ...)
 
 ## Value
 
-A
-[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object with missing values imputed. SummarizedExperiment inputs return
-the same class.
+A container of the same class as `x`, with missing values imputed.

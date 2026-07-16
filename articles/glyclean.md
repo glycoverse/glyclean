@@ -14,15 +14,13 @@ toolkit that takes the guesswork out of data cleaning, with specialized
 methods designed specifically for the unique challenges of glycan
 analysis.
 
-**Important Note:** This package is primarily designed for
-[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-objects.
+**Important Note:** This package is designed for
 [`glyexp::GlycomicSE`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
 and
 [`glyexp::GlycoproteomicSE`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-objects are also supported, and preprocessing functions return the same
-subclass they receive. If you’re new to this data structure, we highly
-recommend checking out [its
+objects. Preprocessing functions return the same subclass they receive.
+If you’re new to this data structure, we highly recommend checking out
+[its
 introduction](https://glycoverse.github.io/glyexp/articles/glyexp.html)
 first. We’ll also be using the
 [glyread](https://github.com/glycoverse/glyread) package to load our
@@ -118,37 +116,31 @@ library(glyrepr)  # for printing glycan compositions and structures
 ## Meet Our Star Player: Real Glycoproteomics Data 🌟
 
 Let’s dive in with a real-world dataset that will showcase what
-`glyclean` can do. We’ll use
-[`glyread::read_pglyco3_pglycoquant()`](https://glycoverse.github.io/glyread/reference/read_pglyco3_pglycoquant.html)
-to load our data into a proper
-[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+`glyclean` can do. We’ll use the bundled
+[`glyexp::real_experiment`](https://glycoverse.github.io/glyexp/reference/real_experiment.html)
+dataset, which is a
+[`glyexp::GlycoproteomicSE`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
 object.
 
 ``` r
 
 exp <- real_experiment
-if (inherits(exp, "glyexp_experiment")) {
-  exp <- mutate_obs(exp, batch = factor(rep(c("A", "B", "C"), 4)))
-} else {
-  exp <- mutate_col(exp, batch = factor(rep(c("A", "B", "C"), 4)))
-}
+exp <- mutate_col(exp, batch = factor(rep(c("A", "B", "C"), 4)))
 exp
 #> 
-#> ── Glycoproteomics Experiment ──────────────────────────────────────────────────
-#> ℹ Expression matrix: 12 samples, 4262 variables
-#> ℹ Sample information fields: group <fct>, batch <fct>
-#> ℹ Variable information fields: peptide <chr>, peptide_site <int>, protein <chr>, protein_site <int>, gene <chr>, glycan_composition <comp>, glycan_structure <struct>
+#> ── GlycoproteomicSE ────────────────────────────────────────────────────────────
+#> ℹ Abundance assay: 12 samples, 4262 variables
+#> ℹ Glycan type: N
+#> ℹ Row data fields: peptide <chr>, peptide_site <int>, protein <chr>, protein_site <int>, gene <chr>, glycan_composition <comp>, glycan_structure <struct>
+#> ℹ Column data fields: group <fct>, batch <fct>
+#> ℹ Metadata fields: exp_type <chr>, glycan_type <chr>, quant_method <chr>
 ```
 
 Let’s peek under the hood and see what we’re working with:
 
 ``` r
 
-if (inherits(exp, "glyexp_experiment")) {
-  get_var_info(exp)
-} else {
-  tibble::as_tibble(rowData(exp), rownames = "variable")
-}
+tibble::as_tibble(rowData(exp), rownames = "variable")
 #> # A tibble: 4,262 × 8
 #>    variable   peptide peptide_site protein protein_site gene  glycan_composition
 #>    <chr>      <chr>          <int> <chr>          <int> <chr> <comp>            
@@ -168,11 +160,7 @@ if (inherits(exp, "glyexp_experiment")) {
 
 ``` r
 
-if (inherits(exp, "glyexp_experiment")) {
-  get_sample_info(exp)
-} else {
-  tibble::as_tibble(colData(exp), rownames = "sample")
-}
+tibble::as_tibble(colData(exp), rownames = "sample")
 #> # A tibble: 12 × 3
 #>    sample group batch
 #>    <chr>  <fct> <fct>
@@ -588,8 +576,7 @@ adjusted_exp <- adjust_protein(inferred_exp, pro_expr_mat)
   news: you can use `glyclean` functions for this too!)
 - Sample matching needs to be perfect – no mixing apples with oranges!
 
-**Pro Tip:** Wrap protein expression data in a
-[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+**Pro Tip:** Wrap protein expression data in a `SummarizedExperiment`
 object before using `glyclean` preprocessing functions. Consistency is
 key!
 
@@ -640,9 +627,7 @@ various stages of the preprocessing pipeline.
 | [`plot_batch_pca()`](https://glycoverse.github.io/glyclean/reference/plot_batch_pca.md) | PCA score plot by batch | Visualizing batch effects and sample clustering |
 | [`plot_rep_scatter()`](https://glycoverse.github.io/glyclean/reference/plot_rep_scatter.md) | Replicate scatter plots | Checking concordance between replicate samples |
 
-These functions are designed to work seamlessly with
-[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-objects. They also accept
+These functions work seamlessly with
 [`glyexp::GlycomicSE`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
 and
 [`glyexp::GlycoproteomicSE`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)

@@ -14,7 +14,8 @@ detect_batch_effect(x, batch = "batch", group = NULL)
 - x:
 
   A
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
   or
   [`SummarizedExperiment::SummarizedExperiment()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
   object.
@@ -35,7 +36,7 @@ detect_batch_effect(x, batch = "batch", group = NULL)
 ## Value
 
 A double vector of p-values for each variable, with the same length as
-`nrow(glyexp::get_expr_mat(x))`.
+`nrow(x)`.
 
 ## Examples
 
@@ -46,13 +47,8 @@ library(SummarizedExperiment)
 exp <- glyexp::real_experiment
 batch <- rep(c("A", "B"), length.out = ncol(exp))
 group <- rep(c("Ctrl", "Ctrl", "Treat", "Treat"), length.out = ncol(exp))
-if (inherits(exp, "glyexp_experiment")) {
-  exp$sample_info$batch <- batch
-  exp$sample_info$group <- group
-} else {
-  SummarizedExperiment::colData(exp)$batch <- batch
-  SummarizedExperiment::colData(exp)$group <- group
-}
+colData(exp)$batch <- batch
+colData(exp)$group <- group
 p_values <- detect_batch_effect(exp, batch = "batch", group = "group")
 #> ℹ Detecting batch effects using ANOVA for 4262 variables...
 #> Warning: ANOVA F-tests on an essentially perfect fit are unreliable

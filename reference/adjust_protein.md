@@ -22,10 +22,8 @@ adjust_protein(exp, pro_expr_mat, method = c("ratio", "reg"))
 - exp:
 
   A
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-  object with "glycoproteomics" type.
   [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-  objects are also supported.
+  object.
 
 - pro_expr_mat:
 
@@ -40,10 +38,8 @@ adjust_protein(exp, pro_expr_mat, method = c("ratio", "reg"))
 ## Value
 
 A
-[`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-object with adjusted protein expression. A
 [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-input returns the same subclass.
+object with adjusted protein expression.
 
 ## Details
 
