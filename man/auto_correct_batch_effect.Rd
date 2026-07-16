@@ -14,7 +14,7 @@ auto_correct_batch_effect(
 )
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\item{exp}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{group_col}{The column name in sample_info for groups. Default is "group".
@@ -33,8 +33,8 @@ Default to TRUE.}
 Only used when \code{check_confounding} is TRUE. Default to 0.4.}
 }
 \value{
-The input container with batch effects corrected.
-SummarizedExperiment inputs return the same class.
+The input container with batch effects corrected and its class
+preserved.
 }
 \description{
 Detects and corrects batch effects in the experiment.

@@ -7,7 +7,7 @@
 impute_svd(x, by = NULL, ...)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
@@ -16,8 +16,7 @@ specifying group assignments for each sample. Used for grouping when imputing mi
 \item{...}{Additional arguments to pass to \code{pcaMethods::pca()}.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed. SummarizedExperiment
-inputs return the same class.
+A container of the same class as \code{x}, with missing values imputed.
 }
 \description{
 A wrapper around the \code{\link[pcaMethods:pca]{pcaMethods::pca()}}.

@@ -7,7 +7,7 @@
 plot_rep_scatter(exp, rep_col, n_pairs = 9)
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\item{exp}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{rep_col}{Column name in \code{sample_info} used to define replicate groups.
@@ -29,11 +29,7 @@ library(SummarizedExperiment)
 
 exp <- glyexp::real_experiment
 replicate <- rep(c("A", "B"), length.out = ncol(exp))
-if (inherits(exp, "glyexp_experiment")) {
-  exp$sample_info$replicate <- replicate
-} else {
-  colData(exp)$replicate <- replicate
-}
+colData(exp)$replicate <- replicate
 plot_rep_scatter(exp, rep_col = "replicate", n_pairs = 4)
 
 }

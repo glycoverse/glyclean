@@ -7,7 +7,7 @@
 auto_coda(x, by = NULL, gamma = 0.1, group_scales = NULL)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} or a factor/vector with one
@@ -23,8 +23,7 @@ multi-group data, provide a positive vector with one scale per group.}
 }
 \value{
 The input container with a CoDA-transformed expression matrix (ALR
-if >50 variables, CLR otherwise). SummarizedExperiment inputs return the
-same class.
+if >50 variables, CLR otherwise) and its class preserved.
 }
 \description{
 If the data has more than 50 variables, call \code{\link[=transform_alr]{transform_alr()}}.

@@ -26,15 +26,14 @@
 #'
 #' In both methods, only glycoproteins identified in both `exp` and `pro_expr_mat` will be retained.
 #'
-#' @param exp A [glyexp::experiment()] object with "glycoproteomics" type.
-#'   [glyexp::GlycoproteomicSE()] objects are also supported.
+#' @param exp A [glyexp::GlycoproteomicSE()] object.
 #' @param pro_expr_mat A matrix of protein expression.
 #'  Columns are samples, rows are uniprot protein accessions.
 #' @param method The method to use for protein adjustment.
 #'  Either "ratio" or "reg". Default is "ratio".
 #'
-#' @return A [glyexp::experiment()] object with adjusted protein expression. A
-#'   [glyexp::GlycoproteomicSE()] input returns the same subclass.
+#' @return A [glyexp::GlycoproteomicSE()] object with adjusted protein
+#'   expression.
 #' @export
 #'
 #' @importFrom rlang .data

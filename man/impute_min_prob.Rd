@@ -7,7 +7,7 @@
 impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
@@ -23,8 +23,7 @@ left-censored draw distribution. Default is \code{1}.}
 supported.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed. SummarizedExperiment
-inputs return the same class.
+A container of the same class as \code{x}, with missing values imputed.
 }
 \description{
 Impute missing values using random draws from the left-censored

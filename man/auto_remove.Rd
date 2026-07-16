@@ -7,7 +7,7 @@
 auto_remove(exp, preset = "discovery", group_col = "group")
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\item{exp}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{preset}{One of "simple", "discovery", or "biomarker".
@@ -17,8 +17,7 @@ Default "discovery" if group information is available, otherwise "simple".}
 Can be NULL when no group information is available.}
 }
 \value{
-The filtered input container. SummarizedExperiment inputs return the
-same class.
+The filtered input container, with its class preserved.
 }
 \description{
 This function uses preset rules to remove variables with low quality.

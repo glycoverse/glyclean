@@ -9,15 +9,14 @@
 #' - "biomarker": more strict, remove variables with more than 40% missing values,
 #'   and ensure less than 60% of missing values in all groups.
 #'
-#' @param exp A [glyexp::experiment()] or
+#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param preset One of "simple", "discovery", or "biomarker".
 #'   Default "discovery" if group information is available, otherwise "simple".
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
 #'
-#' @returns The filtered input container. SummarizedExperiment inputs return the
-#'   same class.
+#' @returns The filtered input container, with its class preserved.
 #'
 #' @examples
 #' library(glyexp)

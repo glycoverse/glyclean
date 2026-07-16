@@ -11,7 +11,7 @@
 #' If no batch information is available,
 #' the function will return the original experiment.
 #'
-#' @param exp A [glyexp::experiment()] or
+#' @param exp A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
@@ -24,8 +24,8 @@
 #' @param confounding_threshold The threshold for Cramer's V to consider batch and group variables highly confounded.
 #'   Only used when `check_confounding` is TRUE. Default to 0.4.
 #'
-#' @return The input container with batch effects corrected.
-#'   SummarizedExperiment inputs return the same class.
+#' @return The input container with batch effects corrected and its class
+#'   preserved.
 #'
 #' @examples
 #' exp <- glyexp::real_experiment

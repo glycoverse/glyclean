@@ -7,15 +7,14 @@
 auto_impute(exp, group_col = "group")
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\item{exp}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{group_col}{The column name in sample_info for groups. Default is "group".
 Can be NULL when no group information is available.}
 }
 \value{
-The imputed input container. SummarizedExperiment inputs return the
-same class.
+The imputed input container, with its class preserved.
 }
 \description{
 This function automatically selects and applies a deterministic default

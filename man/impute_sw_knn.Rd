@@ -7,7 +7,7 @@
 impute_sw_knn(x, k = 5, by = NULL, ...)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{k}{The number of nearest neighbors to consider.}
@@ -18,8 +18,7 @@ specifying group assignments for each sample. Used for grouping when imputing mi
 \item{...}{Additional arguments to pass to \code{impute::impute.knn()}.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with missing values imputed. SummarizedExperiment
-inputs return the same class.
+A container of the same class as \code{x}, with missing values imputed.
 }
 \description{
 A wrapper around the \code{\link[impute:impute.knn]{impute::impute.knn()}}.

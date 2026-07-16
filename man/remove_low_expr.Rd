@@ -7,7 +7,7 @@
 remove_low_expr(x, percentile = 0.05, by = NULL, strict = FALSE)
 }
 \arguments{
-\item{x}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{percentile}{The percentile for median expression values.
@@ -19,8 +19,7 @@ Defaults to 0.05, i.e., the 5\% lowest median expression values will be removed.
 If \code{TRUE}, remove a variable if it passes the abundance thresholds in any group. Defaults to FALSE.}
 }
 \value{
-A \code{\link[glyexp:experiment]{glyexp::experiment()}} object with filtered variables. SummarizedExperiment inputs
-return the same class.
+A container of the same class as \code{x}, with filtered variables.
 }
 \description{
 Filters variables based on median expression values.

@@ -7,12 +7,11 @@
 #' @inheritParams transform_clr
 #' @inheritSection transform_clr Algorithmic details
 #' @inheritSection transform_clr Motif quantification
-#' @param x A [glyexp::experiment()] or
+#' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #'
 #' @returns The input container with a CoDA-transformed expression matrix (ALR
-#'   if >50 variables, CLR otherwise). SummarizedExperiment inputs return the
-#'   same class.
+#'   if >50 variables, CLR otherwise) and its class preserved.
 #' @export
 auto_coda <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
   .assert_glyclean_container(x)

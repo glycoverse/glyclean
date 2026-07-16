@@ -7,7 +7,7 @@
 plot_cv_dent(exp, by = NULL)
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:experiment]{glyexp::experiment()}} or
+\item{exp}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} object.}
 
 \item{by}{Grouping variable for samples. Can be a column name in \code{sample_info}
@@ -28,11 +28,7 @@ library(SummarizedExperiment)
 
 exp <- glyexp::real_experiment
 group <- rep(c("A", "B"), length.out = ncol(exp))
-if (inherits(exp, "glyexp_experiment")) {
-  exp$sample_info$group <- group
-} else {
-  colData(exp)$group <- group
-}
+colData(exp)$group <- group
 plot_cv_dent(exp, by = "group")
 
 }
