@@ -104,12 +104,13 @@ auto_clean <- function(exp, ...) {
     exp <- auto_normalize(exp, ...)
     exp <- auto_remove(exp, ...)
     exp <- auto_impute(exp, ...)
-    exp <- auto_aggregate(exp)
+    exp <- glyclean::aggregate(exp)
     exp <- auto_normalize(exp, ...)
     exp <- auto_correct_batch_effect(exp, ...)
   } else if (glyexp::is_glycomic_se(exp)) {
     exp <- auto_remove(exp, ...)
     exp <- auto_impute(exp, ...)
+    exp <- glyclean::aggregate(exp)
     exp <- auto_normalize(exp, ...)
     exp <- auto_correct_batch_effect(exp, ...)
   } else {
@@ -124,7 +125,7 @@ As you can see, `auto_clean()` calls the following functions in sequence:
 - `auto_normalize()`: Automatically normalize the data
 - `auto_remove()`: Automatically remove variables with too many missing values
 - `auto_impute()`: Automatically impute the missing values
-- `auto_aggregate()`: Automatically aggregate the data
+- `aggregate()`: Aggregate automatically or to an explicitly selected level
 - `auto_correct_batch_effect()`: Automatically correct the batch effects
 
 These functions apply deterministic defaults for the given dataset.
@@ -144,7 +145,7 @@ clean_exp <- exp |>
   auto_remove() |>
   auto_normalize() |>
   auto_impute() |>
-  auto_aggregate()
+  glyclean::aggregate()
 ```
 
 ## Taking the Scenic Route: Step-by-Step Preprocessing 🚶‍♀️

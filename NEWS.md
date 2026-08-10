@@ -1,8 +1,6 @@
 # glyclean (development version)
 
-* `aggregate()` and `auto_aggregate()` now support glycomics data at glycan
-  composition (`"g"`) and glycan structure (`"gs"`) levels, and `auto_clean()`
-  now aggregates glycomics data automatically. (#28)
+* `aggregate()` now supports glycomics levels `"g"` and `"gs"` and uses structure-aware defaults: `"gs"` or `"g"` for glycomics data and `"gfs"` or `"gf"` for glycoproteomics data, depending on whether `glycan_structure` is present. `auto_aggregate()` is deprecated in favor of `aggregate()`, and `auto_clean()` now aggregates glycomics data automatically. (#28)
 
 # glyclean 0.15.2
 

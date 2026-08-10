@@ -20,14 +20,20 @@ A modified container with the same class as \code{exp}, an aggregated
 expression matrix, and updated variable information.
 }
 \description{
-Aggregates glycomics or glycoproteomics data to a structure-aware level when
-the glycan structure column exists, and to a composition-only level otherwise.
-Glycomics data is aggregated to "gs" or "g"; glycoproteomics data is
-aggregated to "gfs" or "gf".
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
+\code{auto_aggregate()} was deprecated in glyclean 0.15.3. Use \code{\link[=aggregate]{aggregate()}}
+instead; it now selects the aggregation level from the input type and whether
+\code{glycan_structure} is present.
 }
 \examples{
 library(glyexp)
 exp <- real_experiment
-auto_aggregate(exp)
+# Deprecated:
+# auto_aggregate(exp)
+
+# Use instead:
+aggregate(exp)
 
 }
+\keyword{internal}

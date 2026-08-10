@@ -9,11 +9,9 @@
 #'
 #' The following levels are available:
 #' - "g": Aggregate glycomics data to glycan compositions.
-#'   This is the default level for glycomics data.
 #' - "gs": Aggregate glycomics data to glycan structures.
 #' - "gf": Aggregate to glycoforms, which is the unique combination of proteins,
 #'   protein sites, and glycan compositions.
-#'   This is the default level for glycoproteomics data.
 #' - "gp": Aggregate to glycopeptides,
 #'   which is the unique combination of peptides,
 #'   proteins, protein sites, and glycan compositions.
@@ -22,6 +20,9 @@
 #'
 #' The "g" and "gs" levels are available for glycomics data. The "gf", "gp",
 #' "gfs", and "gps" levels are available for glycoproteomics data.
+#' When `to_level = NULL`, glycomics data defaults to "gs" when
+#' `glycan_structure` is present and "g" otherwise. Glycoproteomics data
+#' similarly defaults to "gfs" or "gf".
 #'
 #' Different levels of aggregation require different columns in the variable information.
 #' - "g": "glycan_composition"
@@ -43,9 +44,9 @@
 #' @param exp A glycomics or glycoproteomics container: a
 #'   [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
 #'   `glyexp_experiment` object.
-#' @param to_level The aggregation level. If `NULL` (the default), uses "g" for
-#'   glycomics data and "gf" for glycoproteomics data. Otherwise, one of:
-#'   "g" (glycan compositions), "gs" (glycan structures),
+#' @param to_level The aggregation level. If `NULL` (the default), the level is
+#'   selected from the input type and whether `glycan_structure` is present.
+#'   Otherwise, one of: "g" (glycan compositions), "gs" (glycan structures),
 #'   "gf" (glycoforms), "gp" (glycopeptides),
 #'   "gfs" (glycoforms with structures),
 #'   or "gps" (glycopeptides with structures).
@@ -137,11 +138,13 @@ glyclean_aggregate.GlycoproteomicSE <- function(
   # Check arguments
   .assert_aggregation_container(exp, error_call = error_call)
   exp_type <- .get_exp_type(exp)
+  var_info <- .get_var_info(exp)
   if (is.null(to_level)) {
+    has_structure <- "glycan_structure" %in% colnames(var_info)
     to_level <- switch(
       exp_type,
-      glycomics = "g",
-      glycoproteomics = "gf"
+      glycomics = if (has_structure) "gs" else "g",
+      glycoproteomics = if (has_structure) "gfs" else "gf"
     )
   } else {
     to_level <- rlang::arg_match(
@@ -193,7 +196,6 @@ glyclean_aggregate.GlycoproteomicSE <- function(
       "protein_site"
     )
   )
-  var_info <- .get_var_info(exp)
   missing_cols <- setdiff(var_info_cols, colnames(var_info))
   if (length(missing_cols) > 0) {
     if (length(missing_cols) == 1 && missing_cols == "glycan_structure") {

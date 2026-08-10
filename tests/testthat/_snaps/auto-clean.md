@@ -24,7 +24,6 @@
       
       -- Aggregating data --
       
-      i Aggregating to "gfs" level
       v Aggregation completed.
       
       -- Normalizing data again --
@@ -64,7 +63,6 @@
       
       -- Aggregating data --
       
-      i Aggregating to "gfs" level
       v Aggregation completed.
       
       -- Normalizing data again --
@@ -98,7 +96,6 @@
       
       -- Aggregating data --
       
-      i Aggregating to "g" level
       v Aggregation completed.
       
       -- Normalizing data --
@@ -132,7 +129,6 @@
       
       -- Aggregating data --
       
-      i Aggregating to "g" level
       v Aggregation completed.
       
       -- Normalizing data --

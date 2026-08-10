@@ -1,9 +1,11 @@
 #' Automatic Aggregation
 #'
-#' Aggregates glycomics or glycoproteomics data to a structure-aware level when
-#' the glycan structure column exists, and to a composition-only level otherwise.
-#' Glycomics data is aggregated to "gs" or "g"; glycoproteomics data is
-#' aggregated to "gfs" or "gf".
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' `auto_aggregate()` was deprecated in glyclean 0.15.3. Use [aggregate()]
+#' instead; it now selects the aggregation level from the input type and whether
+#' `glycan_structure` is present.
 #'
 #' @param exp A glycomics or glycoproteomics container: a
 #'   [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
@@ -18,29 +20,18 @@
 #' @examples
 #' library(glyexp)
 #' exp <- real_experiment
-#' auto_aggregate(exp)
+#' # Deprecated:
+#' # auto_aggregate(exp)
 #'
+#' # Use instead:
+#' aggregate(exp)
+#'
+#' @keywords internal
 #' @export
 auto_aggregate <- function(exp, standardize_variable = TRUE) {
-  .assert_auto_container(exp)
-  exp_type <- .get_exp_type(exp)
-  if (!exp_type %in% c("glycomics", "glycoproteomics")) {
-    cli::cli_abort(c(
-      "The experiment type must be {.val glycomics} or {.val glycoproteomics}.",
-      "x" = "Got {.val {exp_type}}."
-    ))
-  }
-  has_structure <- "glycan_structure" %in% colnames(.get_var_info(exp))
-  to_level <- if (exp_type == "glycomics") {
-    if (has_structure) "gs" else "g"
-  } else {
-    if (has_structure) "gfs" else "gf"
-  }
-  cli::cli_alert_info("Aggregating to {.val {to_level}} level")
-  .aggregate_container(
+  lifecycle::deprecate_warn("0.15.3", "auto_aggregate()", "aggregate()")
+  aggregate(
     exp,
-    to_level = to_level,
-    standardize_variable = standardize_variable,
-    error_call = rlang::caller_call()
+    standardize_variable = standardize_variable
   )
 }

@@ -17,9 +17,9 @@ aggregate(exp, to_level = NULL, standardize_variable = TRUE)
 \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
 \code{glyexp_experiment} object.}
 
-\item{to_level}{The aggregation level. If \code{NULL} (the default), uses "g" for
-glycomics data and "gf" for glycoproteomics data. Otherwise, one of:
-"g" (glycan compositions), "gs" (glycan structures),
+\item{to_level}{The aggregation level. If \code{NULL} (the default), the level is
+selected from the input type and whether \code{glycan_structure} is present.
+Otherwise, one of: "g" (glycan compositions), "gs" (glycan structures),
 "gf" (glycoforms), "gp" (glycopeptides),
 "gfs" (glycoforms with structures),
 or "gps" (glycopeptides with structures).
@@ -43,11 +43,9 @@ It is recommended to call this function after missing value imputation.
 The following levels are available:
 \itemize{
 \item "g": Aggregate glycomics data to glycan compositions.
-This is the default level for glycomics data.
 \item "gs": Aggregate glycomics data to glycan structures.
 \item "gf": Aggregate to glycoforms, which is the unique combination of proteins,
 protein sites, and glycan compositions.
-This is the default level for glycoproteomics data.
 \item "gp": Aggregate to glycopeptides,
 which is the unique combination of peptides,
 proteins, protein sites, and glycan compositions.
@@ -57,6 +55,9 @@ proteins, protein sites, and glycan compositions.
 
 The "g" and "gs" levels are available for glycomics data. The "gf", "gp",
 "gfs", and "gps" levels are available for glycoproteomics data.
+When \code{to_level = NULL}, glycomics data defaults to "gs" when
+\code{glycan_structure} is present and "g" otherwise. Glycoproteomics data
+similarly defaults to "gfs" or "gf".
 
 Different levels of aggregation require different columns in the variable information.
 \itemize{

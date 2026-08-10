@@ -67,6 +67,7 @@ test_that("grouped preprocessing reads grouping variables from colData", {
 })
 
 test_that("automatic preprocessing preserves glyco SE subclasses", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   glycomic <- simple_glycomic_se()
   glycoproteomic <- simple_glycoproteomic_se()
 
@@ -148,6 +149,7 @@ test_that("plain SummarizedExperiment is always treated as others", {
 })
 
 test_that("type-specific automatic preprocessing rejects plain others SE", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   x <- plain_se(simple_glycomic_se())
 
   expect_error(
@@ -157,7 +159,7 @@ test_that("type-specific automatic preprocessing rejects plain others SE", {
   )
   expect_error(
     auto_aggregate(x, standardize_variable = FALSE),
-    "Must inherit from class 'glyexp_experiment', 'GlycomicSE', or 'GlycoproteomicSE'",
+    "`exp` must be a <glyexp_experiment>, <GlycomicSE>, or <GlycoproteomicSE> object.",
     fixed = TRUE
   )
 })
