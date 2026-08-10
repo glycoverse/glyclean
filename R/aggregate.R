@@ -44,9 +44,11 @@
 #' @param exp A glycomics or glycoproteomics container: a
 #'   [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
 #'   `glyexp_experiment` object.
-#' @param to_level The aggregation level. If `NULL` (the default), the level is
-#'   selected from the input type and whether `glycan_structure` is present.
-#'   Otherwise, one of: "g" (glycan compositions), "gs" (glycan structures),
+#' @param to_level The aggregation level. If `NULL` (the default), glycomics data
+#'   uses "gs" when `glycan_structure` is present and "g" otherwise;
+#'   glycoproteomics data uses "gfs" when `glycan_structure` is present and "gf"
+#'   otherwise. Explicit values are: "g" (glycan compositions),
+#'   "gs" (glycan structures),
 #'   "gf" (glycoforms), "gp" (glycopeptides),
 #'   "gfs" (glycoforms with structures),
 #'   or "gps" (glycopeptides with structures).

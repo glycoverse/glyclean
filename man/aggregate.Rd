@@ -17,9 +17,11 @@ aggregate(exp, to_level = NULL, standardize_variable = TRUE)
 \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
 \code{glyexp_experiment} object.}
 
-\item{to_level}{The aggregation level. If \code{NULL} (the default), the level is
-selected from the input type and whether \code{glycan_structure} is present.
-Otherwise, one of: "g" (glycan compositions), "gs" (glycan structures),
+\item{to_level}{The aggregation level. If \code{NULL} (the default), glycomics data
+uses "gs" when \code{glycan_structure} is present and "g" otherwise;
+glycoproteomics data uses "gfs" when \code{glycan_structure} is present and "gf"
+otherwise. Explicit values are: "g" (glycan compositions),
+"gs" (glycan structures),
 "gf" (glycoforms), "gp" (glycopeptides),
 "gfs" (glycoforms with structures),
 or "gps" (glycopeptides with structures).
