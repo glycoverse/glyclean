@@ -6,31 +6,20 @@
 \alias{glyclean_aggregate.default}
 \title{Aggregate Data}
 \usage{
-aggregate(
-  exp,
-  to_level = c("gf", "gp", "gfs", "gps", "g", "gs"),
-  standardize_variable = TRUE
-)
+aggregate(exp, to_level = NULL, standardize_variable = TRUE)
 
-\method{glyclean_aggregate}{glyexp_experiment}(
-  exp,
-  to_level = c("gf", "gp", "gfs", "gps", "g", "gs"),
-  standardize_variable = TRUE
-)
+\method{glyclean_aggregate}{glyexp_experiment}(exp, to_level = NULL, standardize_variable = TRUE)
 
-\method{glyclean_aggregate}{default}(
-  exp,
-  to_level = c("gf", "gp", "gfs", "gps", "g", "gs"),
-  standardize_variable = TRUE
-)
+\method{glyclean_aggregate}{default}(exp, to_level = NULL, standardize_variable = TRUE)
 }
 \arguments{
 \item{exp}{A glycomics or glycoproteomics container: a
 \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
 \code{glyexp_experiment} object.}
 
-\item{to_level}{The aggregation level,
-one of: "g" (glycan compositions), "gs" (glycan structures),
+\item{to_level}{The aggregation level. If \code{NULL} (the default), uses "g" for
+glycomics data and "gf" for glycoproteomics data. Otherwise, one of:
+"g" (glycan compositions), "gs" (glycan structures),
 "gf" (glycoforms), "gp" (glycopeptides),
 "gfs" (glycoforms with structures),
 or "gps" (glycopeptides with structures).
@@ -54,10 +43,11 @@ It is recommended to call this function after missing value imputation.
 The following levels are available:
 \itemize{
 \item "g": Aggregate glycomics data to glycan compositions.
+This is the default level for glycomics data.
 \item "gs": Aggregate glycomics data to glycan structures.
 \item "gf": Aggregate to glycoforms, which is the unique combination of proteins,
 protein sites, and glycan compositions.
-This is the default level.
+This is the default level for glycoproteomics data.
 \item "gp": Aggregate to glycopeptides,
 which is the unique combination of peptides,
 proteins, protein sites, and glycan compositions.

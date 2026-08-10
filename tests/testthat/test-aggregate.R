@@ -23,6 +23,48 @@ test_that("aggregating to glycoforms works", {
   )
 })
 
+test_that("default aggregation level depends on experiment type", {
+  expect_null(formals(aggregate)$to_level)
+
+  glycomics_exp <- aggregation_glycomic_se()
+  glycomics <- aggregate(
+    glycomics_exp,
+    standardize_variable = FALSE
+  )
+  expected_glycomics <- aggregate(
+    glycomics_exp,
+    to_level = "g",
+    standardize_variable = FALSE
+  )
+  glycoproteomics_exp <- complex_exp()
+  glycoproteomics <- aggregate(
+    glycoproteomics_exp,
+    standardize_variable = FALSE
+  )
+  expected_glycoproteomics <- aggregate(
+    glycoproteomics_exp,
+    to_level = "gf",
+    standardize_variable = FALSE
+  )
+
+  expect_equal(
+    SummarizedExperiment::assay(glycomics),
+    SummarizedExperiment::assay(expected_glycomics)
+  )
+  expect_equal(
+    SummarizedExperiment::rowData(glycomics),
+    SummarizedExperiment::rowData(expected_glycomics)
+  )
+  expect_equal(
+    SummarizedExperiment::assay(glycoproteomics),
+    SummarizedExperiment::assay(expected_glycoproteomics)
+  )
+  expect_equal(
+    SummarizedExperiment::rowData(glycoproteomics),
+    SummarizedExperiment::rowData(expected_glycoproteomics)
+  )
+})
+
 test_that("aggregation preserves group order, missing-value sums, and metadata", {
   exp <- complex_exp()
   input_mat <- SummarizedExperiment::assay(exp)
@@ -113,11 +155,11 @@ test_that("glycomics aggregation supports legacy experiments", {
     )
   )
 
-  result <- aggregate(exp, to_level = "gs", standardize_variable = FALSE)
+  result <- aggregate(exp, standardize_variable = FALSE)
 
   expect_s3_class(result, "glyexp_experiment")
   expect_identical(result$meta_data$exp_type, "glycomics")
-  expect_equal(nrow(result$expr_mat), 3L)
+  expect_equal(nrow(result$expr_mat), 2L)
 })
 
 test_that("aggregation levels must match the experiment type", {

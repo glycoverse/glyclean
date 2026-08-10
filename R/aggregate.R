@@ -9,10 +9,11 @@
 #'
 #' The following levels are available:
 #' - "g": Aggregate glycomics data to glycan compositions.
+#'   This is the default level for glycomics data.
 #' - "gs": Aggregate glycomics data to glycan structures.
 #' - "gf": Aggregate to glycoforms, which is the unique combination of proteins,
 #'   protein sites, and glycan compositions.
-#'   This is the default level.
+#'   This is the default level for glycoproteomics data.
 #' - "gp": Aggregate to glycopeptides,
 #'   which is the unique combination of peptides,
 #'   proteins, protein sites, and glycan compositions.
@@ -42,8 +43,9 @@
 #' @param exp A glycomics or glycoproteomics container: a
 #'   [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
 #'   `glyexp_experiment` object.
-#' @param to_level The aggregation level,
-#'   one of: "g" (glycan compositions), "gs" (glycan structures),
+#' @param to_level The aggregation level. If `NULL` (the default), uses "g" for
+#'   glycomics data and "gf" for glycoproteomics data. Otherwise, one of:
+#'   "g" (glycan compositions), "gs" (glycan structures),
 #'   "gf" (glycoforms), "gp" (glycopeptides),
 #'   "gfs" (glycoforms with structures),
 #'   or "gps" (glycopeptides with structures).
@@ -56,7 +58,7 @@
 #' @export
 aggregate <- function(
   exp,
-  to_level = c("gf", "gp", "gfs", "gps", "g", "gs"),
+  to_level = NULL,
   standardize_variable = TRUE
 ) {
   glyclean_aggregate(
@@ -68,7 +70,7 @@ aggregate <- function(
 
 glyclean_aggregate <- function(
   exp,
-  to_level = c("gf", "gp", "gfs", "gps", "g", "gs"),
+  to_level = NULL,
   standardize_variable = TRUE
 ) {
   UseMethod("glyclean_aggregate")
@@ -78,7 +80,7 @@ glyclean_aggregate <- function(
 #' @export
 glyclean_aggregate.glyexp_experiment <- function(
   exp,
-  to_level = c("gf", "gp", "gfs", "gps", "g", "gs"),
+  to_level = NULL,
   standardize_variable = TRUE
 ) {
   .aggregate_container(
@@ -93,7 +95,7 @@ glyclean_aggregate.glyexp_experiment <- function(
 #' @noRd
 glyclean_aggregate.GlycomicSE <- function(
   exp,
-  to_level = c("gf", "gp", "gfs", "gps", "g", "gs"),
+  to_level = NULL,
   standardize_variable = TRUE
 ) {
   .aggregate_container(
@@ -108,7 +110,7 @@ glyclean_aggregate.GlycomicSE <- function(
 #' @noRd
 glyclean_aggregate.GlycoproteomicSE <- function(
   exp,
-  to_level = c("gf", "gp", "gfs", "gps", "g", "gs"),
+  to_level = NULL,
   standardize_variable = TRUE
 ) {
   .aggregate_container(
@@ -128,14 +130,25 @@ glyclean_aggregate.GlycoproteomicSE <- function(
 #' @noRd
 .aggregate_container <- function(
   exp,
-  to_level = c("gf", "gp", "gfs", "gps", "g", "gs"),
+  to_level = NULL,
   standardize_variable = TRUE,
   error_call = rlang::caller_call()
 ) {
   # Check arguments
   .assert_aggregation_container(exp, error_call = error_call)
-  to_level <- rlang::arg_match(to_level)
   exp_type <- .get_exp_type(exp)
+  if (is.null(to_level)) {
+    to_level <- switch(
+      exp_type,
+      glycomics = "g",
+      glycoproteomics = "gf"
+    )
+  } else {
+    to_level <- rlang::arg_match(
+      to_level,
+      c("gf", "gp", "gfs", "gps", "g", "gs")
+    )
+  }
   supported_levels <- switch(
     exp_type,
     glycomics = c("g", "gs"),
@@ -259,7 +272,7 @@ glyclean_aggregate.GlycoproteomicSE <- function(
 #' @export
 glyclean_aggregate.default <- function(
   exp,
-  to_level = c("gf", "gp", "gfs", "gps", "g", "gs"),
+  to_level = NULL,
   standardize_variable = TRUE
 ) {
   cli::cli_abort(c(
