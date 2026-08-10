@@ -81,7 +81,7 @@
 # auto_clean works for glycomics data
 
     Code
-      result_exp <- auto_clean(test_exp)
+      result_exp <- auto_clean(test_exp, standardize_variable = FALSE)
     Message
       
       -- Removing variables with too many missing values --
@@ -95,6 +95,11 @@
       i Imputation method: `impute_min_prob()`
       i Reason: default for "glycomics" with n_samples < 30.
       v Imputation completed.
+      
+      -- Aggregating data --
+      
+      i Aggregating to "g" level
+      v Aggregation completed.
       
       -- Normalizing data --
       
@@ -110,7 +115,7 @@
 # auto_clean works for glycomics data with QC
 
     Code
-      result_exp <- auto_clean(test_exp)
+      result_exp <- auto_clean(test_exp, standardize_variable = FALSE)
     Message
       
       -- Removing variables with too many missing values --
@@ -124,6 +129,11 @@
       i Imputation method: `impute_min_prob()`
       i Reason: default for "glycomics" with n_samples < 30.
       v Imputation completed.
+      
+      -- Aggregating data --
+      
+      i Aggregating to "g" level
+      v Aggregation completed.
       
       -- Normalizing data --
       

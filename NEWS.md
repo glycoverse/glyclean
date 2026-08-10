@@ -1,5 +1,9 @@
 # glyclean (development version)
 
+* `aggregate()` and `auto_aggregate()` now support glycomics data at glycan
+  composition (`"g"`) and glycan structure (`"gs"`) levels, and `auto_clean()`
+  now aggregates glycomics data automatically. (#22)
+
 # glyclean 0.15.2
 
 * Documentation and vignettes now recommend `GlycomicSE` and `GlycoproteomicSE` containers with `SummarizedExperiment` accessors for Stage II of glycoverse/glyexp#15. (#26)

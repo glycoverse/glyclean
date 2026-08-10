@@ -8,27 +8,30 @@
 \usage{
 aggregate(
   exp,
-  to_level = c("gf", "gp", "gfs", "gps"),
+  to_level = c("gf", "gp", "gfs", "gps", "g", "gs"),
   standardize_variable = TRUE
 )
 
 \method{glyclean_aggregate}{glyexp_experiment}(
   exp,
-  to_level = c("gf", "gp", "gfs", "gps"),
+  to_level = c("gf", "gp", "gfs", "gps", "g", "gs"),
   standardize_variable = TRUE
 )
 
 \method{glyclean_aggregate}{default}(
   exp,
-  to_level = c("gf", "gp", "gfs", "gps"),
+  to_level = c("gf", "gp", "gfs", "gps", "g", "gs"),
   standardize_variable = TRUE
 )
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} object.}
+\item{exp}{A glycomics or glycoproteomics container: a
+\code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
+\code{glyexp_experiment} object.}
 
 \item{to_level}{The aggregation level,
-one of: "gf" (glycoforms), "gp" (glycopeptides),
+one of: "g" (glycan compositions), "gs" (glycan structures),
+"gf" (glycoforms), "gp" (glycopeptides),
 "gfs" (glycoforms with structures),
 or "gps" (glycopeptides with structures).
 See Details for more information.}
@@ -42,14 +45,16 @@ A modified container with the same class as \code{exp}, an aggregated
 expression matrix, and updated variable information.
 }
 \description{
-Aggregate glycoproteomics data to different levels
-(glycoforms, glycopeptides, etc.).
+Aggregate glycomics or glycoproteomics data to different levels
+(glycans, glycoforms, glycopeptides, etc.).
 This function sums up quantitative values for each
 unique combination of specified variables.
 It is recommended to call this function after missing value imputation.
 
 The following levels are available:
 \itemize{
+\item "g": Aggregate glycomics data to glycan compositions.
+\item "gs": Aggregate glycomics data to glycan structures.
 \item "gf": Aggregate to glycoforms, which is the unique combination of proteins,
 protein sites, and glycan compositions.
 This is the default level.
@@ -60,8 +65,13 @@ proteins, protein sites, and glycan compositions.
 \item "gps": Like "gp", but differentiates structures with the same composition.
 }
 
+The "g" and "gs" levels are available for glycomics data. The "gf", "gp",
+"gfs", and "gps" levels are available for glycoproteomics data.
+
 Different levels of aggregation require different columns in the variable information.
 \itemize{
+\item "g": "glycan_composition"
+\item "gs": "glycan_composition", "glycan_structure"
 \item "gf": "protein", "glycan_composition", "protein_site"
 \item "gp": "peptide", "protein", "glycan_composition", "peptide_site", "protein_site"
 \item "gfs": "protein", "glycan_composition", "glycan_structure", "protein_site"

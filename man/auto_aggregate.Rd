@@ -7,7 +7,9 @@
 auto_aggregate(exp, standardize_variable = TRUE)
 }
 \arguments{
-\item{exp}{A \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} object.}
+\item{exp}{A glycomics or glycoproteomics container: a
+\code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
+\code{glyexp_experiment} object.}
 
 \item{standardize_variable}{Whether to call \code{\link[glyexp:standardize_variable]{glyexp::standardize_variable()}}
 after aggregation. Set to \code{FALSE} to skip network calls for faster testing.
@@ -18,9 +20,10 @@ A modified container with the same class as \code{exp}, an aggregated
 expression matrix, and updated variable information.
 }
 \description{
-Aggregates glycoproteomics data to "gfs" (glycoforms with structures) level
-if the glycan structure column exists,
-otherwise to "gf" (glycoforms with compositions) level.
+Aggregates glycomics or glycoproteomics data to a structure-aware level when
+the glycan structure column exists, and to a composition-only level otherwise.
+Glycomics data is aggregated to "gs" or "g"; glycoproteomics data is
+aggregated to "gfs" or "gf".
 }
 \examples{
 library(glyexp)

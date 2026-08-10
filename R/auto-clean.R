@@ -3,12 +3,13 @@
 #' @description
 #' Perform automatic data preprocessing on glycoproteomics or glycomics data.
 #' This function applies an intelligent preprocessing pipeline that includes
-#' normalization, missing value handling, imputation, aggregation (for
-#' glycoproteomics data), and batch effect correction.
+#' normalization, missing value handling, imputation, aggregation, and batch
+#' effect correction.
 #'
 #' For glycomics data, this function calls these functions in sequence:
 #' - [auto_remove()]
 #' - [auto_impute()]
+#' - [auto_aggregate()]
 #' - [auto_normalize()]
 #' - [auto_correct_batch_effect()]
 #'
@@ -154,6 +155,10 @@ auto_clean <- function(
     params$group_col
   )
   cli::cli_alert_success("Imputation completed.")
+
+  cli::cli_h2("Aggregating data")
+  exp <- auto_aggregate(exp, standardize_variable = params$standardize_variable)
+  cli::cli_alert_success("Aggregation completed.")
 
   cli::cli_h2("Normalizing data")
   exp <- auto_normalize(

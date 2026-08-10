@@ -222,7 +222,7 @@ test_that("specialized glycoproteomics operations reject plain SummarizedExperim
 
   expect_error(
     aggregate(x, standardize_variable = FALSE),
-    message,
+    "must be a <glyexp_experiment>, <GlycomicSE>, or <GlycoproteomicSE> object",
     fixed = TRUE
   )
   expect_error(
@@ -237,16 +237,11 @@ test_that("specialized glycoproteomics operations reject plain SummarizedExperim
   )
 })
 
-test_that("specialized glycoproteomics operations distinguish glyco SE subclasses", {
+test_that("glycoproteomics-only operations distinguish glyco SE subclasses", {
   x <- simple_glycomic_se()
   message <- 'Got ("glycomics"|<GlycomicSE>)\\.'
 
   expect_error(
-    aggregate(x, standardize_variable = FALSE),
-    message,
-    fixed = FALSE
-  )
-  expect_error(
     adjust_protein(x, matrix(1)),
     message,
     fixed = FALSE
@@ -258,15 +253,10 @@ test_that("specialized glycoproteomics operations distinguish glyco SE subclasse
   )
 })
 
-test_that("specialized glycoproteomics operations retain experiment type errors", {
+test_that("glycoproteomics-only operations retain experiment type errors", {
   x <- glyexp::real_experiment2
   message <- 'Got ("glycomics"|<GlycomicSE>)\\.'
 
-  expect_error(
-    aggregate(x, standardize_variable = FALSE),
-    message,
-    fixed = FALSE
-  )
   expect_error(
     adjust_protein(x, matrix(1)),
     message,
