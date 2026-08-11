@@ -1,8 +1,11 @@
 # Automatic Aggregation
 
-Aggregates glycoproteomics data to "gfs" (glycoforms with structures)
-level if the glycan structure column exists, otherwise to "gf"
-(glycoforms with compositions) level.
+**\[deprecated\]**
+
+`auto_aggregate()` was deprecated in glyclean 0.15.3. Use
+[`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md)
+instead; it now selects the aggregation level from the input type and
+whether `glycan_structure` is present.
 
 ## Usage
 
@@ -14,9 +17,10 @@ auto_aggregate(exp, standardize_variable = TRUE)
 
 - exp:
 
-  A
-  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-  object.
+  A glycomics or glycoproteomics container: a
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
+  or legacy `glyexp_experiment` object.
 
 - standardize_variable:
 
@@ -35,8 +39,11 @@ expression matrix, and updated variable information.
 ``` r
 library(glyexp)
 exp <- real_experiment
-auto_aggregate(exp)
-#> ℹ Aggregating to "gfs" level
+# Deprecated:
+# auto_aggregate(exp)
+
+# Use instead:
+aggregate(exp)
 #> 
 #> ── GlycoproteomicSE ────────────────────────────────────────────────────────────
 #> ℹ Abundance assay: 12 samples, 4001 variables

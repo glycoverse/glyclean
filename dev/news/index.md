@@ -2,6 +2,18 @@
 
 ## glyclean (development version)
 
+- [`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md)
+  now supports glycomics levels `"g"` and `"gs"` and uses
+  structure-aware defaults: `"gs"` or `"g"` for glycomics data and
+  `"gfs"` or `"gf"` for glycoproteomics data, depending on whether
+  `glycan_structure` is present.
+  [`auto_aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/auto_aggregate.md)
+  is deprecated in favor of
+  [`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md),
+  and
+  [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
+  now aggregates glycomics data automatically. (#28)
+
 ## glyclean 0.15.2
 
 - Documentation and vignettes now recommend `GlycomicSE` and

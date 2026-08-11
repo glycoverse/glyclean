@@ -4,8 +4,6 @@
 
 - [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
   : Automatic Data Preprocessing
-- [`auto_aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/auto_aggregate.md)
-  : Automatic Aggregation
 - [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
   : Automatic Imputation
 - [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)

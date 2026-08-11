@@ -1,15 +1,18 @@
 # Aggregate Data
 
-Aggregate glycoproteomics data to different levels (glycoforms,
-glycopeptides, etc.). This function sums up quantitative values for each
-unique combination of specified variables. It is recommended to call
-this function after missing value imputation.
+Aggregate glycomics or glycoproteomics data to different levels
+(glycans, glycoforms, glycopeptides, etc.). This function sums up
+quantitative values for each unique combination of specified variables.
+It is recommended to call this function after missing value imputation.
 
 The following levels are available:
 
+- "g": Aggregate glycomics data to glycan compositions.
+
+- "gs": Aggregate glycomics data to glycan structures.
+
 - "gf": Aggregate to glycoforms, which is the unique combination of
-  proteins, protein sites, and glycan compositions. This is the default
-  level.
+  proteins, protein sites, and glycan compositions.
 
 - "gp": Aggregate to glycopeptides, which is the unique combination of
   peptides, proteins, protein sites, and glycan compositions.
@@ -20,8 +23,18 @@ The following levels are available:
 - "gps": Like "gp", but differentiates structures with the same
   composition.
 
+The "g" and "gs" levels are available for glycomics data. The "gf",
+"gp", "gfs", and "gps" levels are available for glycoproteomics data.
+When `to_level = NULL`, glycomics data defaults to "gs" when
+`glycan_structure` is present and "g" otherwise. Glycoproteomics data
+similarly defaults to "gfs" or "gf".
+
 Different levels of aggregation require different columns in the
 variable information.
+
+- "g": "glycan_composition"
+
+- "gs": "glycan_composition", "glycan_structure"
 
 - "gf": "protein", "glycan_composition", "protein_site"
 
@@ -46,40 +59,33 @@ removed for "gf" level, as one "glycoform" can contain multiple
 ## Usage
 
 ``` r
-aggregate(
-  exp,
-  to_level = c("gf", "gp", "gfs", "gps"),
-  standardize_variable = TRUE
-)
+aggregate(exp, to_level = NULL, standardize_variable = TRUE)
 
 # S3 method for class 'glyexp_experiment'
-glyclean_aggregate(
-  exp,
-  to_level = c("gf", "gp", "gfs", "gps"),
-  standardize_variable = TRUE
-)
+glyclean_aggregate(exp, to_level = NULL, standardize_variable = TRUE)
 
 # Default S3 method
-glyclean_aggregate(
-  exp,
-  to_level = c("gf", "gp", "gfs", "gps"),
-  standardize_variable = TRUE
-)
+glyclean_aggregate(exp, to_level = NULL, standardize_variable = TRUE)
 ```
 
 ## Arguments
 
 - exp:
 
-  A
-  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-  object.
+  A glycomics or glycoproteomics container: a
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
+  or legacy `glyexp_experiment` object.
 
 - to_level:
 
-  The aggregation level, one of: "gf" (glycoforms), "gp"
-  (glycopeptides), "gfs" (glycoforms with structures), or "gps"
-  (glycopeptides with structures). See Details for more information.
+  The aggregation level. If `NULL` (the default), glycomics data uses
+  "gs" when `glycan_structure` is present and "g" otherwise;
+  glycoproteomics data uses "gfs" when `glycan_structure` is present and
+  "gf" otherwise. Explicit values are: "g" (glycan compositions), "gs"
+  (glycan structures), "gf" (glycoforms), "gp" (glycopeptides), "gfs"
+  (glycoforms with structures), or "gps" (glycopeptides with
+  structures). See Details for more information.
 
 - standardize_variable:
 

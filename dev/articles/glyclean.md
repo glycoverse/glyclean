@@ -35,8 +35,6 @@ library(glyclean)
 #> 
 #>     aggregate
 library(glyexp)
-#> Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by
-#> 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'
 library(SummarizedExperiment)
 #> Loading required package: MatrixGenerics
 #> Loading required package: matrixStats
@@ -211,7 +209,6 @@ clean_exp <- auto_clean(exp)
 #> 
 #> ── Aggregating data ──
 #> 
-#> ℹ Aggregating to "gfs" level
 #> ✔ Aggregation completed.
 #> 
 #> ── Normalizing data again ──
@@ -253,12 +250,13 @@ auto_clean <- function(exp, ...) {
     exp <- auto_normalize(exp, ...)
     exp <- auto_remove(exp, ...)
     exp <- auto_impute(exp, ...)
-    exp <- auto_aggregate(exp)
+    exp <- glyclean::aggregate(exp)
     exp <- auto_normalize(exp, ...)
     exp <- auto_correct_batch_effect(exp, ...)
   } else if (glyexp::is_glycomic_se(exp)) {
     exp <- auto_remove(exp, ...)
     exp <- auto_impute(exp, ...)
+    exp <- glyclean::aggregate(exp)
     exp <- auto_normalize(exp, ...)
     exp <- auto_correct_batch_effect(exp, ...)
   } else {
@@ -278,8 +276,8 @@ calls the following functions in sequence:
   Automatically remove variables with too many missing values
 - [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md):
   Automatically impute the missing values
-- [`auto_aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/auto_aggregate.md):
-  Automatically aggregate the data
+- [`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md):
+  Aggregate automatically or to an explicitly selected level
 - [`auto_correct_batch_effect()`](https://glycoverse.github.io/glyclean/dev/reference/auto_correct_batch_effect.md):
   Automatically correct the batch effects
 
@@ -308,14 +306,13 @@ clean_exp <- exp |>
   auto_remove() |>
   auto_normalize() |>
   auto_impute() |>
-  auto_aggregate()
+  glyclean::aggregate()
 #> ℹ Applying preset "discovery"...
 #> ℹ Total removed: 24 (0.56%) variables.
 #> ℹ Normalization method: `normalize_median()`
 #> ℹ Reason: default for "glycoproteomics".
 #> ℹ Imputation method: `impute_min_prob()`
 #> ℹ Reason: default for "glycoproteomics" with n_samples < 30.
-#> ℹ Aggregating to "gfs" level
 ```
 
 ## Taking the Scenic Route: Step-by-Step Preprocessing 🚶‍♀️

@@ -2,14 +2,16 @@
 
 Perform automatic data preprocessing on glycoproteomics or glycomics
 data. This function applies an intelligent preprocessing pipeline that
-includes normalization, missing value handling, imputation, aggregation
-(for glycoproteomics data), and batch effect correction.
+includes normalization, missing value handling, imputation, aggregation,
+and batch effect correction.
 
 For glycomics data, this function calls these functions in sequence:
 
 - [`auto_remove()`](https://glycoverse.github.io/glyclean/dev/reference/auto_remove.md)
 
 - [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
+
+- [`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md)
 
 - [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
 
@@ -24,7 +26,7 @@ sequence:
 
 - [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
 
-- [`auto_aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/auto_aggregate.md)
+- [`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md)
 
 - [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
 
@@ -112,7 +114,7 @@ A modified container with the same subclass as `exp`.
 [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md),
 [`auto_remove()`](https://glycoverse.github.io/glyclean/dev/reference/auto_remove.md),
 [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md),
-[`auto_aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/auto_aggregate.md),
+[`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md),
 [`auto_correct_batch_effect()`](https://glycoverse.github.io/glyclean/dev/reference/auto_correct_batch_effect.md)
 
 ## Examples
@@ -142,7 +144,6 @@ auto_clean(exp)
 #> 
 #> ── Aggregating data ──
 #> 
-#> ℹ Aggregating to "gfs" level
 #> ✔ Aggregation completed.
 #> 
 #> ── Normalizing data again ──
