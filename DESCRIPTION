@@ -43,6 +43,7 @@ Imports:
     cli,
     dplyr,
     glyexp (>= 0.16.0),
+    lifecycle,
     limma,
     magrittr,
     matrixStats,

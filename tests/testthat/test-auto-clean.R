@@ -68,11 +68,14 @@ test_that("auto_clean works for glycomics data", {
     glycan_type = "N"
   )
 
-  expect_snapshot(result_exp <- auto_clean(test_exp))
+  expect_snapshot(
+    result_exp <- auto_clean(test_exp, standardize_variable = FALSE)
+  )
 
   expect_glyco_se(result_exp)
   expect_true(glyexp::is_glycomic_se(result_exp))
   expect_false(any(is.na(SummarizedExperiment::assay(result_exp))))
+  expect_equal(nrow(result_exp), 1L)
 })
 
 test_that("auto_clean works for glycomics data with QC", {
@@ -98,13 +101,14 @@ test_that("auto_clean works for glycomics data with QC", {
   )
 
   expect_snapshot(
-    result_exp <- auto_clean(test_exp),
+    result_exp <- auto_clean(test_exp, standardize_variable = FALSE),
     transform = sanitize_cv_snapshot
   )
 
   expect_glyco_se(result_exp)
   expect_true(glyexp::is_glycomic_se(result_exp))
   expect_false(any(is.na(SummarizedExperiment::assay(result_exp))))
+  expect_equal(nrow(result_exp), 1L)
 })
 
 test_that("auto_clean forwards batch_col to batch correction", {
@@ -116,7 +120,9 @@ test_that("auto_clean forwards batch_col to batch correction", {
   )
   var_info <- tibble::tibble(
     variable = paste0("V", 1:20),
-    glycan_composition = rep(glyrepr::glycan_composition(c(Hex = 1)), 20)
+    glycan_composition = glyrepr::as_glycan_composition(
+      paste0("H", 1:20, "N2")
+    )
   )
   expr_mat <- matrix(nrow = nrow(var_info), ncol = nrow(sample_info))
   colnames(expr_mat) <- sample_info$sample
@@ -138,14 +144,16 @@ test_that("auto_clean forwards batch_col to batch correction", {
     group_col = NULL,
     batch_col = "plate",
     batch_prop_threshold = 0,
-    check_batch_confounding = FALSE
+    check_batch_confounding = FALSE,
+    standardize_variable = FALSE
   ))
   result_without_batch <- suppressMessages(auto_clean(
     test_exp,
     group_col = NULL,
     batch_col = NULL,
     batch_prop_threshold = 0,
-    check_batch_confounding = FALSE
+    check_batch_confounding = FALSE,
+    standardize_variable = FALSE
   ))
 
   expect_false(isTRUE(all.equal(

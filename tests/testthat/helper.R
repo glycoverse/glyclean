@@ -164,6 +164,29 @@ real_glycomic_exp <- function() {
   glyexp::as_glycomic_se(glyexp::real_experiment2)
 }
 
+aggregation_glycomic_se <- function(include_structure = TRUE) {
+  sample_info <- tibble::tibble(sample = c("S1", "S2"))
+  var_info <- tibble::tibble(
+    variable = paste0("V", 1:4),
+    glycan_composition = glyrepr::as_glycan_composition(
+      c("H5N2", "H5N2", "H5N2", "H3N2")
+    ),
+    source = c("A", "A", "B", "C")
+  )
+  if (include_structure) {
+    structures <- SummarizedExperiment::rowData(
+      glyexp::as_glycomic_se(glyexp::real_experiment2)
+    )$glycan_structure
+    var_info$glycan_structure <- structures[c(1, 1, 2, 3)]
+  }
+  expr_mat <- matrix(
+    1:8,
+    nrow = 4,
+    dimnames = list(var_info$variable, sample_info$sample)
+  )
+  test_glycomic_se(expr_mat, sample_info, var_info, glycan_type = "N")
+}
+
 expect_glyco_se <- function(x) {
   testthat::expect_true(
     glyexp::is_glycomic_se(x) || glyexp::is_glycoproteomic_se(x)

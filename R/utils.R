@@ -249,6 +249,31 @@
   invisible(x)
 }
 
+#' Require a glycomics or glycoproteomics container
+#'
+#' @param x A supported glyclean container.
+#' @param error_call The call to use in error messages.
+#'
+#' @return `x`, invisibly.
+#' @noRd
+.assert_aggregation_container <- function(
+  x,
+  error_call = rlang::caller_call()
+) {
+  .assert_glyclean_container(x)
+  exp_type <- .get_exp_type(x)
+  if (!exp_type %in% c("glycomics", "glycoproteomics")) {
+    cli::cli_abort(
+      c(
+        "The experiment type must be {.val glycomics} or {.val glycoproteomics}.",
+        "x" = "Got {.val {exp_type}}."
+      ),
+      call = error_call
+    )
+  }
+  invisible(x)
+}
+
 #' Extract container metadata
 #'
 #' @param x A supported glyclean container.

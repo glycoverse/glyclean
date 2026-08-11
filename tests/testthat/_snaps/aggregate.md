@@ -1,3 +1,35 @@
+# aggregation levels must match the experiment type
+
+    Code
+      aggregate(aggregation_glycomic_se(), to_level = "gf", standardize_variable = FALSE)
+    Condition
+      Error in `glyclean_aggregate()`:
+      ! The aggregation level must match the experiment type.
+      i "glycomics" data supports "g" and "gs".
+      x Got "gf".
+
+---
+
+    Code
+      aggregate(complex_exp(), to_level = "g", standardize_variable = FALSE)
+    Condition
+      Error in `glyclean_aggregate()`:
+      ! The aggregation level must match the experiment type.
+      i "glycoproteomics" data supports "gf", "gp", "gfs", and "gps".
+      x Got "g".
+
+# glycomics structure aggregation requires glycan structures
+
+    Code
+      aggregate(aggregation_glycomic_se(include_structure = FALSE), to_level = "gs",
+      standardize_variable = FALSE)
+    Condition
+      Error in `glyclean_aggregate()`:
+      ! All required columns must be present in `var_info`.
+      i Required columns: glycan_composition and glycan_structure.
+      x Missing columns: glycan_structure.
+      i You might want to aggregate to "g" level.
+
 # aggregating from glycoforms to glycopeptides fails
 
     Code

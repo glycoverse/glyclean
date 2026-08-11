@@ -67,6 +67,7 @@ test_that("grouped preprocessing reads grouping variables from colData", {
 })
 
 test_that("automatic preprocessing preserves glyco SE subclasses", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   glycomic <- simple_glycomic_se()
   glycoproteomic <- simple_glycoproteomic_se()
 
@@ -148,6 +149,7 @@ test_that("plain SummarizedExperiment is always treated as others", {
 })
 
 test_that("type-specific automatic preprocessing rejects plain others SE", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   x <- plain_se(simple_glycomic_se())
 
   expect_error(
@@ -157,7 +159,7 @@ test_that("type-specific automatic preprocessing rejects plain others SE", {
   )
   expect_error(
     auto_aggregate(x, standardize_variable = FALSE),
-    "Must inherit from class 'glyexp_experiment', 'GlycomicSE', or 'GlycoproteomicSE'",
+    "`exp` must be a <glyexp_experiment>, <GlycomicSE>, or <GlycoproteomicSE> object.",
     fixed = TRUE
   )
 })
@@ -222,7 +224,7 @@ test_that("specialized glycoproteomics operations reject plain SummarizedExperim
 
   expect_error(
     aggregate(x, standardize_variable = FALSE),
-    message,
+    "must be a <glyexp_experiment>, <GlycomicSE>, or <GlycoproteomicSE> object",
     fixed = TRUE
   )
   expect_error(
@@ -237,16 +239,11 @@ test_that("specialized glycoproteomics operations reject plain SummarizedExperim
   )
 })
 
-test_that("specialized glycoproteomics operations distinguish glyco SE subclasses", {
+test_that("glycoproteomics-only operations distinguish glyco SE subclasses", {
   x <- simple_glycomic_se()
   message <- 'Got ("glycomics"|<GlycomicSE>)\\.'
 
   expect_error(
-    aggregate(x, standardize_variable = FALSE),
-    message,
-    fixed = FALSE
-  )
-  expect_error(
     adjust_protein(x, matrix(1)),
     message,
     fixed = FALSE
@@ -258,15 +255,10 @@ test_that("specialized glycoproteomics operations distinguish glyco SE subclasse
   )
 })
 
-test_that("specialized glycoproteomics operations retain experiment type errors", {
+test_that("glycoproteomics-only operations retain experiment type errors", {
   x <- glyexp::real_experiment2
   message <- 'Got ("glycomics"|<GlycomicSE>)\\.'
 
-  expect_error(
-    aggregate(x, standardize_variable = FALSE),
-    message,
-    fixed = FALSE
-  )
   expect_error(
     adjust_protein(x, matrix(1)),
     message,

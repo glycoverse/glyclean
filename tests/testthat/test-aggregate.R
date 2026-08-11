@@ -23,6 +23,41 @@ test_that("aggregating to glycoforms works", {
   )
 })
 
+test_that("default aggregation level depends on experiment type", {
+  expect_null(formals(aggregate)$to_level)
+
+  glycomics_without_structure <- aggregation_glycomic_se(
+    include_structure = FALSE
+  )
+  glycoproteomics_without_structure <- complex_exp()
+  SummarizedExperiment::rowData(
+    glycoproteomics_without_structure
+  )$glycan_structure <- NULL
+  cases <- list(
+    list(exp = aggregation_glycomic_se(), level = "gs"),
+    list(exp = glycomics_without_structure, level = "g"),
+    list(exp = complex_exp(), level = "gfs"),
+    list(exp = glycoproteomics_without_structure, level = "gf")
+  )
+
+  for (case in cases) {
+    result <- aggregate(case$exp, standardize_variable = FALSE)
+    expected <- aggregate(
+      case$exp,
+      to_level = case$level,
+      standardize_variable = FALSE
+    )
+    expect_equal(
+      SummarizedExperiment::assay(result),
+      SummarizedExperiment::assay(expected)
+    )
+    expect_equal(
+      SummarizedExperiment::rowData(result),
+      SummarizedExperiment::rowData(expected)
+    )
+  }
+})
+
 test_that("aggregation preserves group order, missing-value sums, and metadata", {
   exp <- complex_exp()
   input_mat <- SummarizedExperiment::assay(exp)
@@ -58,6 +93,96 @@ test_that("aggregation preserves group order, missing-value sums, and metadata",
   expect_true("gene" %in% colnames(result_var_info))
   expect_false("peptide" %in% colnames(result_var_info))
   expect_false("charge" %in% colnames(result_var_info))
+})
+
+test_that("glycomics aggregation supports composition and structure levels", {
+  exp <- aggregation_glycomic_se()
+
+  compositions <- aggregate(exp, to_level = "g", standardize_variable = FALSE)
+  structures <- aggregate(exp, to_level = "gs", standardize_variable = FALSE)
+
+  expect_s4_class(compositions, "GlycomicSE")
+  expect_equal(
+    SummarizedExperiment::assay(compositions),
+    matrix(
+      c(6, 4, 18, 8),
+      nrow = 2,
+      dimnames = list(c("V1", "V2"), c("S1", "S2"))
+    )
+  )
+  expect_setequal(
+    colnames(SummarizedExperiment::rowData(compositions)),
+    "glycan_composition"
+  )
+
+  expect_s4_class(structures, "GlycomicSE")
+  expect_equal(
+    SummarizedExperiment::assay(structures),
+    matrix(
+      c(3, 3, 4, 11, 7, 8),
+      nrow = 3,
+      dimnames = list(paste0("V", 1:3), c("S1", "S2"))
+    )
+  )
+  expect_setequal(
+    colnames(SummarizedExperiment::rowData(structures)),
+    c("glycan_composition", "glycan_structure", "source")
+  )
+})
+
+test_that("glycomics aggregation supports legacy experiments", {
+  se <- aggregation_glycomic_se()
+  exp <- suppressWarnings(
+    glyexp::experiment(
+      SummarizedExperiment::assay(se),
+      sample_info = tibble::as_tibble(
+        SummarizedExperiment::colData(se),
+        rownames = "sample"
+      ),
+      var_info = tibble::as_tibble(
+        SummarizedExperiment::rowData(se),
+        rownames = "variable"
+      ),
+      exp_type = "glycomics",
+      glycan_type = "N"
+    )
+  )
+
+  result <- aggregate(exp, standardize_variable = FALSE)
+
+  expect_s3_class(result, "glyexp_experiment")
+  expect_identical(result$meta_data$exp_type, "glycomics")
+  expect_equal(nrow(result$expr_mat), 3L)
+})
+
+test_that("aggregation levels must match the experiment type", {
+  expect_snapshot(
+    aggregate(
+      aggregation_glycomic_se(),
+      to_level = "gf",
+      standardize_variable = FALSE
+    ),
+    error = TRUE
+  )
+  expect_snapshot(
+    aggregate(
+      complex_exp(),
+      to_level = "g",
+      standardize_variable = FALSE
+    ),
+    error = TRUE
+  )
+})
+
+test_that("glycomics structure aggregation requires glycan structures", {
+  expect_snapshot(
+    aggregate(
+      aggregation_glycomic_se(include_structure = FALSE),
+      to_level = "gs",
+      standardize_variable = FALSE
+    ),
+    error = TRUE
+  )
 })
 
 test_that("aggregating to glycopeptides (with structures) works", {

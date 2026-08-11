@@ -9,7 +9,6 @@ reference:
   - title: Automactic Processing
     contents:
       - auto_clean
-      - auto_aggregate
       - auto_impute
       - auto_normalize
       - auto_remove

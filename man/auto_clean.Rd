@@ -53,13 +53,14 @@ A modified container with the same subclass as \code{exp}.
 \description{
 Perform automatic data preprocessing on glycoproteomics or glycomics data.
 This function applies an intelligent preprocessing pipeline that includes
-normalization, missing value handling, imputation, aggregation (for
-glycoproteomics data), and batch effect correction.
+normalization, missing value handling, imputation, aggregation, and batch
+effect correction.
 
 For glycomics data, this function calls these functions in sequence:
 \itemize{
 \item \code{\link[=auto_remove]{auto_remove()}}
 \item \code{\link[=auto_impute]{auto_impute()}}
+\item \code{\link[=aggregate]{aggregate()}}
 \item \code{\link[=auto_normalize]{auto_normalize()}}
 \item \code{\link[=auto_correct_batch_effect]{auto_correct_batch_effect()}}
 }
@@ -69,7 +70,7 @@ For glycoproteomics data, this function calls these functions in sequence:
 \item \code{\link[=auto_remove]{auto_remove()}}
 \item \code{\link[=auto_normalize]{auto_normalize()}}
 \item \code{\link[=auto_impute]{auto_impute()}}
-\item \code{\link[=auto_aggregate]{auto_aggregate()}}
+\item \code{\link[=aggregate]{aggregate()}}
 \item \code{\link[=auto_normalize]{auto_normalize()}}
 \item \code{\link[=auto_correct_batch_effect]{auto_correct_batch_effect()}}
 }
@@ -81,5 +82,6 @@ auto_clean(exp)
 
 }
 \seealso{
-\code{\link[=auto_normalize]{auto_normalize()}}, \code{\link[=auto_remove]{auto_remove()}}, \code{\link[=auto_impute]{auto_impute()}}, \code{\link[=auto_aggregate]{auto_aggregate()}}, \code{\link[=auto_correct_batch_effect]{auto_correct_batch_effect()}}
+\code{\link[=auto_normalize]{auto_normalize()}}, \code{\link[=auto_remove]{auto_remove()}}, \code{\link[=auto_impute]{auto_impute()}}, \code{\link[=aggregate]{aggregate()}},
+\code{\link[=auto_correct_batch_effect]{auto_correct_batch_effect()}}
 }
