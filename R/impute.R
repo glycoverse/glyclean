@@ -127,7 +127,7 @@ impute_bpca <- function(x, by = NULL, ...) {
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
-impute_ppca <- function(x, by = NULL, seed = 123, ...) {
+impute_ppca <- function(x, by = NULL, ..., seed = 123) {
   checkmate::assert_int(seed, lower = 0)
   withr::with_seed(
     seed,
@@ -181,8 +181,8 @@ impute_min_prob <- function(
   by = NULL,
   q = 0.01,
   tune.sigma = 1,
-  seed = 123,
-  ...
+  ...,
+  seed = 123
 ) {
   checkmate::assert_int(seed, lower = 0)
   withr::with_seed(

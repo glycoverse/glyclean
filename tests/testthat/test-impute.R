@@ -140,6 +140,20 @@ test_that("impute_ppca is reproducible with its seed", {
   )
 })
 
+test_that("impute_ppca preserves positional pca arguments", {
+  skip_if_not_installed("pcaMethods")
+  test_exp <- missing_exp_10_10()
+
+  result <- suppressWarnings(impute_ppca(
+    test_exp,
+    NULL,
+    "none",
+    seed = 42
+  ))
+
+  expect_equal(sum(is.na(SummarizedExperiment::assay(result))), 0)
+})
+
 test_that("impute_min_prob uses left-censored log-scale draws", {
   test_mat <- matrix(
     c(
