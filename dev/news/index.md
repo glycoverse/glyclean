@@ -13,6 +13,10 @@
   and
   [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
   now aggregates glycomics data automatically. (#28)
+- Stochastic preprocessing functions now accept a reproducibility
+  `seed`, with
+  [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
+  forwarding it through automatic imputation. (#29)
 
 ## glyclean 0.15.2
 

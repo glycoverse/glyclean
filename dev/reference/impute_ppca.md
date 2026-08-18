@@ -9,7 +9,7 @@ for missing value estimation.
 ## Usage
 
 ``` r
-impute_ppca(x, by = NULL, ...)
+impute_ppca(x, by = NULL, ..., seed = 123)
 ```
 
 ## Arguments
@@ -33,6 +33,10 @@ impute_ppca(x, by = NULL, ...)
 
   Additional arguments to pass to
   [`pcaMethods::pca()`](https://rdrr.io/pkg/pcaMethods/man/pca.html).
+
+- seed:
+
+  Integer seed for random number generation. Default is `123`.
 
 ## Value
 

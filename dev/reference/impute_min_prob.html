@@ -44,7 +44,7 @@ scale and then transformed back to the original scale.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">impute_min_prob</span><span class="op">(</span><span class="va">x</span>, by <span class="op">=</span> <span class="cn">NULL</span>, q <span class="op">=</span> <span class="fl">0.01</span>, tune.sigma <span class="op">=</span> <span class="fl">1</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">impute_min_prob</span><span class="op">(</span><span class="va">x</span>, by <span class="op">=</span> <span class="cn">NULL</span>, q <span class="op">=</span> <span class="fl">0.01</span>, tune.sigma <span class="op">=</span> <span class="fl">1</span>, <span class="va">...</span>, seed <span class="op">=</span> <span class="fl">123</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -74,6 +74,10 @@ left-censored draw distribution. Default is <code>1</code>.</p></dd>
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Reserved for backward compatibility. Extra arguments are not
 supported.</p></dd>
+
+
+<dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
+<dd><p>Integer seed for random number generation. Default is <code>123</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

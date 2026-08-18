@@ -43,7 +43,8 @@ auto_clean(
   batch_prop_threshold = 0.3,
   check_batch_confounding = TRUE,
   batch_confounding_threshold = 0.4,
-  standardize_variable = TRUE
+  standardize_variable = TRUE,
+  seed = 123
 )
 ```
 
@@ -104,6 +105,11 @@ auto_clean(
   [`glyexp::standardize_variable()`](https://glycoverse.github.io/glyexp/reference/standardize_variable.html)
   after aggregation. Set to `FALSE` to skip network calls for faster
   testing. Default is `TRUE`.
+
+- seed:
+
+  Integer seed for random number generation used by stochastic
+  preprocessing steps. Default is `123`.
 
 ## Value
 
