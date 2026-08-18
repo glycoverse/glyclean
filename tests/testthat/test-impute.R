@@ -119,6 +119,41 @@ test_that("impute_min_prob works", {
   expect_equal(sum(is.na(SummarizedExperiment::assay(result_exp))), 0)
 })
 
+test_that("impute_min_prob is reproducible with its seed", {
+  first <- impute_min_prob(old_test_exp, seed = 42)
+  second <- impute_min_prob(old_test_exp, seed = 42)
+
+  expect_identical(
+    SummarizedExperiment::assay(first),
+    SummarizedExperiment::assay(second)
+  )
+})
+
+test_that("impute_ppca is reproducible with its seed", {
+  skip_if_not_installed("pcaMethods")
+  first <- suppressWarnings(impute_ppca(old_test_exp, seed = 42))
+  second <- suppressWarnings(impute_ppca(old_test_exp, seed = 42))
+
+  expect_identical(
+    SummarizedExperiment::assay(first),
+    SummarizedExperiment::assay(second)
+  )
+})
+
+test_that("impute_ppca preserves positional pca arguments", {
+  skip_if_not_installed("pcaMethods")
+  test_exp <- missing_exp_10_10()
+
+  result <- suppressWarnings(impute_ppca(
+    test_exp,
+    NULL,
+    "none",
+    seed = 42
+  ))
+
+  expect_equal(sum(is.na(SummarizedExperiment::assay(result))), 0)
+})
+
 test_that("impute_min_prob uses left-censored log-scale draws", {
   test_mat <- matrix(
     c(
@@ -217,6 +252,17 @@ test_that("impute_miss_forest works", {
   skip_if_not_installed("missForest")
   result_exp <- impute_miss_forest(test_exp)
   expect_equal(sum(is.na(SummarizedExperiment::assay(result_exp))), 0)
+})
+
+test_that("impute_miss_forest is reproducible with its seed", {
+  skip_if_not_installed("missForest")
+  first <- impute_miss_forest(old_test_exp, seed = 42)
+  second <- impute_miss_forest(old_test_exp, seed = 42)
+
+  expect_identical(
+    SummarizedExperiment::assay(first),
+    SummarizedExperiment::assay(second)
+  )
 })
 
 

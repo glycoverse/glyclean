@@ -4,7 +4,7 @@
 \alias{auto_impute}
 \title{Automatic Imputation}
 \usage{
-auto_impute(exp, group_col = "group")
+auto_impute(exp, group_col = "group", seed = 123)
 }
 \arguments{
 \item{exp}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
@@ -12,6 +12,8 @@ auto_impute(exp, group_col = "group")
 
 \item{group_col}{The column name in sample_info for groups. Default is "group".
 Can be NULL when no group information is available.}
+
+\item{seed}{Integer seed for random number generation. Default is \code{123}.}
 }
 \value{
 The imputed input container, with its class preserved.

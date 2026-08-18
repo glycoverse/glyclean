@@ -122,12 +122,17 @@ impute_bpca <- function(x, by = NULL, ...) {
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Used for grouping when imputing missing values.
+#' @param seed Integer seed for random number generation. Default is `123`.
 #' @param ... Additional arguments to pass to `pcaMethods::pca()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
-impute_ppca <- function(x, by = NULL, ...) {
-  .update_expr_mat(x, .impute_ppca, by = by, ...)
+impute_ppca <- function(x, by = NULL, ..., seed = 123) {
+  checkmate::assert_int(seed, lower = 0)
+  withr::with_seed(
+    seed,
+    .update_expr_mat(x, .impute_ppca, by = by, ...)
+  )
 }
 
 
@@ -165,19 +170,31 @@ impute_svd <- function(x, by = NULL, ...) {
 #'   sample. Default is `0.01`.
 #' @param tune.sigma Non-negative multiplier for the standard deviation of the
 #'   left-censored draw distribution. Default is `1`.
+#' @param seed Integer seed for random number generation. Default is `123`.
 #' @param ... Reserved for backward compatibility. Extra arguments are not
 #'   supported.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
-impute_min_prob <- function(x, by = NULL, q = 0.01, tune.sigma = 1, ...) {
-  .update_expr_mat(
-    x,
-    .impute_min_prob,
-    by = by,
-    q = q,
-    tune.sigma = tune.sigma,
-    ...
+impute_min_prob <- function(
+  x,
+  by = NULL,
+  q = 0.01,
+  tune.sigma = 1,
+  ...,
+  seed = 123
+) {
+  checkmate::assert_int(seed, lower = 0)
+  withr::with_seed(
+    seed,
+    .update_expr_mat(
+      x,
+      .impute_min_prob,
+      by = by,
+      q = q,
+      tune.sigma = tune.sigma,
+      ...
+    )
   )
 }
 
@@ -198,12 +215,15 @@ impute_min_prob <- function(x, by = NULL, q = 0.01, tune.sigma = 1, ...) {
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_miss_forest <- function(x, by = NULL, seed = 123, ...) {
-  .update_expr_mat(
-    x,
-    .impute_miss_forest,
-    by = by,
-    seed = seed,
-    ...
+  checkmate::assert_int(seed, lower = 0)
+  withr::with_seed(
+    seed,
+    .update_expr_mat(
+      x,
+      .impute_miss_forest,
+      by = by,
+      ...
+    )
   )
 }
 
@@ -388,7 +408,7 @@ impute_miss_forest <- function(x, by = NULL, seed = 123, ...) {
 }
 
 
-.impute_miss_forest <- function(mat, seed, ...) {
+.impute_miss_forest <- function(mat, ...) {
   rlang::check_installed("missForest", reason = "to use `impute_miss_forest()`")
-  withr::with_seed(seed, missForest::missForest(mat, ...)$ximp)
+  missForest::missForest(mat, ...)$ximp
 }

@@ -4,7 +4,7 @@
 \alias{transform_alr}
 \title{Additive Log-Ratio Transformation}
 \usage{
-transform_alr(x, by = NULL, gamma = 0.1, group_scales = NULL)
+transform_alr(x, by = NULL, gamma = 0.1, group_scales = NULL, seed = 123)
 }
 \arguments{
 \item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
@@ -20,6 +20,8 @@ scale. Default is \code{0.1}. Set to \code{0} for deterministic transformation.}
 this can be a single positive ratio for the second group relative to the
 first, or two positive scales from which that ratio is derived. For
 multi-group data, provide a positive vector with one scale per group.}
+
+\item{seed}{Integer seed for random number generation. Default is \code{123}.}
 }
 \value{
 A container of the same class as \code{x}, with an ALR-transformed

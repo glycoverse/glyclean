@@ -4,7 +4,7 @@
 \alias{plot_rep_scatter}
 \title{Plot Replicate Scatter Plots}
 \usage{
-plot_rep_scatter(exp, rep_col, n_pairs = 9)
+plot_rep_scatter(exp, rep_col, n_pairs = 9, seed = 123)
 }
 \arguments{
 \item{exp}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
@@ -16,6 +16,8 @@ Samples with the same value in this column are treated as replicates
 sample A and three for sample B).}
 
 \item{n_pairs}{Number of replicate pairs to draw at random.}
+
+\item{seed}{Integer seed for random pair selection. Default is \code{123}.}
 }
 \value{
 A patchwork object containing replicate scatter plots.

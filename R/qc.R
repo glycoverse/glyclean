@@ -474,6 +474,7 @@ plot_batch_pca <- function(exp, batch_col = "batch") {
 #'   (e.g. `c("A", "A", "A", "B", "B", "B")` indicates three replicates for
 #'   sample A and three for sample B).
 #' @param n_pairs Number of replicate pairs to draw at random.
+#' @param seed Integer seed for random pair selection. Default is `123`.
 #'
 #' @returns A patchwork object containing replicate scatter plots.
 #'
@@ -486,10 +487,11 @@ plot_batch_pca <- function(exp, batch_col = "batch") {
 #' plot_rep_scatter(exp, rep_col = "replicate", n_pairs = 4)
 #'
 #' @export
-plot_rep_scatter <- function(exp, rep_col, n_pairs = 9) {
+plot_rep_scatter <- function(exp, rep_col, n_pairs = 9, seed = 123) {
   .assert_glyclean_container(exp)
   checkmate::assert_string(rep_col)
   checkmate::assert_int(n_pairs, lower = 1)
+  checkmate::assert_int(seed, lower = 0)
   rlang::check_installed("patchwork", reason = "to use `plot_rep_scatter()`")
 
   mat <- .get_expr_mat(exp)
@@ -538,7 +540,10 @@ plot_rep_scatter <- function(exp, rep_col, n_pairs = 9) {
     n_pairs <- length(pairs)
   }
 
-  selected_pairs <- pairs[sample.int(length(pairs), size = n_pairs)]
+  selected_pairs <- withr::with_seed(
+    seed,
+    pairs[sample.int(length(pairs), size = n_pairs)]
+  )
 
   log_mat <- .log2_matrix(mat, sample_names = sample_names)
 

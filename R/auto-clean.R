@@ -42,6 +42,8 @@
 #' @param standardize_variable Whether to call [glyexp::standardize_variable()]
 #'   after aggregation. Set to `FALSE` to skip network calls for faster testing.
 #'   Default is `TRUE`.
+#' @param seed Integer seed for random number generation used by stochastic
+#'   preprocessing steps. Default is `123`.
 #'
 #' @return A modified container with the same subclass as `exp`.
 #'
@@ -61,7 +63,8 @@ auto_clean <- function(
   batch_prop_threshold = 0.3,
   check_batch_confounding = TRUE,
   batch_confounding_threshold = 0.4,
-  standardize_variable = TRUE
+  standardize_variable = TRUE,
+  seed = 123
 ) {
   .assert_auto_container(exp)
   checkmate::assert_string(group_col, null.ok = TRUE)
@@ -70,6 +73,7 @@ auto_clean <- function(
   checkmate::assert_number(batch_prop_threshold, lower = 0, upper = 1)
   checkmate::assert_flag(check_batch_confounding)
   checkmate::assert_number(batch_confounding_threshold, lower = 0, upper = 1)
+  checkmate::assert_int(seed, lower = 0)
   exp_type <- .get_exp_type(exp)
   if (!checkmate::test_choice(exp_type, c("glycoproteomics", "glycomics"))) {
     cli::cli_abort(c(
@@ -85,7 +89,8 @@ auto_clean <- function(
     batch_prop_threshold = batch_prop_threshold,
     check_batch_confounding = check_batch_confounding,
     batch_confounding_threshold = batch_confounding_threshold,
-    standardize_variable = standardize_variable
+    standardize_variable = standardize_variable,
+    seed = seed
   )
   switch(
     .get_exp_type(exp),
@@ -113,7 +118,8 @@ auto_clean <- function(
   cli::cli_h2("Imputing missing values")
   exp <- auto_impute(
     exp,
-    params$group_col
+    params$group_col,
+    seed = params$seed
   )
   cli::cli_alert_success("Imputation completed.")
 
@@ -153,7 +159,8 @@ auto_clean <- function(
   cli::cli_h2("Imputing missing values")
   exp <- auto_impute(
     exp,
-    params$group_col
+    params$group_col,
+    seed = params$seed
   )
   cli::cli_alert_success("Imputation completed.")
 

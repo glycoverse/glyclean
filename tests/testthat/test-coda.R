@@ -102,6 +102,17 @@ test_that("transform_clr samples per-feature noise on the log2 scale", {
   expect_equal(unname(result_mat[, 1]), 2^(c(2, 4) + expected_noise))
 })
 
+test_that("public CoDA transforms are reproducible with their seed", {
+  test_exp <- simple_exp(3, 3)
+  first <- transform_clr(test_exp, seed = 17)
+  second <- transform_clr(test_exp, seed = 17)
+
+  expect_identical(
+    SummarizedExperiment::assay(first),
+    SummarizedExperiment::assay(second)
+  )
+})
+
 test_that("transform_clr ignores group scales when gamma is zero", {
   test_mat <- matrix(
     c(

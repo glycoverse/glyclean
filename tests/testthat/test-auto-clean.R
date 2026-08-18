@@ -10,6 +10,24 @@ test_that("auto_clean works for glycoproteomics data", {
   expect_false(any(is.na(SummarizedExperiment::assay(result_exp))))
 })
 
+test_that("auto_clean is reproducible with its seed", {
+  first <- suppressMessages(auto_clean(
+    complex_exp(),
+    standardize_variable = FALSE,
+    seed = 17
+  ))
+  second <- suppressMessages(auto_clean(
+    complex_exp(),
+    standardize_variable = FALSE,
+    seed = 17
+  ))
+
+  expect_identical(
+    SummarizedExperiment::assay(first),
+    SummarizedExperiment::assay(second)
+  )
+})
+
 test_that("auto_clean works for glycoproteomics data with QC", {
   set.seed(123)
   test_exp <- complex_exp()
