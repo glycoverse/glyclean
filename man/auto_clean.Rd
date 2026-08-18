@@ -12,7 +12,8 @@ auto_clean(
   batch_prop_threshold = 0.3,
   check_batch_confounding = TRUE,
   batch_confounding_threshold = 0.4,
-  standardize_variable = TRUE
+  standardize_variable = TRUE,
+  seed = 123
 )
 }
 \arguments{
@@ -46,6 +47,9 @@ Only used when \code{check_batch_confounding} is TRUE. Default to 0.4.}
 \item{standardize_variable}{Whether to call \code{\link[glyexp:standardize_variable]{glyexp::standardize_variable()}}
 after aggregation. Set to \code{FALSE} to skip network calls for faster testing.
 Default is \code{TRUE}.}
+
+\item{seed}{Integer seed for random number generation used by stochastic
+preprocessing steps. Default is \code{123}.}
 }
 \value{
 A modified container with the same subclass as \code{exp}.

@@ -4,7 +4,7 @@
 \alias{impute_min_prob}
 \title{Minimum Probability Imputation}
 \usage{
-impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
+impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, seed = 123, ...)
 }
 \arguments{
 \item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
@@ -18,6 +18,8 @@ sample. Default is \code{0.01}.}
 
 \item{tune.sigma}{Non-negative multiplier for the standard deviation of the
 left-censored draw distribution. Default is \code{1}.}
+
+\item{seed}{Integer seed for random number generation. Default is \code{123}.}
 
 \item{...}{Reserved for backward compatibility. Extra arguments are not
 supported.}

@@ -4,7 +4,7 @@
 \alias{impute_ppca}
 \title{PPCA Imputation}
 \usage{
-impute_ppca(x, by = NULL, ...)
+impute_ppca(x, by = NULL, seed = 123, ...)
 }
 \arguments{
 \item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
@@ -12,6 +12,8 @@ impute_ppca(x, by = NULL, ...)
 
 \item{by}{Either a column name in \code{sample_info} (string) or a factor/vector
 specifying group assignments for each sample. Used for grouping when imputing missing values.}
+
+\item{seed}{Integer seed for random number generation. Default is \code{123}.}
 
 \item{...}{Additional arguments to pass to \code{pcaMethods::pca()}.}
 }

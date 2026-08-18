@@ -21,6 +21,7 @@
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
+#' @param seed Integer seed for random number generation. Default is `123`.
 #'
 #' @returns The imputed input container, with its class preserved.
 #' @examples
@@ -29,13 +30,15 @@
 #' @export
 auto_impute <- function(
   exp,
-  group_col = "group"
+  group_col = "group",
+  seed = 123
 ) {
   # Check arguments
   .assert_glyclean_container(exp)
   checkmate::assert_string(group_col, null.ok = TRUE)
+  checkmate::assert_int(seed, lower = 0)
 
-  .auto_impute_default(exp)
+  .auto_impute_default(exp, seed = seed)
 }
 
 #' Apply the deterministic automatic imputation strategy
@@ -44,7 +47,7 @@ auto_impute <- function(
 #'
 #' @returns The imputed experiment.
 #' @noRd
-.auto_impute_default <- function(exp) {
+.auto_impute_default <- function(exp, seed = 123) {
   n_samples <- ncol(exp)
   exp_type <- .get_exp_type(exp)
   strategy <- .choose_auto_impute_strategy(n_samples, exp_type)
@@ -58,9 +61,9 @@ auto_impute <- function(
 
   switch(
     strategy$method_name,
-    impute_min_prob = impute_min_prob(exp),
+    impute_min_prob = impute_min_prob(exp, seed = seed),
     impute_bpca = impute_bpca(exp),
-    impute_miss_forest = impute_miss_forest(exp)
+    impute_miss_forest = impute_miss_forest(exp, seed = seed)
   )
 }
 

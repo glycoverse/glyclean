@@ -56,18 +56,29 @@
 #'   this can be a single positive ratio for the second group relative to the
 #'   first, or two positive scales from which that ratio is derived. For
 #'   multi-group data, provide a positive vector with one scale per group.
+#' @param seed Integer seed for random number generation. Default is `123`.
 #'
 #' @return A container of the same class as `x`, with a transformed expression
 #'   matrix.
 #'   The returned values are back-transformed to the original ratio space.
 #'   Zeros in the input therefore remain zeros in the output.
 #' @export
-transform_clr <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
-  .transform_clr_exp(
-    x,
-    by = by,
-    gamma = gamma,
-    group_scales = group_scales
+transform_clr <- function(
+  x,
+  by = NULL,
+  gamma = 0.1,
+  group_scales = NULL,
+  seed = 123
+) {
+  checkmate::assert_int(seed, lower = 0)
+  withr::with_seed(
+    seed,
+    .transform_clr_exp(
+      x,
+      by = by,
+      gamma = gamma,
+      group_scales = group_scales
+    )
   )
 }
 
@@ -92,12 +103,22 @@ transform_clr <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
 #'   are back-transformed to the original ratio space, corresponding to
 #'   `x / x_ref`.
 #' @export
-transform_alr <- function(x, by = NULL, gamma = 0.1, group_scales = NULL) {
-  .transform_alr_exp(
-    x,
-    by = by,
-    gamma = gamma,
-    group_scales = group_scales
+transform_alr <- function(
+  x,
+  by = NULL,
+  gamma = 0.1,
+  group_scales = NULL,
+  seed = 123
+) {
+  checkmate::assert_int(seed, lower = 0)
+  withr::with_seed(
+    seed,
+    .transform_alr_exp(
+      x,
+      by = by,
+      gamma = gamma,
+      group_scales = group_scales
+    )
   )
 }
 
