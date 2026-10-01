@@ -6,11 +6,11 @@
 \alias{glyclean_aggregate.default}
 \title{Aggregate Data}
 \usage{
-aggregate(exp, to_level = NULL, standardize_variable = TRUE)
+aggregate(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
 
-\method{glyclean_aggregate}{glyexp_experiment}(exp, to_level = NULL, standardize_variable = TRUE)
+\method{glyclean_aggregate}{glyexp_experiment}(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
 
-\method{glyclean_aggregate}{default}(exp, to_level = NULL, standardize_variable = TRUE)
+\method{glyclean_aggregate}{default}(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
 }
 \arguments{
 \item{exp}{A glycomics or glycoproteomics container: a
@@ -30,6 +30,11 @@ See Details for more information.}
 \item{standardize_variable}{Whether to call \code{\link[glyexp:standardize_variable]{glyexp::standardize_variable()}}
 after aggregation. Set to \code{FALSE} to skip network calls for faster testing.
 Default is \code{TRUE}.}
+
+\item{f}{A function applied to each group's values separately for each sample.
+Defaults to \code{sum}. Missing values are removed before calling \code{f}, which
+must return one numeric value, including for an empty vector when all values
+are missing. For example, use \code{mean}, \code{max}, or \code{function(x) mean(x, trim = 0.1)}.}
 }
 \value{
 A modified container with the same class as \code{exp}, an aggregated
@@ -38,8 +43,8 @@ expression matrix, and updated variable information.
 \description{
 Aggregate glycomics or glycoproteomics data to different levels
 (glycans, glycoforms, glycopeptides, etc.).
-This function sums up quantitative values for each
-unique combination of specified variables.
+This function combines quantitative values for each unique combination of
+specified variables, using \code{sum()} by default.
 It is recommended to call this function after missing value imputation.
 
 The following levels are available:

@@ -3,8 +3,8 @@
 #' @description
 #' Aggregate glycomics or glycoproteomics data to different levels
 #' (glycans, glycoforms, glycopeptides, etc.).
-#' This function sums up quantitative values for each
-#' unique combination of specified variables.
+#' This function combines quantitative values for each unique combination of
+#' specified variables, using `sum()` by default.
 #' It is recommended to call this function after missing value imputation.
 #'
 #' The following levels are available:
@@ -56,25 +56,32 @@
 #' @param standardize_variable Whether to call [glyexp::standardize_variable()]
 #'   after aggregation. Set to `FALSE` to skip network calls for faster testing.
 #'   Default is `TRUE`.
+#' @param f A function applied to each group's values separately for each sample.
+#'   Defaults to `sum`. Missing values are removed before calling `f`, which
+#'   must return one numeric value, including for an empty vector when all values
+#'   are missing. For example, use `mean`, `max`, or `function(x) mean(x, trim = 0.1)`.
 #' @returns A modified container with the same class as `exp`, an aggregated
 #'   expression matrix, and updated variable information.
 #' @export
 aggregate <- function(
   exp,
   to_level = NULL,
-  standardize_variable = TRUE
+  standardize_variable = TRUE,
+  f = sum
 ) {
   glyclean_aggregate(
     exp,
     to_level = to_level,
-    standardize_variable = standardize_variable
+    standardize_variable = standardize_variable,
+    f = f
   )
 }
 
 glyclean_aggregate <- function(
   exp,
   to_level = NULL,
-  standardize_variable = TRUE
+  standardize_variable = TRUE,
+  f = sum
 ) {
   UseMethod("glyclean_aggregate")
 }
@@ -84,12 +91,14 @@ glyclean_aggregate <- function(
 glyclean_aggregate.glyexp_experiment <- function(
   exp,
   to_level = NULL,
-  standardize_variable = TRUE
+  standardize_variable = TRUE,
+  f = sum
 ) {
   .aggregate_container(
     exp,
     to_level = to_level,
     standardize_variable = standardize_variable,
+    f = f,
     error_call = quote(glyclean_aggregate())
   )
 }
@@ -99,12 +108,14 @@ glyclean_aggregate.glyexp_experiment <- function(
 glyclean_aggregate.GlycomicSE <- function(
   exp,
   to_level = NULL,
-  standardize_variable = TRUE
+  standardize_variable = TRUE,
+  f = sum
 ) {
   .aggregate_container(
     exp,
     to_level = to_level,
     standardize_variable = standardize_variable,
+    f = f,
     error_call = quote(glyclean_aggregate())
   )
 }
@@ -114,12 +125,14 @@ glyclean_aggregate.GlycomicSE <- function(
 glyclean_aggregate.GlycoproteomicSE <- function(
   exp,
   to_level = NULL,
-  standardize_variable = TRUE
+  standardize_variable = TRUE,
+  f = sum
 ) {
   .aggregate_container(
     exp,
     to_level = to_level,
     standardize_variable = standardize_variable,
+    f = f,
     error_call = quote(glyclean_aggregate())
   )
 }
@@ -135,10 +148,14 @@ glyclean_aggregate.GlycoproteomicSE <- function(
   exp,
   to_level = NULL,
   standardize_variable = TRUE,
+  f = sum,
   error_call = rlang::caller_call()
 ) {
   # Check arguments
   .assert_aggregation_container(exp, error_call = error_call)
+  if (!is.function(f)) {
+    cli::cli_abort("{.arg f} must be a function.", call = error_call)
+  }
   exp_type <- .get_exp_type(exp)
   var_info <- .get_var_info(exp)
   if (is.null(to_level)) {
@@ -229,12 +246,37 @@ glyclean_aggregate.GlycoproteomicSE <- function(
   group_id <- .get_aggregation_group_id(var_info, var_info_cols)
   var_info_df <- .get_aggr_var_info(var_info, var_info_cols, group_id) |>
     dplyr::mutate(variable = paste0("V", dplyr::row_number()), .before = 1)
-  expr_mat <- rowsum(
-    .get_expr_mat(exp),
-    group = group_id,
-    reorder = FALSE,
-    na.rm = TRUE
-  )
+  input_mat <- .get_expr_mat(exp)
+  if (identical(f, base::sum)) {
+    expr_mat <- rowsum(input_mat, group_id, reorder = FALSE, na.rm = TRUE)
+  } else {
+    groups <- split(seq_len(nrow(input_mat)), group_id)
+    expr_mat <- matrix(
+      NA_real_,
+      nrow = length(groups),
+      ncol = ncol(input_mat),
+      dimnames = list(NULL, colnames(input_mat))
+    )
+    for (j in seq_len(ncol(input_mat))) {
+      expr_mat[, j] <- vapply(
+        groups,
+        function(rows) {
+          values <- input_mat[rows, j]
+          result <- f(values[!is.na(values)])
+          if (
+            !is.numeric(result) || length(result) != 1L || is.complex(result)
+          ) {
+            cli::cli_abort(
+              "{.arg f} must return one numeric value per group and sample.",
+              call = error_call
+            )
+          }
+          as.double(result)
+        },
+        numeric(1)
+      )
+    }
+  }
   rownames(expr_mat) <- var_info_df$variable
   sample_info_df <- .get_sample_info(exp)
   expr_mat <- expr_mat[
@@ -277,7 +319,8 @@ glyclean_aggregate.GlycoproteomicSE <- function(
 glyclean_aggregate.default <- function(
   exp,
   to_level = NULL,
-  standardize_variable = TRUE
+  standardize_variable = TRUE,
+  f = sum
 ) {
   cli::cli_abort(c(
     paste0(
