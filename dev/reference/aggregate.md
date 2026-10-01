@@ -1,9 +1,10 @@
 # Aggregate Data
 
 Aggregate glycomics or glycoproteomics data to different levels
-(glycans, glycoforms, glycopeptides, etc.). This function sums up
-quantitative values for each unique combination of specified variables.
-It is recommended to call this function after missing value imputation.
+(glycans, glycoforms, glycopeptides, etc.). This function combines
+quantitative values for each unique combination of specified variables,
+using [`sum()`](https://rdrr.io/r/base/sum.html) by default. It is
+recommended to call this function after missing value imputation.
 
 The following levels are available:
 
@@ -59,13 +60,13 @@ removed for "gf" level, as one "glycoform" can contain multiple
 ## Usage
 
 ``` r
-aggregate(exp, to_level = NULL, standardize_variable = TRUE)
+aggregate(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
 
 # S3 method for class 'glyexp_experiment'
-glyclean_aggregate(exp, to_level = NULL, standardize_variable = TRUE)
+glyclean_aggregate(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
 
 # Default S3 method
-glyclean_aggregate(exp, to_level = NULL, standardize_variable = TRUE)
+glyclean_aggregate(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
 ```
 
 ## Arguments
@@ -93,6 +94,14 @@ glyclean_aggregate(exp, to_level = NULL, standardize_variable = TRUE)
   [`glyexp::standardize_variable()`](https://glycoverse.github.io/glyexp/reference/standardize_variable.html)
   after aggregation. Set to `FALSE` to skip network calls for faster
   testing. Default is `TRUE`.
+
+- f:
+
+  A function applied to each group's values separately for each sample.
+  Defaults to `sum`. Missing values are removed before calling `f`,
+  which must return one numeric value, including for an empty vector
+  when all values are missing. For example, use `mean`, `max`, or
+  `function(x) mean(x, trim = 0.1)`.
 
 ## Value
 

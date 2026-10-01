@@ -3,6 +3,12 @@
 ## glyclean (development version)
 
 - [`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md)
+  gains an `f` argument for custom aggregation functions such as
+  [`mean()`](https://rdrr.io/r/base/mean.html) and
+  [`max()`](https://rdrr.io/r/base/Extremes.html), with
+  [`sum()`](https://rdrr.io/r/base/sum.html) remaining the default.
+  (#27)
+- [`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md)
   now supports glycomics levels `"g"` and `"gs"` and uses
   structure-aware defaults: `"gs"` or `"g"` for glycomics data and
   `"gfs"` or `"gf"` for glycoproteomics data, depending on whether
