@@ -1,7 +1,7 @@
 # glyclean (development version)
 
-* `detect_batch_effect()` now tests batch effects after accounting for group in unbalanced designs, using the same complete samples for both models.
-* `correct_batch_effect(method = "limma")` now preserves the specified biological group effects.
+* `detect_batch_effect()` now tests batch effects after accounting for group in unbalanced designs, using the same complete samples for both models. (#31)
+* `correct_batch_effect(method = "limma")` now preserves the specified biological group effects. (#31)
 
 * `aggregate()` gains an `f` argument for custom aggregation functions such as `mean()` and `max()`, with `sum()` remaining the default. (#27)
 * `aggregate()` now supports glycomics levels `"g"` and `"gs"` and uses structure-aware defaults: `"gs"` or `"g"` for glycomics data and `"gfs"` or `"gf"` for glycoproteomics data, depending on whether `glycan_structure` is present. `auto_aggregate()` is deprecated in favor of `aggregate()`, and `auto_clean()` now aggregates glycomics data automatically. (#28)
