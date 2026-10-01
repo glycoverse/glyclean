@@ -1,5 +1,6 @@
 # glyclean (development version)
 
+* `aggregate()` gains an `f` argument for custom aggregation functions such as `mean()` and `max()`, with `sum()` remaining the default. (#27)
 * `aggregate()` now supports glycomics levels `"g"` and `"gs"` and uses structure-aware defaults: `"gs"` or `"g"` for glycomics data and `"gfs"` or `"gf"` for glycoproteomics data, depending on whether `glycan_structure` is present. `auto_aggregate()` is deprecated in favor of `aggregate()`, and `auto_clean()` now aggregates glycomics data automatically. (#28)
 * Stochastic preprocessing functions now accept a reproducibility `seed`, with `auto_clean()` forwarding it through automatic imputation. (#29)
 

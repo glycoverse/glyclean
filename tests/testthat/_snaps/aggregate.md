@@ -51,3 +51,27 @@
       x Missing columns: glycan_structure.
       i You might want to aggregate to "gp" or "gf" level.
 
+# aggregation validates the function and its result
+
+    Code
+      aggregate(exp, "g", FALSE, f = "sum")
+    Condition
+      Error in `glyclean_aggregate()`:
+      ! `f` must be a function.
+
+---
+
+    Code
+      aggregate(exp, "g", FALSE, f = identity)
+    Condition
+      Error in `glyclean_aggregate()`:
+      ! `f` must return one numeric value per group and sample.
+
+---
+
+    Code
+      aggregate(exp, "g", FALSE, f = function(x) "bad")
+    Condition
+      Error in `glyclean_aggregate()`:
+      ! `f` must return one numeric value per group and sample.
+

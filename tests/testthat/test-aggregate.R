@@ -260,3 +260,81 @@ test_that("aggregating from glycoforms without structures to glycoforms with str
     error = TRUE
   )
 })
+
+test_that("custom aggregation works across supported containers", {
+  se <- aggregation_glycomic_se()
+  legacy <- suppressWarnings(glyexp::from_se(
+    se,
+    exp_type = "glycomics",
+    glycan_type = "N"
+  ))
+  for (exp in list(se, legacy, complex_exp())) {
+    level <- if (inherits(exp, "GlycoproteomicSE")) "gf" else "g"
+    input <- .get_expr_mat(exp)
+    groups <- if (level == "gf") {
+      list(c(1, 2, 4, 5, 6, 7), 3, 8)
+    } else {
+      list(1:3, 4)
+    }
+    for (f in list(mean, max, function(x) sum(x) / 2)) {
+      result <- aggregate(exp, level, FALSE, f = f)
+      expected <- t(vapply(
+        groups,
+        function(rows) {
+          vapply(
+            seq_len(ncol(input)),
+            function(j) f(input[rows, j]),
+            numeric(1)
+          )
+        },
+        numeric(ncol(input))
+      ))
+      dimnames(expected) <- list(
+        paste0("V", seq_along(groups)),
+        colnames(input)
+      )
+      expect_equal(.get_expr_mat(result), expected)
+      expect_identical(class(result), class(exp))
+      expect_equal(.get_sample_info(result), .get_sample_info(exp))
+      expect_equal(
+        .get_var_info(result),
+        .get_var_info(aggregate(exp, level, FALSE))
+      )
+    }
+  }
+})
+
+test_that("explicit sum preserves defaults and custom functions receive no missing values", {
+  exp <- aggregation_glycomic_se()[, 1, drop = FALSE]
+  input <- SummarizedExperiment::assay(exp)
+  input[1:3, 1] <- NA_real_
+  SummarizedExperiment::assay(exp) <- input
+  default <- aggregate(exp, "g", FALSE)
+  expect_identical(default, aggregate(exp, "g", FALSE, f = sum))
+  expect_equal(as.numeric(SummarizedExperiment::assay(default)), c(0, 4))
+  result <- aggregate(exp, "g", FALSE, f = function(x) {
+    expect_identical(anyNA(x), FALSE)
+    length(x)
+  })
+  expect_equal(
+    SummarizedExperiment::assay(result),
+    matrix(
+      c(0, 1),
+      ncol = 1,
+      dimnames = list(c("V1", "V2"), "S1")
+    )
+  )
+  result <- aggregate(exp[4, , drop = FALSE], "g", FALSE, f = max)
+  expect_equal(dim(SummarizedExperiment::assay(result)), c(1L, 1L))
+  expect_equal(as.numeric(SummarizedExperiment::assay(result)), 4)
+})
+
+test_that("aggregation validates the function and its result", {
+  exp <- aggregation_glycomic_se()
+  expect_snapshot(aggregate(exp, "g", FALSE, f = "sum"), error = TRUE)
+  expect_snapshot(aggregate(exp, "g", FALSE, f = identity), error = TRUE)
+  expect_snapshot(
+    aggregate(exp, "g", FALSE, f = function(x) "bad"),
+    error = TRUE
+  )
+})
