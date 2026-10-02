@@ -2,12 +2,20 @@
 
 ## glyclean (development version)
 
+- [`detect_batch_effect()`](https://glycoverse.github.io/glyclean/dev/reference/detect_batch_effect.md)
+  now tests batch effects after accounting for group in unbalanced
+  designs, using the same complete samples for both models. (#31)
+
+- `correct_batch_effect(method = "limma")` now preserves the specified
+  biological group effects. (#31)
+
 - [`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md)
   gains an `f` argument for custom aggregation functions such as
   [`mean()`](https://rdrr.io/r/base/mean.html) and
   [`max()`](https://rdrr.io/r/base/Extremes.html), with
   [`sum()`](https://rdrr.io/r/base/sum.html) remaining the default.
   (#27)
+
 - [`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md)
   now supports glycomics levels `"g"` and `"gs"` and uses
   structure-aware defaults: `"gs"` or `"g"` for glycomics data and
@@ -19,6 +27,7 @@
   and
   [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
   now aggregates glycomics data automatically. (#28)
+
 - Stochastic preprocessing functions now accept a reproducibility
   `seed`, with
   [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)

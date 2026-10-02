@@ -1,7 +1,9 @@
 # Detect batch effect
 
 Use ANOVA to detect if batch effect is present in the data. If `group`
-is provided, it will be used as a covariate in the ANOVA model.
+is provided, a partial F-test compares models with and without batch
+after accounting for group. Both models use the same complete samples
+for each variable. Non-estimable batch effects return `NA`.
 
 ## Usage
 
@@ -51,33 +53,5 @@ colData(exp)$batch <- batch
 colData(exp)$group <- group
 p_values <- detect_batch_effect(exp, batch = "batch", group = "group")
 #> ℹ Detecting batch effects using ANOVA for 4262 variables...
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> Warning: ANOVA F-tests on an essentially perfect fit are unreliable
-#> ✔ Batch effect detection completed. 65 out of 4262 variables show significant batch effects (p < 0.05).
+#> ✔ Batch effect detection completed. 66 out of 4262 variables show significant batch effects (p < 0.05).
 ```

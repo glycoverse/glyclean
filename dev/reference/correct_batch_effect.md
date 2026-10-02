@@ -176,6 +176,4 @@ corrected_exp <- correct_batch_effect(exp, batch = "batch", group = "group")
 corrected_exp <- correct_batch_effect(
   exp, batch = "batch", group = "group", method = "limma"
 )
-#> design matrix of interest not specified. Assuming a one-group experiment.
-#> Coefficients not estimable: (Intercept) 
 ```
