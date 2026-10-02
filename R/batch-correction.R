@@ -106,7 +106,9 @@ correct_batch_effect <- function(
 #' Detect batch effect
 #'
 #' Use ANOVA to detect if batch effect is present in the data.
-#' If `group` is provided, it will be used as a covariate in the ANOVA model.
+#' If `group` is provided, a partial F-test compares models with and without
+#' batch after accounting for group. Both models use the same complete samples
+#' for each variable. Non-estimable batch effects return `NA`.
 #'
 #' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
@@ -327,7 +329,7 @@ detect_batch_effect <- function(x, batch = "batch", group = NULL) {
         suppressWarnings(limma::removeBatchEffect(
           log_expr_mat,
           batch = batch,
-          covariates = mod
+          design = if (is.null(mod)) matrix(1, ncol(expr_mat), 1) else mod
         ))
       },
       error = function(e) {
@@ -375,21 +377,27 @@ detect_batch_effect <- function(x, batch = "batch", group = NULL) {
       df$group <- factor(group)
     }
 
-    # Build formula
-    if (!is.null(group)) {
-      formula <- stats::as.formula("value ~ batch + group")
-    } else {
-      formula <- stats::as.formula("value ~ batch")
-    }
+    # Fit both models to the same observations, including missing group values.
+    df <- droplevels(df[stats::complete.cases(df), , drop = FALSE])
+    has_group <- !is.null(group) && nlevels(df$group) > 1L
 
-    # Perform ANOVA with error handling
     tryCatch(
       {
-        fit <- stats::aov(formula, data = df)
-        anova_result <- stats::anova(fit)
-        # Extract p-value for batch effect (first row)
-        p_value <- anova_result$`Pr(>F)`[1]
-        return(p_value)
+        reduced <- stats::lm(
+          if (has_group) value ~ group else value ~ 1,
+          data = df
+        )
+        full <- stats::lm(
+          if (has_group) value ~ group + batch else value ~ batch,
+          data = df
+        )
+        if (
+          full$rank - reduced$rank != nlevels(df$batch) - 1L ||
+            stats::df.residual(full) <= 0L
+        ) {
+          return(NA_real_)
+        }
+        stats::anova(reduced, full)$`Pr(>F)`[2L]
       },
       error = function(e) {
         # Return NA_real_ if ANOVA fails
@@ -403,7 +411,10 @@ detect_batch_effect <- function(x, batch = "batch", group = NULL) {
     "Detecting batch effects using ANOVA for {n_variables} variables..."
   )
 
-  p_values <- purrr::map_dbl(1:n_variables, ~ perform_anova(expr_mat[.x, ]))
+  p_values <- purrr::map_dbl(
+    seq_len(n_variables),
+    ~ perform_anova(expr_mat[.x, ])
+  )
 
   # Set names for the p-values vector
   names(p_values) <- rownames(expr_mat)

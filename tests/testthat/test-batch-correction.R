@@ -1014,3 +1014,85 @@ test_that("batch correction functions reject unsupported inputs", {
   expect_error(correct_batch_effect(mat), "glyexp_experiment")
   expect_error(detect_batch_effect(mat), "glyexp_experiment")
 })
+
+test_that("batch detection separates group and batch in unbalanced designs", {
+  withr::local_seed(12)
+  group <- factor(c(rep("A", 40), rep("B", 10), rep("A", 10), rep("B", 40)))
+  batch <- factor(rep(c("X", "Y"), each = 50))
+  y <- 20 + 10 * (group == "B") + rnorm(100)
+  mat <- rbind(group_only = y, batch_effect = y + 5 * (batch == "Y"))
+  exp <- SummarizedExperiment::SummarizedExperiment(
+    assays = list(abundance = mat),
+    colData = S4Vectors::DataFrame(group, batch)
+  )
+
+  p <- suppressMessages(detect_batch_effect(exp, group = "group"))
+  expect_named(p, rownames(mat))
+  expect_gt(p[["group_only"]], 0.05)
+  expect_lt(p[["batch_effect"]], 0.001)
+  expect_lt(anova(lm(y ~ batch + group))$`Pr(>F)`[1], 0.001)
+  expect_identical(
+    suppressMessages(auto_correct_batch_effect(
+      exp[1, ],
+      check_confounding = FALSE
+    )),
+    exp[1, ]
+  )
+})
+
+test_that("batch detection uses matching complete cases and handles confounding", {
+  withr::local_seed(23)
+  group <- factor(rep(c("A", "B"), each = 12))
+  batch <- factor(rep(rep(c("X", "Y", "Z"), each = 4), 2))
+  y <- 20 + 3 * (group == "B") + 2 * (batch == "Y") + rnorm(24)
+  y[c(2, 16)] <- NA_real_
+  group[5] <- NA
+  batch[20] <- NA
+  exp <- SummarizedExperiment::SummarizedExperiment(
+    assays = list(abundance = rbind(feature = y)),
+    colData = S4Vectors::DataFrame(group, batch)
+  )
+  df <- na.omit(data.frame(y, group, batch))
+  fit <- lm(y ~ group + batch, df)
+  expected <- drop1(fit, test = "F")["batch", "Pr(>F)"]
+  expect_equal(
+    unname(suppressMessages(detect_batch_effect(exp, group = "group"))),
+    expected
+  )
+  expect_equal(
+    unname(suppressMessages(detect_batch_effect(exp))),
+    anova(lm(y ~ batch))$`Pr(>F)`[1]
+  )
+
+  SummarizedExperiment::colData(exp)$batch <- group
+  expect_identical(
+    unname(suppressMessages(detect_batch_effect(exp, group = "group"))),
+    NA_real_
+  )
+})
+
+test_that("limma removes batch effects while preserving biological contrasts", {
+  group <- factor(rep(c("A", "B"), each = 8))
+  batch <- factor(rep(rep(c("X", "Y"), each = 4), 2))
+  noise <- rep(c(-0.15, -0.05, 0.05, 0.15), 4)
+  biological <- rbind(
+    first = 10 + 3 * (group == "B") + noise,
+    second = 12 - 2 * (group == "B") + noise
+  )
+  colnames(biological) <- paste0("S", seq_along(group))
+  log_mat <- sweep(biological, 2, 2 * (batch == "Y"), "+")
+  exp <- SummarizedExperiment::SummarizedExperiment(
+    assays = list(abundance = 2^log_mat - 1e-6),
+    colData = S4Vectors::DataFrame(group, batch)
+  )
+  result <- correct_batch_effect(exp, group = "group", method = "limma")
+  corrected <- log2(SummarizedExperiment::assay(result) + 1e-6)
+  expect_equal(corrected, biological + 1)
+  expect_identical(
+    SummarizedExperiment::colData(result),
+    SummarizedExperiment::colData(exp)
+  )
+
+  result <- correct_batch_effect(exp, method = "limma")
+  expect_equal(log2(SummarizedExperiment::assay(result) + 1e-6), biological + 1)
+})

@@ -25,7 +25,9 @@ as \code{nrow(x)}.
 }
 \description{
 Use ANOVA to detect if batch effect is present in the data.
-If \code{group} is provided, it will be used as a covariate in the ANOVA model.
+If \code{group} is provided, a partial F-test compares models with and without
+batch after accounting for group. Both models use the same complete samples
+for each variable. Non-estimable batch effects return \code{NA}.
 }
 \examples{
 library(SummarizedExperiment)
