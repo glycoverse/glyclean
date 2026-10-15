@@ -1,11 +1,22 @@
-# glyclean (development version)
+# glyclean 0.16.0
 
-* `detect_batch_effect()` now tests batch effects after accounting for group in unbalanced designs, using the same complete samples for both models. (#31)
-* `correct_batch_effect(method = "limma")` now preserves the specified biological group effects. (#31)
+## Breaking changes
 
-* `aggregate()` gains an `f` argument for custom aggregation functions such as `mean()` and `max()`, with `sum()` remaining the default. (#27)
-* `aggregate()` now supports glycomics levels `"g"` and `"gs"` and uses structure-aware defaults: `"gs"` or `"g"` for glycomics data and `"gfs"` or `"gf"` for glycoproteomics data, depending on whether `glycan_structure` is present. `auto_aggregate()` is deprecated in favor of `aggregate()`, and `auto_clean()` now aggregates glycomics data automatically. (#28)
+* `aggregate()` now defaults to `"gfs"` for glycoproteomics data with `glycan_structure`, preserving distinct structures instead of combining them by composition. Set `to_level = "gf"` to retain composition-level aggregation. (#28)
+* `auto_clean()` now aggregates glycomics data automatically. Use the individual preprocessing functions to retain unaggregated features. (#28)
+
+## New features
+
+* `aggregate()` gains an `f` argument for custom aggregation functions such as `mean()` and `max()`, with `sum()` remaining the default. (#27, #30)
+* `aggregate()` now supports glycomics levels `"g"` and `"gs"`, defaulting to `"gs"` when `glycan_structure` is present and `"g"` otherwise. Structure-aware defaults also apply to glycoproteomics data. (#28)
 * Stochastic preprocessing functions now accept a reproducibility `seed`, with `auto_clean()` forwarding it through automatic imputation. (#29)
+
+## Minor improvements and bug fixes
+
+* `auto_aggregate()` is deprecated in favor of `aggregate()`. (#28)
+* `auto_clean()` now includes aggregation in its glycomics preprocessing pipeline. (#28)
+* `correct_batch_effect(method = "limma")` now preserves the specified biological group effects. (#31)
+* `detect_batch_effect()` now tests batch effects after accounting for group in unbalanced designs, using the same complete samples for both models. (#31)
 
 # glyclean 0.15.2
 
