@@ -8,13 +8,13 @@
 ## Citation
 
 Fu B (2026). *glyclean: Perform Preprocessing on Glycomics and
-Glycoproteomics Data*. R package version 0.15.2,
+Glycoproteomics Data*. R package version 0.16.0,
 <https://glycoverse.github.io/glyclean/>.
 
     @Manual{,
       title = {glyclean: Perform Preprocessing on Glycomics and Glycoproteomics Data},
       author = {Bin Fu},
       year = {2026},
-      note = {R package version 0.15.2},
+      note = {R package version 0.16.0},
       url = {https://glycoverse.github.io/glyclean/},
     }

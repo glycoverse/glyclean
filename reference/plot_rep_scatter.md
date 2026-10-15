@@ -7,7 +7,7 @@ R2 value.
 ## Usage
 
 ``` r
-plot_rep_scatter(exp, rep_col, n_pairs = 9)
+plot_rep_scatter(exp, rep_col, n_pairs = 9, seed = 123)
 ```
 
 ## Arguments
@@ -31,6 +31,10 @@ plot_rep_scatter(exp, rep_col, n_pairs = 9)
 - n_pairs:
 
   Number of replicate pairs to draw at random.
+
+- seed:
+
+  Integer seed for random pair selection. Default is `123`.
 
 ## Value
 

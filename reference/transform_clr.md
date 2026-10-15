@@ -8,7 +8,7 @@ the original ratio space before returning the result.
 ## Usage
 
 ``` r
-transform_clr(x, by = NULL, gamma = 0.1, group_scales = NULL)
+transform_clr(x, by = NULL, gamma = 0.1, group_scales = NULL, seed = 123)
 ```
 
 ## Arguments
@@ -38,6 +38,10 @@ transform_clr(x, by = NULL, gamma = 0.1, group_scales = NULL)
   single positive ratio for the second group relative to the first, or
   two positive scales from which that ratio is derived. For multi-group
   data, provide a positive vector with one scale per group.
+
+- seed:
+
+  Integer seed for random number generation. Default is `123`.
 
 ## Value
 

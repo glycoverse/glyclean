@@ -8,7 +8,7 @@ used to benchmark or select the imputation method.
 ## Usage
 
 ``` r
-auto_impute(exp, group_col = "group")
+auto_impute(exp, group_col = "group", seed = 123)
 ```
 
 ## Arguments
@@ -26,6 +26,10 @@ auto_impute(exp, group_col = "group")
 
   The column name in sample_info for groups. Default is "group". Can be
   NULL when no group information is available.
+
+- seed:
+
+  Integer seed for random number generation. Default is `123`.
 
 ## Value
 

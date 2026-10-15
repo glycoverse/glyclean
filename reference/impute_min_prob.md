@@ -7,7 +7,7 @@ then transformed back to the original scale.
 ## Usage
 
 ``` r
-impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
+impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, ..., seed = 123)
 ```
 
 ## Arguments
@@ -41,6 +41,10 @@ impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, ...)
 
   Reserved for backward compatibility. Extra arguments are not
   supported.
+
+- seed:
+
+  Integer seed for random number generation. Default is `123`.
 
 ## Value
 
