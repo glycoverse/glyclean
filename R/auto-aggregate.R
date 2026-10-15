@@ -3,7 +3,7 @@
 #' @description
 #' `r lifecycle::badge("deprecated")`
 #'
-#' `auto_aggregate()` was deprecated in glyclean 0.15.3. Use [aggregate()]
+#' `auto_aggregate()` was deprecated in glyclean 0.16.0. Use [aggregate()]
 #' instead; it now selects the aggregation level from the input type and whether
 #' `glycan_structure` is present.
 #'
@@ -29,7 +29,7 @@
 #' @keywords internal
 #' @export
 auto_aggregate <- function(exp, standardize_variable = TRUE) {
-  lifecycle::deprecate_warn("0.15.3", "auto_aggregate()", "aggregate()")
+  lifecycle::deprecate_warn("0.16.0", "auto_aggregate()", "aggregate()")
   aggregate(
     exp,
     standardize_variable = standardize_variable

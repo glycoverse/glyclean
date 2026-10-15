@@ -22,7 +22,7 @@ expression matrix, and updated variable information.
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
-\code{auto_aggregate()} was deprecated in glyclean 0.15.3. Use \code{\link[=aggregate]{aggregate()}}
+\code{auto_aggregate()} was deprecated in glyclean 0.16.0. Use \code{\link[=aggregate]{aggregate()}}
 instead; it now selects the aggregation level from the input type and whether
 \code{glycan_structure} is present.
 }

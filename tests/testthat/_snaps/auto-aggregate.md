@@ -4,5 +4,6 @@
       result <- auto_aggregate(exp, standardize_variable = FALSE)
     Condition
       Warning:
-      `auto_aggregate()` was deprecated in glyclean 0.15.3.
+      `auto_aggregate()` was deprecated in glyclean 0.16.0.
       i Please use `aggregate()` instead.
+
