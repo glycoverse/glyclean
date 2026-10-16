@@ -2,7 +2,7 @@
 
 **\[deprecated\]**
 
-`auto_aggregate()` was deprecated in glyclean 0.15.3. Use
+`auto_aggregate()` was deprecated in glyclean 0.16.0. Use
 [`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md)
 instead; it now selects the aggregation level from the input type and
 whether `glycan_structure` is present.
