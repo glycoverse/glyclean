@@ -101,6 +101,23 @@ or implicitly through two per-group scales. For multi-group data, provide one
 positive scale per group; these scales are used only in the stochastic branch.</p>
     </div>
     <div class="section level2">
+    <h2 id="glycoproteomics">Glycoproteomics<a class="anchor" aria-label="anchor" href="#glycoproteomics"></a></h2>
+    <p>For <code>GlycoproteomicSE</code> objects and legacy glycoproteomics experiments, each
+unique combination of <code>protein</code> and <code>protein_site</code> is treated as a separate
+composition. CLR centering, ALR reference selection, and ALR-to-CLR fallback
+are performed independently within each site. Both site identifiers must be
+present and non-missing. <code>by</code> continues to specify sample groups.</p>
+<p>The output preserves the original order of retained rows and their
+annotations. Metadata field <code>coda_site_transforms</code> records <code>protein</code>,
+<code>protein_site</code>, <code>transform</code>, and <code>reference</code> for each site; <code>reference</code> is
+missing for CLR sites. <code>coda_transform</code> is <code>"clr"</code>, <code>"alr"</code>, or <code>"mixed"</code>
+when sites use different methods, and <code>coda_reference</code> contains all removed
+reference row names, or <code>NULL</code> when no references are removed.</p>
+<p>With <code>gamma = 0</code>, a site containing a single feature returns one for
+positive abundances and zero for zeros. Samples with no positive abundance
+at a site remain zero for that site.</p>
+    </div>
+    <div class="section level2">
     <h2 id="motif-quantification">Motif quantification<a class="anchor" aria-label="anchor" href="#motif-quantification"></a></h2>
     <p>If you intend to use ALR/CLR transformation with motif quantification,
 you should apply the transformation after motif quantification rather than before.
@@ -111,6 +128,20 @@ In another words, the recommended workflow is:</p><ol><li><p>Perform data prepro
 </ol><p></p><div class="sourceCode r"><pre><code><span><span class="va">dea_res</span> <span class="op">&lt;-</span> <span class="fu">glystats</span><span class="fu">::</span><span class="fu">gly_ttest</span><span class="op">(</span><span class="va">coda_motif_exp</span><span class="op">)</span></span></code></pre><p></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">glyexp</span><span class="fu">::</span><span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/as_glycoproteomic_se.html" class="external-link">as_glycoproteomic_se</a></span><span class="op">(</span><span class="fu">glyexp</span><span class="fu">::</span><span class="va"><a href="https://glycoverse.github.io/glyexp/reference/real_experiment.html" class="external-link">real_experiment</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="impute_zero.html">impute_zero</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">6</span><span class="op">)</span>, <span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">transform_clr</span><span class="op">(</span><span class="va">x</span>, gamma <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">S4Vectors</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Annotated-class.html" class="external-link">metadata</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">$</span><span class="va">coda_site_transforms</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   protein protein_site transform reference</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> P08185           176 clr       <span style="color: #BB0000;">NA</span>       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> P04196           344 clr       <span style="color: #BB0000;">NA</span>       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> P10909           291 clr       <span style="color: #BB0000;">NA</span>       </span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

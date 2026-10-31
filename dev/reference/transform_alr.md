@@ -48,10 +48,11 @@ transform_alr(x, by = NULL, gamma = 0.1, group_scales = NULL, seed = 123)
 
 A container of the same class as `x`, with an ALR-transformed expression
 matrix. When ALR succeeds, the reference glycan is excluded from the
-result and the output therefore has one fewer row than the input. When
-ALR falls back to CLR, the returned object keeps the original
-dimensions. The returned values are back-transformed to the original
-ratio space, corresponding to `x / x_ref`.
+result and the output therefore has one fewer row per successful
+composition (per site for glycoproteomics). Sites that fall back to CLR
+retain all their rows. For other containers, CLR fallback keeps the
+original dimensions. The returned values are back-transformed to the
+original ratio space, corresponding to `x / x_ref`.
 
 ## Algorithmic details
 
@@ -67,6 +68,27 @@ total-signal ratio of the second group relative to the first, either
 directly as a scalar or implicitly through two per-group scales. For
 multi-group data, provide one positive scale per group; these scales are
 used only in the stochastic branch.
+
+## Glycoproteomics
+
+For `GlycoproteomicSE` objects and legacy glycoproteomics experiments,
+each unique combination of `protein` and `protein_site` is treated as a
+separate composition. CLR centering, ALR reference selection, and
+ALR-to-CLR fallback are performed independently within each site. Both
+site identifiers must be present and non-missing. `by` continues to
+specify sample groups.
+
+The output preserves the original order of retained rows and their
+annotations. Metadata field `coda_site_transforms` records `protein`,
+`protein_site`, `transform`, and `reference` for each site; `reference`
+is missing for CLR sites. `coda_transform` is `"clr"`, `"alr"`, or
+`"mixed"` when sites use different methods, and `coda_reference`
+contains all removed reference row names, or `NULL` when no references
+are removed.
+
+With `gamma = 0`, a site containing a single feature returns one for
+positive abundances and zero for zeros. Samples with no positive
+abundance at a site remain zero for that site.
 
 ## Motif quantification
 
