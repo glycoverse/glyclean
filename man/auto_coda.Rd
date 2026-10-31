@@ -25,12 +25,14 @@ multi-group data, provide a positive vector with one scale per group.}
 }
 \value{
 The input container with a CoDA-transformed expression matrix (ALR
-if >50 variables, CLR otherwise) and its class preserved.
+if >50 variables per composition, CLR otherwise) and its class preserved.
 }
 \description{
 If the data has more than 50 variables, call \code{\link[=transform_alr]{transform_alr()}}.
 Otherwise, call \code{\link[=transform_clr]{transform_clr()}},
 following the same strategy in glycowork.
+For glycoproteomics, this decision is made independently at each protein
+site, using the number of features at that site.
 }
 \section{Algorithmic details}{
 The stochastic branch follows \code{glycowork}: when \code{gamma > 0}, CLR noise is
@@ -44,6 +46,25 @@ The \code{group_scales} argument is interpreted in the same way as
 ratio of the second group relative to the first, either directly as a scalar
 or implicitly through two per-group scales. For multi-group data, provide one
 positive scale per group; these scales are used only in the stochastic branch.
+}
+
+\section{Glycoproteomics}{
+For \code{GlycoproteomicSE} objects and legacy glycoproteomics experiments, each
+unique combination of \code{protein} and \code{protein_site} is treated as a separate
+composition. CLR centering, ALR reference selection, and ALR-to-CLR fallback
+are performed independently within each site. Both site identifiers must be
+present and non-missing. \code{by} continues to specify sample groups.
+
+The output preserves the original order of retained rows and their
+annotations. Metadata field \code{coda_site_transforms} records \code{protein},
+\code{protein_site}, \code{transform}, and \code{reference} for each site; \code{reference} is
+missing for CLR sites. \code{coda_transform} is \code{"clr"}, \code{"alr"}, or \code{"mixed"}
+when sites use different methods, and \code{coda_reference} contains all removed
+reference row names, or \code{NULL} when no references are removed.
+
+With \code{gamma = 0}, a site containing a single feature returns one for
+positive abundances and zero for zeros. Samples with no positive abundance
+at a site remain zero for that site.
 }
 
 \section{Motif quantification}{

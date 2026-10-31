@@ -102,6 +102,12 @@ test_that("transform_clr samples per-feature noise on the log2 scale", {
   expect_equal(unname(result_mat[, 1]), 2^(c(2, 4) + expected_noise))
 })
 
+test_that("CLR keeps samples with entirely zero abundance at zero", {
+  mat <- matrix(c(0, 0, 4, 16), nrow = 2)
+  result <- .transform_clr_mat(mat, gamma = 0)
+  expect_equal(result, matrix(c(0, 0, 0.5, 2), nrow = 2))
+})
+
 test_that("public CoDA transforms are reproducible with their seed", {
   test_exp <- simple_exp(3, 3)
   first <- transform_clr(test_exp, seed = 17)

@@ -1,5 +1,7 @@
 # glyclean (development version)
 
+* `transform_clr()`, `transform_alr()`, and `auto_coda()` now treat each `protein` and `protein_site` combination in glycoproteomics objects as an independent composition, with site-specific method selection, reference removal, and metadata; samples with zero abundance throughout a composition remain zero. (#34)
+
 # glyclean 0.16.0
 
 ## Breaking changes
