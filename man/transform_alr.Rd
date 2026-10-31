@@ -27,9 +27,10 @@ multi-group data, provide a positive vector with one scale per group.}
 A container of the same class as \code{x}, with an ALR-transformed
 expression matrix.
 When ALR succeeds, the reference glycan is excluded from the result and the
-output therefore has one fewer row than the input. When ALR falls back to
-CLR, the returned object keeps the original dimensions. The returned values
-are back-transformed to the original ratio space, corresponding to
+output therefore has one fewer row per successful composition (per site
+for glycoproteomics). Sites that fall back to CLR retain all their rows.
+For other containers, CLR fallback keeps the original dimensions. The
+returned values are back-transformed to the original ratio space, corresponding to
 \code{x / x_ref}.
 }
 \description{
@@ -50,6 +51,25 @@ The \code{group_scales} argument is interpreted in the same way as
 ratio of the second group relative to the first, either directly as a scalar
 or implicitly through two per-group scales. For multi-group data, provide one
 positive scale per group; these scales are used only in the stochastic branch.
+}
+
+\section{Glycoproteomics}{
+For \code{GlycoproteomicSE} objects and legacy glycoproteomics experiments, each
+unique combination of \code{protein} and \code{protein_site} is treated as a separate
+composition. CLR centering, ALR reference selection, and ALR-to-CLR fallback
+are performed independently within each site. Both site identifiers must be
+present and non-missing. \code{by} continues to specify sample groups.
+
+The output preserves the original order of retained rows and their
+annotations. Metadata field \code{coda_site_transforms} records \code{protein},
+\code{protein_site}, \code{transform}, and \code{reference} for each site; \code{reference} is
+missing for CLR sites. \code{coda_transform} is \code{"clr"}, \code{"alr"}, or \code{"mixed"}
+when sites use different methods, and \code{coda_reference} contains all removed
+reference row names, or \code{NULL} when no references are removed.
+
+With \code{gamma = 0}, a site containing a single feature returns one for
+positive abundances and zero for zeros. Samples with no positive abundance
+at a site remain zero for that site.
 }
 
 \section{Motif quantification}{

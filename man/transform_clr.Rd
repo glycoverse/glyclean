@@ -49,6 +49,25 @@ or implicitly through two per-group scales. For multi-group data, provide one
 positive scale per group; these scales are used only in the stochastic branch.
 }
 
+\section{Glycoproteomics}{
+For \code{GlycoproteomicSE} objects and legacy glycoproteomics experiments, each
+unique combination of \code{protein} and \code{protein_site} is treated as a separate
+composition. CLR centering, ALR reference selection, and ALR-to-CLR fallback
+are performed independently within each site. Both site identifiers must be
+present and non-missing. \code{by} continues to specify sample groups.
+
+The output preserves the original order of retained rows and their
+annotations. Metadata field \code{coda_site_transforms} records \code{protein},
+\code{protein_site}, \code{transform}, and \code{reference} for each site; \code{reference} is
+missing for CLR sites. \code{coda_transform} is \code{"clr"}, \code{"alr"}, or \code{"mixed"}
+when sites use different methods, and \code{coda_reference} contains all removed
+reference row names, or \code{NULL} when no references are removed.
+
+With \code{gamma = 0}, a site containing a single feature returns one for
+positive abundances and zero for zeros. Samples with no positive abundance
+at a site remain zero for that site.
+}
+
 \section{Motif quantification}{
 If you intend to use ALR/CLR transformation with motif quantification,
 you should apply the transformation after motif quantification rather than before.
@@ -79,3 +98,9 @@ In another words, the recommended workflow is:
 }\if{html}{\out{</div>}}
 }
 
+\examples{
+x <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
+x <- impute_zero(x[seq_len(6), ])
+result <- transform_clr(x, gamma = 0)
+S4Vectors::metadata(result)$coda_site_transforms
+}

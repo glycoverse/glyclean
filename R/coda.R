@@ -20,6 +20,25 @@
 #' or implicitly through two per-group scales. For multi-group data, provide one
 #' positive scale per group; these scales are used only in the stochastic branch.
 #'
+#' # Glycoproteomics
+#'
+#' For `GlycoproteomicSE` objects and legacy glycoproteomics experiments, each
+#' unique combination of `protein` and `protein_site` is treated as a separate
+#' composition. CLR centering, ALR reference selection, and ALR-to-CLR fallback
+#' are performed independently within each site. Both site identifiers must be
+#' present and non-missing. `by` continues to specify sample groups.
+#'
+#' The output preserves the original order of retained rows and their
+#' annotations. Metadata field `coda_site_transforms` records `protein`,
+#' `protein_site`, `transform`, and `reference` for each site; `reference` is
+#' missing for CLR sites. `coda_transform` is `"clr"`, `"alr"`, or `"mixed"`
+#' when sites use different methods, and `coda_reference` contains all removed
+#' reference row names, or `NULL` when no references are removed.
+#'
+#' With `gamma = 0`, a site containing a single feature returns one for
+#' positive abundances and zero for zeros. Samples with no positive abundance
+#' at a site remain zero for that site.
+#'
 #' # Motif quantification
 #'
 #' If you intend to use ALR/CLR transformation with motif quantification,
@@ -62,6 +81,11 @@
 #'   matrix.
 #'   The returned values are back-transformed to the original ratio space.
 #'   Zeros in the input therefore remain zeros in the output.
+#' @examples
+#' x <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
+#' x <- impute_zero(x[seq_len(6), ])
+#' result <- transform_clr(x, gamma = 0)
+#' S4Vectors::metadata(result)$coda_site_transforms
 #' @export
 transform_clr <- function(
   x,
@@ -91,6 +115,7 @@ transform_clr <- function(
 #' the original ratio space before returning the result.
 #'
 #' @inheritSection transform_clr Algorithmic details
+#' @inheritSection transform_clr Glycoproteomics
 #' @inheritSection transform_clr Motif quantification
 #'
 #' @inheritParams transform_clr
@@ -98,9 +123,10 @@ transform_clr <- function(
 #' @return A container of the same class as `x`, with an ALR-transformed
 #'   expression matrix.
 #'   When ALR succeeds, the reference glycan is excluded from the result and the
-#'   output therefore has one fewer row than the input. When ALR falls back to
-#'   CLR, the returned object keeps the original dimensions. The returned values
-#'   are back-transformed to the original ratio space, corresponding to
+#'   output therefore has one fewer row per successful composition (per site
+#'   for glycoproteomics). Sites that fall back to CLR retain all their rows.
+#'   For other containers, CLR fallback keeps the original dimensions. The
+#'   returned values are back-transformed to the original ratio space, corresponding to
 #'   `x / x_ref`.
 #' @export
 transform_alr <- function(
@@ -287,7 +313,7 @@ transform_alr <- function(
   apply(mat, 2, function(values) {
     positive_values <- values[values > 0]
     if (length(positive_values) == 0) {
-      return(NaN)
+      return(1)
     }
 
     exp(mean(log(positive_values)))
@@ -459,6 +485,16 @@ transform_alr <- function(
   group_scales = NULL
 ) {
   .assert_glyclean_container(exp)
+
+  if (identical(.get_exp_type(exp), "glycoproteomics")) {
+    return(.transform_coda_sites(
+      exp,
+      method = "clr",
+      by = by,
+      gamma = gamma,
+      group_scales = group_scales
+    ))
+  }
 
   expr_mat <- .get_expr_mat(exp)
   sample_info <- .get_sample_info(exp)
@@ -771,6 +807,16 @@ transform_alr <- function(
 ) {
   .assert_glyclean_container(exp)
 
+  if (identical(.get_exp_type(exp), "glycoproteomics")) {
+    return(.transform_coda_sites(
+      exp,
+      method = "alr",
+      by = by,
+      gamma = gamma,
+      group_scales = group_scales
+    ))
+  }
+
   expr_mat <- .get_expr_mat(exp)
   sample_info <- .get_sample_info(exp)
 
@@ -809,6 +855,107 @@ transform_alr <- function(
     exp,
     expr_mat = transformed,
     var_info = var_info,
+    metadata = metadata
+  )
+}
+
+#' Transform each protein site as an independent composition
+#'
+#' @param exp A glycoproteomics container.
+#' @param method One of `"clr"`, `"alr"`, or `"auto"`.
+#' @inheritParams transform_clr
+#' @return A container with site-wise transformations and reference metadata.
+#' @noRd
+.transform_coda_sites <- function(
+  exp,
+  method,
+  by = NULL,
+  gamma = 0.1,
+  group_scales = NULL
+) {
+  expr_mat <- .get_expr_mat(exp)
+  var_info <- .get_var_info(exp)
+  site_cols <- c("protein", "protein_site")
+  if (!all(site_cols %in% names(var_info))) {
+    cli::cli_abort(
+      "Site-wise CoDA requires {.field protein} and {.field protein_site} annotations."
+    )
+  }
+  if (
+    anyNA(var_info$protein) ||
+      anyNA(var_info$protein_site) ||
+      any(!nzchar(trimws(var_info$protein)))
+  ) {
+    cli::cli_abort(
+      "Site identifiers cannot be missing or empty for site-wise CoDA."
+    )
+  }
+
+  .validate_coda_input(expr_mat, toupper(method))
+  checkmate::assert_number(gamma, lower = 0, finite = TRUE)
+  by_values <- .resolve_column_param(
+    by,
+    sample_info = .get_sample_info(exp),
+    param_name = "by",
+    n_samples = ncol(expr_mat),
+    allow_null = TRUE
+  )
+  site_ids <- dplyr::group_indices(
+    dplyr::group_by(var_info, .data$protein, .data$protein_site)
+  )
+  site_rows <- split(
+    seq_len(nrow(expr_mat)),
+    factor(site_ids, levels = unique(site_ids))
+  )
+  sites <- var_info[!duplicated(site_ids), site_cols, drop = FALSE]
+  sites$transform <- rep(NA_character_, nrow(sites))
+  sites$reference <- rep(NA_character_, nrow(sites))
+  transformed <- expr_mat
+  keep <- rep(TRUE, nrow(expr_mat))
+
+  for (i in seq_along(site_rows)) {
+    idx <- site_rows[[i]]
+    site_mat <- expr_mat[idx, , drop = FALSE]
+    site_method <- if (method == "auto") {
+      if (length(idx) > 50) "alr" else "clr"
+    } else {
+      method
+    }
+    transform <- switch(
+      site_method,
+      clr = .transform_clr_mat,
+      alr = .transform_alr_mat
+    )
+    result <- transform(
+      site_mat,
+      by = by_values,
+      gamma = gamma,
+      group_scales = group_scales
+    )
+    retained <- rownames(site_mat) %in% rownames(result)
+    keep[idx] <- retained
+    transformed[idx[retained], ] <- result
+    sites$transform[i] <- if (all(retained)) "clr" else "alr"
+    if (!all(retained)) {
+      sites$reference[i] <- rownames(site_mat)[!retained]
+    }
+  }
+
+  metadata <- .get_container_metadata(exp)
+  methods <- unique(sites$transform)
+  metadata$coda_transform <- if (length(methods) == 0) {
+    if (method == "auto") "clr" else method
+  } else if (length(methods) == 1) {
+    methods[[1]]
+  } else {
+    "mixed"
+  }
+  metadata$coda_reference <- if (any(!keep)) rownames(expr_mat)[!keep] else NULL
+  metadata$coda_site_transforms <- sites
+  .rebuild_container(
+    exp,
+    expr_mat = transformed[keep, , drop = FALSE],
+    var_info = var_info[keep, , drop = FALSE],
     metadata = metadata
   )
 }
