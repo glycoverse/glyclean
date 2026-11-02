@@ -49,9 +49,10 @@ parameters directly to the operation. Steps carry package-version information
 as an attribute; no random-generator state is stored. Callback functions and parameter
 values are captured at construction/recording time; external files, network
 side effects and mutable references in arbitrary callbacks are not supported.
-Site-sequence annotation records the actual sequences. CoDA records actual
-site decisions, reference features and seeds, so replay does not
-repeat automatic reference selection.
+Site-sequence annotation records the actual sequences. CoDA records the
+selected top-level CLR or ALR function and its parameters, including seed.
+Replaying ALR repeats its reference evaluation and any CLR fallback using
+that seed; no per-site plan or reference selection is stored in history.
 }
 \examples{
 pipeline <- glyclean_pipeline(normalize_total_area(), impute_min_prob(seed = 42))

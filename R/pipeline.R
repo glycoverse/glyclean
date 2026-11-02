@@ -28,9 +28,10 @@
 #' as an attribute; no random-generator state is stored. Callback functions and parameter
 #' values are captured at construction/recording time; external files, network
 #' side effects and mutable references in arbitrary callbacks are not supported.
-#' Site-sequence annotation records the actual sequences. CoDA records actual
-#' site decisions, reference features and seeds, so replay does not
-#' repeat automatic reference selection.
+#' Site-sequence annotation records the actual sequences. CoDA records the
+#' selected top-level CLR or ALR function and its parameters, including seed.
+#' Replaying ALR repeats its reference evaluation and any CLR fallback using
+#' that seed; no per-site plan or reference selection is stored in history.
 #'
 #' @return `glyclean_pipeline()` and `get_pipeline()` return a
 #'   `glyclean_pipeline` list. `apply_pipeline()` returns a processed experiment.
@@ -289,13 +290,6 @@ print.glyclean_pipeline <- function(x, ...) {
       identical(fun, get(nm, envir = asNamespace("glyclean")))
     }, logical(1))]
     label <- if (length(hit)) hit[[1L]] else "recorded operation"
-    if (identical(fun, .replay_coda_step)) {
-      methods <- vapply(step$parameters$site_plan, function(entry) {
-        if (identical(entry[["function"]], .transform_clr_seeded)) "CLR" else "ALR"
-      }, character(1))
-      label <- sprintf("CoDA [%s; %d composition(s)]",
-                       paste(unique(methods), collapse = "/"), length(methods))
-    }
     cat(sprintf("  %d. %s\n", i, label))
   }
   invisible(x)

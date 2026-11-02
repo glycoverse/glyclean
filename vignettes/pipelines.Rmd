@@ -68,13 +68,16 @@ Recipes and histories serve different purposes. A recipe can select methods on
 new data. A recorded history captures resolved arguments and concrete choices
 for replay on the **same original input**, with compatible package versions
 and the same RNG configuration.
-Recorded CoDA histories contain a lightweight per-composition plan: actual CLR
-or ALR function, selected reference, parameters and an explicit seed for the
-actual transformation. This also handles ALR-to-CLR fallback and mixed sites.
-Each composition's seed is stored with its concrete operation in
-`history[[i]]$parameters$site_plan[[j]]$parameters$seed`.
-They require the original feature/sample identities and order. Neither the
-original assay nor intermediate assay matrices are stored in history.
+CoDA histories use the same function-and-parameters structure as other steps:
+`history[[i]][["function"]]` is `transform_clr` or `transform_alr`, and
+`history[[i]]$parameters$seed` contains the actual seed, including the default.
+`auto_coda()` records its selected top-level function: CLR for glycoproteomics,
+and CLR or ALR for glycomics. If ALR internally falls back to CLR, the recorded
+function remains `transform_alr`, so replay repeats the same reference evaluation,
+random draws and fallback decision on the original input. There is no per-site
+replay plan or saved reference in the pipeline. The ordinary CoDA result metadata
+still describes the transformation and reference used.
+Neither the original assay nor intermediate assay matrices are stored in history.
 
 Site-sequence annotation stores the sequences used, so replay does not depend
 on a FASTA file still existing or a remote UniProt response staying unchanged.

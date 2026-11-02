@@ -24,16 +24,15 @@
 #'
 #' For `GlycoproteomicSE` objects and legacy glycoproteomics experiments, each
 #' unique combination of `protein` and `protein_site` is treated as a separate
-#' composition. CLR centering, ALR reference selection, and ALR-to-CLR fallback
-#' are performed independently within each site. Both site identifiers must be
+#' composition. CLR centering is performed independently within each site.
+#' ALR is not supported for glycoproteomics; use `transform_clr()` or
+#' `auto_coda()`, which always uses CLR. Both site identifiers must be
 #' present and non-missing. `by` continues to specify sample groups.
 #'
-#' The output preserves the original order of retained rows and their
+#' The output preserves all rows, their original order, and their
 #' annotations. Metadata field `coda_site_transforms` records `protein`,
 #' `protein_site`, `transform`, and `reference` for each site; `reference` is
-#' missing for CLR sites. `coda_transform` is `"clr"`, `"alr"`, or `"mixed"`
-#' when sites use different methods, and `coda_reference` contains all removed
-#' reference row names, or `NULL` when no references are removed.
+#' always missing. `coda_transform` is `"clr"`, and `coda_reference` is `NULL`.
 #'
 #' With `gamma = 0`, a site containing a single feature returns one for
 #' positive abundances and zero for zeros. Samples with no positive abundance
@@ -95,10 +94,19 @@ transform_clr <- function(
   group_scales = NULL,
   seed = 123
 ) {
-  .run_recorded_coda(
-    x, method = "clr", by = by, gamma = gamma,
-    group_scales = group_scales, seed = seed
+  .previous <- get_pipeline(x)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  checkmate::assert_int(seed, lower = 0)
+  .result <- withr::with_seed(
+    seed,
+    .transform_clr_exp(
+      x,
+      by = by,
+      gamma = gamma,
+      group_scales = group_scales
+    )
   )
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -118,9 +126,8 @@ transform_clr <- function(
 #' @return A container of the same class as `x`, with an ALR-transformed
 #'   expression matrix.
 #'   When ALR succeeds, the reference glycan is excluded from the result and the
-#'   output therefore has one fewer row per successful composition (per site
-#'   for glycoproteomics). Sites that fall back to CLR retain all their rows.
-#'   For other containers, CLR fallback keeps the original dimensions. The
+#'   output therefore has one fewer row. CLR fallback keeps the original
+#'   dimensions. Glycoproteomics input is not supported. The
 #'   returned values are back-transformed to the original ratio space, corresponding to
 #'   `x / x_ref`.
 #' @export
@@ -131,10 +138,19 @@ transform_alr <- function(
   group_scales = NULL,
   seed = 123
 ) {
-  .run_recorded_coda(
-    x, method = "alr", by = by, gamma = gamma,
-    group_scales = group_scales, seed = seed
+  .previous <- get_pipeline(x)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  checkmate::assert_int(seed, lower = 0)
+  .result <- withr::with_seed(
+    seed,
+    .transform_alr_exp(
+      x,
+      by = by,
+      gamma = gamma,
+      group_scales = group_scales
+    )
   )
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 #' Validate compositional inputs used by CLR and ALR
@@ -471,19 +487,16 @@ transform_alr <- function(
   exp,
   by = NULL,
   gamma = 0.1,
-  group_scales = NULL,
-  .pipeline_trace = NULL
+  group_scales = NULL
 ) {
   .assert_glyclean_container(exp)
 
   if (identical(.get_exp_type(exp), "glycoproteomics")) {
-    return(.transform_coda_sites(
+    return(.transform_clr_sites(
       exp,
-      method = "clr",
       by = by,
       gamma = gamma,
-      group_scales = group_scales,
-      .pipeline_trace = .pipeline_trace
+      group_scales = group_scales
     ))
   }
 
@@ -498,8 +511,8 @@ transform_alr <- function(
     allow_null = TRUE
   )
 
-  transformed <- .trace_coda_matrix(
-    expr_mat, method = "clr", trace = .pipeline_trace,
+  transformed <- .transform_clr_mat(
+    expr_mat,
     by = by_values,
     gamma = gamma,
     group_scales = group_scales
@@ -732,8 +745,7 @@ transform_alr <- function(
   mat,
   by = NULL,
   gamma = 0.1,
-  group_scales = NULL,
-  .pipeline_trace = NULL
+  group_scales = NULL
 ) {
   .validate_coda_input(mat, "ALR")
   checkmate::assert_number(gamma, lower = 0, finite = TRUE)
@@ -751,9 +763,11 @@ transform_alr <- function(
     cli::cli_warn(
       "ALR requires at least two glycans with positive values in every sample; falling back to CLR."
     )
-    return(.execute_coda_operation(
-      mat, .pipeline_trace, .transform_clr_mat,
-      list(by = by_values, gamma = gamma, group_scales = group_scales)
+    return(.transform_clr_mat(
+      mat,
+      by = by_values,
+      gamma = gamma,
+      group_scales = group_scales
     ))
   }
 
@@ -762,16 +776,20 @@ transform_alr <- function(
       "Best ALR reference {.val {ref_stats$reference}} did not meet the paper thresholds; falling back to CLR.",
       "i" = "Procrustes correlation = {.val {signif(ref_stats$procrustes, 4)}}, between-group variance = {.val {signif(ref_stats$variance, 4)}}."
     ))
-    return(.execute_coda_operation(
-      mat, .pipeline_trace, .transform_clr_mat,
-      list(by = by_values, gamma = gamma, group_scales = group_scales)
+    return(.transform_clr_mat(
+      mat,
+      by = by_values,
+      gamma = gamma,
+      group_scales = group_scales
     ))
   }
 
-  .execute_coda_operation(
-    mat, .pipeline_trace, .apply_alr_reference,
-    list(ref_idx = ref_stats$ref_idx, by_values = by_values,
-         gamma = gamma, group_scales = group_scales)
+  .apply_alr_reference(
+    mat,
+    ref_stats$ref_idx,
+    by_values = by_values,
+    gamma = gamma,
+    group_scales = group_scales
   )
 }
 
@@ -789,19 +807,14 @@ transform_alr <- function(
   exp,
   by = NULL,
   gamma = 0.1,
-  group_scales = NULL,
-  .pipeline_trace = NULL
+  group_scales = NULL
 ) {
   .assert_glyclean_container(exp)
 
   if (identical(.get_exp_type(exp), "glycoproteomics")) {
-    return(.transform_coda_sites(
-      exp,
-      method = "alr",
-      by = by,
-      gamma = gamma,
-      group_scales = group_scales,
-      .pipeline_trace = .pipeline_trace
+    cli::cli_abort(c(
+      "{.fun transform_alr} does not support glycoproteomics data.",
+      "i" = "Use {.fun transform_clr} or {.fun auto_coda} for site-wise CLR transformation."
     ))
   }
 
@@ -817,8 +830,8 @@ transform_alr <- function(
   )
 
   original_rows <- rownames(expr_mat)
-  transformed <- .trace_coda_matrix(
-    expr_mat, method = "alr", trace = .pipeline_trace,
+  transformed <- .transform_alr_mat(
+    expr_mat,
     by = by_values,
     gamma = gamma,
     group_scales = group_scales
@@ -847,20 +860,17 @@ transform_alr <- function(
   )
 }
 
-#' Transform each protein site as an independent composition
+#' Apply CLR to each protein site as an independent composition
 #'
 #' @param exp A glycoproteomics container.
-#' @param method One of `"clr"`, `"alr"`, or `"auto"`.
 #' @inheritParams transform_clr
 #' @return A container with site-wise transformations and reference metadata.
 #' @noRd
-.transform_coda_sites <- function(
+.transform_clr_sites <- function(
   exp,
-  method,
   by = NULL,
   gamma = 0.1,
-  group_scales = NULL,
-  .pipeline_trace = NULL
+  group_scales = NULL
 ) {
   expr_mat <- .get_expr_mat(exp)
   var_info <- .get_var_info(exp)
@@ -880,7 +890,7 @@ transform_alr <- function(
     )
   }
 
-  .validate_coda_input(expr_mat, toupper(method))
+  .validate_coda_input(expr_mat, "CLR")
   checkmate::assert_number(gamma, lower = 0, finite = TRUE)
   by_values <- .resolve_column_param(
     by,
@@ -896,202 +906,30 @@ transform_alr <- function(
     seq_len(nrow(expr_mat)),
     factor(site_ids, levels = unique(site_ids))
   )
-  if (!is.null(.pipeline_trace)) {
-    .pipeline_trace$seeds <- if (length(site_rows) <= 1L) {
-      rep(.pipeline_trace$seed, length(site_rows))
-    } else {
-      withr::with_seed(.pipeline_trace$seed,
-        sample.int(.Machine$integer.max, length(site_rows)))
-    }
-  }
   sites <- var_info[!duplicated(site_ids), site_cols, drop = FALSE]
-  sites$transform <- rep(NA_character_, nrow(sites))
+  sites$transform <- rep("clr", nrow(sites))
   sites$reference <- rep(NA_character_, nrow(sites))
   transformed <- expr_mat
-  keep <- rep(TRUE, nrow(expr_mat))
 
   for (i in seq_along(site_rows)) {
     idx <- site_rows[[i]]
     site_mat <- expr_mat[idx, , drop = FALSE]
-    site_method <- if (method == "auto") {
-      if (length(idx) > 50) "alr" else "clr"
-    } else {
-      method
-    }
-    result <- .trace_coda_matrix(
-      site_mat, method = site_method, trace = .pipeline_trace, rows = idx,
+    result <- .transform_clr_mat(
+      site_mat,
       by = by_values,
       gamma = gamma,
       group_scales = group_scales
     )
-    retained <- rownames(site_mat) %in% rownames(result)
-    keep[idx] <- retained
-    transformed[idx[retained], ] <- result
-    sites$transform[i] <- if (all(retained)) "clr" else "alr"
-    if (!all(retained)) {
-      sites$reference[i] <- rownames(site_mat)[!retained]
-    }
+    transformed[idx, ] <- result
   }
 
   metadata <- .get_container_metadata(exp)
-  methods <- unique(sites$transform)
-  metadata$coda_transform <- if (length(methods) == 0) {
-    if (method == "auto") "clr" else method
-  } else if (length(methods) == 1) {
-    methods[[1]]
-  } else {
-    "mixed"
-  }
-  metadata$coda_reference <- if (any(!keep)) rownames(expr_mat)[!keep] else NULL
+  metadata$coda_transform <- "clr"
+  metadata$coda_reference <- NULL
   metadata$coda_site_transforms <- sites
   .rebuild_container(
     exp,
-    expr_mat = transformed[keep, , drop = FALSE],
-    var_info = var_info[keep, , drop = FALSE],
+    expr_mat = transformed,
     metadata = metadata
   )
-}
-
-# Store concrete operations with explicit per-composition seeds. Reference
-# selection and transformation use separate seeded calls, so replay can skip
-# selection without storing or reconstructing a random generator state.
-.run_recorded_coda <- function(
-  x, method, by = NULL, gamma = 0.1, group_scales = NULL, seed = 123
-) {
-  .assert_glyclean_container(x)
-  checkmate::assert_int(seed, lower = 0)
-  trace <- new.env(parent = emptyenv())
-  trace$plan <- list()
-  trace$seed <- seed
-  trace$seeds <- seed
-  if (method == "auto" && identical(.get_exp_type(x), "glycoproteomics")) {
-    result <- .transform_coda_sites(
-      x, method = "auto", by = by, gamma = gamma,
-      group_scales = group_scales, .pipeline_trace = trace
-    )
-  } else {
-    actual_method <- if (method == "auto") {
-      if (nrow(x) > 50) "alr" else "clr"
-    } else method
-    transform <- switch(actual_method,
-      clr = .transform_clr_exp, alr = .transform_alr_exp
-    )
-    result <- transform(
-      x, by = by, gamma = gamma, group_scales = group_scales,
-      .pipeline_trace = trace
-    )
-  }
-  metadata <- .get_container_metadata(result)
-  coda_metadata <- list(
-    coda_transform = metadata$coda_transform,
-    coda_reference = metadata$coda_reference
-  )
-  if ("coda_site_transforms" %in% names(metadata)) {
-    coda_metadata$coda_site_transforms <- metadata$coda_site_transforms
-  }
-  step <- .new_pipeline_step(.replay_coda_step, list(
-    site_plan = trace$plan,
-    coda_metadata = coda_metadata,
-    input_rows = rownames(.get_expr_mat(x)),
-    input_samples = colnames(.get_expr_mat(x))
-  ))
-  .append_pipeline_step(result, step, previous = get_pipeline(x))
-}
-
-.transform_clr_seeded <- function(mat, by = NULL, gamma = 0.1,
-                                  group_scales = NULL, seed = 123) {
-  checkmate::assert_int(seed, lower = 0)
-  withr::with_seed(seed, .transform_clr_mat(
-    mat, by = by, gamma = gamma, group_scales = group_scales
-  ))
-}
-
-.apply_alr_reference_seeded <- function(mat, ref_idx, by_values = NULL,
-                                        gamma = 0.1, group_scales = NULL,
-                                        seed = 123) {
-  checkmate::assert_int(seed, lower = 0)
-  withr::with_seed(seed, .apply_alr_reference(
-    mat, ref_idx = ref_idx, by_values = by_values,
-    gamma = gamma, group_scales = group_scales
-  ))
-}
-
-.execute_coda_operation <- function(mat, trace, fun, parameters) {
-  if (is.null(trace)) return(do.call(fun, c(list(mat = mat), parameters)))
-  seeded_fun <- if (identical(fun, .transform_clr_mat)) {
-    .transform_clr_seeded
-  } else .apply_alr_reference_seeded
-  parameters$seed <- trace$seed
-  trace$operation <- list(`function` = seeded_fun, parameters = parameters)
-  do.call(seeded_fun, c(list(mat = mat), parameters))
-}
-
-.trace_coda_matrix <- function(
-  mat, method, trace = NULL, by = NULL, gamma = 0.1, group_scales = NULL,
-  rows = seq_len(nrow(mat))
-) {
-  if (is.null(trace)) {
-    transform <- switch(method, clr = .transform_clr_mat, alr = .transform_alr_mat)
-    return(transform(mat, by = by, gamma = gamma, group_scales = group_scales))
-  }
-  operation <- new.env(parent = emptyenv())
-  operation$seed <- trace$seeds[[length(trace$plan) + 1L]]
-  if (method == "clr") {
-    result <- .execute_coda_operation(
-      mat, operation, .transform_clr_mat,
-      list(by = by, gamma = gamma, group_scales = group_scales)
-    )
-  } else {
-    result <- withr::with_seed(operation$seed, .transform_alr_mat(
-      mat, by = by, gamma = gamma, group_scales = group_scales,
-      .pipeline_trace = operation
-    ))
-  }
-  entry <- operation$operation
-  entry$rows <- rownames(mat)
-  entry$row_indices <- rows
-  entry$retained <- if (is.null(rownames(mat))) {
-    if (identical(entry[["function"]], .apply_alr_reference_seeded)) {
-      seq_len(nrow(mat)) != entry$parameters$ref_idx
-    } else rep(TRUE, nrow(mat))
-  } else rownames(mat) %in% rownames(result)
-  trace$plan[[length(trace$plan) + 1L]] <- entry
-  result
-}
-
-.replay_coda_step <- function(
-  exp, site_plan, coda_metadata, input_rows, input_samples
-) {
-  .assert_glyclean_container(exp)
-  mat <- .get_expr_mat(exp)
-  if (!identical(rownames(mat), input_rows) ||
-      !identical(colnames(mat), input_samples)) {
-    cli::cli_abort(
-      "Recorded CoDA replay requires the original feature and sample identities and order."
-    )
-  }
-  transformed <- mat
-  keep <- rep(TRUE, nrow(mat))
-  for (entry in site_plan) {
-    idx <- entry$row_indices
-    if (!identical(rownames(mat)[idx], entry$rows)) {
-      cli::cli_abort("Recorded CoDA composition rows do not match the input.")
-    }
-    result <- do.call(entry[["function"]],
-                     c(list(mat = mat[idx, , drop = FALSE]), entry$parameters))
-    retained <- entry$retained
-    keep[idx] <- retained
-    transformed[idx[retained], ] <- result
-  }
-  metadata <- .get_container_metadata(exp)
-  for (name in names(coda_metadata)) metadata[[name]] <- coda_metadata[[name]]
-  result <- .rebuild_container(
-    exp, expr_mat = transformed[keep, , drop = FALSE],
-    var_info = .get_var_info(exp)[keep, , drop = FALSE], metadata = metadata
-  )
-  step <- .new_pipeline_step(.replay_coda_step, list(
-    site_plan = site_plan, coda_metadata = coda_metadata,
-    input_rows = input_rows, input_samples = input_samples
-  ))
-  .append_pipeline_step(result, step, previous = get_pipeline(exp))
 }

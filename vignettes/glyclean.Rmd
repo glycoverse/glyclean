@@ -177,7 +177,7 @@ bringing all intensities to a comparable scale.
 | `normalize_loessf()` | LOESS with feature smoothing | Non-linear trends |
 | `normalize_loesscyc()` | LOESS with cyclic smoothing | Cyclic data |
 | `normalize_vsn()` | Variance stabilizing normalization | Heteroscedastic data |
-| `transform_clr()` | Centered Log-Ratio transformation | Glycomics data (compositional) |
+| `transform_clr()` | Centered Log-Ratio transformation | Glycomics and site-wise glycoproteomics data |
 | `transform_alr()` | Additive Log-Ratio transformation | Glycomics data (compositional) |
 
 **Pro Tips:**
@@ -453,3 +453,21 @@ within the same R/RNG configuration and dependency versions. External random
 generators, backend changes, parallel computation and arbitrary side effects in
 custom callbacks may require additional controls; a seed alone is not a promise
 of bitwise identity across platforms or package versions.
+
+
+## Compositional transformation for glycoproteomics
+
+For glycoproteomics, `auto_coda()` always applies CLR separately to each
+`protein` and `protein_site` combination, regardless of the number of features
+at a site. It is equivalent to `transform_clr()` with the same parameters and
+seed, and preserves all feature rows. `transform_alr()` does not support
+glycoproteomics input and reports an error directing users to CLR.
+
+```{r, eval=FALSE}
+clr_exp <- auto_coda(clean_exp, by = "group", seed = 123)
+# Equivalent for a glycoproteomics experiment:
+clr_exp <- transform_clr(clean_exp, by = "group", seed = 123)
+```
+
+For glycomics, automatic selection is unchanged: more than 50 features selects
+ALR, otherwise CLR. ALR can fall back to CLR when no suitable reference exists.
