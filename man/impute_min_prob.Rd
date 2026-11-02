@@ -22,7 +22,8 @@ left-censored draw distribution. Default is \code{1}.}
 \item{...}{Reserved for backward compatibility. Extra arguments are not
 supported.}
 
-\item{seed}{Integer seed for random number generation. Default is \code{123}.}
+\item{seed}{Non-negative integer seed for random number generation. Default is
+\code{123}. The caller's random state is restored, including on errors.}
 }
 \value{
 A container of the same class as \code{x}, with missing values imputed.

@@ -4,7 +4,7 @@
 \alias{impute_sw_knn}
 \title{Sample-wise KNN Imputation}
 \usage{
-impute_sw_knn(x, k = 5, by = NULL, ...)
+impute_sw_knn(x, k = 5, by = NULL, ..., seed = 123)
 }
 \arguments{
 \item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
@@ -16,6 +16,9 @@ impute_sw_knn(x, k = 5, by = NULL, ...)
 specifying group assignments for each sample. Used for grouping when imputing missing values.}
 
 \item{...}{Additional arguments to pass to \code{impute::impute.knn()}.}
+
+\item{seed}{Non-negative integer seed for random number generation. Default is
+\code{123}. The caller's random state is restored, including on errors.}
 }
 \value{
 A container of the same class as \code{x}, with missing values imputed.

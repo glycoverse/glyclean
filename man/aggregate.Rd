@@ -6,11 +6,29 @@
 \alias{glyclean_aggregate.default}
 \title{Aggregate Data}
 \usage{
-aggregate(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
+aggregate(
+  exp,
+  to_level = NULL,
+  standardize_variable = TRUE,
+  f = sum,
+  seed = 123
+)
 
-\method{glyclean_aggregate}{glyexp_experiment}(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
+\method{glyclean_aggregate}{glyexp_experiment}(
+  exp,
+  to_level = NULL,
+  standardize_variable = TRUE,
+  f = sum,
+  seed = 123
+)
 
-\method{glyclean_aggregate}{default}(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
+\method{glyclean_aggregate}{default}(
+  exp,
+  to_level = NULL,
+  standardize_variable = TRUE,
+  f = sum,
+  seed = 123
+)
 }
 \arguments{
 \item{exp}{A glycomics or glycoproteomics container: a
@@ -35,6 +53,9 @@ Default is \code{TRUE}.}
 Defaults to \code{sum}. Missing values are removed before calling \code{f}, which
 must return one numeric value, including for an empty vector when all values
 are missing. For example, use \code{mean}, \code{max}, or \code{function(x) mean(x, trim = 0.1)}.}
+
+\item{seed}{Non-negative integer seed for random number generation. Default is
+\code{123}. The caller's random state is restored, including on errors.}
 }
 \value{
 A modified container with the same class as \code{exp}, an aggregated

@@ -21,7 +21,8 @@
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param group_col The column name in sample_info for groups. Default is "group".
 #'   Can be NULL when no group information is available.
-#' @param seed Integer seed for random number generation. Default is `123`.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #'
 #' @returns The imputed input container, with its class preserved.
 #' @examples
@@ -62,7 +63,7 @@ auto_impute <- function(
   switch(
     strategy$method_name,
     impute_min_prob = impute_min_prob(exp, seed = seed),
-    impute_bpca = impute_bpca(exp),
+    impute_bpca = impute_bpca(exp, seed = seed),
     impute_miss_forest = impute_miss_forest(exp, seed = seed)
   )
 }

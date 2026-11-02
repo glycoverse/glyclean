@@ -60,12 +60,19 @@ impute_half_sample_min <- function(x) {
 #' @param k The number of nearest neighbors to consider.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Used for grouping when imputing missing values.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #' @param ... Additional arguments to pass to `impute::impute.knn()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
-impute_sw_knn <- function(x, k = 5, by = NULL, ...) {
-  .update_expr_mat(x, .impute_sw_knn, by = by, k = k, ...)
+impute_sw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
+  checkmate::assert_int(seed, lower = 0)
+  withr::with_seed(
+    seed,
+    .update_expr_mat(x, .impute_sw_knn, by = by, k = k,
+                     rng.seed = seed, ...)
+  )
 }
 
 
@@ -80,12 +87,19 @@ impute_sw_knn <- function(x, k = 5, by = NULL, ...) {
 #' @param k The number of nearest neighbors to consider.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Used for grouping when imputing missing values.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #' @param ... Additional arguments to pass to `impute::impute.knn()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
-impute_fw_knn <- function(x, k = 5, by = NULL, ...) {
-  .update_expr_mat(x, .impute_fw_knn, by = by, k = k, ...)
+impute_fw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
+  checkmate::assert_int(seed, lower = 0)
+  withr::with_seed(
+    seed,
+    .update_expr_mat(x, .impute_fw_knn, by = by, k = k,
+                     rng.seed = seed, ...)
+  )
 }
 
 
@@ -103,12 +117,18 @@ impute_fw_knn <- function(x, k = 5, by = NULL, ...) {
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Used for grouping when imputing missing values.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #' @param ... Additional arguments to pass to `pcaMethods::pca()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
-impute_bpca <- function(x, by = NULL, ...) {
-  .update_expr_mat(x, .impute_bpca, by = by, ...)
+impute_bpca <- function(x, by = NULL, ..., seed = 123) {
+  checkmate::assert_int(seed, lower = 0)
+  withr::with_seed(
+    seed,
+    .update_expr_mat(x, .impute_bpca, by = by, ...)
+  )
 }
 
 
@@ -122,7 +142,8 @@ impute_bpca <- function(x, by = NULL, ...) {
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Used for grouping when imputing missing values.
-#' @param seed Integer seed for random number generation. Default is `123`.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #' @param ... Additional arguments to pass to `pcaMethods::pca()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
@@ -147,12 +168,18 @@ impute_ppca <- function(x, by = NULL, ..., seed = 123) {
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Used for grouping when imputing missing values.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #' @param ... Additional arguments to pass to `pcaMethods::pca()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
-impute_svd <- function(x, by = NULL, ...) {
-  .update_expr_mat(x, .impute_svd, by = by, ...)
+impute_svd <- function(x, by = NULL, ..., seed = 123) {
+  checkmate::assert_int(seed, lower = 0)
+  withr::with_seed(
+    seed,
+    .update_expr_mat(x, .impute_svd, by = by, ...)
+  )
 }
 
 
@@ -170,7 +197,8 @@ impute_svd <- function(x, by = NULL, ...) {
 #'   sample. Default is `0.01`.
 #' @param tune.sigma Non-negative multiplier for the standard deviation of the
 #'   left-censored draw distribution. Default is `1`.
-#' @param seed Integer seed for random number generation. Default is `123`.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #' @param ... Reserved for backward compatibility. Extra arguments are not
 #'   supported.
 #'
@@ -209,7 +237,8 @@ impute_min_prob <- function(
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Used for grouping when imputing missing values.
-#' @param seed Integer seed for random number generation. Default is 123.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #' @param ... Additional arguments to pass to `missForest::missForest()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.

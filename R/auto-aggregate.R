@@ -14,6 +14,7 @@
 #'   after aggregation. Set to `FALSE` to skip network calls for faster testing.
 #'   Default is `TRUE`.
 #'
+#' @inheritParams aggregate
 #' @returns A modified container with the same class as `exp`, an aggregated
 #'   expression matrix, and updated variable information.
 #'
@@ -28,10 +29,11 @@
 #'
 #' @keywords internal
 #' @export
-auto_aggregate <- function(exp, standardize_variable = TRUE) {
+auto_aggregate <- function(exp, standardize_variable = TRUE, seed = 123) {
   lifecycle::deprecate_warn("0.16.0", "auto_aggregate()", "aggregate()")
   aggregate(
     exp,
-    standardize_variable = standardize_variable
+    standardize_variable = standardize_variable,
+    seed = seed
   )
 }

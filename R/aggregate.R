@@ -60,6 +60,8 @@
 #'   Defaults to `sum`. Missing values are removed before calling `f`, which
 #'   must return one numeric value, including for an empty vector when all values
 #'   are missing. For example, use `mean`, `max`, or `function(x) mean(x, trim = 0.1)`.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #' @returns A modified container with the same class as `exp`, an aggregated
 #'   expression matrix, and updated variable information.
 #' @export
@@ -67,13 +69,15 @@ aggregate <- function(
   exp,
   to_level = NULL,
   standardize_variable = TRUE,
-  f = sum
+  f = sum,
+  seed = 123
 ) {
   glyclean_aggregate(
     exp,
     to_level = to_level,
     standardize_variable = standardize_variable,
-    f = f
+    f = f,
+    seed = seed
   )
 }
 
@@ -81,7 +85,8 @@ glyclean_aggregate <- function(
   exp,
   to_level = NULL,
   standardize_variable = TRUE,
-  f = sum
+  f = sum,
+  seed = 123
 ) {
   UseMethod("glyclean_aggregate")
 }
@@ -92,13 +97,15 @@ glyclean_aggregate.glyexp_experiment <- function(
   exp,
   to_level = NULL,
   standardize_variable = TRUE,
-  f = sum
+  f = sum,
+  seed = 123
 ) {
   .aggregate_container(
     exp,
     to_level = to_level,
     standardize_variable = standardize_variable,
     f = f,
+    seed = seed,
     error_call = quote(glyclean_aggregate())
   )
 }
@@ -109,13 +116,15 @@ glyclean_aggregate.GlycomicSE <- function(
   exp,
   to_level = NULL,
   standardize_variable = TRUE,
-  f = sum
+  f = sum,
+  seed = 123
 ) {
   .aggregate_container(
     exp,
     to_level = to_level,
     standardize_variable = standardize_variable,
     f = f,
+    seed = seed,
     error_call = quote(glyclean_aggregate())
   )
 }
@@ -126,13 +135,15 @@ glyclean_aggregate.GlycoproteomicSE <- function(
   exp,
   to_level = NULL,
   standardize_variable = TRUE,
-  f = sum
+  f = sum,
+  seed = 123
 ) {
   .aggregate_container(
     exp,
     to_level = to_level,
     standardize_variable = standardize_variable,
     f = f,
+    seed = seed,
     error_call = quote(glyclean_aggregate())
   )
 }
@@ -149,10 +160,15 @@ glyclean_aggregate.GlycoproteomicSE <- function(
   to_level = NULL,
   standardize_variable = TRUE,
   f = sum,
+  seed = 123,
   error_call = rlang::caller_call()
 ) {
   # Check arguments
   .assert_aggregation_container(exp, error_call = error_call)
+  checkmate::assert_int(seed, lower = 0)
+  withr::local_preserve_seed()
+  rng_kind <- RNGkind()
+  withr::defer(do.call(RNGkind, as.list(rng_kind)))
   if (!is.function(f)) {
     cli::cli_abort("{.arg f} must be a function.", call = error_call)
   }
@@ -247,36 +263,39 @@ glyclean_aggregate.GlycoproteomicSE <- function(
   var_info_df <- .get_aggr_var_info(var_info, var_info_cols, group_id) |>
     dplyr::mutate(variable = paste0("V", dplyr::row_number()), .before = 1)
   input_mat <- .get_expr_mat(exp)
-  if (identical(f, base::sum)) {
-    expr_mat <- rowsum(input_mat, group_id, reorder = FALSE, na.rm = TRUE)
-  } else {
-    groups <- split(seq_len(nrow(input_mat)), group_id)
-    expr_mat <- matrix(
-      NA_real_,
-      nrow = length(groups),
-      ncol = ncol(input_mat),
-      dimnames = list(NULL, colnames(input_mat))
-    )
-    for (j in seq_len(ncol(input_mat))) {
-      expr_mat[, j] <- vapply(
-        groups,
-        function(rows) {
-          values <- input_mat[rows, j]
-          result <- f(values[!is.na(values)])
-          if (
-            !is.numeric(result) || length(result) != 1L || is.complex(result)
-          ) {
-            cli::cli_abort(
-              "{.arg f} must return one numeric value per group and sample.",
-              call = error_call
-            )
-          }
-          as.double(result)
-        },
-        numeric(1)
+  expr_mat <- withr::with_seed(seed, {
+    if (identical(f, base::sum)) {
+      expr_mat <- rowsum(input_mat, group_id, reorder = FALSE, na.rm = TRUE)
+    } else {
+      groups <- split(seq_len(nrow(input_mat)), group_id)
+      expr_mat <- matrix(
+        NA_real_,
+        nrow = length(groups),
+        ncol = ncol(input_mat),
+        dimnames = list(NULL, colnames(input_mat))
       )
+      for (j in seq_len(ncol(input_mat))) {
+        expr_mat[, j] <- vapply(
+          groups,
+          function(rows) {
+            values <- input_mat[rows, j]
+            result <- f(values[!is.na(values)])
+            if (
+              !is.numeric(result) || length(result) != 1L || is.complex(result)
+            ) {
+              cli::cli_abort(
+                "{.arg f} must return one numeric value per group and sample.",
+                call = error_call
+              )
+            }
+            as.double(result)
+          },
+          numeric(1)
+        )
+      }
     }
-  }
+    expr_mat
+  })
   rownames(expr_mat) <- var_info_df$variable
   sample_info_df <- .get_sample_info(exp)
   expr_mat <- expr_mat[
@@ -320,7 +339,8 @@ glyclean_aggregate.default <- function(
   exp,
   to_level = NULL,
   standardize_variable = TRUE,
-  f = sum
+  f = sum,
+  seed = 123
 ) {
   cli::cli_abort(c(
     paste0(
