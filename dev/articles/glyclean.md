@@ -348,7 +348,7 @@ bringing all intensities to a comparable scale.
 | [`normalize_loessf()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_loessf.md) | LOESS with feature smoothing | Non-linear trends |
 | [`normalize_loesscyc()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_loesscyc.md) | LOESS with cyclic smoothing | Cyclic data |
 | [`normalize_vsn()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_vsn.md) | Variance stabilizing normalization | Heteroscedastic data |
-| [`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md) | Centered Log-Ratio transformation | Glycomics data (compositional) |
+| [`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md) | Centered Log-Ratio transformation | Glycomics and site-wise glycoproteomics data |
 | [`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md) | Additive Log-Ratio transformation | Glycomics data (compositional) |
 
 **Pro Tips:**
@@ -692,3 +692,27 @@ versions. External random generators, backend changes, parallel
 computation and arbitrary side effects in custom callbacks may require
 additional controls; a seed alone is not a promise of bitwise identity
 across platforms or package versions.
+
+## Compositional transformation for glycoproteomics
+
+For glycoproteomics,
+[`auto_coda()`](https://glycoverse.github.io/glyclean/dev/reference/auto_coda.md)
+always applies CLR separately to each `protein` and `protein_site`
+combination, regardless of the number of features at a site. It is
+equivalent to
+[`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md)
+with the same parameters and seed, and preserves all feature rows.
+[`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md)
+does not support glycoproteomics input and reports an error directing
+users to CLR.
+
+``` r
+
+clr_exp <- auto_coda(clean_exp, by = "group", seed = 123)
+# Equivalent for a glycoproteomics experiment:
+clr_exp <- transform_clr(clean_exp, by = "group", seed = 123)
+```
+
+For glycomics, automatic selection is unchanged: more than 50 features
+selects ALR, otherwise CLR. ALR can fall back to CLR when no suitable
+reference exists.

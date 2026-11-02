@@ -105,15 +105,14 @@ positive scale per group; these scales are used only in the stochastic branch.</
     <h2 id="glycoproteomics">Glycoproteomics<a class="anchor" aria-label="anchor" href="#glycoproteomics"></a></h2>
     <p>For <code>GlycoproteomicSE</code> objects and legacy glycoproteomics experiments, each
 unique combination of <code>protein</code> and <code>protein_site</code> is treated as a separate
-composition. CLR centering, ALR reference selection, and ALR-to-CLR fallback
-are performed independently within each site. Both site identifiers must be
+composition. CLR centering is performed independently within each site.
+ALR is not supported for glycoproteomics; use <code>transform_clr()</code> or
+<code><a href="auto_coda.html">auto_coda()</a></code>, which always uses CLR. Both site identifiers must be
 present and non-missing. <code>by</code> continues to specify sample groups.</p>
-<p>The output preserves the original order of retained rows and their
+<p>The output preserves all rows, their original order, and their
 annotations. Metadata field <code>coda_site_transforms</code> records <code>protein</code>,
 <code>protein_site</code>, <code>transform</code>, and <code>reference</code> for each site; <code>reference</code> is
-missing for CLR sites. <code>coda_transform</code> is <code>"clr"</code>, <code>"alr"</code>, or <code>"mixed"</code>
-when sites use different methods, and <code>coda_reference</code> contains all removed
-reference row names, or <code>NULL</code> when no references are removed.</p>
+always missing. <code>coda_transform</code> is <code>"clr"</code>, and <code>coda_reference</code> is <code>NULL</code>.</p>
 <p>With <code>gamma = 0</code>, a site containing a single feature returns one for
 positive abundances and zero for zeros. Samples with no positive abundance
 at a site remain zero for that site.</p>

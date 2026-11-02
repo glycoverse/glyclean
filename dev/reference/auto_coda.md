@@ -1,12 +1,13 @@
 # Automatical CoDA transformation
 
-If the data has more than 50 variables, call
-[`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md).
-Otherwise, call
-[`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md),
-following the same strategy in glycowork. For glycoproteomics, this
-decision is made independently at each protein site, using the number of
-features at that site.
+For glycoproteomics, always call
+[`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md)
+to transform each protein site independently, regardless of the number
+of features at the site. For other supported containers, call
+[`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md)
+when the data has more than 50 variables and
+[`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md)
+otherwise, following glycowork.
 
 ## Usage
 
@@ -49,8 +50,10 @@ auto_coda(x, by = NULL, gamma = 0.1, group_scales = NULL, seed = 123)
 
 ## Value
 
-The input container with a CoDA-transformed expression matrix (ALR if
-\>50 variables per composition, CLR otherwise) and its class preserved.
+The input container with a CoDA-transformed expression matrix and its
+class preserved. Glycoproteomics always uses site-wise CLR and retains
+all rows. Other supported containers use ALR if there are more than 50
+variables, or CLR otherwise.
 
 ## Algorithmic details
 
@@ -71,18 +74,17 @@ used only in the stochastic branch.
 
 For `GlycoproteomicSE` objects and legacy glycoproteomics experiments,
 each unique combination of `protein` and `protein_site` is treated as a
-separate composition. CLR centering, ALR reference selection, and
-ALR-to-CLR fallback are performed independently within each site. Both
-site identifiers must be present and non-missing. `by` continues to
-specify sample groups.
+separate composition. CLR centering is performed independently within
+each site. ALR is not supported for glycoproteomics; use
+[`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md)
+or `auto_coda()`, which always uses CLR. Both site identifiers must be
+present and non-missing. `by` continues to specify sample groups.
 
-The output preserves the original order of retained rows and their
+The output preserves all rows, their original order, and their
 annotations. Metadata field `coda_site_transforms` records `protein`,
 `protein_site`, `transform`, and `reference` for each site; `reference`
-is missing for CLR sites. `coda_transform` is `"clr"`, `"alr"`, or
-`"mixed"` when sites use different methods, and `coda_reference`
-contains all removed reference row names, or `NULL` when no references
-are removed.
+is always missing. `coda_transform` is `"clr"`, and `coda_reference` is
+`NULL`.
 
 With `gamma = 0`, a site containing a single feature returns one for
 positive abundances and zero for zeros. Samples with no positive

@@ -25,15 +25,17 @@
   from the backend default `362436069` to `123`, so split-based results
   can change. Other forwarded backend arguments remain supported.
 
-- [`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md),
-  [`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md),
-  and
+- Glycoproteomics CoDA now always uses CLR:
   [`auto_coda()`](https://glycoverse.github.io/glyclean/dev/reference/auto_coda.md)
-  now treat each `protein` and `protein_site` combination in
-  glycoproteomics objects as an independent composition, with
-  site-specific method selection, reference removal, and metadata;
-  samples with zero abundance throughout a composition remain zero.
-  (#34)
+  delegates to
+  [`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md)
+  regardless of site size, and
+  [`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md)
+  explicitly rejects glycoproteomics input. Each `protein` and
+  `protein_site` combination remains an independent composition, all
+  rows are retained, and site metadata records CLR with no reference.
+  This replaces the per-site ALR selection introduced in \#34; glycomics
+  method selection and ALR behavior are unchanged.
 
 ## glyclean 0.16.0
 
