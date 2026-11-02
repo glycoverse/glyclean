@@ -74,49 +74,32 @@ test_that("CLR centers by both protein and site while preserving row order", {
   )
 })
 
-test_that("site-wise ALR removes one reference per successful site", {
-  block <- coda_alr_site_matrix()
-  mat <- rbind(block, block * 16, c(4, 0, 8, 16, 0))
-  x <- coda_site_exp(
-    mat,
-    protein = rep(c("P1", "P2", "P3"), c(5, 5, 1)),
-    protein_site = rep(10, 11)
+test_that("ALR explicitly rejects glycoproteomics without consuming RNG", {
+  x <- coda_site_exp(coda_alr_site_matrix(), rep("P1", 5), rep(10, 5))
+  withr::local_seed(97)
+  original_seed <- .Random.seed
+  expect_error(
+    transform_alr(x, by = "group"),
+    "does not support glycoproteomics"
   )
-  x <- x[c(1, 6, 11, 2, 7, 3, 8, 4, 9, 5, 10), ]
+  expect_identical(.Random.seed, original_seed)
 
-  expect_warning(
-    result <- transform_alr(x, by = "group", gamma = 0),
-    "at least two glycans"
+  withr::local_options(lifecycle_verbosity = "quiet")
+  legacy <- glyexp::experiment(
+    SummarizedExperiment::assay(x),
+    sample_info = .get_sample_info(x),
+    var_info = .get_var_info(x),
+    exp_type = "glycoproteomics", glycan_type = "N"
   )
+  expect_error(transform_alr(legacy), "does not support glycoproteomics")
+  expect_identical(.Random.seed, original_seed)
 
-  retained <- !rownames(x) %in% c("V1", "V6")
-  expected <- SummarizedExperiment::assay(x)[retained, , drop = FALSE]
-  expected[grep("^V[2-5]$", rownames(expected)), ] <- block[-1, ] / 8
-  expected[grep("^V([7-9]|10)$", rownames(expected)), ] <- block[-1, ] / 8
-  expected["V11", ] <- c(1, 0, 1, 1, 0)
-  expect_equal(SummarizedExperiment::assay(result), expected)
-  expect_s4_class(result, "GlycoproteomicSE")
-  expect_true(methods::validObject(result))
-  expect_identical(rownames(result), rownames(x)[retained])
-  expect_identical(
-    SummarizedExperiment::rowData(result),
-    SummarizedExperiment::rowData(x)[retained, , drop = FALSE]
-  )
-  expect_identical(
-    SummarizedExperiment::colData(result),
-    SummarizedExperiment::colData(x)
-  )
-  meta <- S4Vectors::metadata(result)
-  expect_identical(meta$coda_transform, "mixed")
-  expect_identical(meta$coda_reference, c("V1", "V6"))
-  expect_identical(meta$coda_site_transforms$transform, c("alr", "alr", "clr"))
-  expect_identical(
-    meta$coda_site_transforms$reference,
-    c("V1", "V6", NA_character_)
-  )
+  rm(".Random.seed", envir = .GlobalEnv)
+  expect_error(transform_alr(x), "does not support glycoproteomics")
+  expect_false(exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
 })
 
-test_that("auto_coda selects its method at the 50-feature site boundary", {
+test_that("auto_coda uses CLR at every site regardless of the 50-feature boundary", {
   block <- coda_alr_site_matrix()
   small <- rbind(block[1, ], block[rep(2:5, length.out = 49), ])
   large <- rbind(block[1, ], block[rep(2:5, length.out = 50), ])
@@ -130,15 +113,16 @@ test_that("auto_coda selects its method at the 50-feature site boundary", {
 
   expected <- rbind(
     sweep(small, 2, exp(colMeans(log(small))), "/"),
-    large[-1, ] / 8,
+    sweep(large, 2, exp(colMeans(log(large))), "/"),
     rep(1, 5)
   )
   expect_equal(unname(SummarizedExperiment::assay(result)), expected)
-  expect_identical(rownames(result), rownames(x)[-51])
+  expect_identical(rownames(result), rownames(x))
+  expect_identical(result, transform_clr(x, by = "group", gamma = 0))
   meta <- S4Vectors::metadata(result)
-  expect_identical(meta$coda_transform, "mixed")
-  expect_identical(meta$coda_reference, "V51")
-  expect_identical(meta$coda_site_transforms$transform, c("clr", "alr", "clr"))
+  expect_identical(meta$coda_transform, "clr")
+  expect_null(meta$coda_reference)
+  expect_identical(meta$coda_site_transforms$transform, rep("clr", 3))
 })
 
 test_that("singleton sites and all-zero site samples keep zeros", {
@@ -146,7 +130,7 @@ test_that("singleton sites and all-zero site samples keep zeros", {
   x <- coda_site_exp(mat, rep("P1", 3), c(10, 20, 20))
   expected <- rbind(c(0, 0, 0, 0), c(0.5, 0, 2, 0), c(2, 0, 0.5, 0))
 
-  for (fn in list(transform_clr, transform_alr, auto_coda)) {
+  for (fn in list(transform_clr, auto_coda)) {
     result <- suppressMessages(suppressWarnings(fn(x, gamma = 0)))
     expect_equal(unname(SummarizedExperiment::assay(result)), expected)
     expect_true(all(is.finite(SummarizedExperiment::assay(result))))
@@ -164,7 +148,7 @@ test_that("site-wise stochastic transforms preserve seed and sample parameters",
   withr::local_seed(97)
   original_seed <- .Random.seed
 
-  for (fn in list(transform_clr, transform_alr, auto_coda)) {
+  for (fn in list(transform_clr, auto_coda)) {
     first <- suppressMessages(fn(x, by = "group", group_scales = 2, seed = 17))
     second <- suppressMessages(fn(
       x,
@@ -201,7 +185,7 @@ test_that("legacy glycoproteomics experiments use the same site-wise transform",
     exp_type = "glycoproteomics",
     glycan_type = "N"
   )
-  for (fn in list(transform_clr, transform_alr, auto_coda)) {
+  for (fn in list(transform_clr, auto_coda)) {
     result <- suppressMessages(fn(legacy, by = "group", gamma = 0))
     expected <- suppressMessages(fn(x, by = "group", gamma = 0))
     expect_s3_class(result, "glyexp_experiment")
@@ -220,7 +204,7 @@ test_that("site-wise CoDA rejects incomplete site identities", {
     SummarizedExperiment::rowData(missing)[[column]][1] <- NA
     absent <- x
     SummarizedExperiment::rowData(absent)[[column]] <- NULL
-    for (fn in list(transform_clr, transform_alr, auto_coda)) {
+    for (fn in list(transform_clr, auto_coda)) {
       expect_error(
         suppressMessages(fn(missing)),
         "identifiers cannot be missing"
@@ -248,4 +232,30 @@ test_that("plain SummarizedExperiment retains whole-matrix CoDA", {
   expect_equal(unname(SummarizedExperiment::assay(result)), expected)
   expect_identical(as.character(class(result)), "SummarizedExperiment")
   expect_null(S4Vectors::metadata(result)$coda_site_transforms)
+})
+
+
+test_that("auto_coda is identical to explicit CLR across external RNG states", {
+  block <- coda_alr_site_matrix()
+  mat <- rbind(block[rep(1:5, length.out = 51), ], block)
+  x <- coda_site_exp(mat, rep(c("P1", "P2"), c(51, 5)), rep(10, 56))
+  x <- x[c(1, 52, 2:51, 53:56), ]
+  withr::local_seed(99)
+  expected <- transform_clr(x, by = "group", group_scales = 2, seed = 17)
+  for (outside_seed in c(42, 381)) {
+    set.seed(outside_seed)
+    invisible(runif(7))
+    caller <- .Random.seed
+    result <- suppressMessages(auto_coda(
+      x, by = "group", group_scales = 2, seed = 17
+    ))
+    expect_identical(result, expected)
+    expect_identical(.Random.seed, caller)
+  }
+  rm(".Random.seed", envir = .GlobalEnv)
+  expect_identical(
+    suppressMessages(auto_coda(x, by = "group", group_scales = 2, seed = 17)),
+    expected
+  )
+  expect_false(exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
 })
