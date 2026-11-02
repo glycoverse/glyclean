@@ -283,9 +283,52 @@ apply_pipeline <- function(exp, pipeline) {
   do.call(step[["function"]], c(list(exp), step$parameters))
 }
 
+# Compact, non-dispatching summaries: printing history must never run callbacks
+# or user-defined print/format methods, or expose large stored data.
+.pipeline_parameter_summary <- function(value) {
+  if (is.null(value)) return("NULL")
+  if (is.function(value)) return("<function>")
+  dimensions <- attr(value, "dim", exact = TRUE)
+  if (!is.null(dimensions)) {
+    kind <- if (length(dimensions) == 2L) "matrix" else "array"
+    return(sprintf("<%s [%s]>", kind, paste(dimensions, collapse = " x ")))
+  }
+  if (is.object(value)) {
+    return(paste0("<", paste(attr(value, "class", exact = TRUE),
+                            collapse = "/"), ">"))
+  }
+  kind <- typeof(value)
+  size <- length(value)
+  if (kind %in% c("logical", "integer", "double", "complex", "character") &&
+      size == 1L) {
+    if (kind == "character") {
+      if (is.na(value)) return("NA_character_")
+      # Long strings may be biological sequences or other stored input data.
+      if (nchar(value, type = "width") > 40L) return("<character [1]>")
+      return(encodeString(value, quote = '"'))
+    }
+    return(as.character(value))
+  }
+  sprintf("<%s [%s]>", kind, size)
+}
+
 #' @export
 print.glyclean_pipeline <- function(x, ...) {
-  cat(sprintf("<glyclean_pipeline> %d step(s)\n", length(x)))
+  if (!interactive()) {
+    old <- options(cli.num_colors = 1L)
+    on.exit(options(old), add = TRUE)
+  }
+  width <- max(1L, cli::console_width())
+  emit <- function(line) {
+    line <- cli::ansi_strtrim(line, width = width)
+    cli::cli_verbatim(line)
+  }
+  count <- length(x)
+  header <- sprintf("<glyclean_pipeline> %d %s", count,
+                    if (count == 1L) "step" else "steps")
+  header <- cli::ansi_strtrim(header, width = width)
+  emit(cli::rule(left = header, width = width))
+  if (!count) emit("  (empty)")
   for (i in seq_along(x)) {
     step <- x[[i]]
     fun <- step[["function"]]
@@ -294,7 +337,30 @@ print.glyclean_pipeline <- function(x, ...) {
       identical(fun, get(nm, envir = asNamespace("glyclean")))
     }, logical(1))]
     label <- if (length(hit)) hit[[1L]] else "recorded operation"
-    cat(sprintf("  %d. %s\n", i, label))
+    emit(sprintf("  %d. %s", i, label))
+    parameters <- step[["parameters"]]
+    if (!length(parameters)) {
+      emit("     (no parameters)")
+      next
+    }
+    tokens <- vapply(seq_along(parameters), function(j) {
+      paste0(encodeString(names(parameters)[[j]]), " = ",
+             .pipeline_parameter_summary(parameters[[j]]))
+    }, character(1))
+    # Wrap between arguments; truncate an unusually long individual argument.
+    line <- "    "
+    for (token in tokens) {
+      separator <- if (identical(line, "    ")) "" else ", "
+      proposed <- paste0(line, separator, token)
+      if (!identical(line, "    ") &&
+          cli::ansi_nchar(proposed, type = "width") > width) {
+        emit(line)
+        line <- paste0("    ", token)
+      } else {
+        line <- proposed
+      }
+    }
+    emit(line)
   }
   invisible(x)
 }

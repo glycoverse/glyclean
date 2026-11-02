@@ -98,3 +98,10 @@ Dynamic lookup (`get()`, `eval()`, or caller/global-environment access) is rejec
 They must be self-contained: external side effects, mutable reference objects,
 and recursive callback environments are unsupported. A history is not an
 archive of external services or a substitute for versioning dependencies.
+
+## Inspecting a pipeline
+
+Printing a pipeline uses `cli` to show its step count, numbered public function
+names, and concise parameter summaries. Scalar values such as `seed` are visible;
+matrices, sequences and other large inputs are summarized by type and size.
+Printing never runs a processing step and leaves the pipeline unchanged.
