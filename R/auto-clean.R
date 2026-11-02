@@ -124,7 +124,9 @@ auto_clean <- function(
   cli::cli_alert_success("Imputation completed.")
 
   cli::cli_h2("Aggregating data")
-  exp <- aggregate(exp, standardize_variable = params$standardize_variable)
+  exp <- aggregate(
+    exp, standardize_variable = params$standardize_variable, seed = params$seed
+  )
   cli::cli_alert_success("Aggregation completed.")
 
   cli::cli_h2("Normalizing data again")
@@ -165,7 +167,9 @@ auto_clean <- function(
   cli::cli_alert_success("Imputation completed.")
 
   cli::cli_h2("Aggregating data")
-  exp <- aggregate(exp, standardize_variable = params$standardize_variable)
+  exp <- aggregate(
+    exp, standardize_variable = params$standardize_variable, seed = params$seed
+  )
   cli::cli_alert_success("Aggregation completed.")
 
   cli::cli_h2("Normalizing data")

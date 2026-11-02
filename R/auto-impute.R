@@ -62,7 +62,7 @@ auto_impute <- function(
   switch(
     strategy$method_name,
     impute_min_prob = impute_min_prob(exp, seed = seed),
-    impute_bpca = impute_bpca(exp),
+    impute_bpca = impute_bpca(exp, seed = seed),
     impute_miss_forest = impute_miss_forest(exp, seed = seed)
   )
 }

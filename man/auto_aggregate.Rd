@@ -4,7 +4,7 @@
 \alias{auto_aggregate}
 \title{Automatic Aggregation}
 \usage{
-auto_aggregate(exp, standardize_variable = TRUE)
+auto_aggregate(exp, standardize_variable = TRUE, seed = 123)
 }
 \arguments{
 \item{exp}{A glycomics or glycoproteomics container: a
@@ -14,6 +14,10 @@ auto_aggregate(exp, standardize_variable = TRUE)
 \item{standardize_variable}{Whether to call \code{\link[glyexp:standardize_variable]{glyexp::standardize_variable()}}
 after aggregation. Set to \code{FALSE} to skip network calls for faster testing.
 Default is \code{TRUE}.}
+
+\item{seed}{Non-negative integer seed for R randomness in a custom \code{f}.
+Default is \code{123}. The caller's random state is restored, including on errors.
+This does not control external or independently seeded random generators.}
 }
 \value{
 A modified container with the same class as \code{exp}, an aggregated

@@ -4,7 +4,7 @@
 \alias{impute_fw_knn}
 \title{Feature-wise KNN Imputation}
 \usage{
-impute_fw_knn(x, k = 5, by = NULL, ...)
+impute_fw_knn(x, k = 5, by = NULL, ..., seed = 123)
 }
 \arguments{
 \item{x}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or
@@ -16,6 +16,11 @@ impute_fw_knn(x, k = 5, by = NULL, ...)
 specifying group assignments for each sample. Used for grouping when imputing missing values.}
 
 \item{...}{Additional arguments to pass to \code{impute::impute.knn()}.}
+
+\item{seed}{Non-negative integer random seed. Default is \code{123}. The seed
+controls KNN partitioning and the caller's random state is restored.
+A legacy \code{rng.seed} supplied through \code{...} is used when \code{seed} is omitted.
+If both are supplied they must agree.}
 }
 \value{
 A container of the same class as \code{x}, with missing values imputed.

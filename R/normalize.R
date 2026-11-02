@@ -153,13 +153,16 @@ normalize_loesscyc <- function(x, by = NULL, ...) {
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Optional.
 #'   If provided, the normalization will be performed within each group.
+#' @param seed Non-negative integer seed for random VSN subsampling.
+#'   Default is `123`. The caller's random state is restored after the call.
 #' @param ... Additional arguments to pass to [limma::normalizeVSN()].
 #'
 #' @return A container of the same class as `x`, with a normalized expression
 #'   matrix.
 #' @export
-normalize_vsn <- function(x, by = NULL, ...) {
-  .update_expr_mat(x, .normalize_vsn, by = by, ...)
+normalize_vsn <- function(x, by = NULL, ..., seed = 123) {
+  checkmate::assert_int(seed, lower = 0)
+  withr::with_seed(seed, .update_expr_mat(x, .normalize_vsn, by = by, ...))
 }
 
 
