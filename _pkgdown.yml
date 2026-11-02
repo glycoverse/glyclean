@@ -6,6 +6,9 @@ development:
   mode: auto
 
 reference:
+  - title: Reproducible Pipelines
+    contents:
+      - glyclean_pipeline
   - title: Automactic Processing
     contents:
       - auto_clean
