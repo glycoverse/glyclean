@@ -257,6 +257,10 @@ apply_pipeline <- function(exp, pipeline) {
       parameters$by, sample_info = .get_sample_info(input),
       param_name = "by", n_samples = ncol(.get_expr_mat(input))
     ))
+    # A single character value is otherwise parsed as a column name on replay.
+    if (is.character(parameters$by) && length(parameters$by) == 1L) {
+      parameters$by <- factor(parameters$by)
+    }
   }
   .new_pipeline_step(fun, parameters)
 }

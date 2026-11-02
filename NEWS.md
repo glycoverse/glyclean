@@ -1,6 +1,7 @@
 # glyclean (development version)
 
 * Added list-based `glyclean_pipeline()`, `apply_pipeline()`, and `get_pipeline()` APIs. Processing records concrete reproducible steps in experiment metadata while retaining one assay. Automatic preprocessing records its selected operations; CoDA records its selected top-level function and sequence annotation inputs are frozen for replay.
+* Single-sample character grouping values are recorded unambiguously as factors, preserving grouped-history replay even when a value matches another metadata column name.
 * Pipelines record explicit seeds (including defaults) as ordinary step parameters, without storing or restoring RNG snapshots. Each seeded operation manages its own random state through `withr`.
 * CoDA histories use ordinary function-and-parameter steps, including the seed. ALR reference evaluation and fallback are re-executed on replay; no per-site plan, saved reference, RNG snapshots, or derived sub-seeds are needed. The existing seeded CoDA algorithm and random-number sequence are preserved.
 * Added an explicit `seed = 123` to `normalize_vsn()`, `impute_sw_knn()`, `impute_fw_knn()`, `impute_bpca()`, `impute_svd()`, and `aggregate()` (for stochastic callbacks). Newly seeded functions preserve the caller's R random state. `auto_impute()`, `auto_aggregate()`, and `auto_clean()` propagate the seed to their concrete operations.

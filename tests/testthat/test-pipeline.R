@@ -375,3 +375,19 @@ test_that("positional forwarded arguments remain supported in direct calls", {
   expect_pipeline_result(suppressWarnings(apply_pipeline(x, history)), result)
   expect_error(glyclean_pipeline(impute_ppca(NULL, "none")))
 })
+
+test_that("single-sample character grouping values are unambiguous on replay", {
+  x <- SummarizedExperiment::SummarizedExperiment(
+    assays = list(signal = matrix(c(1, 2, 3), ncol = 1,
+      dimnames = list(c("V1", "V2", "V3"), "S1"))),
+    colData = S4Vectors::DataFrame(group = "A")
+  )
+  for (column_collision in c(FALSE, TRUE)) {
+    if (column_collision) SummarizedExperiment::colData(x)$A <- "B"
+    result <- remove_rare(x, prop = 0.5, by = "group")
+    history <- get_pipeline(result)
+    expect_identical(history[[1L]]$parameters$by, factor("A"))
+    expect_identical(apply_pipeline(x, history), result)
+    expect_identical(apply_pipeline(x, unserialize(serialize(history, NULL))), result)
+  }
+})
