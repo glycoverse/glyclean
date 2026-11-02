@@ -474,7 +474,8 @@ plot_batch_pca <- function(exp, batch_col = "batch") {
 #'   (e.g. `c("A", "A", "A", "B", "B", "B")` indicates three replicates for
 #'   sample A and three for sample B).
 #' @param n_pairs Number of replicate pairs to draw at random.
-#' @param seed Integer seed for random pair selection. Default is `123`.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #'
 #' @returns A patchwork object containing replicate scatter plots.
 #'

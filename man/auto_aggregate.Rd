@@ -15,9 +15,8 @@ auto_aggregate(exp, standardize_variable = TRUE, seed = 123)
 after aggregation. Set to \code{FALSE} to skip network calls for faster testing.
 Default is \code{TRUE}.}
 
-\item{seed}{Non-negative integer seed for R randomness in a custom \code{f}.
-Default is \code{123}. The caller's random state is restored, including on errors.
-This does not control external or independently seeded random generators.}
+\item{seed}{Non-negative integer seed for random number generation. Default is
+\code{123}. The caller's random state is restored, including on errors.}
 }
 \value{
 A modified container with the same class as \code{exp}, an aggregated

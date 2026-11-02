@@ -17,7 +17,8 @@ sample A and three for sample B).}
 
 \item{n_pairs}{Number of replicate pairs to draw at random.}
 
-\item{seed}{Integer seed for random pair selection. Default is \code{123}.}
+\item{seed}{Non-negative integer seed for random number generation. Default is
+\code{123}. The caller's random state is restored, including on errors.}
 }
 \value{
 A patchwork object containing replicate scatter plots.

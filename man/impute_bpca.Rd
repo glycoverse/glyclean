@@ -15,9 +15,8 @@ specifying group assignments for each sample. Used for grouping when imputing mi
 
 \item{...}{Additional arguments to pass to \code{pcaMethods::pca()}.}
 
-\item{seed}{Non-negative integer random seed. Default is \code{123}. This also
-controls optional cross-validation requested through \code{...}; the caller's
-random state is restored. The default fitting path is deterministic.}
+\item{seed}{Non-negative integer seed for random number generation. Default is
+\code{123}. The caller's random state is restored, including on errors.}
 }
 \value{
 A container of the same class as \code{x}, with missing values imputed.

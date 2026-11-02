@@ -16,8 +16,8 @@ If provided, the normalization will be performed within each group.}
 
 \item{...}{Additional arguments to pass to \code{\link[limma:normalizeVSN]{limma::normalizeVSN()}}.}
 
-\item{seed}{Non-negative integer seed for random VSN subsampling.
-Default is \code{123}. The caller's random state is restored after the call.}
+\item{seed}{Non-negative integer seed for random number generation. Default is
+\code{123}. The caller's random state is restored, including on errors.}
 }
 \value{
 A container of the same class as \code{x}, with a normalized expression

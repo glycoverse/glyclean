@@ -21,7 +21,8 @@ this can be a single positive ratio for the second group relative to the
 first, or two positive scales from which that ratio is derived. For
 multi-group data, provide a positive vector with one scale per group.}
 
-\item{seed}{Integer seed for random number generation. Default is \code{123}.}
+\item{seed}{Non-negative integer seed for random number generation. Default is
+\code{123}. The caller's random state is restored, including on errors.}
 }
 \value{
 A container of the same class as \code{x}, with an ALR-transformed

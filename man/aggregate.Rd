@@ -54,9 +54,8 @@ Defaults to \code{sum}. Missing values are removed before calling \code{f}, whic
 must return one numeric value, including for an empty vector when all values
 are missing. For example, use \code{mean}, \code{max}, or \code{function(x) mean(x, trim = 0.1)}.}
 
-\item{seed}{Non-negative integer seed for R randomness in a custom \code{f}.
-Default is \code{123}. The caller's random state is restored, including on errors.
-This does not control external or independently seeded random generators.}
+\item{seed}{Non-negative integer seed for random number generation. Default is
+\code{123}. The caller's random state is restored, including on errors.}
 }
 \value{
 A modified container with the same class as \code{exp}, an aggregated
