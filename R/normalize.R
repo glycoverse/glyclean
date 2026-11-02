@@ -23,8 +23,6 @@
 #' @export
 normalize_median <- function(x) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     .update_expr_mat(x, .normalize_median)
@@ -46,8 +44,6 @@ normalize_median <- function(x) {
 #' @export
 normalize_median_abs <- function(x) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     .update_expr_mat(x, .normalize_median_abs)
@@ -73,8 +69,6 @@ normalize_median_abs <- function(x) {
 #' @export
 normalize_total_area <- function(x) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     .update_expr_mat(x, .normalize_total_area)
@@ -104,8 +98,6 @@ normalize_total_area <- function(x) {
 #' @export
 normalize_quantile <- function(x, by = NULL, ...) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     .update_expr_mat(x, .normalize_quantile, by = by, ...)
@@ -135,8 +127,6 @@ normalize_quantile <- function(x, by = NULL, ...) {
 #' @export
 normalize_loessf <- function(x, by = NULL, ...) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     .update_expr_mat(x, .normalize_loessf, by = by, ...)
@@ -165,8 +155,6 @@ normalize_loessf <- function(x, by = NULL, ...) {
 #' @export
 normalize_loesscyc <- function(x, by = NULL, ...) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     .update_expr_mat(x, .normalize_loesscyc, by = by, ...)
@@ -204,8 +192,6 @@ normalize_loesscyc <- function(x, by = NULL, ...) {
 #' @export
 normalize_vsn <- function(x, by = NULL, ..., seed = 123) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
   checkmate::assert_int(seed, lower = 0)
@@ -241,8 +227,6 @@ normalize_vsn <- function(x, by = NULL, ..., seed = 123) {
 #' @export
 normalize_median_quotient <- function(x, by = NULL) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     .update_expr_mat(x, .normalize_median_quotient, by = by)
@@ -273,8 +257,6 @@ normalize_median_quotient <- function(x, by = NULL) {
 #' @export
 normalize_rlr <- function(x, by = NULL) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     .update_expr_mat(x, .normalize_rlr, by = by)
@@ -301,8 +283,6 @@ normalize_rlr <- function(x, by = NULL) {
 #' @export
 normalize_rlrma <- function(x, by = NULL) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     .update_expr_mat(x, .normalize_rlrma, by = by)
@@ -333,8 +313,6 @@ normalize_rlrma <- function(x, by = NULL) {
 #' @export
 normalize_rlrmacyc <- function(x, n_iter = 3, by = NULL) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     .update_expr_mat(x, .normalize_rlrmacyc, by = by, n_iter = n_iter)

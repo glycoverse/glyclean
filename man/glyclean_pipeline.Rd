@@ -43,12 +43,14 @@ history. The experiment still contains only one abundance assay; history
 contains parameters, not copies of intermediate assays.
 
 Replaying a history requires the same original input and compatible package
-versions. Steps carry package-version and RNG information as attributes.
-Random state is restored after replay. Callback functions and parameter
+versions and RNG configuration. Each stochastic operation records its explicit \code{seed} in
+\code{parameters}, including the default when omitted. Replay passes these
+parameters directly to the operation. Steps carry package-version information
+as an attribute; no random-generator state is stored. Callback functions and parameter
 values are captured at construction/recording time; external files, network
 side effects and mutable references in arbitrary callbacks are not supported.
 Site-sequence annotation records the actual sequences. CoDA records actual
-site decisions, reference features and random states, so replay does not
+site decisions, reference features and seeds, so replay does not
 repeat automatic reference selection.
 }
 \examples{

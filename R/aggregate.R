@@ -164,8 +164,6 @@ glyclean_aggregate.GlycoproteomicSE <- function(
   error_call = rlang::caller_call()
 ) {
   .previous <- get_pipeline(exp)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   # Check arguments
   .assert_aggregation_container(exp, error_call = error_call)
   checkmate::assert_int(seed, lower = 0)
@@ -269,7 +267,6 @@ glyclean_aggregate.GlycoproteomicSE <- function(
     to_level = to_level, standardize_variable = standardize_variable, f = f, seed = seed
   ))
   f <- step$parameters$f
-  step <- .attach_pipeline_rng(step, .rng)
   input_mat <- .get_expr_mat(exp)
   expr_mat <- withr::with_seed(seed, {
     if (identical(f, base::sum)) {

@@ -67,8 +67,6 @@ correct_batch_effect <- function(
 ) {
   method <- match.arg(method)
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- (function() {
   .assert_glyclean_container(x)

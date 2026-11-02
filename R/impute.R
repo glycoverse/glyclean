@@ -9,8 +9,6 @@
 #' @export
 impute_zero <- function(x) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     .update_expr_mat(x, .impute_zero)
@@ -33,8 +31,6 @@ impute_zero <- function(x) {
 #' @export
 impute_sample_min <- function(x) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     .update_expr_mat(x, .impute_sample_min)
@@ -57,8 +53,6 @@ impute_sample_min <- function(x) {
 #' @export
 impute_half_sample_min <- function(x) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     .update_expr_mat(x, .impute_half_sample_min)
@@ -89,8 +83,6 @@ impute_half_sample_min <- function(x) {
 #' @export
 impute_sw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   checkmate::assert_int(seed, lower = 0)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- withr::with_seed(
@@ -121,8 +113,6 @@ impute_sw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
 #' @export
 impute_fw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   checkmate::assert_int(seed, lower = 0)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- withr::with_seed(
@@ -156,8 +146,6 @@ impute_fw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
 #' @export
 impute_bpca <- function(x, by = NULL, ..., seed = 123) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
   checkmate::assert_int(seed, lower = 0)
@@ -189,8 +177,6 @@ impute_bpca <- function(x, by = NULL, ..., seed = 123) {
 #' @export
 impute_ppca <- function(x, by = NULL, ..., seed = 123) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     checkmate::assert_int(seed, lower = 0)
@@ -222,8 +208,6 @@ impute_ppca <- function(x, by = NULL, ..., seed = 123) {
 #' @export
 impute_svd <- function(x, by = NULL, ..., seed = 123) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
   checkmate::assert_int(seed, lower = 0)
@@ -267,8 +251,6 @@ impute_min_prob <- function(
   seed = 123
 ) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     checkmate::assert_int(seed, lower = 0)
@@ -306,8 +288,6 @@ impute_min_prob <- function(
 #' @export
 impute_miss_forest <- function(x, by = NULL, seed = 123, ...) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     checkmate::assert_int(seed, lower = 0)

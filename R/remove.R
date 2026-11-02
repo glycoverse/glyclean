@@ -64,8 +64,6 @@ remove_rare <- function(
   min_n = NULL
 ) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     .filter_exp(
@@ -308,8 +306,6 @@ remove_rare <- function(
 #' @export
 remove_low_var <- function(x, var_cutoff = 0, by = NULL, strict = FALSE) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     .filter_exp(x, by, strict, .filter_matrix_low_var, var_cutoff = var_cutoff)
@@ -371,8 +367,6 @@ remove_low_var <- function(x, var_cutoff = 0, by = NULL, strict = FALSE) {
 #' @export
 remove_low_cv <- function(x, cv_cutoff = 0, by = NULL, strict = FALSE) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     .filter_exp(x, by, strict, .filter_matrix_low_cv, cv_cutoff = cv_cutoff)
@@ -467,8 +461,6 @@ remove_low_cv <- function(x, cv_cutoff = 0, by = NULL, strict = FALSE) {
 #' @export
 remove_constant <- function(x, by = NULL, strict = FALSE) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     remove_low_var(x, var_cutoff = 0, by = by, strict = strict)
@@ -495,8 +487,6 @@ remove_constant <- function(x, by = NULL, strict = FALSE) {
 #' @export
 remove_low_expr <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
   .previous <- get_pipeline(x)
-  .rng <- .pipeline_rng_context()
-  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   .step <- .capture_pipeline_step(sys.function(), environment())
   .result <- {
     .filter_exp(x, by, strict, .filter_matrix_low_expr, percentile = percentile)

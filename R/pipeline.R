@@ -22,12 +22,14 @@
 #' contains parameters, not copies of intermediate assays.
 #'
 #' Replaying a history requires the same original input and compatible package
-#' versions. Steps carry package-version and RNG information as attributes.
-#' Random state is restored after replay. Callback functions and parameter
+#' versions and RNG configuration. Each stochastic operation records its explicit `seed` in
+#' `parameters`, including the default when omitted. Replay passes these
+#' parameters directly to the operation. Steps carry package-version information
+#' as an attribute; no random-generator state is stored. Callback functions and parameter
 #' values are captured at construction/recording time; external files, network
 #' side effects and mutable references in arbitrary callbacks are not supported.
 #' Site-sequence annotation records the actual sequences. CoDA records actual
-#' site decisions, reference features and random states, so replay does not
+#' site decisions, reference features and seeds, so replay does not
 #' repeat automatic reference selection.
 #'
 #' @return `glyclean_pipeline()` and `get_pipeline()` return a
@@ -98,14 +100,6 @@ get_pipeline <- function(exp) {
 apply_pipeline <- function(exp, pipeline) {
   .assert_glyclean_container(exp)
   .validate_pipeline(pipeline)
-  old_kind <- RNGkind()
-  had_seed <- exists(".Random.seed", .GlobalEnv, inherits = FALSE)
-  old_seed <- if (had_seed) get(".Random.seed", .GlobalEnv) else NULL
-  on.exit({
-    do.call(RNGkind, as.list(old_kind))
-    if (had_seed) assign(".Random.seed", old_seed, .GlobalEnv)
-    else if (exists(".Random.seed", .GlobalEnv, inherits = FALSE)) rm(".Random.seed", envir = .GlobalEnv)
-  })
   result <- exp
   for (step in pipeline) {
     before <- get_pipeline(result)
@@ -195,8 +189,7 @@ apply_pipeline <- function(exp, pipeline) {
   structure(list(`function` = fun,
                  parameters = .freeze_pipeline_value(parameters)),
             class = c("glyclean_step", "list"),
-            package_version = as.character(utils::packageVersion("glyclean")),
-            rng_kind = RNGkind())
+            package_version = as.character(utils::packageVersion("glyclean")))
 }
 
 .validate_pipeline <- function(pipeline) {
@@ -246,27 +239,6 @@ apply_pipeline <- function(exp, pipeline) {
   dots
 }
 
-# Uniform capture also covers randomness hidden inside downstream dependencies.
-.pipeline_rng_context <- function() {
-  had_seed <- exists(".Random.seed", .GlobalEnv, inherits = FALSE)
-  if (!had_seed) set.seed(NULL)
-  list(kind = RNGkind(), state = get(".Random.seed", .GlobalEnv), had_seed = had_seed)
-}
-
-.pipeline_rng_cleanup <- function(context) {
-  if (!context$had_seed && exists(".Random.seed", .GlobalEnv, inherits = FALSE) &&
-      identical(get(".Random.seed", .GlobalEnv), context$state)) {
-    rm(".Random.seed", envir = .GlobalEnv)
-  }
-  invisible(NULL)
-}
-
-.attach_pipeline_rng <- function(step, context) {
-  attr(step, "rng_kind") <- context$kind
-  attr(step, "rng_state") <- context$state
-  step
-}
-
 .capture_pipeline_step <- function(fun, frame) {
   parameters <- list()
   for (nm in names(formals(fun))[-1L]) {
@@ -285,8 +257,7 @@ apply_pipeline <- function(exp, pipeline) {
       param_name = "by", n_samples = ncol(.get_expr_mat(input))
     ))
   }
-  step <- .new_pipeline_step(fun, parameters)
-  .attach_pipeline_rng(step, get(".rng", frame, inherits = FALSE))
+  .new_pipeline_step(fun, parameters)
 }
 
 .append_pipeline_step <- function(result, step, previous = get_pipeline(result)) {
@@ -304,10 +275,6 @@ apply_pipeline <- function(exp, pipeline) {
 }
 
 .replay_pipeline_step <- function(exp, step) {
-  kind <- attr(step, "rng_kind")
-  if (!is.null(kind) && !identical(kind, RNGkind())) do.call(RNGkind, as.list(kind))
-  seed <- attr(step, "rng_state")
-  if (!is.null(seed)) assign(".Random.seed", seed, .GlobalEnv)
   do.call(step[["function"]], c(list(exp), step$parameters))
 }
 
@@ -324,7 +291,7 @@ print.glyclean_pipeline <- function(x, ...) {
     label <- if (length(hit)) hit[[1L]] else "recorded operation"
     if (identical(fun, .replay_coda_step)) {
       methods <- vapply(step$parameters$site_plan, function(entry) {
-        if (identical(entry[["function"]], .transform_clr_mat)) "CLR" else "ALR"
+        if (identical(entry[["function"]], .transform_clr_seeded)) "CLR" else "ALR"
       }, character(1))
       label <- sprintf("CoDA [%s; %d composition(s)]",
                        paste(unique(methods), collapse = "/"), length(methods))

@@ -64,3 +64,42 @@ test_that("VSN subsampling records the effective seed and replays independently"
                    SummarizedExperiment::assay(result))
   expect_identical(.Random.seed, outside)
 })
+
+test_that("recipes and histories store seeds only as ordinary parameters", {
+  x <- SummarizedExperiment::SummarizedExperiment(assays = list(signal =
+    matrix(seq_len(12), nrow = 4, dimnames = list(paste0("V", 1:4), paste0("S", 1:3)))))
+  SummarizedExperiment::assay(x)[c(1, 7)] <- NA_real_
+  recipe <- glyclean_pipeline(normalize_total_area(), impute_min_prob())
+  history <- get_pipeline(apply_pipeline(x, recipe))
+  for (steps in list(recipe, history)) {
+    expect_false("seed" %in% names(steps[[1]]$parameters))
+    expect_identical(steps[[2]]$parameters$seed, 123)
+    for (step in steps) {
+      expect_null(attr(step, "rng_state"))
+      expect_null(attr(step, "rng_kind"))
+      expect_identical(names(step), c("function", "parameters"))
+    }
+  }
+  recipe[[2]]$parameters$seed <- 729
+  result <- apply_pipeline(x, recipe)
+  expected <- impute_min_prob(normalize_total_area(x), seed = 729)
+  expect_identical(SummarizedExperiment::assay(result), SummarizedExperiment::assay(expected))
+  expect_identical(get_pipeline(result)[[2]]$parameters$seed, 729)
+})
+
+test_that("building and applying deterministic steps never initializes RNG state", {
+  x <- SummarizedExperiment::SummarizedExperiment(assays = list(signal =
+    matrix(seq_len(12), nrow = 4, dimnames = list(paste0("V", 1:4), paste0("S", 1:3)))))
+  withr::local_preserve_seed()
+  if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
+    rm(".Random.seed", envir = .GlobalEnv)
+  }
+  {
+    recipe <- glyclean_pipeline(normalize_total_area())
+    expect_false(exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
+    result <- apply_pipeline(x, recipe)
+    expect_false(exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
+    apply_pipeline(x, get_pipeline(result))
+    expect_false(exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
+  }
+})

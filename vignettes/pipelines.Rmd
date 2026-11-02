@@ -66,10 +66,13 @@ stopifnot(isTRUE(all.equal(
 
 Recipes and histories serve different purposes. A recipe can select methods on
 new data. A recorded history captures resolved arguments and concrete choices
-for replay on the **same original input**, with compatible package versions.
+for replay on the **same original input**, with compatible package versions
+and the same RNG configuration.
 Recorded CoDA histories contain a lightweight per-composition plan: actual CLR
-or ALR function, selected reference, parameters and the random state before the
+or ALR function, selected reference, parameters and an explicit seed for the
 actual transformation. This also handles ALR-to-CLR fallback and mixed sites.
+Each composition's seed is stored with its concrete operation in
+`history[[i]]$parameters$site_plan[[j]]$parameters$seed`.
 They require the original feature/sample identities and order. Neither the
 original assay nor intermediate assay matrices are stored in history.
 
@@ -78,8 +81,10 @@ on a FASTA file still existing or a remote UniProt response staying unchanged.
 A protein-adjustment step includes its supplied protein expression matrix,
 which is a necessary external input rather than an intermediate assay.
 
-Steps have package-version and RNG attributes in addition to their two fields.
-Replay restores the caller's random generator and state, including on errors.
+Seeds are ordinary step parameters, including defaults when omitted. Replay
+passes them directly to the recorded function; no RNG-state snapshots are stored.
+Each seeded function restores the caller's random state, including on errors.
+Steps carry a package-version attribute in addition to their two fields.
 Pipelines can be saved with `saveRDS()` and reloaded with `readRDS()`.
 As with other R objects containing functions, only load histories from trusted
 sources. Preserve the original data and an R dependency lockfile alongside the

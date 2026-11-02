@@ -16,7 +16,7 @@ test_that("recorded stochastic CLR replays and retains one assay", {
   expect_length(pipeline, 1L)
   expect_named(pipeline[[1L]], c("function", "parameters"))
   plan <- pipeline[[1L]]$parameters$site_plan
-  expect_identical(plan[[1L]][["function"]], .transform_clr_mat)
+  expect_identical(plan[[1L]][["function"]], .transform_clr_seeded)
   expect_true(isNamespace(environment(plan[[1L]][["function"]])))
   set.seed(921)
   state <- .Random.seed
@@ -29,7 +29,7 @@ test_that("recorded stochastic CLR replays and retains one assay", {
   expect_identical(S4Vectors::metadata(replay)$custom, "keep")
 })
 
-test_that("ALR fallback preserves randomness consumed by reference selection", {
+test_that("ALR fallback replays from its explicit seed without reference selection", {
   x <- coda_pipeline_input()
   # Force a rejected reference after the real selection path consumed RNG.
   original_select <- .select_alr_reference
@@ -42,7 +42,7 @@ test_that("ALR fallback preserves randomness consumed by reference selection", {
                  "falling back to CLR")
   pipeline <- get_pipeline(result)
   expect_identical(pipeline[[1L]]$parameters$site_plan[[1L]][["function"]],
-                   .transform_clr_mat)
+                   .transform_clr_seeded)
   replay <- apply_pipeline(x, pipeline)
   expect_identical(SummarizedExperiment::assay(replay),
                    SummarizedExperiment::assay(result))
@@ -67,8 +67,8 @@ test_that("recorded site-wise mixed CoDA replays concrete decisions", {
   pipeline <- get_pipeline(result)
   plan <- pipeline[[1L]]$parameters$site_plan
   expect_length(plan, 2L)
-  expect_identical(plan[[1L]][["function"]], .apply_alr_reference)
-  expect_identical(plan[[2L]][["function"]], .transform_clr_mat)
+  expect_identical(plan[[1L]][["function"]], .apply_alr_reference_seeded)
+  expect_identical(plan[[2L]][["function"]], .transform_clr_seeded)
   expect_identical(S4Vectors::metadata(result)$coda_transform, "mixed")
   replay <- apply_pipeline(x, pipeline)
   expect_identical(SummarizedExperiment::assay(replay),
@@ -123,7 +123,7 @@ test_that("CoDA replay restores RNG kind and an absent caller RNG state", {
   expect_false(exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
 })
 
-test_that("CoDA records uniform step RNG context even before any random draw", {
+test_that("CoDA records seeds as parameters without RNG attributes", {
   x <- coda_pipeline_input()
   old_kind <- RNGkind()
   had_seed <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
@@ -142,12 +142,75 @@ test_that("CoDA records uniform step RNG context even before any random draw", {
     result <- transform_clr(x, gamma = gamma, seed = 128)
     history <- get_pipeline(result)
     expect_false(exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
-    expect_type(attr(history[[1L]], "rng_state"), "integer")
-    expect_identical(attr(history[[1L]], "rng_kind"), old_kind)
+    expect_null(attr(history[[1L]], "rng_state"))
+    expect_false("seed" %in% names(history[[1L]]$parameters))
+    expect_identical(history[[1L]]$parameters$site_plan[[1L]]$parameters$seed, 128)
+    expect_null(attr(history[[1L]], "rng_kind"))
     replay <- apply_pipeline(x, history)
     expect_false(exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
     expect_identical(S4Vectors::metadata(replay), S4Vectors::metadata(result))
     expect_identical(SummarizedExperiment::assay(replay),
                      SummarizedExperiment::assay(result))
+  }
+})
+
+test_that("CoDA plans preserve explicit site seeds and row identities", {
+  mat <- outer(seq_len(8), c(2, 3, 5, 7))
+  dimnames(mat) <- list(paste0("V", seq_len(8)), paste0("S", seq_len(4)))
+  x <- test_glycoproteomic_se(mat, var_info = tibble::tibble(
+    variable = rownames(mat), protein = rep(c("P2", "P1"), 4),
+    protein_site = rep(c(20L, 10L), 4)
+  ))
+  result <- auto_coda(x, gamma = 0.3, seed = 87)
+  history <- get_pipeline(result)
+  plan <- history[[1L]]$parameters$site_plan
+  seeds <- withr::with_seed(87, sample.int(.Machine$integer.max, 2L))
+  expect_identical(vapply(plan, function(entry) entry$parameters$seed, integer(1)),
+                   seeds)
+  expect_identical(plan[[1L]]$row_indices, c(1L, 3L, 5L, 7L))
+  expect_identical(plan[[2L]]$row_indices, c(2L, 4L, 6L, 8L))
+  for (entry in plan) {
+    expect_identical(entry$rows, rownames(mat)[entry$row_indices])
+    expect_false(any(c("rng_state", "rng_kind") %in% names(entry)))
+    expected <- do.call(entry[["function"]],
+      c(list(mat = mat[entry$row_indices, , drop = FALSE]), entry$parameters))
+    expect_identical(SummarizedExperiment::assay(result)[entry$row_indices, ],
+                     expected)
+  }
+  restored <- unserialize(serialize(history, NULL))
+  expect_identical(SummarizedExperiment::assay(apply_pipeline(x, restored)),
+                   SummarizedExperiment::assay(result))
+  expect_error(apply_pipeline(x[c(2, 1, 3:8), ], history), "identities and order")
+  expect_error(apply_pipeline(x[, 4:1], history), "identities and order")
+  broken <- history
+  broken[[1L]]$parameters$site_plan[[1L]]$row_indices <- c(2L, 4L, 6L, 8L)
+  expect_error(apply_pipeline(x, broken), "composition rows")
+})
+
+test_that("recorded ALR and fallback replay without selecting a reference again", {
+  x <- coda_pipeline_input()
+  for (accepted in c(FALSE, TRUE)) {
+    local_mocked_bindings(.select_alr_reference = function(mat, by_values = NULL) {
+      stats::rnorm(7)
+      list(ref_idx = 1L, reference = rownames(mat)[1L],
+           procrustes = if (accepted) 1 else 0, variance = 0)
+    })
+    result <- suppressWarnings(transform_alr(x, gamma = 0.3, seed = 87))
+    history <- get_pipeline(result)
+    plan <- history[[1L]]$parameters$site_plan
+    expect_identical(plan[[1L]]$parameters$seed, 87)
+    expected_fun <- if (accepted) .apply_alr_reference_seeded else .transform_clr_seeded
+    expect_identical(plan[[1L]][["function"]], expected_fun)
+    local_mocked_bindings(.select_alr_reference = function(...) {
+      stop("Reference selection must not run during replay")
+    })
+    replay <- apply_pipeline(x, history)
+    expect_identical(SummarizedExperiment::assay(replay),
+                     SummarizedExperiment::assay(result))
+    changed <- history
+    changed[[1L]]$parameters$site_plan[[1L]]$parameters$seed <- 88
+    alternate <- apply_pipeline(x, changed)
+    expect_false(identical(SummarizedExperiment::assay(alternate),
+                           SummarizedExperiment::assay(result)))
   }
 })
