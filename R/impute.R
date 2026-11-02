@@ -81,10 +81,8 @@ impute_half_sample_min <- function(x) {
 #' @param k The number of nearest neighbors to consider.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Used for grouping when imputing missing values.
-#' @param seed Non-negative integer random seed. Default is `123`. The seed
-#'   controls KNN partitioning and the caller's random state is restored.
-#'   A legacy `rng.seed` supplied through `...` is used when `seed` is omitted.
-#'   If both are supplied they must agree.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #' @param ... Additional arguments to pass to `impute::impute.knn()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
@@ -93,20 +91,13 @@ impute_sw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
   .previous <- get_pipeline(x)
   .rng <- .pipeline_rng_context()
   on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
-  args <- .resolve_knn_seed(seed, missing(seed), list(...))
-  seed <- args$seed
+  checkmate::assert_int(seed, lower = 0)
   .step <- .capture_pipeline_step(sys.function(), environment())
-  .step$parameters$seed <- args$seed
-  .step$parameters$rng.seed <- NULL
-  .result <- {
-    withr::with_seed(
-    args$seed,
-    do.call(.update_expr_mat, c(
-      list(exp = x, matrix_func = .impute_sw_knn, by = by, k = k), args$dots
-    ))
+  .result <- withr::with_seed(
+    seed,
+    .update_expr_mat(x, .impute_sw_knn, by = by, k = k,
+                     rng.seed = seed, ...)
   )
-
-  }
   .append_pipeline_step(.result, .step, previous = .previous)
 }
 
@@ -122,10 +113,8 @@ impute_sw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
 #' @param k The number of nearest neighbors to consider.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Used for grouping when imputing missing values.
-#' @param seed Non-negative integer random seed. Default is `123`. The seed
-#'   controls KNN partitioning and the caller's random state is restored.
-#'   A legacy `rng.seed` supplied through `...` is used when `seed` is omitted.
-#'   If both are supplied they must agree.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #' @param ... Additional arguments to pass to `impute::impute.knn()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
@@ -134,20 +123,13 @@ impute_fw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
   .previous <- get_pipeline(x)
   .rng <- .pipeline_rng_context()
   on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
-  args <- .resolve_knn_seed(seed, missing(seed), list(...))
-  seed <- args$seed
+  checkmate::assert_int(seed, lower = 0)
   .step <- .capture_pipeline_step(sys.function(), environment())
-  .step$parameters$seed <- args$seed
-  .step$parameters$rng.seed <- NULL
-  .result <- {
-    withr::with_seed(
-    args$seed,
-    do.call(.update_expr_mat, c(
-      list(exp = x, matrix_func = .impute_fw_knn, by = by, k = k), args$dots
-    ))
+  .result <- withr::with_seed(
+    seed,
+    .update_expr_mat(x, .impute_fw_knn, by = by, k = k,
+                     rng.seed = seed, ...)
   )
-
-  }
   .append_pipeline_step(.result, .step, previous = .previous)
 }
 
@@ -166,9 +148,8 @@ impute_fw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Used for grouping when imputing missing values.
-#' @param seed Non-negative integer random seed. Default is `123`. This also
-#'   controls optional cross-validation requested through `...`; the caller's
-#'   random state is restored. The default fitting path is deterministic.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #' @param ... Additional arguments to pass to `pcaMethods::pca()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
@@ -200,7 +181,8 @@ impute_bpca <- function(x, by = NULL, ..., seed = 123) {
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Used for grouping when imputing missing values.
-#' @param seed Integer seed for random number generation. Default is `123`.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #' @param ... Additional arguments to pass to `pcaMethods::pca()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
@@ -232,9 +214,8 @@ impute_ppca <- function(x, by = NULL, ..., seed = 123) {
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Used for grouping when imputing missing values.
-#' @param seed Non-negative integer random seed. Default is `123`. This also
-#'   controls optional cross-validation requested through `...`; the caller's
-#'   random state is restored. The default fitting path is deterministic.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #' @param ... Additional arguments to pass to `pcaMethods::pca()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
@@ -270,7 +251,8 @@ impute_svd <- function(x, by = NULL, ..., seed = 123) {
 #'   sample. Default is `0.01`.
 #' @param tune.sigma Non-negative multiplier for the standard deviation of the
 #'   left-censored draw distribution. Default is `1`.
-#' @param seed Integer seed for random number generation. Default is `123`.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #' @param ... Reserved for backward compatibility. Extra arguments are not
 #'   supported.
 #'
@@ -316,7 +298,8 @@ impute_min_prob <- function(
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #' @param by Either a column name in `sample_info` (string) or a factor/vector
 #'   specifying group assignments for each sample. Used for grouping when imputing missing values.
-#' @param seed Integer seed for random number generation. Default is 123.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #' @param ... Additional arguments to pass to `missForest::missForest()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
@@ -525,29 +508,4 @@ impute_miss_forest <- function(x, by = NULL, seed = 123, ...) {
 .impute_miss_forest <- function(mat, ...) {
   rlang::check_installed("missForest", reason = "to use `impute_miss_forest()`")
   missForest::missForest(mat, ...)$ximp
-}
-
-# Resolve the historical backend seed without swallowing positional arguments.
-# impute.knn() unconditionally calls set.seed(rng.seed), so an outer seed alone
-# would not control its partitioning. Match the real backend signature first.
-.resolve_knn_seed <- function(seed, seed_missing, dots) {
-  rlang::check_installed("impute", reason = "to use KNN imputation")
-  call <- as.call(c(list(quote(impute::impute.knn)),
-                    list(data = NULL, k = NULL), dots))
-  matched <- as.list(match.call(impute::impute.knn, call))[-1L]
-  matched$data <- NULL
-  matched$k <- NULL
-  if ("rng.seed" %in% names(matched)) {
-    legacy <- matched$rng.seed
-    checkmate::assert_int(legacy, lower = 0)
-    if (!seed_missing) {
-      checkmate::assert_int(seed, lower = 0)
-      if (seed != legacy) {
-        cli::cli_abort("{.arg seed} and legacy {.arg rng.seed} must agree when both are supplied.")
-      }
-    } else seed <- legacy
-  }
-  checkmate::assert_int(seed, lower = 0)
-  matched$rng.seed <- seed
-  list(seed = seed, dots = matched)
 }

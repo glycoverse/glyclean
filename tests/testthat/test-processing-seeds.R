@@ -159,3 +159,33 @@ test_that("auto_clean forwards its seed to aggregation for both experiment types
   expect_identical(suppressMessages(auto_clean(proteomic, seed = 87)), proteomic)
   expect_identical(observed, c(87, 87))
 })
+
+test_that("aggregation restores RNG kind even when an unseeded callback changes it", {
+  x <- simple_exp(4, 3)
+  for (fail in c(FALSE, TRUE)) {
+    f <- function(values) {
+      RNGkind("L'Ecuyer-CMRG")
+      if (fail) stop("changed kind")
+      sum(values) + stats::runif(1)
+    }
+    withr::local_seed(21)
+    state <- .Random.seed
+    kind <- RNGkind()
+    if (fail) {
+      expect_error(aggregate(x, f = f, standardize_variable = FALSE), "changed kind")
+    } else {
+      aggregate(x, f = f, standardize_variable = FALSE)
+    }
+    expect_identical(.Random.seed, state)
+    expect_identical(RNGkind(), kind)
+    seed_without_global_state({
+      if (fail) {
+        expect_error(aggregate(x, f = f, standardize_variable = FALSE), "changed kind")
+      } else {
+        aggregate(x, f = f, standardize_variable = FALSE)
+      }
+      expect_identical(RNGkind(), kind)
+      expect_false(exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
+    })
+  }
+})

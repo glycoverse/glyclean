@@ -17,10 +17,8 @@ specifying group assignments for each sample. Used for grouping when imputing mi
 
 \item{...}{Additional arguments to pass to \code{impute::impute.knn()}.}
 
-\item{seed}{Non-negative integer random seed. Default is \code{123}. The seed
-controls KNN partitioning and the caller's random state is restored.
-A legacy \code{rng.seed} supplied through \code{...} is used when \code{seed} is omitted.
-If both are supplied they must agree.}
+\item{seed}{Non-negative integer seed for random number generation. Default is
+\code{123}. The caller's random state is restored, including on errors.}
 }
 \value{
 A container of the same class as \code{x}, with missing values imputed.

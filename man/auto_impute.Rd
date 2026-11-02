@@ -13,7 +13,8 @@ auto_impute(exp, group_col = "group", seed = 123)
 \item{group_col}{The column name in sample_info for groups. Default is "group".
 Can be NULL when no group information is available.}
 
-\item{seed}{Integer seed for random number generation. Default is \code{123}.}
+\item{seed}{Non-negative integer seed for random number generation. Default is
+\code{123}. The caller's random state is restored, including on errors.}
 }
 \value{
 The imputed input container, with its class preserved.

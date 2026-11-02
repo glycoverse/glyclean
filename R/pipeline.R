@@ -64,15 +64,6 @@ glyclean_pipeline <- function(...) {
       }
     }
     parameters <- lapply(args, eval, envir = caller)
-    if (identical(fun, impute_sw_knn) || identical(fun, impute_fw_knn)) {
-      dots <- parameters[!names(parameters) %in% fml]
-      effective <- .resolve_knn_seed(
-        if ("seed" %in% names(parameters)) parameters$seed else 123,
-        !"seed" %in% names(parameters), dots
-      )
-      parameters$rng.seed <- NULL
-      parameters$seed <- effective$seed
-    }
     defaults <- formals(fun)
     bindings <- list2env(parameters, parent = environment(fun))
     for (nm in setdiff(names(defaults)[-1L], "...")) {

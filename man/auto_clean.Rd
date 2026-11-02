@@ -48,8 +48,8 @@ Only used when \code{check_batch_confounding} is TRUE. Default to 0.4.}
 after aggregation. Set to \code{FALSE} to skip network calls for faster testing.
 Default is \code{TRUE}.}
 
-\item{seed}{Integer seed for random number generation used by stochastic
-preprocessing steps. Default is \code{123}.}
+\item{seed}{Non-negative integer seed for random number generation. Default is
+\code{123}. The caller's random state is restored, including on errors.}
 }
 \value{
 A modified container with the same subclass as \code{exp}.

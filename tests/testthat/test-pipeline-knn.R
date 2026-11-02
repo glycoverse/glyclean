@@ -11,32 +11,31 @@ pipeline_knn_quiet <- function(fun, ...) {
   result
 }
 
-test_that("KNN recipes canonicalize the legacy seed before filling defaults", {
-  implicit <- glyclean_pipeline(
-    impute_sw_knn(k = 3, maxp = 12, rng.seed = 99),
-    impute_fw_knn(k = 3, maxp = 12, rng.seed = 99)
-  )
-  explicit <- glyclean_pipeline(
-    impute_sw_knn(k = 3, maxp = 12, rng.seed = 99, seed = 99),
-    impute_fw_knn(k = 3, maxp = 12, rng.seed = 99, seed = 99)
-  )
-  for (i in seq_along(implicit)) {
-    expect_identical(implicit[[i]]$parameters$seed, 99)
-    expect_false("rng.seed" %in% names(implicit[[i]]$parameters))
-    expect_equal(implicit[[i]]$parameters, explicit[[i]]$parameters)
-  }
-  expect_error(glyclean_pipeline(impute_sw_knn(rng.seed = 99, seed = 123)),
-               "must agree")
-  expect_error(glyclean_pipeline(impute_fw_knn(rng.seed = 99, seed = 123)),
-               "must agree")
-})
-
-test_that("KNN recipes with a legacy seed execute and record the effective seed", {
+test_that("KNN recipes use only the explicit seed", {
   skip_if_not_installed("impute")
   x <- pipeline_knn_input()
   recipes <- list(
-    glyclean_pipeline(impute_sw_knn(k = 3, maxp = 12, rng.seed = 99)),
-    glyclean_pipeline(impute_fw_knn(k = 3, maxp = 12, rng.seed = 99))
+    glyclean_pipeline(impute_sw_knn(k = 3, maxp = 12, seed = 99)),
+    glyclean_pipeline(impute_fw_knn(k = 3, maxp = 12, seed = 99))
+  )
+  for (recipe in recipes) {
+    expect_identical(recipe[[1]]$parameters$seed, 99)
+    expect_false("rng.seed" %in% names(recipe[[1]]$parameters))
+  }
+  for (recipe in list(
+    glyclean_pipeline(impute_sw_knn(rng.seed = 99)),
+    glyclean_pipeline(impute_fw_knn(rng.seed = 99, seed = 99))
+  )) {
+    expect_error(apply_pipeline(x, recipe), "matched by multiple")
+  }
+})
+
+test_that("KNN recipes execute and record the explicit seed", {
+  skip_if_not_installed("impute")
+  x <- pipeline_knn_input()
+  recipes <- list(
+    glyclean_pipeline(impute_sw_knn(k = 3, maxp = 12, seed = 99)),
+    glyclean_pipeline(impute_fw_knn(k = 3, maxp = 12, seed = 99))
   )
   functions <- list(impute_sw_knn, impute_fw_knn)
   withr::local_seed(918)
@@ -54,14 +53,14 @@ test_that("KNN recipes with a legacy seed execute and record the effective seed"
   }
 })
 
-test_that("direct named and positional legacy KNN seeds produce replayable histories", {
+test_that("direct KNN calls with explicit seeds produce replayable histories", {
   skip_if_not_installed("impute")
   x <- pipeline_knn_input()
   withr::local_seed(387)
   for (fun in list(impute_sw_knn, impute_fw_knn)) {
     results <- list(
-      pipeline_knn_quiet(fun, x, k = 3, maxp = 12, rng.seed = 99),
-      pipeline_knn_quiet(fun, x, 3, NULL, 0.5, 0.8, 12, 99)
+      pipeline_knn_quiet(fun, x, k = 3, maxp = 12, seed = 99),
+      pipeline_knn_quiet(fun, x, 3, NULL, 0.5, 0.8, 12, seed = 99)
     )
     for (result in results) {
       history <- get_pipeline(result)
@@ -93,14 +92,14 @@ test_that("recipe construction and application preserve an absent RNG state", {
     }
   })
   if (had_seed) rm(".Random.seed", envir = .GlobalEnv)
-  recipe <- glyclean_pipeline(impute_sw_knn(k = 3, maxp = 12, rng.seed = 99))
+  recipe <- glyclean_pipeline(impute_sw_knn(k = 3, maxp = 12, seed = 99))
   expect_false(exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
   result <- pipeline_knn_quiet(apply_pipeline, x, recipe)
   expect_false(exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
   expect_identical(RNGkind(), old_kind)
   pipeline_knn_quiet(apply_pipeline, x, get_pipeline(result))
   expect_false(exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
-  expect_error(glyclean_pipeline(impute_sw_knn(rng.seed = 99, seed = 123)),
-               "must agree")
+  expect_error(apply_pipeline(x, glyclean_pipeline(impute_sw_knn(rng.seed = 99))),
+               "matched by multiple")
   expect_false(exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
 })

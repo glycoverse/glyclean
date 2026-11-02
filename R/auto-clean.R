@@ -42,8 +42,8 @@
 #' @param standardize_variable Whether to call [glyexp::standardize_variable()]
 #'   after aggregation. Set to `FALSE` to skip network calls for faster testing.
 #'   Default is `TRUE`.
-#' @param seed Integer seed for random number generation used by stochastic
-#'   preprocessing steps. Default is `123`.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #'
 #' @return A modified container with the same subclass as `exp`.
 #'

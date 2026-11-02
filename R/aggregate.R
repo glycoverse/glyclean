@@ -60,9 +60,8 @@
 #'   Defaults to `sum`. Missing values are removed before calling `f`, which
 #'   must return one numeric value, including for an empty vector when all values
 #'   are missing. For example, use `mean`, `max`, or `function(x) mean(x, trim = 0.1)`.
-#' @param seed Non-negative integer seed for R randomness in a custom `f`.
-#'   Default is `123`. The caller's random state is restored, including on errors.
-#'   This does not control external or independently seeded random generators.
+#' @param seed Non-negative integer seed for random number generation. Default is
+#'   `123`. The caller's random state is restored, including on errors.
 #' @returns A modified container with the same class as `exp`, an aggregated
 #'   expression matrix, and updated variable information.
 #' @export
@@ -170,18 +169,9 @@ glyclean_aggregate.GlycoproteomicSE <- function(
   # Check arguments
   .assert_aggregation_container(exp, error_call = error_call)
   checkmate::assert_int(seed, lower = 0)
-  # with_seed restores kinds when a seed exists. Also preserve the kind when
-  # an unseeded caller supplies a callback that changes RNGkind().
-  had_seed <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+  withr::local_preserve_seed()
   rng_kind <- RNGkind()
-  on.exit({
-    if (!had_seed && !identical(RNGkind(), rng_kind)) {
-      do.call(RNGkind, as.list(rng_kind))
-      if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
-        rm(".Random.seed", envir = .GlobalEnv)
-      }
-    }
-  }, add = TRUE)
+  withr::defer(do.call(RNGkind, as.list(rng_kind)))
   if (!is.function(f)) {
     cli::cli_abort("{.arg f} must be a function.", call = error_call)
   }

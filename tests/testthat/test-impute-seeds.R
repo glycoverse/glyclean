@@ -32,20 +32,17 @@ test_that("KNN seeds control actual split partitioning and restore caller RNG", 
   }
 })
 
-test_that("KNN preserves legacy named and positional backend seeds", {
+test_that("KNN accepts only the explicit seed and preserves other backend arguments", {
   skip_if_not_installed("impute")
   x <- seed_impute_exp()
   for (fun in list(impute_sw_knn, impute_fw_knn)) {
     expected <- quiet_seed_call(fun, x, k = 3, maxp = 12, seed = 37)
-    named <- quiet_seed_call(fun, x, k = 3, maxp = 12, rng.seed = 37)
-    positional <- quiet_seed_call(fun, x, 3, NULL, 0.5, 0.8, 12, 37)
-    equal_seeds <- quiet_seed_call(fun, x, k = 3, maxp = 12,
-                                  rng.seed = 37, seed = 37)
-    for (actual in list(named, positional, equal_seeds)) {
-      expect_identical(SummarizedExperiment::assay(actual),
-                       SummarizedExperiment::assay(expected))
-    }
-    expect_error(fun(x, seed = 10, rng.seed = 11), "must agree")
+    positional <- quiet_seed_call(fun, x, 3, NULL, 0.5, 0.8, 12, seed = 37)
+    expect_identical(SummarizedExperiment::assay(positional),
+                     SummarizedExperiment::assay(expected))
+    expect_error(fun(x, rng.seed = 37), "matched by multiple")
+    expect_error(fun(x, seed = 37, rng.seed = 37), "matched by multiple")
+    expect_error(fun(x, 3, NULL, 0.5, 0.8, 12, 37), "unused argument")
   }
 })
 
