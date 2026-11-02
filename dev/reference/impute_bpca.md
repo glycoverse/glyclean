@@ -13,7 +13,7 @@ subspace.
 ## Usage
 
 ``` r
-impute_bpca(x, by = NULL, ...)
+impute_bpca(x, by = NULL, ..., seed = 123)
 ```
 
 ## Arguments
@@ -37,6 +37,11 @@ impute_bpca(x, by = NULL, ...)
 
   Additional arguments to pass to
   [`pcaMethods::pca()`](https://rdrr.io/pkg/pcaMethods/man/pca.html).
+
+- seed:
+
+  Non-negative integer seed for random number generation. Default is
+  `123`. The caller's random state is restored, including on errors.
 
 ## Value
 

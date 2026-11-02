@@ -34,7 +34,8 @@ plot_rep_scatter(exp, rep_col, n_pairs = 9, seed = 123)
 
 - seed:
 
-  Integer seed for random pair selection. Default is `123`.
+  Non-negative integer seed for random number generation. Default is
+  `123`. The caller's random state is restored, including on errors.
 
 ## Value
 

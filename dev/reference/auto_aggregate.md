@@ -10,7 +10,7 @@ whether `glycan_structure` is present.
 ## Usage
 
 ``` r
-auto_aggregate(exp, standardize_variable = TRUE)
+auto_aggregate(exp, standardize_variable = TRUE, seed = 123)
 ```
 
 ## Arguments
@@ -28,6 +28,11 @@ auto_aggregate(exp, standardize_variable = TRUE)
   [`glyexp::standardize_variable()`](https://glycoverse.github.io/glyexp/reference/standardize_variable.html)
   after aggregation. Set to `FALSE` to skip network calls for faster
   testing. Default is `TRUE`.
+
+- seed:
+
+  Non-negative integer seed for random number generation. Default is
+  `123`. The caller's random state is restored, including on errors.
 
 ## Value
 

@@ -2,6 +2,29 @@
 
 ## glyclean (development version)
 
+- Added an explicit `seed = 123` to
+  [`normalize_vsn()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_vsn.md),
+  [`impute_sw_knn()`](https://glycoverse.github.io/glyclean/dev/reference/impute_sw_knn.md),
+  [`impute_fw_knn()`](https://glycoverse.github.io/glyclean/dev/reference/impute_fw_knn.md),
+  [`impute_bpca()`](https://glycoverse.github.io/glyclean/dev/reference/impute_bpca.md),
+  [`impute_svd()`](https://glycoverse.github.io/glyclean/dev/reference/impute_svd.md),
+  and
+  [`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md)
+  (for stochastic callbacks). Newly seeded functions preserve the
+  caller’s R random state.
+  [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md),
+  [`auto_aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/auto_aggregate.md),
+  and
+  [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
+  propagate the seed to their concrete operations.
+
+- KNN seeds now reach `impute::impute.knn(rng.seed = ...)`, including
+  its random large-matrix splitting. Configure random seeds only with
+  the explicit `seed` argument; legacy `rng.seed` values passed through
+  `...` are no longer supported. The default effective KNN seed changes
+  from the backend default `362436069` to `123`, so split-based results
+  can change. Other forwarded backend arguments remain supported.
+
 - [`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md),
   [`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md),
   and

@@ -35,6 +35,8 @@ library(glyclean)
 #> 
 #>     aggregate
 library(glyexp)
+#> Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by
+#> 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'
 library(SummarizedExperiment)
 #> Loading required package: MatrixGenerics
 #> Loading required package: matrixStats
@@ -655,3 +657,38 @@ world of glyco-omics analysis:
 - **Visualization**: Create stunning plots that tell your data’s story
 
 The `glycoverse` ecosystem has tools for all of these and more!
+
+## Controlling random preprocessing
+
+Stochastic preprocessing functions expose a non-negative integer `seed`,
+with `123` as the default. This includes VSN subsampling
+([`normalize_vsn()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_vsn.md)),
+both KNN imputation directions, BPCA/SVD cross-validation, PPCA,
+MinProb, MissForest and CoDA. Aggregation also accepts a seed for custom
+callbacks that use R’s RNG.
+[`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
+and
+[`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
+pass their seed to the selected imputation method, and automatic
+aggregation forwards the seed as well.
+
+``` r
+
+normalized <- normalize_vsn(exp, subsample = 100, seed = 42)
+imputed <- impute_bpca(exp, cv = "q2", seed = 42)
+knn <- impute_sw_knn(exp, k = 5, maxp = 1500, seed = 42)
+```
+
+For functions with `...`, newly added seeds must be named. Existing
+positional arguments forwarded through `...` retain their meaning. KNN’s
+historical `rng.seed` argument remains supported when `seed` is omitted.
+Supplying both with conflicting values is an error; the effective seed
+is passed to the backend rather than being overridden by its default.
+
+These calls restore the caller’s R random state, including on errors and
+when `.Random.seed` did not previously exist. A fixed seed supports
+reproducibility within the same R/RNG configuration and dependency
+versions. External random generators, backend changes, parallel
+computation and arbitrary side effects in custom callbacks may require
+additional controls; a seed alone is not a promise of bitwise identity
+across platforms or package versions.

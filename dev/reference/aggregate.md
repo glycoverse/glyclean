@@ -60,13 +60,31 @@ removed for "gf" level, as one "glycoform" can contain multiple
 ## Usage
 
 ``` r
-aggregate(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
+aggregate(
+  exp,
+  to_level = NULL,
+  standardize_variable = TRUE,
+  f = sum,
+  seed = 123
+)
 
 # S3 method for class 'glyexp_experiment'
-glyclean_aggregate(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
+glyclean_aggregate(
+  exp,
+  to_level = NULL,
+  standardize_variable = TRUE,
+  f = sum,
+  seed = 123
+)
 
 # Default S3 method
-glyclean_aggregate(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
+glyclean_aggregate(
+  exp,
+  to_level = NULL,
+  standardize_variable = TRUE,
+  f = sum,
+  seed = 123
+)
 ```
 
 ## Arguments
@@ -102,6 +120,11 @@ glyclean_aggregate(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
   which must return one numeric value, including for an empty vector
   when all values are missing. For example, use `mean`, `max`, or
   `function(x) mean(x, trim = 0.1)`.
+
+- seed:
+
+  Non-negative integer seed for random number generation. Default is
+  `123`. The caller's random state is restored, including on errors.
 
 ## Value
 

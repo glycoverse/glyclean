@@ -44,7 +44,8 @@ auto_coda(x, by = NULL, gamma = 0.1, group_scales = NULL, seed = 123)
 
 - seed:
 
-  Integer seed for random number generation. Default is `123`.
+  Non-negative integer seed for random number generation. Default is
+  `123`. The caller's random state is restored, including on errors.
 
 ## Value
 

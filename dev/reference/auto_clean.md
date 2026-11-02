@@ -108,8 +108,8 @@ auto_clean(
 
 - seed:
 
-  Integer seed for random number generation used by stochastic
-  preprocessing steps. Default is `123`.
+  Non-negative integer seed for random number generation. Default is
+  `123`. The caller's random state is restored, including on errors.
 
 ## Value
 

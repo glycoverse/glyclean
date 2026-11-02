@@ -13,7 +13,7 @@ paper](https://doi.org/10.1093/bib/bbw095) for more information.
 ## Usage
 
 ``` r
-normalize_vsn(x, by = NULL, ...)
+normalize_vsn(x, by = NULL, ..., seed = 123)
 ```
 
 ## Arguments
@@ -37,6 +37,11 @@ normalize_vsn(x, by = NULL, ...)
 
   Additional arguments to pass to
   [`limma::normalizeVSN()`](https://rdrr.io/pkg/limma/man/normalizeVSN.html).
+
+- seed:
+
+  Non-negative integer seed for random number generation. Default is
+  `123`. The caller's random state is restored, including on errors.
 
 ## Value
 
