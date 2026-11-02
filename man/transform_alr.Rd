@@ -28,9 +28,8 @@ multi-group data, provide a positive vector with one scale per group.}
 A container of the same class as \code{x}, with an ALR-transformed
 expression matrix.
 When ALR succeeds, the reference glycan is excluded from the result and the
-output therefore has one fewer row per successful composition (per site
-for glycoproteomics). Sites that fall back to CLR retain all their rows.
-For other containers, CLR fallback keeps the original dimensions. The
+output therefore has one fewer row. CLR fallback keeps the original
+dimensions. Glycoproteomics input is not supported. The
 returned values are back-transformed to the original ratio space, corresponding to
 \code{x / x_ref}.
 }
@@ -57,16 +56,15 @@ positive scale per group; these scales are used only in the stochastic branch.
 \section{Glycoproteomics}{
 For \code{GlycoproteomicSE} objects and legacy glycoproteomics experiments, each
 unique combination of \code{protein} and \code{protein_site} is treated as a separate
-composition. CLR centering, ALR reference selection, and ALR-to-CLR fallback
-are performed independently within each site. Both site identifiers must be
+composition. CLR centering is performed independently within each site.
+ALR is not supported for glycoproteomics; use \code{transform_clr()} or
+\code{auto_coda()}, which always uses CLR. Both site identifiers must be
 present and non-missing. \code{by} continues to specify sample groups.
 
-The output preserves the original order of retained rows and their
+The output preserves all rows, their original order, and their
 annotations. Metadata field \code{coda_site_transforms} records \code{protein},
 \code{protein_site}, \code{transform}, and \code{reference} for each site; \code{reference} is
-missing for CLR sites. \code{coda_transform} is \code{"clr"}, \code{"alr"}, or \code{"mixed"}
-when sites use different methods, and \code{coda_reference} contains all removed
-reference row names, or \code{NULL} when no references are removed.
+always missing. \code{coda_transform} is \code{"clr"}, and \code{coda_reference} is \code{NULL}.
 
 With \code{gamma = 0}, a site containing a single feature returns one for
 positive abundances and zero for zeros. Samples with no positive abundance

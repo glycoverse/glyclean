@@ -25,15 +25,16 @@ multi-group data, provide a positive vector with one scale per group.}
 \code{123}. The caller's random state is restored, including on errors.}
 }
 \value{
-The input container with a CoDA-transformed expression matrix (ALR
-if >50 variables per composition, CLR otherwise) and its class preserved.
+The input container with a CoDA-transformed expression matrix and
+its class preserved. Glycoproteomics always uses site-wise CLR and retains
+all rows. Other supported containers use ALR if there are more than 50
+variables, or CLR otherwise.
 }
 \description{
-If the data has more than 50 variables, call \code{\link[=transform_alr]{transform_alr()}}.
-Otherwise, call \code{\link[=transform_clr]{transform_clr()}},
-following the same strategy in glycowork.
-For glycoproteomics, this decision is made independently at each protein
-site, using the number of features at that site.
+For glycoproteomics, always call \code{\link[=transform_clr]{transform_clr()}} to transform each protein
+site independently, regardless of the number of features at the site.
+For other supported containers, call \code{\link[=transform_alr]{transform_alr()}} when the data has more
+than 50 variables and \code{\link[=transform_clr]{transform_clr()}} otherwise, following glycowork.
 }
 \section{Algorithmic details}{
 The stochastic branch follows \code{glycowork}: when \code{gamma > 0}, CLR noise is
@@ -52,16 +53,15 @@ positive scale per group; these scales are used only in the stochastic branch.
 \section{Glycoproteomics}{
 For \code{GlycoproteomicSE} objects and legacy glycoproteomics experiments, each
 unique combination of \code{protein} and \code{protein_site} is treated as a separate
-composition. CLR centering, ALR reference selection, and ALR-to-CLR fallback
-are performed independently within each site. Both site identifiers must be
+composition. CLR centering is performed independently within each site.
+ALR is not supported for glycoproteomics; use \code{transform_clr()} or
+\code{auto_coda()}, which always uses CLR. Both site identifiers must be
 present and non-missing. \code{by} continues to specify sample groups.
 
-The output preserves the original order of retained rows and their
+The output preserves all rows, their original order, and their
 annotations. Metadata field \code{coda_site_transforms} records \code{protein},
 \code{protein_site}, \code{transform}, and \code{reference} for each site; \code{reference} is
-missing for CLR sites. \code{coda_transform} is \code{"clr"}, \code{"alr"}, or \code{"mixed"}
-when sites use different methods, and \code{coda_reference} contains all removed
-reference row names, or \code{NULL} when no references are removed.
+always missing. \code{coda_transform} is \code{"clr"}, and \code{coda_reference} is \code{NULL}.
 
 With \code{gamma = 0}, a site containing a single feature returns one for
 positive abundances and zero for zeros. Samples with no positive abundance

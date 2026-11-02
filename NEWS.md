@@ -3,7 +3,7 @@
 * Added an explicit `seed = 123` to `normalize_vsn()`, `impute_sw_knn()`, `impute_fw_knn()`, `impute_bpca()`, `impute_svd()`, and `aggregate()` (for stochastic callbacks). Newly seeded functions preserve the caller's R random state. `auto_impute()`, `auto_aggregate()`, and `auto_clean()` propagate the seed to their concrete operations.
 * KNN seeds now reach `impute::impute.knn(rng.seed = ...)`, including its random large-matrix splitting. Configure random seeds only with the explicit `seed` argument; legacy `rng.seed` values passed through `...` are no longer supported. The default effective KNN seed changes from the backend default `362436069` to `123`, so split-based results can change. Other forwarded backend arguments remain supported.
 
-* `transform_clr()`, `transform_alr()`, and `auto_coda()` now treat each `protein` and `protein_site` combination in glycoproteomics objects as an independent composition, with site-specific method selection, reference removal, and metadata; samples with zero abundance throughout a composition remain zero. (#34)
+* Glycoproteomics CoDA now always uses CLR: `auto_coda()` delegates to `transform_clr()` regardless of site size, and `transform_alr()` explicitly rejects glycoproteomics input. Each `protein` and `protein_site` combination remains an independent composition, all rows are retained, and site metadata records CLR with no reference. This replaces the per-site ALR selection introduced in #34; glycomics method selection and ALR behavior are unchanged.
 
 # glyclean 0.16.0
 
