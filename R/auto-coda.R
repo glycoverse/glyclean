@@ -23,46 +23,8 @@ auto_coda <- function(
   group_scales = NULL,
   seed = 123
 ) {
-  .assert_glyclean_container(x)
-  checkmate::assert_int(seed, lower = 0)
-
-  if (identical(.get_exp_type(x), "glycoproteomics")) {
-    cli::cli_alert_info(
-      "Applying CoDA separately at each protein site (ALR for >50 features, CLR otherwise)."
-    )
-    return(withr::with_seed(
-      seed,
-      .transform_coda_sites(
-        x,
-        method = "auto",
-        by = by,
-        gamma = gamma,
-        group_scales = group_scales
-      )
-    ))
-  }
-
-  if (nrow(x) > 50) {
-    cli::cli_alert_info(
-      "Data has more than 50 variables, using ALR transformation."
-    )
-    transform_alr(
-      x,
-      by = by,
-      gamma = gamma,
-      group_scales = group_scales,
-      seed = seed
-    )
-  } else {
-    cli::cli_alert_info(
-      "Data has 50 or fewer variables, using CLR transformation."
-    )
-    transform_clr(
-      x,
-      by = by,
-      gamma = gamma,
-      group_scales = group_scales,
-      seed = seed
-    )
-  }
+  .run_recorded_coda(
+    x, method = "auto", by = by, gamma = gamma,
+    group_scales = group_scales, seed = seed
+  )
 }

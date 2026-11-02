@@ -8,7 +8,14 @@
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_zero <- function(x) {
-  .update_expr_mat(x, .impute_zero)
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
+    .update_expr_mat(x, .impute_zero)
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -25,7 +32,14 @@ impute_zero <- function(x) {
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_sample_min <- function(x) {
-  .update_expr_mat(x, .impute_sample_min)
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
+    .update_expr_mat(x, .impute_sample_min)
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -42,7 +56,14 @@ impute_sample_min <- function(x) {
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_half_sample_min <- function(x) {
-  .update_expr_mat(x, .impute_half_sample_min)
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
+    .update_expr_mat(x, .impute_half_sample_min)
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -69,13 +90,24 @@ impute_half_sample_min <- function(x) {
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_sw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   args <- .resolve_knn_seed(seed, missing(seed), list(...))
-  withr::with_seed(
+  seed <- args$seed
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .step$parameters$seed <- args$seed
+  .step$parameters$rng.seed <- NULL
+  .result <- {
+    withr::with_seed(
     args$seed,
     do.call(.update_expr_mat, c(
       list(exp = x, matrix_func = .impute_sw_knn, by = by, k = k), args$dots
     ))
   )
+
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -99,13 +131,24 @@ impute_sw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_fw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
   args <- .resolve_knn_seed(seed, missing(seed), list(...))
-  withr::with_seed(
+  seed <- args$seed
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .step$parameters$seed <- args$seed
+  .step$parameters$rng.seed <- NULL
+  .result <- {
+    withr::with_seed(
     args$seed,
     do.call(.update_expr_mat, c(
       list(exp = x, matrix_func = .impute_fw_knn, by = by, k = k), args$dots
     ))
   )
+
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -131,11 +174,19 @@ impute_fw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_bpca <- function(x, by = NULL, ..., seed = 123) {
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
   checkmate::assert_int(seed, lower = 0)
   withr::with_seed(
     seed,
     .update_expr_mat(x, .impute_bpca, by = by, ...)
   )
+
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -155,11 +206,18 @@ impute_bpca <- function(x, by = NULL, ..., seed = 123) {
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_ppca <- function(x, by = NULL, ..., seed = 123) {
-  checkmate::assert_int(seed, lower = 0)
-  withr::with_seed(
-    seed,
-    .update_expr_mat(x, .impute_ppca, by = by, ...)
-  )
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
+    checkmate::assert_int(seed, lower = 0)
+    withr::with_seed(
+      seed,
+      .update_expr_mat(x, .impute_ppca, by = by, ...)
+    )
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -182,11 +240,19 @@ impute_ppca <- function(x, by = NULL, ..., seed = 123) {
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_svd <- function(x, by = NULL, ..., seed = 123) {
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
   checkmate::assert_int(seed, lower = 0)
   withr::with_seed(
     seed,
     .update_expr_mat(x, .impute_svd, by = by, ...)
   )
+
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -218,18 +284,25 @@ impute_min_prob <- function(
   ...,
   seed = 123
 ) {
-  checkmate::assert_int(seed, lower = 0)
-  withr::with_seed(
-    seed,
-    .update_expr_mat(
-      x,
-      .impute_min_prob,
-      by = by,
-      q = q,
-      tune.sigma = tune.sigma,
-      ...
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
+    checkmate::assert_int(seed, lower = 0)
+    withr::with_seed(
+      seed,
+      .update_expr_mat(
+        x,
+        .impute_min_prob,
+        by = by,
+        q = q,
+        tune.sigma = tune.sigma,
+        ...
+      )
     )
-  )
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -249,16 +322,23 @@ impute_min_prob <- function(
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_miss_forest <- function(x, by = NULL, seed = 123, ...) {
-  checkmate::assert_int(seed, lower = 0)
-  withr::with_seed(
-    seed,
-    .update_expr_mat(
-      x,
-      .impute_miss_forest,
-      by = by,
-      ...
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
+    checkmate::assert_int(seed, lower = 0)
+    withr::with_seed(
+      seed,
+      .update_expr_mat(
+        x,
+        .impute_miss_forest,
+        by = by,
+        ...
+      )
     )
-  )
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 # ===== Implementation =====

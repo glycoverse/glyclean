@@ -96,5 +96,7 @@ auto_remove <- function(
     cli::cli_alert_info("No variables removed.")
   }
 
-  exp
+  metadata <- .get_container_metadata(exp)
+  metadata$pipeline <- get_pipeline(exp_filtered)
+  .rebuild_container(exp, metadata = metadata)
 }

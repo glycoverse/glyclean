@@ -6,11 +6,12 @@ test_that("assay preprocessing preserves glyco SE subclasses", {
     normalized <- normalize_median(x)
     imputed <- impute_zero(x)
 
+    expect_length(get_pipeline(normalized), 1L)
     expect_s4_class(normalized, class_name)
     expect_s4_class(imputed, class_name)
     expect_false(anyNA(SummarizedExperiment::assay(imputed)))
     expect_identical(
-      S4Vectors::metadata(normalized),
+      S4Vectors::metadata(normalized)[names(S4Vectors::metadata(x))],
       S4Vectors::metadata(x)
     )
   }
@@ -40,7 +41,10 @@ test_that("non-auto preprocessing accepts plain SummarizedExperiment objects", {
     expect_identical(as.character(class(result)), "SummarizedExperiment")
   }
   expect_false(anyNA(SummarizedExperiment::assay(imputed)))
-  expect_identical(S4Vectors::metadata(normalized), S4Vectors::metadata(x))
+  expect_identical(
+    S4Vectors::metadata(normalized)[names(S4Vectors::metadata(x))],
+    S4Vectors::metadata(x)
+  )
 })
 
 test_that("assay preprocessing preserves a nonstandard assay name", {

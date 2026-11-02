@@ -84,6 +84,8 @@ test_that("correct_batch_effect warns and returns original when batch and group 
   # Should warn and return original experiment when group_col is specified
   expect_snapshot(result <- correct_batch_effect(exp, group = "group"))
 
+  expect_length(get_pipeline(result), 1L)
+  S4Vectors::metadata(result)$pipeline <- NULL
   expect_equal(result, exp)
 })
 
@@ -176,6 +178,8 @@ test_that("correct_batch_effect handles insufficient samples per batch", {
   # Should warn and return original experiment
   expect_snapshot(result <- correct_batch_effect(exp))
 
+  expect_length(get_pipeline(result), 1L)
+  S4Vectors::metadata(result)$pipeline <- NULL
   expect_identical(result, exp)
 })
 
@@ -213,7 +217,11 @@ test_that("correct_batch_effect preserves GlycomicSE structure", {
     SummarizedExperiment::rowData(result),
     SummarizedExperiment::rowData(exp)
   )
-  expect_identical(S4Vectors::metadata(result), S4Vectors::metadata(exp))
+  expect_length(get_pipeline(result), 1L)
+  expect_identical(
+    S4Vectors::metadata(result)[names(S4Vectors::metadata(exp))],
+    S4Vectors::metadata(exp)
+  )
 })
 
 # Tests for detect_batch_effect function
@@ -780,6 +788,8 @@ test_that("correct_batch_effect handles single batch scenario", {
     "Less than 2 batches found"
   )
   expect_glyco_se(result)
+  expect_length(get_pipeline(result), 1L)
+  S4Vectors::metadata(result)$pipeline <- NULL
   expect_equal(result, exp) # Should return equivalent data when correction fails
 })
 

@@ -117,6 +117,10 @@ test_that("aggregation defaults remain deterministic and validate seeds", {
   x <- simple_exp(4, 3)
   first <- aggregate(x, seed = 7, standardize_variable = FALSE)
   second <- aggregate(x, seed = 19, standardize_variable = FALSE)
+  expect_identical(get_pipeline(first)[[1]]$parameters$seed, 7)
+  expect_identical(get_pipeline(second)[[1]]$parameters$seed, 19)
+  S4Vectors::metadata(first)$pipeline <- NULL
+  S4Vectors::metadata(second)$pipeline <- NULL
   expect_identical(first, second)
   expect_error(aggregate(x, seed = -1, standardize_variable = FALSE))
   expect_error(aggregate(x, seed = NA_integer_, standardize_variable = FALSE))

@@ -22,7 +22,14 @@
 #'   matrix.
 #' @export
 normalize_median <- function(x) {
-  .update_expr_mat(x, .normalize_median)
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
+    .update_expr_mat(x, .normalize_median)
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -38,7 +45,14 @@ normalize_median <- function(x) {
 #'   matrix.
 #' @export
 normalize_median_abs <- function(x) {
-  .update_expr_mat(x, .normalize_median_abs)
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
+    .update_expr_mat(x, .normalize_median_abs)
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -58,7 +72,14 @@ normalize_median_abs <- function(x) {
 #'   matrix.
 #' @export
 normalize_total_area <- function(x) {
-  .update_expr_mat(x, .normalize_total_area)
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
+    .update_expr_mat(x, .normalize_total_area)
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -82,7 +103,14 @@ normalize_total_area <- function(x) {
 #'   matrix.
 #' @export
 normalize_quantile <- function(x, by = NULL, ...) {
-  .update_expr_mat(x, .normalize_quantile, by = by, ...)
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
+    .update_expr_mat(x, .normalize_quantile, by = by, ...)
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -106,7 +134,14 @@ normalize_quantile <- function(x, by = NULL, ...) {
 #'   matrix.
 #' @export
 normalize_loessf <- function(x, by = NULL, ...) {
-  .update_expr_mat(x, .normalize_loessf, by = by, ...)
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
+    .update_expr_mat(x, .normalize_loessf, by = by, ...)
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -129,7 +164,14 @@ normalize_loessf <- function(x, by = NULL, ...) {
 #'   matrix.
 #' @export
 normalize_loesscyc <- function(x, by = NULL, ...) {
-  .update_expr_mat(x, .normalize_loesscyc, by = by, ...)
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
+    .update_expr_mat(x, .normalize_loesscyc, by = by, ...)
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -161,8 +203,16 @@ normalize_loesscyc <- function(x, by = NULL, ...) {
 #'   matrix.
 #' @export
 normalize_vsn <- function(x, by = NULL, ..., seed = 123) {
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
   checkmate::assert_int(seed, lower = 0)
   withr::with_seed(seed, .update_expr_mat(x, .normalize_vsn, by = by, ...))
+
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -190,7 +240,14 @@ normalize_vsn <- function(x, by = NULL, ..., seed = 123) {
 #'   matrix.
 #' @export
 normalize_median_quotient <- function(x, by = NULL) {
-  .update_expr_mat(x, .normalize_median_quotient, by = by)
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
+    .update_expr_mat(x, .normalize_median_quotient, by = by)
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -215,7 +272,14 @@ normalize_median_quotient <- function(x, by = NULL) {
 #'   matrix.
 #' @export
 normalize_rlr <- function(x, by = NULL) {
-  .update_expr_mat(x, .normalize_rlr, by = by)
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
+    .update_expr_mat(x, .normalize_rlr, by = by)
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -236,7 +300,14 @@ normalize_rlr <- function(x, by = NULL) {
 #'   matrix.
 #' @export
 normalize_rlrma <- function(x, by = NULL) {
-  .update_expr_mat(x, .normalize_rlrma, by = by)
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
+    .update_expr_mat(x, .normalize_rlrma, by = by)
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 
@@ -261,7 +332,14 @@ normalize_rlrma <- function(x, by = NULL) {
 #'   matrix.
 #' @export
 normalize_rlrmacyc <- function(x, n_iter = 3, by = NULL) {
-  .update_expr_mat(x, .normalize_rlrmacyc, by = by, n_iter = n_iter)
+  .previous <- get_pipeline(x)
+  .rng <- .pipeline_rng_context()
+  on.exit(.pipeline_rng_cleanup(.rng), add = TRUE)
+  .step <- .capture_pipeline_step(sys.function(), environment())
+  .result <- {
+    .update_expr_mat(x, .normalize_rlrmacyc, by = by, n_iter = n_iter)
+  }
+  .append_pipeline_step(.result, .step, previous = .previous)
 }
 
 

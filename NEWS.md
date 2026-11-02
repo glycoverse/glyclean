@@ -1,5 +1,6 @@
 # glyclean (development version)
 
+* Added list-based `glyclean_pipeline()`, `apply_pipeline()`, and `get_pipeline()` APIs. Processing records concrete reproducible steps in experiment metadata while retaining one assay. Automatic preprocessing records its selected operations; site CoDA decisions and sequence annotation inputs are frozen for replay.
 * Added an explicit `seed = 123` to `normalize_vsn()`, `impute_sw_knn()`, `impute_fw_knn()`, `impute_bpca()`, `impute_svd()`, and `aggregate()` (for stochastic callbacks). Newly seeded functions preserve the caller's R random state. `auto_impute()`, `auto_aggregate()`, and `auto_clean()` propagate the seed to their concrete operations.
 * KNN seeds now reach `impute::impute.knn(rng.seed = ...)`, including its random large-matrix splitting. The old `rng.seed` argument is accepted when `seed` is omitted; conflicting explicit values are rejected. The default effective KNN seed changes from the backend default `362436069` to `123`, so split-based results can change. Existing positional forwarded arguments remain supported.
 

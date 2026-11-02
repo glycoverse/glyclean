@@ -126,6 +126,9 @@ test_that("auto_correct_batch_effect uses group information", {
 
   # We just want to ensure it runs without error when group is provided
   # and that it's actually using the group column (detected by not erroring on a valid column)
+  # Keep the printed fixture stable across released and development glyexp:
+  # older constructors do not add this metadata field automatically.
+  S4Vectors::metadata(exp)$scale <- "raw"
 
   expect_snapshot(auto_correct_batch_effect(
     exp,
