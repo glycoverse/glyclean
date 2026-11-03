@@ -512,8 +512,7 @@ history
 #> 1. remove_rare
 #>    prop = 0.8, n = NULL, by = NULL, strict = FALSE, min_n = 1
 #> 2. remove_rare
-#>    prop = 0.5, n = NULL, by = <factor [12]: "H" (3), "M" (3), "Y" (3), "C"
-#>    (3)>, strict = FALSE, min_n = 1
+#>    prop = 0.5, n = NULL, by = "group", strict = FALSE, min_n = 1
 #> 3. normalize_median
 #>    (no parameters)
 #> 4. impute_min_prob

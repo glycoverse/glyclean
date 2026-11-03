@@ -84,7 +84,9 @@ lists, not callable functions: use <code>apply_pipeline(exp, pipeline)</code>.</
 <code>exp$meta_data$pipeline</code> for legacy experiments). Automatic operations record
 the concrete operations they execute. QC summaries and plots do not modify
 history. The experiment still contains only one abundance assay; history
-contains parameters, not copies of intermediate assays.</p>
+contains parameters, not copies of intermediate assays.
+Grouping values are frozen for replay. When <code>by</code> is supplied as a column
+name, that original name is retained for printing the recorded step.</p>
 <p>Replaying a history requires the same original input and compatible package
 versions and RNG configuration. Each stochastic operation records its explicit <code>seed</code> in
 <code>parameters</code>, including the default when omitted. Replay passes these
