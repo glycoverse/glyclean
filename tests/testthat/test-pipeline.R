@@ -527,3 +527,52 @@ test_that("shared recording retains batch no-op steps and excludes auto recipes"
     .is_auto_pipeline_function(step[["function"]])
   }, logical(1))))
 })
+
+test_that("ordinary parameter slicing preserves omitted row and column indices", {
+  proteins <- matrix(seq_len(12), nrow = 3,
+    dimnames = list(paste0("P", 1:3), paste0("S", 1:4)))
+  keep_rows <- c(1L, 3L)
+  keep_columns <- c(2L, 4L)
+  expected_columns <- proteins[, keep_columns, drop = FALSE]
+  expected_rows <- proteins[keep_rows, , drop = FALSE]
+  expected_all <- proteins[, , drop = FALSE]
+
+  pipeline <- glyclean_pipeline(
+    adjust_protein(pro_expr_mat = proteins[, keep_columns, drop = FALSE]),
+    adjust_protein(pro_expr_mat = proteins[keep_rows, , drop = FALSE]),
+    adjust_protein(pro_expr_mat = proteins[, , drop = FALSE])
+  )
+  proteins[] <- 0L
+  expect_identical(pipeline[[1L]]$parameters$pro_expr_mat, expected_columns)
+  expect_identical(pipeline[[2L]]$parameters$pro_expr_mat, expected_rows)
+  expect_identical(pipeline[[3L]]$parameters$pro_expr_mat, expected_all)
+  expect_false(.has_pipeline_quosure(quote(proteins[, keep_columns, drop = FALSE])))
+  expect_false(.has_pipeline_quosure(quote(proteins[keep_rows, , drop = FALSE])))
+})
+
+test_that("nested quosure slicing preserves omitted indices and local environments", {
+  proteins <- matrix(seq_len(12), nrow = 3,
+    dimnames = list(paste0("P", 1:3), paste0("S", 1:4)))
+  rows <- local({
+    keep <- c(1L, 3L)
+    rlang::quo(keep)
+  })
+  columns <- local({
+    keep <- c(2L, 4L)
+    rlang::quo(keep)
+  })
+  pipeline <- glyclean_pipeline(
+    adjust_protein(pro_expr_mat = proteins[, !!columns, drop = FALSE]),
+    adjust_protein(pro_expr_mat = proteins[!!rows, , drop = FALSE])
+  )
+  expect_identical(pipeline[[1L]]$parameters$pro_expr_mat,
+                   proteins[, c(2L, 4L), drop = FALSE])
+  expect_identical(pipeline[[2L]]$parameters$pro_expr_mat,
+                   proteins[c(1L, 3L), , drop = FALSE])
+  expect_true(.has_pipeline_quosure(
+    rlang::expr(proteins[, !!columns, drop = FALSE])
+  ))
+  expect_true(.has_pipeline_quosure(
+    rlang::expr(proteins[!!rows, , drop = FALSE])
+  ))
+})

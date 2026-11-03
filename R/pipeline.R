@@ -95,6 +95,8 @@ glyclean_pipeline <- function(...) {
 }
 
 .has_pipeline_quosure <- function(expr) {
+  # Empty subscript positions are missing arguments, not quosures.
+  if (rlang::is_missing(expr)) return(FALSE)
   rlang::is_quosure(expr) ||
     (rlang::is_call(expr) &&
        any(vapply(as.list(expr), .has_pipeline_quosure, logical(1))))
