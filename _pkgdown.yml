@@ -23,8 +23,9 @@ reference:
   - title: Normalization
     contents:
       - starts_with("normalize_")
-  - title: Imputation
+  - title: Missing Values
     contents:
+      - zero_to_na
       - starts_with("impute_")
   - title: Filtering
     contents:

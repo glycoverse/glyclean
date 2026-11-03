@@ -90,3 +90,17 @@ stopifnot(identical(from_recipe, cleaned))
 Recipes can also include `auto_*()` calls to choose methods when they are
 applied. The resulting experiment's history records the concrete operations
 that ran, ready to inspect or replay.
+
+## Treat zeros as missing measurements
+
+When zeros in your data represent missing measurements, explicitly convert them
+before imputation. `zero_to_na()` changes exact zeros only; it does not change
+nonzero values or decide how to impute. It is recorded like any other operation:
+
+```{r}
+zero_recipe <- glyclean_pipeline(zero_to_na(), impute_min_prob(seed = 42))
+zero_cleaned <- apply_pipeline(original, zero_recipe)
+stopifnot(identical(
+  apply_pipeline(original, get_pipeline(zero_cleaned)), zero_cleaned
+))
+```

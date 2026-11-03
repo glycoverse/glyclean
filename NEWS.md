@@ -1,5 +1,7 @@
 # glyclean (development version)
 
+* Added `zero_to_na()` to explicitly replace exact zeros in the abundance assay with missing values, preserving annotations and recording a replayable pipeline step.
+
 * Pipeline recording uses a shared helper across preprocessing functions. Recipe construction uses tidy evaluation, and the pipeline tutorial now starts with recorded processing history and replay before introducing manual recipes.
 
 * CoDA operations now record their function and parameters only in the preprocessing pipeline. They add no CoDA-specific metadata and preserve all existing metadata unchanged, with no legacy-field migration or cleanup.

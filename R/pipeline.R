@@ -136,7 +136,7 @@ apply_pipeline <- function(exp, pipeline) {
   c("normalize_median", "normalize_median_abs", "normalize_total_area",
     "normalize_quantile", "normalize_loessf", "normalize_loesscyc",
     "normalize_rlr", "normalize_rlrma", "normalize_rlrmacyc",
-    "normalize_vsn", "normalize_median_quotient", "impute_zero",
+    "normalize_vsn", "normalize_median_quotient", "zero_to_na", "impute_zero",
     "impute_sample_min", "impute_half_sample_min", "impute_sw_knn",
     "impute_fw_knn", "impute_bpca", "impute_ppca", "impute_svd",
     "impute_min_prob", "impute_miss_forest", "remove_rare", "remove_low_var",
