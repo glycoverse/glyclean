@@ -43,6 +43,8 @@ Successful processing calls append to \code{metadata(exp)$pipeline} (or
 the concrete operations they execute. QC summaries and plots do not modify
 history. The experiment still contains only one abundance assay; history
 contains parameters, not copies of intermediate assays.
+Grouping values are frozen for replay. When \code{by} is supplied as a column
+name, that original name is retained for printing the recorded step.
 
 Replaying a history requires the same original input and compatible package
 versions and RNG configuration. Each stochastic operation records its explicit \code{seed} in

@@ -77,9 +77,72 @@ test_that("recorded history retains operation names across namespace reloads", {
     expect_match(shown$text, name, fixed = TRUE)
   }
   expect_false(grepl("recorded operation", shown$text, fixed = TRUE))
-  expect_match(shown$text, 'by = <factor [3]: "A" (2), "B" (1)>', fixed = TRUE)
+  expect_match(shown$text, 'by = "group"', fixed = TRUE)
   expect_match(shown$text, "f = base::sum", fixed = TRUE)
   expect_identical(serialize(history, NULL), before)
+})
+
+test_that("column grouping prints its original name in recorded and replayed history", {
+  x <- simple_exp(4, 3)
+  groups <- factor(c("A", "A", "B"))
+  column_names <- c(
+    "group",
+    "treatment",
+    paste(rep("group", 10), collapse = "_")
+  )
+  for (column in column_names) {
+    SummarizedExperiment::colData(x)[[column]] <- groups
+    recipe <- glyclean_pipeline(remove_rare(by = !!column, min_n = 1))
+    result <- suppressMessages(apply_pipeline(x, recipe))
+    history <- unserialize(serialize(get_pipeline(result), NULL))
+    expect_identical(history[[1]]$parameters$by, groups)
+    expected <- paste0("by = ", encodeString(column, quote = '"'))
+    shown <- capture_pipeline_print(history, width = 120)
+    expect_match(shown$text, expected, fixed = TRUE)
+    expect_false(grepl("<factor", shown$text, fixed = TRUE))
+    replay <- suppressMessages(apply_pipeline(x, history))
+    expect_identical(replay, result)
+    expect_match(
+      capture_pipeline_print(get_pipeline(replay), width = 120)$text,
+      expected,
+      fixed = TRUE
+    )
+  }
+  direct <- suppressMessages(remove_rare(x, by = groups, min_n = 1))
+  expect_match(
+    capture_pipeline_print(get_pipeline(direct))$text,
+    "<factor [3]",
+    fixed = TRUE
+  )
+  automatic <- suppressMessages(auto_remove(x))
+  expect_match(
+    capture_pipeline_print(get_pipeline(automatic))$text,
+    'by = "group"',
+    fixed = TRUE
+  )
+})
+
+test_that("column labels do not change frozen grouping values on replay", {
+  x <- simple_exp(4, 3)
+  groups <- factor(c("A", "A", "B"))
+  SummarizedExperiment::colData(x)$group <- groups
+  SummarizedExperiment::assay(x)[1, 1:2] <- NA_real_
+  result <- suppressMessages(remove_rare(x, prop = 0, by = "group", min_n = 1))
+  history <- get_pipeline(result)
+  SummarizedExperiment::colData(x)$group <- factor(c("A", "B", "B"))
+  replay <- suppressMessages(apply_pipeline(x, history))
+  expect_identical(
+    SummarizedExperiment::assay(replay),
+    SummarizedExperiment::assay(result)
+  )
+  expect_identical(get_pipeline(replay)[[1]]$parameters$by, groups)
+  expect_match(
+    capture_pipeline_print(get_pipeline(replay))$text,
+    'by = "group"',
+    fixed = TRUE
+  )
+  changed <- suppressMessages(remove_rare(x, prop = 0, by = "group", min_n = 1))
+  expect_false(identical(rownames(changed), rownames(replay)))
 })
 
 test_that("callback summaries identify named functions without executing them", {

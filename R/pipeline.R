@@ -22,6 +22,8 @@
 #' the concrete operations they execute. QC summaries and plots do not modify
 #' history. The experiment still contains only one abundance assay; history
 #' contains parameters, not copies of intermediate assays.
+#' Grouping values are frozen for replay. When `by` is supplied as a column
+#' name, that original name is retained for printing the recorded step.
 #'
 #' Replaying a history requires the same original input and compatible package
 #' versions and RNG configuration. Each stochastic operation records its explicit `seed` in
@@ -283,18 +285,28 @@ apply_pipeline <- function(exp, pipeline) {
       parameters[nm] <- list(get(nm, frame, inherits = FALSE))
     }
   }
+  by_column <- NULL
   if ("by" %in% names(parameters) && !is.null(parameters$by)) {
+    if (is.character(parameters$by) && length(parameters$by) == 1L) {
+      by_column <- parameters$by
+    }
     input <- get(names(formals(fun))[[1L]], frame, inherits = FALSE)
     parameters["by"] <- list(.resolve_column_param(
-      parameters$by, sample_info = .get_sample_info(input),
-      param_name = "by", n_samples = ncol(.get_expr_mat(input))
+      parameters$by,
+      sample_info = .get_sample_info(input),
+      param_name = "by",
+      n_samples = ncol(.get_expr_mat(input))
     ))
     # A single character value is otherwise parsed as a column name on replay.
     if (is.character(parameters$by) && length(parameters$by) == 1L) {
       parameters$by <- factor(parameters$by)
     }
   }
-  .new_pipeline_step(fun, parameters)
+  step <- .new_pipeline_step(fun, parameters)
+  if (!is.null(by_column)) {
+    attr(step, "by_column") <- by_column
+  }
+  step
 }
 
 .append_pipeline_step <- function(result, step, previous = get_pipeline(result)) {
@@ -312,7 +324,20 @@ apply_pipeline <- function(exp, pipeline) {
 }
 
 .replay_pipeline_step <- function(exp, step) {
-  do.call(step[["function"]], c(list(exp), step$parameters))
+  result <- do.call(step[["function"]], c(list(exp), step$parameters))
+  by_column <- attr(step, "by_column", exact = TRUE)
+  if (!is.null(by_column)) {
+    # Replay supplies frozen group values, so the recorder cannot recover the
+    # original column name. Carry that display attribute to its new record.
+    previous <- get_pipeline(exp)
+    history <- get_pipeline(result)
+    if (length(history) == length(previous) + 1L) {
+      recorded <- history[[length(history)]]
+      attr(recorded, "by_column") <- by_column
+      result <- .append_pipeline_step(result, recorded, previous = previous)
+    }
+  }
+  result
 }
 
 .pipeline_operation_name <- function(fun) {
@@ -440,6 +465,7 @@ print.glyclean_pipeline <- function(x, ...) {
     cli::cli_li("{.strong {label}}")
     parameter_block <- cli::cli_div(theme = list(div = list("margin-left" = 3)))
     parameters <- step[["parameters"]]
+    by_column <- attr(step, "by_column", exact = TRUE)
     if (!length(parameters)) {
       cli::cli_text("(no parameters)")
       cli::cli_end(parameter_block)
@@ -448,10 +474,16 @@ print.glyclean_pipeline <- function(x, ...) {
     tokens <- vapply(
       seq_along(parameters),
       function(j) {
-        paste0(
-          encodeString(names(parameters)[[j]]),
-          " = ",
+        name <- names(parameters)[[j]]
+        summary <- if (name == "by" && !is.null(by_column)) {
+          encodeString(by_column, quote = '"')
+        } else {
           .pipeline_parameter_summary(parameters[[j]])
+        }
+        paste0(
+          encodeString(name),
+          " = ",
+          summary
         )
       },
       character(1)
