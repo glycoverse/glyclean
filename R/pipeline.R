@@ -345,54 +345,79 @@ apply_pipeline <- function(exp, pipeline) {
 }
 
 #' @export
-print.glyclean_pipeline <- function(x, ...) {
+format.glyclean_pipeline <- function(x, ...) {
   if (!interactive()) {
     old <- options(cli.num_colors = 1L)
     on.exit(options(old), add = TRUE)
   }
-  width <- max(1L, cli::console_width())
-  emit <- function(line) {
-    line <- cli::ansi_strtrim(line, width = width)
-    cli::cli_verbatim(line)
-  }
-  count <- length(x)
-  header <- sprintf("<glyclean_pipeline> %d %s", count,
-                    if (count == 1L) "step" else "steps")
-  header <- cli::ansi_strtrim(header, width = width)
-  emit(cli::rule(left = header, width = width))
-  if (!count) emit("  (empty)")
-  for (i in seq_along(x)) {
-    step <- x[[i]]
-    fun <- step[["function"]]
-    candidates <- .pipeline_function_names()
-    hit <- candidates[vapply(candidates, function(nm) {
-      identical(fun, get(nm, envir = asNamespace("glyclean")))
-    }, logical(1))]
-    label <- if (length(hit)) hit[[1L]] else "recorded operation"
-    emit(sprintf("  %d. %s", i, label))
-    parameters <- step[["parameters"]]
-    if (!length(parameters)) {
-      emit("     (no parameters)")
-      next
+  cli::cli_format_method({
+    width <- max(1L, cli::console_width())
+    emit <- function(line) {
+      line <- cli::ansi_strtrim(line, width = width)
+      cli::cli_verbatim(line)
     }
-    tokens <- vapply(seq_along(parameters), function(j) {
-      paste0(encodeString(names(parameters)[[j]]), " = ",
-             .pipeline_parameter_summary(parameters[[j]]))
-    }, character(1))
-    # Wrap between arguments; truncate an unusually long individual argument.
-    line <- "    "
-    for (token in tokens) {
-      separator <- if (identical(line, "    ")) "" else ", "
-      proposed <- paste0(line, separator, token)
-      if (!identical(line, "    ") &&
-          cli::ansi_nchar(proposed, type = "width") > width) {
-        emit(line)
-        line <- paste0("    ", token)
-      } else {
-        line <- proposed
+    count <- length(x)
+    header <- sprintf(
+      "<glyclean_pipeline> %d %s",
+      count,
+      if (count == 1L) "step" else "steps"
+    )
+    header <- cli::ansi_strtrim(header, width = width)
+    emit(cli::rule(left = header, width = width))
+    if (!count) {
+      emit("  (empty)")
+    }
+    for (i in seq_along(x)) {
+      step <- x[[i]]
+      fun <- step[["function"]]
+      candidates <- .pipeline_function_names()
+      hit <- candidates[vapply(
+        candidates,
+        function(nm) {
+          identical(fun, get(nm, envir = asNamespace("glyclean")))
+        },
+        logical(1)
+      )]
+      label <- if (length(hit)) hit[[1L]] else "recorded operation"
+      emit(sprintf("  %d. %s", i, label))
+      parameters <- step[["parameters"]]
+      if (!length(parameters)) {
+        emit("     (no parameters)")
+        next
       }
+      tokens <- vapply(
+        seq_along(parameters),
+        function(j) {
+          paste0(
+            encodeString(names(parameters)[[j]]),
+            " = ",
+            .pipeline_parameter_summary(parameters[[j]])
+          )
+        },
+        character(1)
+      )
+      # Wrap between arguments; truncate an unusually long individual argument.
+      line <- "    "
+      for (token in tokens) {
+        separator <- if (identical(line, "    ")) "" else ", "
+        proposed <- paste0(line, separator, token)
+        if (
+          !identical(line, "    ") &&
+            cli::ansi_nchar(proposed, type = "width") > width
+        ) {
+          emit(line)
+          line <- paste0("    ", token)
+        } else {
+          line <- proposed
+        }
+      }
+      emit(line)
     }
-    emit(line)
-  }
+  })
+}
+
+#' @export
+print.glyclean_pipeline <- function(x, ...) {
+  cat(format(x, ...), sep = "\n")
   invisible(x)
 }
