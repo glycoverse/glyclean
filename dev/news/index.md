@@ -8,6 +8,27 @@
   values, preserving annotations and recording a replayable pipeline
   step.
 
+- **Breaking change:**
+  [`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md),
+  [`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md),
+  and
+  [`auto_coda()`](https://glycoverse.github.io/glyclean/dev/reference/auto_coda.md)
+  now return log2-ratio coordinates directly instead of exponentiated
+  ratios, and set experiment metadata `scale = "log2"`. This requires
+  glyexp \>= 0.18.0.9000 for logged-scale containers with negative
+  coordinates. ALR reference scoring continues to use log-ratio
+  geometry. Saved pipelines replaying CoDA under this version produce
+  these new values; preserve the original package environment to
+  reproduce pre-change numerical results.
+
+- CoDA now requires finite, strictly positive input: zero values produce
+  an error directing users to
+  [`zero_to_na()`](https://glycoverse.github.io/glyclean/dev/reference/zero_to_na.md)
+  followed by appropriate imputation. No pseudo-count or imputation is
+  applied inside CoDA. Missing and negative values remain unsupported.
+  `group_scales` also rejects zero/non-finite scales and unrepresentable
+  derived two-group ratios instead of producing non-finite coordinates.
+
 - Pipeline recording uses a shared helper across preprocessing
   functions. Recipe construction uses tidy evaluation, and the pipeline
   tutorial now starts with recorded processing history and replay before
@@ -15,8 +36,8 @@
 
 - CoDA operations now record their function and parameters only in the
   preprocessing pipeline. They add no CoDA-specific metadata and
-  preserve all existing metadata unchanged, with no legacy-field
-  migration or cleanup.
+  preserve other existing metadata unchanged (apart from the new `scale`
+  update), with no legacy-field migration or cleanup.
 
 - Added list-based
   [`glyclean_pipeline()`](https://glycoverse.github.io/glyclean/dev/reference/glyclean_pipeline.md),

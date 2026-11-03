@@ -77,7 +77,8 @@ scale. Default is <code>0.1</code>. Set to <code>0</code> for deterministic tran
 <dd><p>Optional informed group scales. For binary comparisons,
 this can be a single positive ratio for the second group relative to the
 first, or two positive scales from which that ratio is derived. For
-multi-group data, provide a positive vector with one scale per group.</p></dd>
+multi-group data, provide a positive vector with one scale per group. All
+scales and any derived two-group ratio must be finite and strictly positive.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
@@ -90,20 +91,31 @@ multi-group data, provide a positive vector with one scale per group.</p></dd>
     <p>The input container with a CoDA-transformed expression matrix and
 its class preserved. Glycoproteomics always uses site-wise CLR and retains
 all rows. Other supported containers use ALR if there are more than 50
-variables, or CLR otherwise.</p>
+variables, or CLR otherwise. Values remain on the <code>log2</code>-ratio scale,
+with <code>scale = "log2"</code> in metadata.</p>
     </div>
     <div class="section level2">
     <h2 id="algorithmic-details">Algorithmic details<a class="anchor" aria-label="anchor" href="#algorithmic-details"></a></h2>
     <p>The stochastic branch follows <code>glycowork</code>: when <code>gamma &gt; 0</code>, CLR noise is
 sampled per feature-sample entry rather than once per sample. Without
 informed scales, this corresponds to jittering around the sample-specific
-<code>log2</code> geometric mean of the non-zero components and then returning to ratio
-space.</p>
+<code>log2</code> geometric mean of the components. The result remains on the
+log-ratio scale, without exponentiation.</p>
 <p>The <code>group_scales</code> argument is interpreted in the same way as
 <code>glycowork</code>'s <code>custom_scale</code>. For exactly two groups, provide the total-signal
 ratio of the second group relative to the first, either directly as a scalar
 or implicitly through two per-group scales. For multi-group data, provide one
 positive scale per group; these scales are used only in the stochastic branch.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="input-requirements">Input requirements<a class="anchor" aria-label="anchor" href="#input-requirements"></a></h2>
+    <p>CoDA requires finite, strictly positive abundances. Missing values, zeros,
+and negative values are rejected; no pseudo-count or automatic imputation
+is applied. If zeros represent missing observations, first call
+<code><a href="zero_to_na.html">zero_to_na()</a></code>, then use an appropriate imputation function to obtain
+positive values. Choose the imputation method for your data; <code><a href="impute_zero.html">impute_zero()</a></code>
+is not suitable before CoDA. Entirely missing features or samples may need
+filtering rather than imputation.</p>
     </div>
     <div class="section level2">
     <h2 id="glycoproteomics">Glycoproteomics<a class="anchor" aria-label="anchor" href="#glycoproteomics"></a></h2>
@@ -115,9 +127,8 @@ ALR is not supported for glycoproteomics; use <code><a href="transform_clr.html"
 present and non-missing. <code>by</code> continues to specify sample groups.</p>
 <p>The output preserves all rows, their original order, and their
 annotations.</p>
-<p>With <code>gamma = 0</code>, a site containing a single feature returns one for
-positive abundances and zero for zeros. Samples with no positive abundance
-at a site remain zero for that site.</p>
+<p>With <code>gamma = 0</code> and no informed scales, a site containing a single
+positive feature returns zero on the log-ratio scale.</p>
     </div>
     <div class="section level2">
     <h2 id="motif-quantification">Motif quantification<a class="anchor" aria-label="anchor" href="#motif-quantification"></a></h2>
