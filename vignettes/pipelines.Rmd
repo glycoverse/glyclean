@@ -75,8 +75,8 @@ CoDA histories use the same function-and-parameters structure as other steps:
 and CLR or ALR for glycomics. If ALR internally falls back to CLR, the recorded
 function remains `transform_alr`, so replay repeats the same reference evaluation,
 random draws and fallback decision on the original input. There is no per-site
-replay plan or saved reference in the pipeline. The ordinary CoDA result metadata
-still describes the transformation and reference used.
+replay plan or saved reference in the pipeline. CoDA only appends the operation
+to pipeline history and preserves all other input metadata unchanged.
 Neither the original assay nor intermediate assay matrices are stored in history.
 
 Site-sequence annotation stores the sequences used, so replay does not depend

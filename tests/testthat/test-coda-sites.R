@@ -56,6 +56,7 @@ test_that("CLR centers by both protein and site while preserving row order", {
   expect_identical(meta$custom, "preserved")
   expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
                      names(meta)))
+  expect_identical(apply_pipeline(x, get_pipeline(result)), result)
 
   SummarizedExperiment::assay(x)[c(2, 5), ] <- c(1e6, 1e9)
   changed <- transform_clr(x, gamma = 0)
@@ -113,6 +114,7 @@ test_that("auto_coda uses CLR at every site regardless of the 50-feature boundar
   meta <- S4Vectors::metadata(result)
   expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
                      names(meta)))
+  expect_identical(apply_pipeline(x, get_pipeline(result)), result)
 })
 
 test_that("singleton sites and all-zero site samples keep zeros", {
@@ -220,7 +222,9 @@ test_that("plain SummarizedExperiment retains whole-matrix CoDA", {
   expected <- matrix(c(0.125, 0.5, 2, 8), nrow = 4, ncol = 4)
   expect_equal(unname(SummarizedExperiment::assay(result)), expected)
   expect_identical(as.character(class(result)), "SummarizedExperiment")
-  expect_null(S4Vectors::metadata(result)$coda_site_transforms)
+  expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
+                     names(S4Vectors::metadata(result))))
+  expect_identical(apply_pipeline(x, get_pipeline(result)), result)
 })
 
 

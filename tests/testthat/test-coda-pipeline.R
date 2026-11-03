@@ -7,15 +7,15 @@ coda_pipeline_input <- function(large = FALSE) {
     sample = colnames(mat), group = factor(c("A", "A", "B", "B", "B"))))
 }
 
-coda_pipeline_stale_input <- function(x) {
+coda_pipeline_existing_metadata_input <- function(x) {
   metadata <- .get_container_metadata(x)
   metadata$scale <- "linear"
   metadata$custom <- list(keep = TRUE, label = "preserved")
-  metadata$coda_transform <- "alr"
-  metadata$coda_reference <- "obsolete-reference"
+  # These opaque values must not be interpreted, validated, or rewritten.
+  metadata$coda_transform <- list(keep = TRUE, values = c(NA_integer_, 7L))
+  metadata$coda_reference <- c("obsolete-reference", "another-reference")
   metadata$coda_site_transforms <- tibble::tibble(
-    protein = "obsolete-protein", protein_site = 999L,
-    transform = "alr", reference = "obsolete-reference"
+    unrelated = "preserved", values = list(c(1L, 3L))
   )
   if (inherits(x, "glyexp_experiment")) {
     x$meta_data <- metadata
@@ -42,7 +42,7 @@ test_that("CoDA records public functions and ordinary complete parameters", {
     expect_false("site_plan" %in% names(history[[1L]]$parameters))
     expect_length(SummarizedExperiment::assays(result), 1L)
     expect_identical(S4Vectors::metadata(result)$custom, "keep")
-    expect_false(any(c("coda_transform", "coda_site_transforms") %in%
+    expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
                        names(S4Vectors::metadata(result))))
     set.seed(918)
     expect_identical(apply_pipeline(x, history), result)
@@ -65,13 +65,11 @@ test_that("direct and recorded CoDA return identical complete experiments", {
     expect_identical(.Random.seed, state)
   }
   alr <- transform_alr(x, by = "group", gamma = 0.2, seed = 981)
-  expect_identical(S4Vectors::metadata(alr)$coda_reference, "V1")
+  expect_identical(setdiff(rownames(x), rownames(alr)), "V1")
   expect_equal(nrow(alr), nrow(x) - 1L)
 })
 
 test_that("ALR fallback records ALR and repeats the full reference assessment", {
-  original <- coda_pipeline_stale_input(coda_pipeline_input())
-  x <- impute_zero(original)
   original_select <- .select_alr_reference
   calls <- 0L
   local_mocked_bindings(.select_alr_reference = function(mat, by_values = NULL) {
@@ -80,49 +78,54 @@ test_that("ALR fallback records ALR and repeats the full reference assessment", 
     selected$procrustes <- 0
     selected
   })
-  expect_warning(result <- transform_alr(x, by = "group", gamma = 0.3, seed = 712),
-                 "falling back to CLR")
-  expect_identical(calls, 1L)
-  metadata <- S4Vectors::metadata(result)
-  expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
-                     names(metadata)))
-  keep <- setdiff(names(S4Vectors::metadata(x)),
-                  c("pipeline", "coda_transform", "coda_site_transforms", "coda_reference"))
-  expect_identical(metadata[keep], S4Vectors::metadata(x)[keep])
-  history <- get_pipeline(result)
-  expect_length(history, 2L)
-  expect_identical(history[[1L]], get_pipeline(x)[[1L]])
-  expect_identical(history[[2L]][["function"]], transform_alr)
-  expect_identical(history[[2L]]$parameters$seed, 712)
-  set.seed(921)
-  expect_warning(replay <- apply_pipeline(original, history), "falling back to CLR")
-  expect_identical(calls, 2L)
-  expect_identical(replay, result)
-  # The assessment consumes RNG before fallback; replacing ALR with CLR would
-  # reset the stream at the wrong point and change the actual transformed assay.
-  clr <- transform_clr(x, by = "group", gamma = 0.3, seed = 712)
-  expect_false(identical(SummarizedExperiment::assay(clr),
-                         SummarizedExperiment::assay(result)))
+  input <- coda_pipeline_input()
+  for (original in list(input, coda_pipeline_existing_metadata_input(input))) {
+    calls <- 0L
+    x <- impute_zero(original)
+    input_metadata <- S4Vectors::metadata(x)
+    expect_warning(result <- transform_alr(x, by = "group", gamma = 0.3, seed = 712),
+                   "falling back to CLR")
+    expect_identical(calls, 1L)
+    metadata <- S4Vectors::metadata(result)
+    expect_identical(metadata[setdiff(names(metadata), "pipeline")],
+                     input_metadata[setdiff(names(input_metadata), "pipeline")])
+    expect_identical(rownames(result), rownames(x))
+    history <- get_pipeline(result)
+    expect_length(history, 2L)
+    expect_identical(history[[1L]], get_pipeline(x)[[1L]])
+    expect_identical(history[[2L]][["function"]], transform_alr)
+    expect_identical(history[[2L]]$parameters$seed, 712)
+    set.seed(921)
+    expect_warning(replay <- apply_pipeline(original, history), "falling back to CLR")
+    expect_identical(calls, 2L)
+    expect_identical(replay, result)
+    # The assessment consumes RNG before fallback; replacing ALR with CLR would
+    # reset the stream at the wrong point and change the actual transformed assay.
+    clr <- transform_clr(x, by = "group", gamma = 0.3, seed = 712)
+    expect_false(identical(SummarizedExperiment::assay(clr),
+                           SummarizedExperiment::assay(result)))
+  }
 })
 
-test_that("ALR fallback without an eligible reference removes stale metadata", {
-  original <- coda_pipeline_stale_input(coda_pipeline_input())
-  SummarizedExperiment::assay(original)[-1L, 1L] <- 0
-  x <- impute_zero(original)
-  expect_warning(result <- transform_alr(x, by = "group", gamma = 0.2, seed = 712),
-                 "at least two glycans")
-  metadata <- S4Vectors::metadata(result)
-  expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
-                     names(metadata)))
-  expect_identical(metadata$scale, S4Vectors::metadata(original)$scale)
-  expect_identical(metadata$custom, S4Vectors::metadata(original)$custom)
-  expect_identical(rownames(result), rownames(original))
-  history <- get_pipeline(result)
-  expect_length(history, 2L)
-  expect_identical(history[[1L]], get_pipeline(x)[[1L]])
-  expect_identical(history[[2L]][["function"]], transform_alr)
-  expect_warning(replay <- apply_pipeline(original, history), "at least two glycans")
-  expect_identical(replay, result)
+test_that("ALR fallback without an eligible reference preserves existing metadata", {
+  input <- coda_pipeline_input()
+  SummarizedExperiment::assay(input)[-1L, 1L] <- 0
+  for (original in list(input, coda_pipeline_existing_metadata_input(input))) {
+    x <- impute_zero(original)
+    input_metadata <- S4Vectors::metadata(x)
+    expect_warning(result <- transform_alr(x, by = "group", gamma = 0.2, seed = 712),
+                   "at least two glycans")
+    metadata <- S4Vectors::metadata(result)
+    expect_identical(metadata[setdiff(names(metadata), "pipeline")],
+                     input_metadata[setdiff(names(input_metadata), "pipeline")])
+    expect_identical(rownames(result), rownames(original))
+    history <- get_pipeline(result)
+    expect_length(history, 2L)
+    expect_identical(history[[1L]], get_pipeline(x)[[1L]])
+    expect_identical(history[[2L]][["function"]], transform_alr)
+    expect_warning(replay <- apply_pipeline(original, history), "at least two glycans")
+    expect_identical(replay, result)
+  }
 })
 
 test_that("glycomic auto CoDA records its selected public transformation", {
@@ -134,6 +137,8 @@ test_that("glycomic auto CoDA records its selected public transformation", {
     expect_length(history, 1L)
     expect_identical(history[[1L]][["function"]], expected)
     expect_identical(result, expected(x, by = "group", gamma = 0.2, seed = 828))
+    expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
+                       names(S4Vectors::metadata(result))))
     expect_identical(apply_pipeline(x, history), result)
   }
 })
@@ -174,7 +179,7 @@ test_that("CoDA appends once and preserves the complete prior history", {
   expect_identical(apply_pipeline(original, get_pipeline(result)), result)
 })
 
-test_that("CoDA cleans stale metadata and replays complete containers from the original", {
+test_that("CoDA preserves metadata and replays complete containers", {
   withr::local_options(lifecycle_verbosity = "quiet")
   withr::local_seed(91)
   glycomic <- coda_pipeline_input()
@@ -194,14 +199,14 @@ test_that("CoDA cleans stale metadata and replays complete containers from the o
     var_info = .get_var_info(glycoproteomic),
     exp_type = "glycoproteomics", glycan_type = "N")
 
-  for (input in list(glycomic, plain_se(glycomic), legacy_glycomic,
-                     glycoproteomic, legacy_glycoproteomic)) {
-    original <- coda_pipeline_stale_input(input)
+  inputs <- list(glycomic, plain_se(glycomic), legacy_glycomic,
+                 glycoproteomic, legacy_glycoproteomic)
+  inputs <- c(inputs, lapply(inputs, coda_pipeline_existing_metadata_input))
+  for (original in inputs) {
     unchanged <- original
     x <- impute_zero(original)
     input_metadata <- .get_container_metadata(x)
-    keep <- setdiff(names(input_metadata),
-                    c("pipeline", "coda_transform", "coda_site_transforms", "coda_reference"))
+    keep <- setdiff(names(input_metadata), "pipeline")
     transforms <- if (.get_exp_type(x) == "glycoproteomics") {
       list(transform_clr, auto_coda)
     } else {
@@ -210,15 +215,15 @@ test_that("CoDA cleans stale metadata and replays complete containers from the o
     for (fun in transforms) {
       result <- suppressMessages(fun(x, by = "group", gamma = 0.2, seed = 981))
       metadata <- .get_container_metadata(result)
-      expect_false(any(c("coda_transform", "coda_site_transforms") %in% names(metadata)))
+      expect_identical(metadata[setdiff(names(metadata), "pipeline")], input_metadata[keep])
       if (identical(fun, transform_alr)) {
-        expect_identical(metadata$coda_reference, "V1")
-        expect_identical(metadata$coda_reference,
-                         setdiff(rownames(.get_expr_mat(x)), rownames(.get_expr_mat(result))))
+        expect_identical(setdiff(rownames(.get_expr_mat(x)),
+                                 rownames(.get_expr_mat(result))), "V1")
+        expect_identical(rownames(.get_expr_mat(result)),
+                         rownames(.get_expr_mat(x))[-1L])
       } else {
-        expect_false("coda_reference" %in% names(metadata))
+        expect_identical(rownames(.get_expr_mat(result)), rownames(.get_expr_mat(x)))
       }
-      expect_identical(metadata[keep], input_metadata[keep])
       history <- get_pipeline(result)
       expect_length(history, 2L)
       expect_identical(history[[1L]], get_pipeline(x)[[1L]])

@@ -168,7 +168,7 @@ test_that("type-specific automatic preprocessing rejects plain others SE", {
   )
 })
 
-test_that("CoDA transformations preserve class and only store an ALR reference", {
+test_that("CoDA transformations preserve class without adding CoDA metadata", {
   x <- simple_glycomic_se()
 
   clr <- transform_clr(x, gamma = 0)
@@ -178,14 +178,17 @@ test_that("CoDA transformations preserve class and only store an ALR reference",
   expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
                      names(S4Vectors::metadata(clr))))
   expect_s4_class(alr, "GlycomicSE")
-  expect_false(any(c("coda_transform", "coda_site_transforms") %in%
+  expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
                      names(S4Vectors::metadata(alr))))
   expect_true(nrow(alr) %in% c(nrow(x) - 1, nrow(x)))
-  if (nrow(alr) < nrow(x)) {
-    expect_identical(S4Vectors::metadata(alr)$coda_reference,
-                     setdiff(rownames(x), rownames(alr)))
-  } else {
-    expect_false("coda_reference" %in% names(S4Vectors::metadata(alr)))
+  expect_length(setdiff(rownames(x), rownames(alr)), nrow(x) - nrow(alr))
+  expect_identical(rownames(alr), rownames(x)[rownames(x) %in% rownames(alr)])
+  input_metadata <- S4Vectors::metadata(x)
+  for (result in list(clr, alr)) {
+    metadata <- S4Vectors::metadata(result)
+    expect_identical(metadata[setdiff(names(metadata), "pipeline")],
+                     input_metadata[setdiff(names(input_metadata), "pipeline")])
+    expect_identical(suppressWarnings(apply_pipeline(x, get_pipeline(result))), result)
   }
 })
 

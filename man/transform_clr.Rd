@@ -59,9 +59,9 @@ ALR is not supported for glycoproteomics; use \code{transform_clr()} or
 present and non-missing. \code{by} continues to specify sample groups.
 
 The output preserves all rows, their original order, and their
-annotations. CLR clears \code{coda_reference}; successful glycomics ALR records
-its reference glycan in that field. Legacy \code{coda_transform} and
-\code{coda_site_transforms} metadata fields are removed during CoDA processing.
+annotations. CoDA preserves input metadata and records the operation only
+in the preprocessing pipeline. No CoDA-specific metadata is added or
+modified.
 
 With \code{gamma = 0}, a site containing a single feature returns one for
 positive abundances and zero for zeros. Samples with no positive abundance
@@ -102,5 +102,5 @@ In another words, the recommended workflow is:
 x <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
 x <- impute_zero(x[seq_len(6), ])
 result <- transform_clr(x, gamma = 0)
-S4Vectors::metadata(result)$coda_reference
+get_pipeline(result)
 }
