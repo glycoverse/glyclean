@@ -32,7 +32,7 @@ test_that("non-auto preprocessing accepts plain SummarizedExperiment objects", {
   normalized <- normalize_median(x)
   imputed <- impute_zero(x)
   filtered <- suppressMessages(remove_rare(x))
-  transformed <- transform_clr(imputed, gamma = 0)
+  transformed <- transform_clr(impute_half_sample_min(x), gamma = 0)
   corrected <- suppressMessages(
     correct_batch_effect(x, batch = "batch", group = "group")
   )
@@ -186,8 +186,9 @@ test_that("CoDA transformations preserve class without adding CoDA metadata", {
   input_metadata <- S4Vectors::metadata(x)
   for (result in list(clr, alr)) {
     metadata <- S4Vectors::metadata(result)
-    expect_identical(metadata[setdiff(names(metadata), "pipeline")],
-                     input_metadata[setdiff(names(input_metadata), "pipeline")])
+    expect_identical(metadata$scale, "log2")
+    expect_identical(metadata[setdiff(names(metadata), c("pipeline", "scale"))],
+                     input_metadata[setdiff(names(input_metadata), c("pipeline", "scale"))])
     expect_identical(suppressWarnings(apply_pipeline(x, get_pipeline(result))), result)
   }
 })

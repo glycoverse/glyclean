@@ -1,9 +1,9 @@
 #' Centered Log-Ratio Transformation
 #'
 #' This function implements a glycoWork-compatible CLR preprocessing strategy.
-#' Internally, the data are transformed on the `log2` scale following
-#' `glycowork::clr_transformation()`, then back-transformed to the original
-#' ratio space before returning the result.
+#' Data are transformed on the `log2` scale following
+#' `glycowork::clr_transformation()`. The log-ratio coordinates are returned
+#' directly, with the experiment's `scale` metadata set to `"log2"`.
 #'
 #' @details
 #' # Algorithmic details
@@ -11,14 +11,24 @@
 #' The stochastic branch follows `glycowork`: when `gamma > 0`, CLR noise is
 #' sampled per feature-sample entry rather than once per sample. Without
 #' informed scales, this corresponds to jittering around the sample-specific
-#' `log2` geometric mean of the non-zero components and then returning to ratio
-#' space.
+#' `log2` geometric mean of the components. The result remains on the
+#' log-ratio scale, without exponentiation.
 #'
 #' The `group_scales` argument is interpreted in the same way as
 #' `glycowork`'s `custom_scale`. For exactly two groups, provide the total-signal
 #' ratio of the second group relative to the first, either directly as a scalar
 #' or implicitly through two per-group scales. For multi-group data, provide one
 #' positive scale per group; these scales are used only in the stochastic branch.
+#'
+#' # Input requirements
+#'
+#' CoDA requires finite, strictly positive abundances. Missing values, zeros,
+#' and negative values are rejected; no pseudo-count or automatic imputation
+#' is applied. If zeros represent missing observations, first call
+#' [zero_to_na()], then use an appropriate imputation function to obtain
+#' positive values. Choose the imputation method for your data; [impute_zero()]
+#' is not suitable before CoDA. Entirely missing features or samples may need
+#' filtering rather than imputation.
 #'
 #' # Glycoproteomics
 #'
@@ -32,9 +42,8 @@
 #' The output preserves all rows, their original order, and their
 #' annotations.
 #'
-#' With `gamma = 0`, a site containing a single feature returns one for
-#' positive abundances and zero for zeros. Samples with no positive abundance
-#' at a site remain zero for that site.
+#' With `gamma = 0` and no informed scales, a site containing a single
+#' positive feature returns zero on the log-ratio scale.
 #'
 #' # Motif quantification
 #'
@@ -71,17 +80,18 @@
 #' @param group_scales Optional informed group scales. For binary comparisons,
 #'   this can be a single positive ratio for the second group relative to the
 #'   first, or two positive scales from which that ratio is derived. For
-#'   multi-group data, provide a positive vector with one scale per group.
+#'   multi-group data, provide a positive vector with one scale per group. All
+#'   scales and any derived two-group ratio must be finite and strictly positive.
 #' @param seed Non-negative integer seed for random number generation. Default is
 #'   `123`. The caller's random state is restored, including on errors.
 #'
 #' @return A container of the same class as `x`, with a transformed expression
 #'   matrix.
-#'   The returned values are back-transformed to the original ratio space.
-#'   Zeros in the input therefore remain zeros in the output.
+#'   The returned values are `log2`-ratio coordinates, with `scale = "log2"`
+#'   in metadata. Other metadata are preserved, apart from pipeline recording.
 #' @examples
 #' x <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
-#' x <- impute_zero(x[seq_len(6), ])
+#' x <- impute_half_sample_min(zero_to_na(x[seq_len(6), ]))
 #' result <- transform_clr(x, gamma = 0)
 #' get_pipeline(result)
 #' @export
@@ -112,10 +122,11 @@ transform_clr <- function(
 #'
 #' This function implements a glycoWork-compatible ALR preprocessing strategy.
 #' Internally, the data are transformed relative to an automatically selected
-#' reference glycan using glycoWork-style ALR logic, then back-transformed to
-#' the original ratio space before returning the result.
+#' reference glycan using glycoWork-style ALR logic. The `log2`-ratio
+#' coordinates are returned directly, with `scale = "log2"` in metadata.
 #'
 #' @inheritSection transform_clr Algorithmic details
+#' @inheritSection transform_clr Input requirements
 #' @inheritSection transform_clr Glycoproteomics
 #' @inheritSection transform_clr Motif quantification
 #'
@@ -126,8 +137,8 @@ transform_clr <- function(
 #'   When ALR succeeds, the reference glycan is excluded from the result and the
 #'   output therefore has one fewer row. CLR fallback keeps the original
 #'   dimensions. Glycoproteomics input is not supported. The
-#'   returned values are back-transformed to the original ratio space, corresponding to
-#'   `x / x_ref`.
+#'   returned values are `log2`-ratio coordinates, corresponding to
+#'   `log2(x / x_ref)` when `gamma = 0` and no informed scales are supplied.
 #' @export
 transform_alr <- function(
   x,
@@ -174,7 +185,22 @@ transform_alr <- function(
     cli::cli_abort(c(
       "Negative values are not allowed for {.val {method}} transformation.",
       "x" = "Found {.val {sum(mat < 0, na.rm = TRUE)}} negative value(s) in the data.",
-      "i" = "Only zero and positive abundances are valid for compositional log-ratio transformations."
+      "i" = "Only strictly positive abundances are valid for compositional log-ratio transformations."
+    ))
+  }
+
+  if (any(!is.finite(mat))) {
+    cli::cli_abort(c(
+      "Non-finite values are not allowed for {.val {method}} transformation.",
+      "i" = "Supply finite, strictly positive abundances before applying CoDA."
+    ))
+  }
+
+  if (any(mat == 0)) {
+    cli::cli_abort(c(
+      "Zero values are not allowed for {.val {method}} transformation.",
+      "x" = "Found {.val {sum(mat == 0)}} zero value(s) in the data.",
+      "i" = "Use {.fun zero_to_na} to convert zeros to NA, then apply an appropriate imputation function before CoDA."
     ))
   }
 
@@ -235,7 +261,10 @@ transform_alr <- function(
     return(list(type = "none", value = NULL))
   }
 
-  checkmate::assert_numeric(group_scales, lower = 0, any.missing = FALSE)
+  checkmate::assert_numeric(group_scales, any.missing = FALSE)
+  if (any(!is.finite(group_scales) | group_scales <= 0)) {
+    cli::cli_abort("{.arg group_scales} must contain only finite, strictly positive values.")
+  }
 
   if (is.null(by_values)) {
     cli::cli_abort(
@@ -276,10 +305,11 @@ transform_alr <- function(
       names(scale_map) <- unique_groups
     }
 
-    return(list(
-      type = "numeric",
-      value = unname(scale_map[unique_groups[2]] / scale_map[unique_groups[1]])
-    ))
+    ratio <- unname(scale_map[unique_groups[2]] / scale_map[unique_groups[1]])
+    if (!is.finite(ratio) || ratio <= 0) {
+      cli::cli_abort("The ratio derived from {.arg group_scales} must be finite and strictly positive.")
+    }
+    return(list(type = "numeric", value = ratio))
   }
 
   if (is.null(names(group_scales))) {
@@ -441,7 +471,7 @@ transform_alr <- function(
 #' @param gamma Standard deviation of the scale-uncertainty model.
 #' @param group_scales Optional known group-level scales.
 #'
-#' @return A CLR-transformed matrix in the original ratio space.
+#' @return A CLR-transformed matrix on the `log2`-ratio scale.
 #' @keywords internal
 #' @noRd
 .transform_clr_mat <- function(
@@ -460,7 +490,7 @@ transform_alr <- function(
     n_samples = ncol(mat),
     allow_null = TRUE
   )
-  result <- 2^.glycowork_clr_log(
+  result <- .glycowork_clr_log(
     mat,
     by_values = by_values,
     gamma = gamma,
@@ -515,7 +545,9 @@ transform_alr <- function(
     gamma = gamma,
     group_scales = group_scales
   )
-  .rebuild_container(exp, expr_mat = transformed)
+  metadata <- .get_container_metadata(exp)
+  metadata$scale <- "log2"
+  .rebuild_container(exp, expr_mat = transformed, metadata = metadata)
 }
 
 #' Compute between-group variance for a candidate ALR reference
@@ -544,8 +576,8 @@ transform_alr <- function(
 #' @param mat A matrix with variables as rows and samples as columns.
 #' @param ref_idx Integer index of the reference glycan.
 #'
-#' @return An ALR-transformed matrix without the reference row, in the original
-#'   ratio space.
+#' @return An ALR-transformed matrix without the reference row, on the
+#'   `log2`-ratio scale.
 #' @keywords internal
 #' @noRd
 .apply_alr_reference <- function(
@@ -619,7 +651,6 @@ transform_alr <- function(
     }
   }
 
-  result <- 2^result
   keep_idx <- setdiff(seq_len(nrow(mat)), ref_idx)
   result <- result[keep_idx, , drop = FALSE]
   colnames(result) <- colnames(mat)
@@ -703,12 +734,12 @@ transform_alr <- function(
   stats_list <- purrr::map(
     seq_len(nrow(scoring_mat)),
     function(idx) {
-      alr_mat <- log2(.apply_alr_reference(
+      alr_mat <- .apply_alr_reference(
         scoring_mat,
         idx,
         by_values = by_values,
         gamma = 0.01
-      ))
+      )
       proc_corr <- .procrustes_correlation(clr_mat, alr_mat)
       ref_var <- .between_group_variance(scoring_mat[idx, ], by_values)
 
@@ -838,10 +869,13 @@ transform_alr <- function(
     var_info <- var_info[keep_idx, , drop = FALSE]
   }
 
+  metadata <- .get_container_metadata(exp)
+  metadata$scale <- "log2"
   .rebuild_container(
     exp,
     expr_mat = transformed,
-    var_info = var_info
+    var_info = var_info,
+    metadata = metadata
   )
 }
 
@@ -905,8 +939,11 @@ transform_alr <- function(
     transformed[idx, ] <- result
   }
 
+  metadata <- .get_container_metadata(exp)
+  metadata$scale <- "log2"
   .rebuild_container(
     exp,
-    expr_mat = transformed
+    expr_mat = transformed,
+    metadata = metadata
   )
 }

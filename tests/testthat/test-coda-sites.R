@@ -37,7 +37,7 @@ test_that("CLR centers by both protein and site while preserving row order", {
   S4Vectors::metadata(x)$custom <- "preserved"
   SummarizedExperiment::assayNames(x) <- "signal"
   result <- transform_clr(x, gamma = 0)
-  expected <- matrix(c(0.5, 0.5, 1 / 3, 2, 2, 3), nrow = 6, ncol = 4)
+  expected <- matrix(c(-1, -1, -log2(3), 1, 1, log2(3)), nrow = 6, ncol = 4)
 
   expect_equal(unname(SummarizedExperiment::assay(result)), expected)
   expect_s4_class(result, "GlycoproteomicSE")
@@ -53,6 +53,7 @@ test_that("CLR centers by both protein and site while preserving row order", {
     SummarizedExperiment::colData(x)
   )
   meta <- S4Vectors::metadata(result)
+  expect_identical(meta$scale, "log2")
   expect_identical(meta$custom, "preserved")
   expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
                      names(meta)))
@@ -104,34 +105,27 @@ test_that("auto_coda uses CLR at every site regardless of the 50-feature boundar
   result <- suppressMessages(auto_coda(x, by = "group", gamma = 0))
 
   expected <- rbind(
-    sweep(small, 2, exp(colMeans(log(small))), "/"),
-    sweep(large, 2, exp(colMeans(log(large))), "/"),
-    rep(1, 5)
+    sweep(log2(small), 2, colMeans(log2(small)), "-"),
+    sweep(log2(large), 2, colMeans(log2(large)), "-"),
+    rep(0, 5)
   )
   expect_equal(unname(SummarizedExperiment::assay(result)), expected)
   expect_identical(rownames(result), rownames(x))
   expect_identical(result, transform_clr(x, by = "group", gamma = 0))
   meta <- S4Vectors::metadata(result)
+  expect_identical(meta$scale, "log2")
   expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
                      names(meta)))
   expect_identical(apply_pipeline(x, get_pipeline(result)), result)
 })
 
-test_that("singleton sites and all-zero site samples keep zeros", {
+test_that("singleton sites and all-zero site samples reject zeros", {
   mat <- rbind(c(0, 0, 0, 0), c(4, 0, 16, 0), c(16, 0, 4, 0))
   x <- coda_site_exp(mat, rep("P1", 3), c(10, 20, 20))
-  expected <- rbind(c(0, 0, 0, 0), c(0.5, 0, 2, 0), c(2, 0, 0.5, 0))
-
   for (fn in list(transform_clr, auto_coda)) {
-    result <- suppressMessages(suppressWarnings(fn(x, gamma = 0)))
-    expect_equal(unname(SummarizedExperiment::assay(result)), expected)
-    expect_true(all(is.finite(SummarizedExperiment::assay(result))))
+    expect_error(suppressMessages(fn(x, gamma = 0)), "Zero values")
+    expect_error(suppressMessages(fn(x)), "zero_to_na")
   }
-  noisy <- transform_clr(x)
-  expect_identical(
-    unname(SummarizedExperiment::assay(noisy)[mat == 0]),
-    rep(0, sum(mat == 0))
-  )
 })
 
 test_that("site-wise stochastic transforms preserve seed and sample parameters", {
@@ -219,7 +213,7 @@ test_that("plain SummarizedExperiment retains whole-matrix CoDA", {
 
   result <- transform_clr(x, gamma = 0)
 
-  expected <- matrix(c(0.125, 0.5, 2, 8), nrow = 4, ncol = 4)
+  expected <- matrix(c(-3, -1, 1, 3), nrow = 4, ncol = 4)
   expect_equal(unname(SummarizedExperiment::assay(result)), expected)
   expect_identical(as.character(class(result)), "SummarizedExperiment")
   expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
