@@ -2,6 +2,12 @@
 
 ## glyclean (development version)
 
+- Added
+  [`zero_to_na()`](https://glycoverse.github.io/glyclean/dev/reference/zero_to_na.md)
+  to explicitly replace exact zeros in the abundance assay with missing
+  values, preserving annotations and recording a replayable pipeline
+  step.
+
 - Pipeline recording uses a shared helper across preprocessing
   functions. Recipe construction uses tidy evaluation, and the pipeline
   tutorial now starts with recorded processing history and replay before

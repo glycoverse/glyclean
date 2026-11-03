@@ -159,6 +159,20 @@ methods when they are applied. The resulting experiment’s history
 records the concrete operations that ran, ready to inspect or
 replay.</p>
 </div>
+<div class="section level2">
+<h2 id="treat-zeros-as-missing-measurements">Treat zeros as missing measurements<a class="anchor" aria-label="anchor" href="#treat-zeros-as-missing-measurements"></a>
+</h2>
+<p>When zeros in your data represent missing measurements, explicitly
+convert them before imputation. <code><a href="../reference/zero_to_na.html">zero_to_na()</a></code> changes exact
+zeros only; it does not change nonzero values or decide how to impute.
+It is recorded like any other operation:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">zero_recipe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/glyclean_pipeline.html">glyclean_pipeline</a></span><span class="op">(</span><span class="fu"><a href="../reference/zero_to_na.html">zero_to_na</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="../reference/impute_min_prob.html">impute_min_prob</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">zero_cleaned</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/glyclean_pipeline.html">apply_pipeline</a></span><span class="op">(</span><span class="va">original</span>, <span class="va">zero_recipe</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/glyclean_pipeline.html">apply_pipeline</a></span><span class="op">(</span><span class="va">original</span>, <span class="fu"><a href="../reference/glyclean_pipeline.html">get_pipeline</a></span><span class="op">(</span><span class="va">zero_cleaned</span><span class="op">)</span><span class="op">)</span>, <span class="va">zero_cleaned</span></span>
+<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>

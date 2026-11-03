@@ -55,8 +55,10 @@
 - [`normalize_vsn()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_vsn.md)
   : Variance Stabilizing Normalization
 
-## Imputation
+## Missing Values
 
+- [`zero_to_na()`](https://glycoverse.github.io/glyclean/dev/reference/zero_to_na.md)
+  : Replace Zeros with Missing Values
 - [`impute_bpca()`](https://glycoverse.github.io/glyclean/dev/reference/impute_bpca.md)
   : BPCA Imputation
 - [`impute_fw_knn()`](https://glycoverse.github.io/glyclean/dev/reference/impute_fw_knn.md)
