@@ -19,7 +19,8 @@ scale. Default is \code{0.1}. Set to \code{0} for deterministic transformation.}
 \item{group_scales}{Optional informed group scales. For binary comparisons,
 this can be a single positive ratio for the second group relative to the
 first, or two positive scales from which that ratio is derived. For
-multi-group data, provide a positive vector with one scale per group.}
+multi-group data, provide a positive vector with one scale per group. All
+scales and any derived two-group ratio must be finite and strictly positive.}
 
 \item{seed}{Non-negative integer seed for random number generation. Default is
 \code{123}. The caller's random state is restored, including on errors.}

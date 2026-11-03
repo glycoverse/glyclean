@@ -438,3 +438,24 @@ test_that("zero conversion and positive imputation replay before log-ratio CoDA"
     expect_identical(S4Vectors::metadata(original)$scale, "raw")
   }
 })
+
+
+test_that("CoDA rejects invalid informed scales without mutating input or RNG", {
+  x <- coda_pipeline_input()
+  original <- x
+  for (fun in list(transform_clr, transform_alr, auto_coda)) {
+    for (scales in list(0, Inf, -1, c(A = 1, B = 0), c(A = 1, B = Inf),
+                        c(A = 1e-308, B = 1e308), c(A = 1e308, B = 1e-308))) {
+      set.seed(912)
+      state <- .Random.seed
+      expect_error(suppressMessages(fun(x, by = "group", group_scales = scales)),
+                   "finite.*(strictly )?positive")
+      expect_identical(.Random.seed, state)
+      expect_identical(x, original)
+    }
+  }
+  for (scales in list(c(A = 1, B = 0, C = 2), c(A = 1, B = Inf, C = 2))) {
+    expect_error(transform_clr(x, by = c("A", "A", "B", "B", "C"),
+                               group_scales = scales), "finite.*strictly positive")
+  }
+})

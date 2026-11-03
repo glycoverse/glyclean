@@ -3,7 +3,7 @@
 * Added `zero_to_na()` to explicitly replace exact zeros in the abundance assay with missing values, preserving annotations and recording a replayable pipeline step.
 * **Breaking change:** `transform_clr()`, `transform_alr()`, and `auto_coda()` now return log2-ratio coordinates directly instead of exponentiated ratios, and set experiment metadata `scale = "log2"`. This requires glyexp >= 0.18.0.9000 for logged-scale containers with negative coordinates. ALR reference scoring continues to use log-ratio geometry. Saved pipelines replaying CoDA under this version produce these new values; preserve the original package environment to reproduce pre-change numerical results.
 
-* CoDA now requires finite, strictly positive input: zero values produce an error directing users to `zero_to_na()` followed by appropriate imputation. No pseudo-count or imputation is applied inside CoDA. Missing and negative values remain unsupported.
+* CoDA now requires finite, strictly positive input: zero values produce an error directing users to `zero_to_na()` followed by appropriate imputation. No pseudo-count or imputation is applied inside CoDA. Missing and negative values remain unsupported. `group_scales` also rejects zero/non-finite scales and unrepresentable derived two-group ratios instead of producing non-finite coordinates.
 
 * Pipeline recording uses a shared helper across preprocessing functions. Recipe construction uses tidy evaluation, and the pipeline tutorial now starts with recorded processing history and replay before introducing manual recipes.
 

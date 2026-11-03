@@ -80,7 +80,8 @@
 #' @param group_scales Optional informed group scales. For binary comparisons,
 #'   this can be a single positive ratio for the second group relative to the
 #'   first, or two positive scales from which that ratio is derived. For
-#'   multi-group data, provide a positive vector with one scale per group.
+#'   multi-group data, provide a positive vector with one scale per group. All
+#'   scales and any derived two-group ratio must be finite and strictly positive.
 #' @param seed Non-negative integer seed for random number generation. Default is
 #'   `123`. The caller's random state is restored, including on errors.
 #'
@@ -260,7 +261,10 @@ transform_alr <- function(
     return(list(type = "none", value = NULL))
   }
 
-  checkmate::assert_numeric(group_scales, lower = 0, any.missing = FALSE)
+  checkmate::assert_numeric(group_scales, any.missing = FALSE)
+  if (any(!is.finite(group_scales) | group_scales <= 0)) {
+    cli::cli_abort("{.arg group_scales} must contain only finite, strictly positive values.")
+  }
 
   if (is.null(by_values)) {
     cli::cli_abort(
@@ -301,10 +305,11 @@ transform_alr <- function(
       names(scale_map) <- unique_groups
     }
 
-    return(list(
-      type = "numeric",
-      value = unname(scale_map[unique_groups[2]] / scale_map[unique_groups[1]])
-    ))
+    ratio <- unname(scale_map[unique_groups[2]] / scale_map[unique_groups[1]])
+    if (!is.finite(ratio) || ratio <= 0) {
+      cli::cli_abort("The ratio derived from {.arg group_scales} must be finite and strictly positive.")
+    }
+    return(list(type = "numeric", value = ratio))
   }
 
   if (is.null(names(group_scales))) {
