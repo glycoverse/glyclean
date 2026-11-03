@@ -72,6 +72,7 @@ test_that("auto_impute chooses defaults by sample count and experiment type", {
 test_that("auto_impute uses min_prob for others experiments", {
   exp <- legacy_exp(10, 10)
   exp$expr_mat[1, 1] <- NA
+  withr::local_options(lifecycle_verbosity = "warning")
 
   called <- NULL
   testthat::local_mocked_bindings(
@@ -83,9 +84,12 @@ test_that("auto_impute uses min_prob for others experiments", {
     .package = "glyclean"
   )
 
-  expect_message(
-    result <- auto_impute(exp, group_col = NULL),
-    'Reason: default for "others" with n_samples = 10\\.'
+  expect_warning(
+    expect_message(
+      result <- auto_impute(exp, group_col = NULL),
+      'Reason: default for "others" with n_samples = 10\\.'
+    ),
+    NA
   )
   expect_equal(called, "impute_min_prob")
   expect_s3_class(result, "glyexp_experiment")

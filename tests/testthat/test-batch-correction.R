@@ -40,7 +40,7 @@ test_that("correct_batch_effect works with valid batch and group information", {
 
 test_that("correct_batch_effect keeps glyco SE abundance non-negative", {
   exp <- glyexp::real_experiment |>
-    glyexp::slice_head_var(n = 50) |>
+    glyexp::slice_head_row(n = 50) |>
     glyexp::as_glycoproteomic_se()
   SummarizedExperiment::colData(exp)$batch <- factor(
     rep(c("A", "B", "C"), each = 4)

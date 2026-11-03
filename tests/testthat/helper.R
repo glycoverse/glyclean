@@ -103,12 +103,17 @@ legacy_exp <- function(
   expr_mat <- matrix(seq_len(n_var * n_samp), nrow = n_var)
   colnames(expr_mat) <- sample_info$sample
   rownames(expr_mat) <- var_info$variable
-  glyexp::experiment(
-    expr_mat,
-    sample_info = sample_info,
-    var_info = var_info,
-    exp_type = exp_type,
-    glycan_type = glycan_type
+  # The deprecated constructor is intentional fixture setup; warnings from
+  # processing these legacy containers must still remain visible to tests.
+  withr::with_options(
+    list(lifecycle_verbosity = "quiet"),
+    glyexp::experiment(
+      expr_mat,
+      sample_info = sample_info,
+      var_info = var_info,
+      exp_type = exp_type,
+      glycan_type = glycan_type
+    )
   )
 }
 
@@ -230,7 +235,7 @@ simple_glycomic_se <- function(n_var = 4, n_samp = 6) {
 
 simple_glycoproteomic_se <- function(n_var = 20) {
   glyexp::real_experiment |>
-    glyexp::slice_head_var(n = n_var) |>
+    glyexp::slice_head_row(n = n_var) |>
     glyexp::as_glycoproteomic_se()
 }
 

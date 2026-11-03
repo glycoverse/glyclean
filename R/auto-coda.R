@@ -42,7 +42,7 @@ auto_coda <- function(
     ))
   }
 
-  if (nrow(x) > 50) {
+  if (nrow(.get_expr_mat(x)) > 50) {
     cli::cli_alert_info(
       "Data has more than 50 variables, using ALR transformation."
     )

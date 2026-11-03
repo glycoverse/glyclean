@@ -148,7 +148,15 @@ test_that("site-wise stochastic transforms preserve seed and sample parameters",
       group_scales = 2,
       seed = 18
     ))
-    expect_identical(first, second)
+    # Both inputs use the same grouping values, while only the column-name
+    # input retains that name for printing its recorded history.
+    metadata <- S4Vectors::metadata(first)
+    expect_identical(attr(metadata$pipeline[[1]], "by_column"), "group")
+    expect_null(attr(get_pipeline(second)[[1]], "by_column"))
+    attr(metadata$pipeline[[1]], "by_column") <- NULL
+    expected <- first
+    S4Vectors::metadata(expected) <- metadata
+    expect_identical(expected, second)
     expect_false(identical(
       SummarizedExperiment::assay(first),
       SummarizedExperiment::assay(other_seed)

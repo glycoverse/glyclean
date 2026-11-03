@@ -49,7 +49,7 @@ auto_impute <- function(
 #' @returns The imputed experiment.
 #' @noRd
 .auto_impute_default <- function(exp, seed = 123) {
-  n_samples <- ncol(exp)
+  n_samples <- ncol(.get_expr_mat(exp))
   exp_type <- .get_exp_type(exp)
   strategy <- .choose_auto_impute_strategy(n_samples, exp_type)
 
