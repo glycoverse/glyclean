@@ -128,11 +128,12 @@ x <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
 x <- impute_half_sample_min(zero_to_na(x[seq_len(6), ]))
 result <- transform_clr(x, gamma = 0)
 get_pipeline(result)
+#> 
 #> ── <glyclean_pipeline> 3 steps ─────────────────────────────────────────────────
-#>   1. zero_to_na
-#>      (no parameters)
-#>   2. impute_half_sample_min
-#>      (no parameters)
-#>   3. transform_clr
-#>     by = NULL, gamma = 0, group_scales = NULL, seed = 123
+#> 1. zero_to_na
+#>    (no parameters)
+#> 2. impute_half_sample_min
+#>    (no parameters)
+#> 3. transform_clr
+#>    by = NULL, gamma = 0, group_scales = NULL, seed = 123
 ```

@@ -1,30 +1,21 @@
 # Get Started with glyclean
 
-## Welcome to the Wild World of Data Preprocessing! 🧬
+## Getting Started
 
-Every omics data analysis journey begins with the same challenge: taming
-your raw data. Think of it like preparing ingredients before cooking a
-gourmet meal – you need to wash, chop, and season everything just right.
-In the glycomics and glycoproteomics world, this means normalization,
-missing value handling, and batch effect correction.
+Preparing data is an important first step in glycomics and
+glycoproteomics analysis. Depending on the experiment, this can include
+normalization, handling missing values, and correcting batch effects.
 
-Meet `glyclean` – your Swiss Army knife for glycoproteomics and
-glycomics data preprocessing! This package provides a comprehensive
-toolkit that takes the guesswork out of data cleaning, with specialized
-methods designed specifically for the unique challenges of glycan
-analysis.
-
-**Important Note:** This package is designed for
+`glyclean` provides preprocessing methods for glycomics and
+glycoproteomics data. Its functions work with
 [`glyexp::GlycomicSE`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
 and
 [`glyexp::GlycoproteomicSE`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-objects. Preprocessing functions return the same subclass they receive.
-If you’re new to this data structure, we highly recommend checking out
-[its
-introduction](https://glycoverse.github.io/glyexp/articles/glyexp.html)
-first. We’ll also be using the
-[glyread](https://github.com/glycoverse/glyread) package to load our
-data – it’s the go-to tool in the `glycoverse` ecosystem.
+objects and return the same subclass they receive. If these objects are
+new to you, start with the [glyexp
+introduction](https://glycoverse.github.io/glyexp/articles/glyexp.html).
+The [glyread](https://github.com/glycoverse/glyread) package can help
+you import data into the `glycoverse` ecosystem.
 
 ``` r
 
@@ -37,86 +28,12 @@ library(glyclean)
 library(glyexp)
 #> Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by
 #> 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'
-library(SummarizedExperiment)
-#> Loading required package: MatrixGenerics
-#> Loading required package: matrixStats
-#> 
-#> Attaching package: 'MatrixGenerics'
-#> The following objects are masked from 'package:matrixStats':
-#> 
-#>     colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,
-#>     colCounts, colCummaxs, colCummins, colCumprods, colCumsums,
-#>     colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,
-#>     colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,
-#>     colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,
-#>     colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,
-#>     colWeightedMeans, colWeightedMedians, colWeightedSds,
-#>     colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,
-#>     rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,
-#>     rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,
-#>     rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,
-#>     rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,
-#>     rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,
-#>     rowWeightedMads, rowWeightedMeans, rowWeightedMedians,
-#>     rowWeightedSds, rowWeightedVars
-#> Loading required package: GenomicRanges
-#> Loading required package: stats4
-#> Loading required package: BiocGenerics
-#> Loading required package: generics
-#> 
-#> Attaching package: 'generics'
-#> The following objects are masked from 'package:base':
-#> 
-#>     as.difftime, as.factor, as.ordered, intersect, is.element, setdiff,
-#>     setequal, union
-#> 
-#> Attaching package: 'BiocGenerics'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     IQR, mad, sd, var, xtabs
-#> The following objects are masked from 'package:base':
-#> 
-#>     anyDuplicated, aperm, append, as.data.frame, basename, cbind,
-#>     colnames, dirname, do.call, duplicated, eval, evalq, Filter, Find,
-#>     get, grep, grepl, is.unsorted, lapply, Map, mapply, match, mget,
-#>     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
-#>     rbind, Reduce, rownames, sapply, saveRDS, table, tapply, unique,
-#>     unsplit, which.max, which.min
-#> Loading required package: S4Vectors
-#> 
-#> Attaching package: 'S4Vectors'
-#> The following object is masked from 'package:utils':
-#> 
-#>     findMatches
-#> The following objects are masked from 'package:base':
-#> 
-#>     expand.grid, I, unname
-#> Loading required package: IRanges
-#> Loading required package: Seqinfo
-#> Loading required package: Biobase
-#> Welcome to Bioconductor
-#> 
-#>     Vignettes contain introductory material; view with
-#>     'browseVignettes()'. To cite Bioconductor, see
-#>     'citation("Biobase")', and for packages 'citation("pkgname")'.
-#> 
-#> Attaching package: 'Biobase'
-#> The following object is masked from 'package:MatrixGenerics':
-#> 
-#>     rowMedians
-#> The following objects are masked from 'package:matrixStats':
-#> 
-#>     anyMissing, rowMedians
-#> The following object is masked from 'package:glyexp':
-#> 
-#>     samples
-library(glyrepr)  # for printing glycan compositions and structures
 ```
 
-## Meet Our Star Player: Real Glycoproteomics Data 🌟
+## Example Data
 
-Let’s dive in with a real-world dataset that will showcase what
-`glyclean` can do. We’ll use the bundled
+Let’s start with a real-world dataset to explore what `glyclean` can do.
+We’ll use the bundled
 [`glyexp::real_experiment`](https://glycoverse.github.io/glyexp/reference/real_experiment.html)
 dataset, which is a
 [`glyexp::GlycoproteomicSE`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
@@ -136,7 +53,7 @@ exp
 #> ℹ Metadata fields: exp_type <chr>, glycan_type <chr>, quant_method <chr>
 ```
 
-Let’s peek under the hood and see what we’re working with:
+First, let’s take a look at the feature and sample metadata:
 
 ``` r
 
@@ -178,14 +95,14 @@ tibble::as_tibble(colData(exp), rownames = "sample")
 #> 12 Y3     Y     C
 ```
 
-What we have here is a beautiful N-glycoproteomics dataset featuring 500
-PSMs (Peptide Spectrum Matches) across 12 samples. These samples come
-from 3 different batches and represent 4 distinct biological groups – a
-perfect playground for demonstrating preprocessing techniques!
+This N-glycoproteomics dataset contains 500 peptide-spectrum matches
+(PSMs) across 12 samples. The samples come from three batches and
+represent four biological groups.
 
-## The Magic Wand: One Function to Rule Them All ✨
+## A Starting Point: `auto_clean()`
 
-Ready for some magic? Watch this:
+[`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
+provides a convenient starting point for preprocessing:
 
 ``` r
 
@@ -225,22 +142,13 @@ clean_exp <- auto_clean(exp)
 #> ✔ Batch correction completed.
 ```
 
-**That’s it!** Your data is now preprocessed and ready for analysis! 🎉
+The function applies a sequence of preprocessing steps using automatic
+defaults. You can inspect those steps and adjust your workflow to suit
+the experiment.
 
-But Wait, What Just Happened?
-[`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
-isn’t actually magic (sorry to disappoint) – it’s a carefully designed
-intelligent pipeline that:
+## Understanding the Automatic Pipeline
 
-- **Analyzes your data**: Checks experiment type, sample size, and
-  metadata
-- **Selects optimal methods**: Chooses the best preprocessing strategy
-  for your specific dataset
-- **Executes the pipeline**: Runs everything in the optimal order
-
-## Still Like Magic, but With More Control?
-
-Let’s look into the details of what
+Let’s look at what
 [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
 does. Here is a simplified version of the function:
 
@@ -317,21 +225,14 @@ clean_exp <- exp |>
 #> ℹ Reason: default for "glycoproteomics" with n_samples < 30.
 ```
 
-## Taking the Scenic Route: Step-by-Step Preprocessing 🚶‍♀️
+## Step-by-Step Preprocessing
 
-While
-[`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
-and other `auto_xxx()` functions are fantastic for getting started,
-you’ll eventually want more control over your preprocessing pipeline.
-Let’s explore each step individually – think of it as learning to cook
-rather than just ordering takeout!
+The `auto_xxx()` functions offer a convenient starting point. For more
+control, you can choose and apply individual methods at each step.
 
-### Step 1: Normalization – Getting Everyone on the Same Page 📏
+### Step 1: Normalization
 
-Imagine you’re comparing heights of people measured in different units –
-some in feet, some in meters, some in furlongs (okay, maybe not
-furlongs). Normalization does the same thing for your omics data,
-bringing all intensities to a comparable scale.
+Normalization helps make intensities more comparable across samples.
 
 **Available normalization methods in `glyclean`:**
 
@@ -351,15 +252,10 @@ bringing all intensities to a comparable scale.
 | [`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md) | Centered Log-Ratio transformation | Glycomics and site-wise glycoproteomics data |
 | [`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md) | Additive Log-Ratio transformation | Glycomics data (compositional) |
 
-**Pro Tips:**
-
-- Notice the `by` parameter in many functions? This allows stratified
-  normalization within groups – super useful when you have distinct
-  experimental conditions!
-- **Maximum flexibility**: The `by` parameter accepts both column names
-  from your sample metadata and direct vectors! This gives you complete
-  control over grouping, even for custom groupings that aren’t stored in
-  your experiment object.
+Many normalization functions accept a `by` parameter for normalization
+within groups. It can take a column name from the sample metadata or a
+vector, including a grouping that is not stored in the experiment
+object.
 
 ``` r
 
@@ -369,45 +265,38 @@ custom_groups <- c("A", "A", "B", "B", "C", "C", "A", "A", "B", "B", "C", "C")
 normalized_exp <- normalize_median(exp, by = custom_groups)
 ```
 
-**Compositional Data: CLR, ALR, and Median Quotient Normalization**
+**Compositional Data: CLR and ALR**
 
 For glycomics data (where intensities represent relative abundances of
 glycans), standard normalization methods may not be appropriate.
 Instead, compositional data analysis techniques are recommended:
 
-- **[`normalize_median_quotient()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_median_quotient.md)**:
-  Median quotient normalization. A robust method specifically designed
-  for compositional data, dividing each sample by its median quotient
-  relative to a reference sample.
-
 - **[`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md)**:
-  Centered Log-Ratio transformation with `glycowork`-compatible internal
-  logic. The result remains on the `log2`-ratio scale, with experiment
-  metadata `scale = "log2"`. The stochastic branch uses per-feature
-  noise, matching `glycowork`.
+  Centered Log-Ratio transformation. A robust method for compositional
+  data analysis. The result remains on the `log2`-ratio scale, with
+  experiment metadata `scale = "log2"`.
 
 - **[`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md)**:
-  Additive Log-Ratio transformation with `glycowork`-compatible internal
-  logic. The reference glycan is chosen based on Procrustes correlation
-  to CLR geometry and minimal between-group variance, and the final
-  result remains on the `log2`-ratio scale (`scale = "log2"`). If no
-  suitable reference is found, ALR falls back to CLR.
+  Additive Log-Ratio transformation. The reference glycan is chosen
+  based on Procrustes correlation to CLR geometry and minimal
+  between-group variance, and the final result remains on the
+  `log2`-ratio scale (`scale = "log2"`). If no suitable reference is
+  found, ALR falls back to CLR.
 
 The CLR and ALR methods align with the best practices described in DOI:
 10.1038/s41467-025-56249-3 for glycomics data preprocessing.
 
-Here we do the median normalization manually:
+Here we apply median normalization explicitly:
 
 ``` r
 
 normed_exp <- normalize_median(exp)
 ```
 
-### Step 2: Variable Filtering – Saying Goodbye to the Unreliable 🧹
+### Step 2: Variable Filtering
 
-Some variables are like that friend who never shows up to plans –
-they’re missing most of the time and aren’t very helpful. In omics data,
-variables with too many missing values are often more noise than signal.
+Filtering can remove variables with too many missing values or too
+little variation for the analysis.
 
 **Available variable filtering functions in `glyclean`:**
 
@@ -428,19 +317,15 @@ filtered_exp <- remove_rare(normed_exp, prop = 0.5)
 #> ℹ Removed 137 of 4262 (3.21%) variables.
 ```
 
-### Step 3: Imputation – Filling in the Blanks Intelligently 🔮
+### Step 3: Imputation
 
-Here’s where things get scientifically interesting! Missing values in
-mass spectrometry aren’t randomly distributed – they follow patterns
-based on the physics and chemistry of the measurement process.
+Missing values in mass spectrometry data can arise through different
+mechanisms. For example, low-abundance ions may be missed because of
+poor ionization efficiency or because their signal falls below the
+detection threshold. Consider the likely cause of missingness when
+choosing an imputation method.
 
-**The Science:** Missing values in MS-based omics data are typically
-“Missing Not At Random” (MNAR), meaning they’re related to the intensity
-of the signal. Low-abundance ions are more likely to be missed, either
-due to poor ionization efficiency or because they fall below the
-detection threshold.
-
-**Your imputation toolkit:**
+**Available imputation methods:**
 
 | Function | Method | Best For |
 |----|----|----|
@@ -462,24 +347,20 @@ For demonstration, let’s use the simple zero imputation:
 imputed_exp <- impute_zero(filtered_exp)
 ```
 
-### Step 4: Aggregation – From Peptides to Glycoforms 🔄
+### Step 4: Aggregation – From Peptides to Glycoforms
 
-Here’s where glycoproteomics gets uniquely challenging! Search engines
-typically report results at the PSM or peptide level, but what we really
-care about are **glycoforms** – the specific glycan structures attached
-to specific protein sites.
-
-**The Problem:** One glycoform can appear multiple times in your data
-due to:
+Search engines typically report glycoproteomics results at the PSM or
+peptide level. Aggregation can bring these measurements together at a
+level suited to the analysis, such as glycoforms defined by a glycan and
+a protein site. One glycoform can appear multiple times in the data due
+to:
 
 - Different charge states
 - Post-translational modifications
 - Missed protease cleavages
 - Different peptide sequences covering the same site
 
-**The Solution:** Intelligent aggregation!
-
-**Aggregation levels available:**
+**Available aggregation levels:**
 
 - **“gps”**: Glycopeptides with structures (most detailed)
 - **“gp”**: Glycopeptides with compositions
@@ -491,7 +372,7 @@ due to:
 aggregated_exp <- glyclean::aggregate(imputed_exp, to_level = "gf")
 ```
 
-**Pro move:** Re-normalize after aggregation to account for the new
+You can normalize again after aggregation to account for changes in the
 intensity distributions:
 
 ``` r
@@ -499,16 +380,12 @@ intensity distributions:
 aggregated_exp2 <- normalize_median(aggregated_exp)
 ```
 
-### Step 5: Batch Effect Correction – Harmonizing Your Orchestra 🎼
+### Step 5: Batch Effect Correction
 
-Batch effects are the “different violinists playing the same piece”
-problem of omics data. Even when following identical protocols, subtle
-differences in instruments, reagents, or environmental conditions can
-introduce systematic bias.
-
-**The Good News:** If your experimental design is well-controlled
-(conditions distributed across batches), batch effect correction can
-work wonders!
+Differences in instruments, reagents, or environmental conditions can
+introduce systematic variation between batches, even when protocols are
+consistent. Batch effect correction is most useful when the experimental
+design allows batch and biological effects to be distinguished.
 
 ``` r
 
@@ -525,8 +402,8 @@ p_values[1:5]
 #>                          0.4907154
 ```
 
-Here we do not have batch effects, but we will correct it anyway for
-demonstration.
+For demonstration, we can also apply batch effect correction to this
+dataset:
 
 ``` r
 
@@ -540,25 +417,13 @@ corrected_exp <- correct_batch_effect(aggregated_exp2)
 #> Adjusting the Data
 ```
 
-### Step 6: Protein Expression Adjustment – Separating Signal from Noise 🎯
+### Step 6: Protein Expression Adjustment
 
-Here’s a fascinating biological puzzle: when you measure a
-glycopeptide’s intensity, you’re actually seeing two stories at once!
-
-**The Dual Nature Problem:** Every glycopeptide intensity is a tale of
-two factors:
-
-- **The protein story**: How much of the substrate protein is present
-- **The glycosylation story**: How actively that protein is being
-  glycosylated
-
-It’s like trying to understand applause volume – is the audience bigger,
-or are they just more enthusiastic?
-
-**The Solution:** If you’re specifically interested in glycosylation
-changes (not protein abundance changes), you need to mathematically
-“subtract out” the protein expression component. Think of it as noise
-cancellation for biology!
+Glycopeptide intensity can reflect both protein abundance and
+glycosylation. When protein expression measurements are available,
+[`adjust_protein()`](https://glycoverse.github.io/glyclean/dev/reference/adjust_protein.md)
+can help account for protein abundance when investigating glycosylation
+changes.
 
 ``` r
 
@@ -566,30 +431,20 @@ cancellation for biology!
 adjusted_exp <- adjust_protein(inferred_exp, pro_expr_mat)
 ```
 
-**Important Prerequisites:**
+The protein expression matrix should be preprocessed and contain the
+same samples as the glycopeptide data, with samples matched correctly.
+You can wrap protein expression data in a `SummarizedExperiment` object
+to use `glyclean` preprocessing functions.
 
-- Your protein expression matrix must have the same samples as your
-  glycopeptide data
-- The protein expression matrix should be properly preprocessed (good
-  news: you can use `glyclean` functions for this too!)
-- Sample matching needs to be perfect – no mixing apples with oranges!
+The example workflow has now covered normalization, filtering,
+imputation, aggregation, and batch correction. Choose and assess these
+steps for your own data and analysis goals.
 
-**Pro Tip:** Wrap protein expression data in a `SummarizedExperiment`
-object before using `glyclean` preprocessing functions. Consistency is
-key!
-
-### 🎉 Mission Accomplished!
-
-Congratulations! You now have beautifully preprocessed, analysis-ready
-glycoproteomics data. Your data has been normalized, filtered, imputed,
-aggregated, and batch-corrected – it’s ready to reveal its biological
-secrets!
-
-## Advanced Usage: Flexible Grouping with Custom Vectors 🔧
+## Advanced Usage: Flexible Grouping with Custom Vectors
 
 Many functions in `glyclean` accept a `by` parameter for stratified
-processing. This parameter offers maximum flexibility – it accepts both
-column names from your sample metadata and direct vectors!
+processing. It accepts both column names from the sample metadata and
+vectors.
 
 ``` r
 
@@ -601,15 +456,13 @@ custom_groups <- c("A", "A", "B", "B", "C", "C", "A", "A", "B", "B", "C", "C")
 normalized_exp <- normalize_median(exp, by = custom_groups)
 ```
 
-This gives you complete control over grouping, even for custom groupings
-that aren’t stored in your experiment object. Perfect for complex
-experimental designs or external grouping criteria!
+This also lets you use groupings that are not stored in the experiment
+object.
 
-## Quality Control (QC) 📊
+## Quality Control (QC)
 
-`glyclean` provides a comprehensive suite of quality control plotting
-functions to help you visualize and assess the quality of your data at
-various stages of the preprocessing pipeline.
+`glyclean` provides quality control plots to help you assess data at
+different stages of preprocessing.
 
 **Available QC plotting functions in `glyclean`:**
 
@@ -625,12 +478,11 @@ various stages of the preprocessing pipeline.
 | [`plot_batch_pca()`](https://glycoverse.github.io/glyclean/dev/reference/plot_batch_pca.md) | PCA score plot by batch | Visualizing batch effects and sample clustering |
 | [`plot_rep_scatter()`](https://glycoverse.github.io/glyclean/dev/reference/plot_rep_scatter.md) | Replicate scatter plots | Checking concordance between replicate samples |
 
-These functions work seamlessly with
+These functions work with
 [`glyexp::GlycomicSE`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
 and
 [`glyexp::GlycoproteomicSE`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-objects and provide consistent, high-quality visualizations using
-`ggplot2`.
+objects and use `ggplot2` for visualization.
 
 For example, you can use
 [`plot_missing_heatmap()`](https://glycoverse.github.io/glyclean/dev/reference/plot_missing_heatmap.md)
@@ -645,73 +497,50 @@ plot_missing_heatmap(exp) + plot_missing_heatmap(clean_exp)
 
 ![](glyclean_files/figure-html/unnamed-chunk-16-1.png)
 
+## Revisit the History
+
+All preprocessing steps applied to an experiment are recorded and stored
+as a pipeline object. You can get it with
+[`get_pipeline()`](https://glycoverse.github.io/glyclean/dev/reference/glyclean_pipeline.md).
+
+``` r
+
+history <- get_pipeline(clean_exp)
+history
+#> 
+#> ── <glyclean_pipeline> 5 steps ─────────────────────────────────────────────────
+#> 1. remove_rare
+#>    prop = 0.8, n = NULL, by = NULL, strict = FALSE, min_n = 1
+#> 2. remove_rare
+#>    prop = 0.5, n = NULL, by = <factor [12]: "H" (3), "M" (3), "Y" (3), "C"
+#>    (3)>, strict = FALSE, min_n = 1
+#> 3. normalize_median
+#>    (no parameters)
+#> 4. impute_min_prob
+#>    by = NULL, q = 0.01, tune.sigma = 1, seed = 123
+#> 5. aggregate
+#>    to_level = "gfs", standardize_variable = TRUE, f = base::sum, seed = 123
+```
+
+You can reapply the recorded pipeline to the original experiment and
+compare the result:
+
+``` r
+
+identical(apply_pipeline(exp, history), clean_exp)
+#> ℹ Removed 18 of 4262 (0.42%) variables.
+#> ℹ Removed 6 of 4244 (0.14%) variables.
+#> [1] TRUE
+```
+
 ## What’s Next?
 
-With your clean data in hand, you’re ready to dive into the exciting
-world of glyco-omics analysis:
+Once you have assessed your preprocessed data, you can move on to
+analyses such as:
 
 - **Differential analysis**: Find glycans that change between conditions
 - **Pathway analysis**: Understand biological processes
 - **Machine learning**: Build predictive models
-- **Visualization**: Create stunning plots that tell your data’s story
+- **Visualization**: Explore and communicate patterns in the data
 
-The `glycoverse` ecosystem has tools for all of these and more!
-
-## Controlling random preprocessing
-
-Stochastic preprocessing functions expose a non-negative integer `seed`,
-with `123` as the default. This includes VSN subsampling
-([`normalize_vsn()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_vsn.md)),
-both KNN imputation directions, BPCA/SVD cross-validation, PPCA,
-MinProb, MissForest and CoDA. Aggregation also accepts a seed for custom
-callbacks that use R’s RNG.
-[`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
-and
-[`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
-pass their seed to the selected imputation method, and automatic
-aggregation forwards the seed as well.
-
-``` r
-
-normalized <- normalize_vsn(exp, subsample = 100, seed = 42)
-imputed <- impute_bpca(exp, cv = "q2", seed = 42)
-knn <- impute_sw_knn(exp, k = 5, maxp = 1500, seed = 42)
-```
-
-For functions with `...`, newly added seeds must be named. Existing
-positional non-seed arguments forwarded through `...` retain their
-meaning. Configure KNN randomness with `seed`; the historical `rng.seed`
-argument is no longer accepted through `...`. The explicit seed reaches
-the backend’s partitioning algorithm.
-
-These calls restore the caller’s R random state, including on errors and
-when `.Random.seed` did not previously exist. A fixed seed supports
-reproducibility within the same R/RNG configuration and dependency
-versions. External random generators, backend changes, parallel
-computation and arbitrary side effects in custom callbacks may require
-additional controls; a seed alone is not a promise of bitwise identity
-across platforms or package versions.
-
-## Compositional transformation for glycoproteomics
-
-For glycoproteomics,
-[`auto_coda()`](https://glycoverse.github.io/glyclean/dev/reference/auto_coda.md)
-always applies CLR separately to each `protein` and `protein_site`
-combination, regardless of the number of features at a site. It is
-equivalent to
-[`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md)
-with the same parameters and seed, and preserves all feature rows.
-[`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md)
-does not support glycoproteomics input and reports an error directing
-users to CLR.
-
-``` r
-
-clr_exp <- auto_coda(clean_exp, by = "group", seed = 123)
-# Equivalent for a glycoproteomics experiment:
-clr_exp <- transform_clr(clean_exp, by = "group", seed = 123)
-```
-
-For glycomics, automatic selection is unchanged: more than 50 features
-selects ALR, otherwise CLR. ALR can fall back to CLR when no suitable
-reference exists.
+The `glycoverse` ecosystem provides tools for these next steps.

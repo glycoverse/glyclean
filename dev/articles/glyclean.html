@@ -32,12 +32,6 @@
       <ul class="navbar-nav me-auto">
 <li class="active nav-item"><a class="nav-link" href="../articles/glyclean.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/pipelines.html">Reproducible single-assay pipelines</a></li>
-  </ul>
-</li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -66,26 +60,20 @@
     
     
 <div class="section level2">
-<h2 id="welcome-to-the-wild-world-of-data-preprocessing">Welcome to the Wild World of Data Preprocessing! 🧬<a class="anchor" aria-label="anchor" href="#welcome-to-the-wild-world-of-data-preprocessing"></a>
+<h2 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h2>
-<p>Every omics data analysis journey begins with the same challenge:
-taming your raw data. Think of it like preparing ingredients before
-cooking a gourmet meal – you need to wash, chop, and season everything
-just right. In the glycomics and glycoproteomics world, this means
-normalization, missing value handling, and batch effect correction.</p>
-<p>Meet <code>glyclean</code> – your Swiss Army knife for
-glycoproteomics and glycomics data preprocessing! This package provides
-a comprehensive toolkit that takes the guesswork out of data cleaning,
-with specialized methods designed specifically for the unique challenges
-of glycan analysis.</p>
-<p><strong>Important Note:</strong> This package is designed for
+<p>Preparing data is an important first step in glycomics and
+glycoproteomics analysis. Depending on the experiment, this can include
+normalization, handling missing values, and correcting batch
+effects.</p>
+<p><code>glyclean</code> provides preprocessing methods for glycomics
+and glycoproteomics data. Its functions work with
 <code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE</a></code> and
-<code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code> objects. Preprocessing functions
-return the same subclass they receive. If you’re new to this data
-structure, we highly recommend checking out <a href="https://glycoverse.github.io/glyexp/articles/glyexp.html" class="external-link">its
-introduction</a> first. We’ll also be using the <a href="https://github.com/glycoverse/glyread" class="external-link">glyread</a> package to load
-our data – it’s the go-to tool in the <code>glycoverse</code>
-ecosystem.</p>
+<code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code> objects and return the same
+subclass they receive. If these objects are new to you, start with the
+<a href="https://glycoverse.github.io/glyexp/articles/glyexp.html" class="external-link">glyexp
+introduction</a>. The <a href="https://github.com/glycoverse/glyread" class="external-link">glyread</a> package can
+help you import data into the <code>glycoverse</code> ecosystem.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glycoverse.github.io/glyclean/">glyclean</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -95,86 +83,12 @@ ecosystem.</p>
 <span><span class="co">#&gt;     aggregate</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glycoverse.github.io/glyexp/" class="external-link">glyexp</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by</span></span>
-<span><span class="co">#&gt; 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/SummarizedExperiment" class="external-link">SummarizedExperiment</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: MatrixGenerics</span></span>
-<span><span class="co">#&gt; Loading required package: matrixStats</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'MatrixGenerics'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:matrixStats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,</span></span>
-<span><span class="co">#&gt;     colCounts, colCummaxs, colCummins, colCumprods, colCumsums,</span></span>
-<span><span class="co">#&gt;     colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,</span></span>
-<span><span class="co">#&gt;     colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,</span></span>
-<span><span class="co">#&gt;     colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,</span></span>
-<span><span class="co">#&gt;     colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,</span></span>
-<span><span class="co">#&gt;     colWeightedMeans, colWeightedMedians, colWeightedSds,</span></span>
-<span><span class="co">#&gt;     colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,</span></span>
-<span><span class="co">#&gt;     rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,</span></span>
-<span><span class="co">#&gt;     rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,</span></span>
-<span><span class="co">#&gt;     rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,</span></span>
-<span><span class="co">#&gt;     rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,</span></span>
-<span><span class="co">#&gt;     rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,</span></span>
-<span><span class="co">#&gt;     rowWeightedMads, rowWeightedMeans, rowWeightedMedians,</span></span>
-<span><span class="co">#&gt;     rowWeightedSds, rowWeightedVars</span></span>
-<span><span class="co">#&gt; Loading required package: GenomicRanges</span></span>
-<span><span class="co">#&gt; Loading required package: stats4</span></span>
-<span><span class="co">#&gt; Loading required package: BiocGenerics</span></span>
-<span><span class="co">#&gt; Loading required package: generics</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'generics'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     as.difftime, as.factor, as.ordered, intersect, is.element, setdiff,</span></span>
-<span><span class="co">#&gt;     setequal, union</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'BiocGenerics'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     IQR, mad, sd, var, xtabs</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     anyDuplicated, aperm, append, as.data.frame, basename, cbind,</span></span>
-<span><span class="co">#&gt;     colnames, dirname, do.call, duplicated, eval, evalq, Filter, Find,</span></span>
-<span><span class="co">#&gt;     get, grep, grepl, is.unsorted, lapply, Map, mapply, match, mget,</span></span>
-<span><span class="co">#&gt;     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,</span></span>
-<span><span class="co">#&gt;     rbind, Reduce, rownames, sapply, saveRDS, table, tapply, unique,</span></span>
-<span><span class="co">#&gt;     unsplit, which.max, which.min</span></span>
-<span><span class="co">#&gt; Loading required package: S4Vectors</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'S4Vectors'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:utils':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     findMatches</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     expand.grid, I, unname</span></span>
-<span><span class="co">#&gt; Loading required package: IRanges</span></span>
-<span><span class="co">#&gt; Loading required package: Seqinfo</span></span>
-<span><span class="co">#&gt; Loading required package: Biobase</span></span>
-<span><span class="co">#&gt; Welcome to Bioconductor</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     Vignettes contain introductory material; view with</span></span>
-<span><span class="co">#&gt;     'browseVignettes()'. To cite Bioconductor, see</span></span>
-<span><span class="co">#&gt;     'citation("Biobase")', and for packages 'citation("pkgname")'.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'Biobase'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:MatrixGenerics':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     rowMedians</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:matrixStats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     anyMissing, rowMedians</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:glyexp':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     samples</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glycoverse.github.io/glyrepr/" class="external-link">glyrepr</a></span><span class="op">)</span>  <span class="co"># for printing glycan compositions and structures</span></span></code></pre></div>
+<span><span class="co">#&gt; 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="meet-our-star-player-real-glycoproteomics-data">Meet Our Star Player: Real Glycoproteomics Data 🌟<a class="anchor" aria-label="anchor" href="#meet-our-star-player-real-glycoproteomics-data"></a>
+<h2 id="example-data">Example Data<a class="anchor" aria-label="anchor" href="#example-data"></a>
 </h2>
-<p>Let’s dive in with a real-world dataset that will showcase what
+<p>Let’s start with a real-world dataset to explore what
 <code>glyclean</code> can do. We’ll use the bundled
 <code><a href="https://glycoverse.github.io/glyexp/reference/real_experiment.html" class="external-link">glyexp::real_experiment</a></code> dataset, which is a
 <code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code> object.</p>
@@ -189,7 +103,7 @@ ecosystem.</p>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Row data fields: <span style="color: #00BB00;">peptide</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">peptide_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">protein</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">protein_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">gene</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">glycan_composition</span> <span style="color: #0000BB;">&lt;comp&gt;</span>, <span style="color: #00BB00;">glycan_structure</span> <span style="color: #0000BB;">&lt;struct&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Column data fields: <span style="color: #00BB00;">group</span> <span style="color: #0000BB;">&lt;fct&gt;</span>, <span style="color: #00BB00;">batch</span> <span style="color: #0000BB;">&lt;fct&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Metadata fields: <span style="color: #00BB00;">exp_type</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">glycan_type</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">quant_method</span> <span style="color: #0000BB;">&lt;chr&gt;</span></span></span></code></pre></div>
-<p>Let’s peek under the hood and see what we’re working with:</p>
+<p>First, let’s take a look at the feature and sample metadata:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span>, rownames <span class="op">=</span> <span class="st">"variable"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4,262 × 8</span></span></span>
@@ -224,15 +138,15 @@ ecosystem.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Y1     Y     A    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> Y2     Y     B    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> Y3     Y     C</span></span></code></pre></div>
-<p>What we have here is a beautiful N-glycoproteomics dataset featuring
-500 PSMs (Peptide Spectrum Matches) across 12 samples. These samples
-come from 3 different batches and represent 4 distinct biological groups
-– a perfect playground for demonstrating preprocessing techniques!</p>
+<p>This N-glycoproteomics dataset contains 500 peptide-spectrum matches
+(PSMs) across 12 samples. The samples come from three batches and
+represent four biological groups.</p>
 </div>
 <div class="section level2">
-<h2 id="the-magic-wand-one-function-to-rule-them-all">The Magic Wand: One Function to Rule Them All ✨<a class="anchor" aria-label="anchor" href="#the-magic-wand-one-function-to-rule-them-all"></a>
+<h2 id="a-starting-point-auto_clean">A Starting Point: <code>auto_clean()</code><a class="anchor" aria-label="anchor" href="#a-starting-point-auto_clean"></a>
 </h2>
-<p>Ready for some magic? Watch this:</p>
+<p><code><a href="../reference/auto_clean.html">auto_clean()</a></code> provides a convenient starting point for
+preprocessing:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clean_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_clean.html">auto_clean</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -268,28 +182,15 @@ come from 3 different batches and represent 4 distinct biological groups
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Batch effects detected in <span style="color: #0000BB;">"2.1%"</span> of variables (&lt;= <span style="color: #0000BB;">"30.0%"</span>). Skipping batch correction.</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Batch correction completed.</span></span></code></pre></div>
-<p><strong>That’s it!</strong> Your data is now preprocessed and ready
-for analysis! 🎉</p>
-<p>But Wait, What Just Happened? <code><a href="../reference/auto_clean.html">auto_clean()</a></code> isn’t
-actually magic (sorry to disappoint) – it’s a carefully designed
-intelligent pipeline that:</p>
-<ul>
-<li>
-<strong>Analyzes your data</strong>: Checks experiment type, sample
-size, and metadata</li>
-<li>
-<strong>Selects optimal methods</strong>: Chooses the best
-preprocessing strategy for your specific dataset</li>
-<li>
-<strong>Executes the pipeline</strong>: Runs everything in the
-optimal order</li>
-</ul>
+<p>The function applies a sequence of preprocessing steps using
+automatic defaults. You can inspect those steps and adjust your workflow
+to suit the experiment.</p>
 </div>
 <div class="section level2">
-<h2 id="still-like-magic-but-with-more-control">Still Like Magic, but With More Control?<a class="anchor" aria-label="anchor" href="#still-like-magic-but-with-more-control"></a>
+<h2 id="understanding-the-automatic-pipeline">Understanding the Automatic Pipeline<a class="anchor" aria-label="anchor" href="#understanding-the-automatic-pipeline"></a>
 </h2>
-<p>Let’s look into the details of what <code><a href="../reference/auto_clean.html">auto_clean()</a></code> does.
-Here is a simplified version of the function:</p>
+<p>Let’s look at what <code><a href="../reference/auto_clean.html">auto_clean()</a></code> does. Here is a
+simplified version of the function:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">auto_clean</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">exp</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># ... are other arguments, see documentation for more details</span></span>
@@ -357,20 +258,16 @@ different orders:</p>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reason: default for <span style="color: #0000BB;">"glycoproteomics"</span> with n_samples &lt; 30.</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="taking-the-scenic-route-step-by-step-preprocessing">Taking the Scenic Route: Step-by-Step Preprocessing 🚶‍♀️<a class="anchor" aria-label="anchor" href="#taking-the-scenic-route-step-by-step-preprocessing"></a>
+<h2 id="step-by-step-preprocessing">Step-by-Step Preprocessing<a class="anchor" aria-label="anchor" href="#step-by-step-preprocessing"></a>
 </h2>
-<p>While <code><a href="../reference/auto_clean.html">auto_clean()</a></code> and other <code>auto_xxx()</code>
-functions are fantastic for getting started, you’ll eventually want more
-control over your preprocessing pipeline. Let’s explore each step
-individually – think of it as learning to cook rather than just ordering
-takeout!</p>
+<p>The <code>auto_xxx()</code> functions offer a convenient starting
+point. For more control, you can choose and apply individual methods at
+each step.</p>
 <div class="section level3">
-<h3 id="step-1-normalization-getting-everyone-on-the-same-page">Step 1: Normalization – Getting Everyone on the Same Page 📏<a class="anchor" aria-label="anchor" href="#step-1-normalization-getting-everyone-on-the-same-page"></a>
+<h3 id="step-1-normalization">Step 1: Normalization<a class="anchor" aria-label="anchor" href="#step-1-normalization"></a>
 </h3>
-<p>Imagine you’re comparing heights of people measured in different
-units – some in feet, some in meters, some in furlongs (okay, maybe not
-furlongs). Normalization does the same thing for your omics data,
-bringing all intensities to a comparable scale.</p>
+<p>Normalization helps make intensities more comparable across
+samples.</p>
 <p><strong>Available normalization methods in
 <code>glyclean</code>:</strong></p>
 <table class="table">
@@ -453,59 +350,42 @@ smoothing</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Pro Tips:</strong></p>
-<ul>
-<li>Notice the <code>by</code> parameter in many functions? This allows
-stratified normalization within groups – super useful when you have
-distinct experimental conditions!</li>
-<li>
-<strong>Maximum flexibility</strong>: The <code>by</code> parameter
-accepts both column names from your sample metadata and direct vectors!
-This gives you complete control over grouping, even for custom groupings
-that aren’t stored in your experiment object.</li>
-</ul>
+<p>Many normalization functions accept a <code>by</code> parameter for
+normalization within groups. It can take a column name from the sample
+metadata or a vector, including a grouping that is not stored in the
+experiment object.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Example: Using by parameter with a custom vector</span></span>
 <span><span class="co"># Normalize within custom groups (e.g., based on some external criteria)</span></span>
 <span><span class="va">custom_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"C"</span>, <span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"C"</span><span class="op">)</span></span>
 <span><span class="va">normalized_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">exp</span>, by <span class="op">=</span> <span class="va">custom_groups</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Compositional Data: CLR, ALR, and Median Quotient
-Normalization</strong></p>
+<p><strong>Compositional Data: CLR and ALR</strong></p>
 <p>For glycomics data (where intensities represent relative abundances
 of glycans), standard normalization methods may not be appropriate.
 Instead, compositional data analysis techniques are recommended:</p>
 <ul>
-<li><p><strong><code><a href="../reference/normalize_median_quotient.html">normalize_median_quotient()</a></code></strong>: Median
-quotient normalization. A robust method specifically designed for
-compositional data, dividing each sample by its median quotient relative
-to a reference sample.</p></li>
 <li><p><strong><code><a href="../reference/transform_clr.html">transform_clr()</a></code></strong>: Centered Log-Ratio
-transformation with <code>glycowork</code>-compatible internal logic.
-The result remains on the <code>log2</code>-ratio scale, with experiment
-metadata <code>scale = "log2"</code>. The stochastic branch uses
-per-feature noise, matching <code>glycowork</code>.</p></li>
+transformation. A robust method for compositional data analysis. The
+result remains on the <code>log2</code>-ratio scale, with experiment
+metadata <code>scale = "log2"</code>.</p></li>
 <li><p><strong><code><a href="../reference/transform_alr.html">transform_alr()</a></code></strong>: Additive Log-Ratio
-transformation with <code>glycowork</code>-compatible internal logic.
-The reference glycan is chosen based on Procrustes correlation to CLR
-geometry and minimal between-group variance, and the final result
-remains on the <code>log2</code>-ratio scale
+transformation. The reference glycan is chosen based on Procrustes
+correlation to CLR geometry and minimal between-group variance, and the
+final result remains on the <code>log2</code>-ratio scale
 (<code>scale = "log2"</code>). If no suitable reference is found, ALR
 falls back to CLR.</p></li>
 </ul>
 <p>The CLR and ALR methods align with the best practices described in
 DOI: 10.1038/s41467-025-56249-3 for glycomics data preprocessing.</p>
-<p>Here we do the median normalization manually:</p>
+<p>Here we apply median normalization explicitly:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">normed_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="step-2-variable-filtering-saying-goodbye-to-the-unreliable">Step 2: Variable Filtering – Saying Goodbye to the Unreliable
-🧹<a class="anchor" aria-label="anchor" href="#step-2-variable-filtering-saying-goodbye-to-the-unreliable"></a>
+<h3 id="step-2-variable-filtering">Step 2: Variable Filtering<a class="anchor" aria-label="anchor" href="#step-2-variable-filtering"></a>
 </h3>
-<p>Some variables are like that friend who never shows up to plans –
-they’re missing most of the time and aren’t very helpful. In omics data,
-variables with too many missing values are often more noise than
-signal.</p>
+<p>Filtering can remove variables with too many missing values or too
+little variation for the analysis.</p>
 <p><strong>Available variable filtering functions in
 <code>glyclean</code>:</strong></p>
 <table class="table">
@@ -554,17 +434,14 @@ samples:</p>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Removed <span style="color: #0000BB;">137</span> of <span style="color: #0000BB;">4262</span> (<span style="color: #0000BB;">3.21</span>%) variables.</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="step-3-imputation-filling-in-the-blanks-intelligently">Step 3: Imputation – Filling in the Blanks Intelligently 🔮<a class="anchor" aria-label="anchor" href="#step-3-imputation-filling-in-the-blanks-intelligently"></a>
+<h3 id="step-3-imputation">Step 3: Imputation<a class="anchor" aria-label="anchor" href="#step-3-imputation"></a>
 </h3>
-<p>Here’s where things get scientifically interesting! Missing values in
-mass spectrometry aren’t randomly distributed – they follow patterns
-based on the physics and chemistry of the measurement process.</p>
-<p><strong>The Science:</strong> Missing values in MS-based omics data
-are typically “Missing Not At Random” (MNAR), meaning they’re related to
-the intensity of the signal. Low-abundance ions are more likely to be
-missed, either due to poor ionization efficiency or because they fall
-below the detection threshold.</p>
-<p><strong>Your imputation toolkit:</strong></p>
+<p>Missing values in mass spectrometry data can arise through different
+mechanisms. For example, low-abundance ions may be missed because of
+poor ionization efficiency or because their signal falls below the
+detection threshold. Consider the likely cause of missingness when
+choosing an imputation method.</p>
+<p><strong>Available imputation methods:</strong></p>
 <table class="table">
 <colgroup>
 <col width="35%">
@@ -634,22 +511,20 @@ below the detection threshold.</p>
 <code class="sourceCode R"><span><span class="va">imputed_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/impute_zero.html">impute_zero</a></span><span class="op">(</span><span class="va">filtered_exp</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="step-4-aggregation-from-peptides-to-glycoforms">Step 4: Aggregation – From Peptides to Glycoforms 🔄<a class="anchor" aria-label="anchor" href="#step-4-aggregation-from-peptides-to-glycoforms"></a>
+<h3 id="step-4-aggregation-from-peptides-to-glycoforms">Step 4: Aggregation – From Peptides to Glycoforms<a class="anchor" aria-label="anchor" href="#step-4-aggregation-from-peptides-to-glycoforms"></a>
 </h3>
-<p>Here’s where glycoproteomics gets uniquely challenging! Search
-engines typically report results at the PSM or peptide level, but what
-we really care about are <strong>glycoforms</strong> – the specific
-glycan structures attached to specific protein sites.</p>
-<p><strong>The Problem:</strong> One glycoform can appear multiple times
-in your data due to:</p>
+<p>Search engines typically report glycoproteomics results at the PSM or
+peptide level. Aggregation can bring these measurements together at a
+level suited to the analysis, such as glycoforms defined by a glycan and
+a protein site. One glycoform can appear multiple times in the data due
+to:</p>
 <ul>
 <li>Different charge states</li>
 <li>Post-translational modifications</li>
 <li>Missed protease cleavages</li>
 <li>Different peptide sequences covering the same site</li>
 </ul>
-<p><strong>The Solution:</strong> Intelligent aggregation!</p>
-<p><strong>Aggregation levels available:</strong></p>
+<p><strong>Available aggregation levels:</strong></p>
 <ul>
 <li>
 <strong>“gps”</strong>: Glycopeptides with structures (most
@@ -665,21 +540,18 @@ condensed)</li>
 </ul>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">aggregated_exp</span> <span class="op">&lt;-</span> <span class="fu">glyclean</span><span class="fu">::</span><span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">imputed_exp</span>, to_level <span class="op">=</span> <span class="st">"gf"</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Pro move:</strong> Re-normalize after aggregation to account
-for the new intensity distributions:</p>
+<p>You can normalize again after aggregation to account for changes in
+the intensity distributions:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">aggregated_exp2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">aggregated_exp</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="step-5-batch-effect-correction-harmonizing-your-orchestra">Step 5: Batch Effect Correction – Harmonizing Your Orchestra 🎼<a class="anchor" aria-label="anchor" href="#step-5-batch-effect-correction-harmonizing-your-orchestra"></a>
+<h3 id="step-5-batch-effect-correction">Step 5: Batch Effect Correction<a class="anchor" aria-label="anchor" href="#step-5-batch-effect-correction"></a>
 </h3>
-<p>Batch effects are the “different violinists playing the same piece”
-problem of omics data. Even when following identical protocols, subtle
-differences in instruments, reagents, or environmental conditions can
-introduce systematic bias.</p>
-<p><strong>The Good News:</strong> If your experimental design is
-well-controlled (conditions distributed across batches), batch effect
-correction can work wonders!</p>
+<p>Differences in instruments, reagents, or environmental conditions can
+introduce systematic variation between batches, even when protocols are
+consistent. Batch effect correction is most useful when the experimental
+design allows batch and biological effects to be distinguished.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># To detect batch effects:</span></span>
 <span><span class="va">p_values</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detect_batch_effect.html">detect_batch_effect</a></span><span class="op">(</span><span class="va">aggregated_exp2</span><span class="op">)</span></span>
@@ -692,8 +564,8 @@ correction can work wonders!</p>
 <span><span class="co">#&gt;                          0.4852698                          0.3329619 </span></span>
 <span><span class="co">#&gt; P04196-344-Hex(5)HexNAc(4)NeuAc(2) </span></span>
 <span><span class="co">#&gt;                          0.4907154</span></span></code></pre></div>
-<p>Here we do not have batch effects, but we will correct it anyway for
-demonstration.</p>
+<p>For demonstration, we can also apply batch effect correction to this
+dataset:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># To correct batch effects:</span></span>
 <span><span class="va">corrected_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_batch_effect.html">correct_batch_effect</a></span><span class="op">(</span><span class="va">aggregated_exp2</span><span class="op">)</span></span>
@@ -705,60 +577,31 @@ demonstration.</p>
 <span><span class="co">#&gt; Adjusting the Data</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="step-6-protein-expression-adjustment-separating-signal-from-noise">Step 6: Protein Expression Adjustment – Separating Signal from Noise
-🎯<a class="anchor" aria-label="anchor" href="#step-6-protein-expression-adjustment-separating-signal-from-noise"></a>
+<h3 id="step-6-protein-expression-adjustment">Step 6: Protein Expression Adjustment<a class="anchor" aria-label="anchor" href="#step-6-protein-expression-adjustment"></a>
 </h3>
-<p>Here’s a fascinating biological puzzle: when you measure a
-glycopeptide’s intensity, you’re actually seeing two stories at
-once!</p>
-<p><strong>The Dual Nature Problem:</strong> Every glycopeptide
-intensity is a tale of two factors:</p>
-<ul>
-<li>
-<strong>The protein story</strong>: How much of the substrate
-protein is present</li>
-<li>
-<strong>The glycosylation story</strong>: How actively that protein
-is being glycosylated</li>
-</ul>
-<p>It’s like trying to understand applause volume – is the audience
-bigger, or are they just more enthusiastic?</p>
-<p><strong>The Solution:</strong> If you’re specifically interested in
-glycosylation changes (not protein abundance changes), you need to
-mathematically “subtract out” the protein expression component. Think of
-it as noise cancellation for biology!</p>
+<p>Glycopeptide intensity can reflect both protein abundance and
+glycosylation. When protein expression measurements are available,
+<code><a href="../reference/adjust_protein.html">adjust_protein()</a></code> can help account for protein abundance
+when investigating glycosylation changes.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># We don't run the code here because we don't have the protein expression matrix.</span></span>
 <span><span class="va">adjusted_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/adjust_protein.html">adjust_protein</a></span><span class="op">(</span><span class="va">inferred_exp</span>, <span class="va">pro_expr_mat</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Important Prerequisites:</strong></p>
-<ul>
-<li>Your protein expression matrix must have the same samples as your
-glycopeptide data</li>
-<li>The protein expression matrix should be properly preprocessed (good
-news: you can use <code>glyclean</code> functions for this too!)</li>
-<li>Sample matching needs to be perfect – no mixing apples with
-oranges!</li>
-</ul>
-<p><strong>Pro Tip:</strong> Wrap protein expression data in a
-<code>SummarizedExperiment</code> object before using
-<code>glyclean</code> preprocessing functions. Consistency is key!</p>
-</div>
-<div class="section level3">
-<h3 id="mission-accomplished">🎉 Mission Accomplished!<a class="anchor" aria-label="anchor" href="#mission-accomplished"></a>
-</h3>
-<p>Congratulations! You now have beautifully preprocessed,
-analysis-ready glycoproteomics data. Your data has been normalized,
-filtered, imputed, aggregated, and batch-corrected – it’s ready to
-reveal its biological secrets!</p>
+<p>The protein expression matrix should be preprocessed and contain the
+same samples as the glycopeptide data, with samples matched correctly.
+You can wrap protein expression data in a
+<code>SummarizedExperiment</code> object to use <code>glyclean</code>
+preprocessing functions.</p>
+<p>The example workflow has now covered normalization, filtering,
+imputation, aggregation, and batch correction. Choose and assess these
+steps for your own data and analysis goals.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="advanced-usage-flexible-grouping-with-custom-vectors">Advanced Usage: Flexible Grouping with Custom Vectors 🔧<a class="anchor" aria-label="anchor" href="#advanced-usage-flexible-grouping-with-custom-vectors"></a>
+<h2 id="advanced-usage-flexible-grouping-with-custom-vectors">Advanced Usage: Flexible Grouping with Custom Vectors<a class="anchor" aria-label="anchor" href="#advanced-usage-flexible-grouping-with-custom-vectors"></a>
 </h2>
 <p>Many functions in <code>glyclean</code> accept a <code>by</code>
-parameter for stratified processing. This parameter offers maximum
-flexibility – it accepts both column names from your sample metadata and
-direct vectors!</p>
+parameter for stratified processing. It accepts both column names from
+the sample metadata and vectors.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Using column names (standard approach)</span></span>
 <span><span class="va">normalized_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">exp</span>, by <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span>
@@ -766,16 +609,14 @@ direct vectors!</p>
 <span><span class="co"># Using custom vectors (advanced approach)</span></span>
 <span><span class="va">custom_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"C"</span>, <span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"C"</span><span class="op">)</span></span>
 <span><span class="va">normalized_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">exp</span>, by <span class="op">=</span> <span class="va">custom_groups</span><span class="op">)</span></span></code></pre></div>
-<p>This gives you complete control over grouping, even for custom
-groupings that aren’t stored in your experiment object. Perfect for
-complex experimental designs or external grouping criteria!</p>
+<p>This also lets you use groupings that are not stored in the
+experiment object.</p>
 </div>
 <div class="section level2">
-<h2 id="quality-control-qc">Quality Control (QC) 📊<a class="anchor" aria-label="anchor" href="#quality-control-qc"></a>
+<h2 id="quality-control-qc">Quality Control (QC)<a class="anchor" aria-label="anchor" href="#quality-control-qc"></a>
 </h2>
-<p><code>glyclean</code> provides a comprehensive suite of quality
-control plotting functions to help you visualize and assess the quality
-of your data at various stages of the preprocessing pipeline.</p>
+<p><code>glyclean</code> provides quality control plots to help you
+assess data at different stages of preprocessing.</p>
 <p><strong>Available QC plotting functions in
 <code>glyclean</code>:</strong></p>
 <table class="table">
@@ -837,9 +678,9 @@ of your data at various stages of the preprocessing pipeline.</p>
 </tr>
 </tbody>
 </table>
-<p>These functions work seamlessly with <code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE</a></code>
-and <code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code> objects and provide
-consistent, high-quality visualizations using <code>ggplot2</code>.</p>
+<p>These functions work with <code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE</a></code> and
+<code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE</a></code> objects and use
+<code>ggplot2</code> for visualization.</p>
 <p>For example, you can use <code><a href="../reference/plot_missing_heatmap.html">plot_missing_heatmap()</a></code> to
 visualize the missing values in your data before and after cleaning:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
@@ -849,10 +690,40 @@ visualize the missing values in your data before and after cleaning:</p>
 <p><img src="glyclean_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level2">
+<h2 id="revisit-the-history">Revisit the History<a class="anchor" aria-label="anchor" href="#revisit-the-history"></a>
+</h2>
+<p>All preprocessing steps applied to an experiment are recorded and
+stored as a pipeline object. You can get it with
+<code><a href="../reference/glyclean_pipeline.html">get_pipeline()</a></code>.</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">history</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/glyclean_pipeline.html">get_pipeline</a></span><span class="op">(</span><span class="va">clean_exp</span><span class="op">)</span></span>
+<span><span class="va">history</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── &lt;glyclean_pipeline&gt; 5 steps ─────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; 1. remove_rare</span></span>
+<span><span class="co">#&gt;    prop = 0.8, n = NULL, by = NULL, strict = FALSE, min_n = 1</span></span>
+<span><span class="co">#&gt; 2. remove_rare</span></span>
+<span><span class="co">#&gt;    prop = 0.5, n = NULL, by = &lt;factor [12]: "H" (3), "M" (3), "Y" (3), "C"</span></span>
+<span><span class="co">#&gt;    (3)&gt;, strict = FALSE, min_n = 1</span></span>
+<span><span class="co">#&gt; 3. normalize_median</span></span>
+<span><span class="co">#&gt;    (no parameters)</span></span>
+<span><span class="co">#&gt; 4. impute_min_prob</span></span>
+<span><span class="co">#&gt;    by = NULL, q = 0.01, tune.sigma = 1, seed = 123</span></span>
+<span><span class="co">#&gt; 5. aggregate</span></span>
+<span><span class="co">#&gt;    to_level = "gfs", standardize_variable = TRUE, f = base::sum, seed = 123</span></span></code></pre></div>
+<p>You can reapply the recorded pipeline to the original experiment and
+compare the result:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="../reference/glyclean_pipeline.html">apply_pipeline</a></span><span class="op">(</span><span class="va">exp</span>, <span class="va">history</span><span class="op">)</span>, <span class="va">clean_exp</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Removed <span style="color: #0000BB;">18</span> of <span style="color: #0000BB;">4262</span> (<span style="color: #0000BB;">0.42</span>%) variables.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Removed <span style="color: #0000BB;">6</span> of <span style="color: #0000BB;">4244</span> (<span style="color: #0000BB;">0.14</span>%) variables.</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+</div>
+<div class="section level2">
 <h2 id="whats-next">What’s Next?<a class="anchor" aria-label="anchor" href="#whats-next"></a>
 </h2>
-<p>With your clean data in hand, you’re ready to dive into the exciting
-world of glyco-omics analysis:</p>
+<p>Once you have assessed your preprocessed data, you can move on to
+analyses such as:</p>
 <ul>
 <li>
 <strong>Differential analysis</strong>: Find glycans that change
@@ -863,58 +734,11 @@ processes</li>
 <li>
 <strong>Machine learning</strong>: Build predictive models</li>
 <li>
-<strong>Visualization</strong>: Create stunning plots that tell your
-data’s story</li>
+<strong>Visualization</strong>: Explore and communicate patterns in
+the data</li>
 </ul>
-<p>The <code>glycoverse</code> ecosystem has tools for all of these and
-more!</p>
-</div>
-<div class="section level2">
-<h2 id="controlling-random-preprocessing">Controlling random preprocessing<a class="anchor" aria-label="anchor" href="#controlling-random-preprocessing"></a>
-</h2>
-<p>Stochastic preprocessing functions expose a non-negative integer
-<code>seed</code>, with <code>123</code> as the default. This includes
-VSN subsampling (<code><a href="../reference/normalize_vsn.html">normalize_vsn()</a></code>), both KNN imputation
-directions, BPCA/SVD cross-validation, PPCA, MinProb, MissForest and
-CoDA. Aggregation also accepts a seed for custom callbacks that use R’s
-RNG. <code><a href="../reference/auto_impute.html">auto_impute()</a></code> and <code><a href="../reference/auto_clean.html">auto_clean()</a></code> pass their
-seed to the selected imputation method, and automatic aggregation
-forwards the seed as well.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">normalized</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_vsn.html">normalize_vsn</a></span><span class="op">(</span><span class="va">exp</span>, subsample <span class="op">=</span> <span class="fl">100</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span>
-<span><span class="va">imputed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/impute_bpca.html">impute_bpca</a></span><span class="op">(</span><span class="va">exp</span>, cv <span class="op">=</span> <span class="st">"q2"</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span>
-<span><span class="va">knn</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/impute_sw_knn.html">impute_sw_knn</a></span><span class="op">(</span><span class="va">exp</span>, k <span class="op">=</span> <span class="fl">5</span>, maxp <span class="op">=</span> <span class="fl">1500</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span></code></pre></div>
-<p>For functions with <code>...</code>, newly added seeds must be named.
-Existing positional non-seed arguments forwarded through
-<code>...</code> retain their meaning. Configure KNN randomness with
-<code>seed</code>; the historical <code>rng.seed</code> argument is no
-longer accepted through <code>...</code>. The explicit seed reaches the
-backend’s partitioning algorithm.</p>
-<p>These calls restore the caller’s R random state, including on errors
-and when <code>.Random.seed</code> did not previously exist. A fixed
-seed supports reproducibility within the same R/RNG configuration and
-dependency versions. External random generators, backend changes,
-parallel computation and arbitrary side effects in custom callbacks may
-require additional controls; a seed alone is not a promise of bitwise
-identity across platforms or package versions.</p>
-</div>
-<div class="section level2">
-<h2 id="compositional-transformation-for-glycoproteomics">Compositional transformation for glycoproteomics<a class="anchor" aria-label="anchor" href="#compositional-transformation-for-glycoproteomics"></a>
-</h2>
-<p>For glycoproteomics, <code><a href="../reference/auto_coda.html">auto_coda()</a></code> always applies CLR
-separately to each <code>protein</code> and <code>protein_site</code>
-combination, regardless of the number of features at a site. It is
-equivalent to <code><a href="../reference/transform_clr.html">transform_clr()</a></code> with the same parameters and
-seed, and preserves all feature rows. <code><a href="../reference/transform_alr.html">transform_alr()</a></code> does
-not support glycoproteomics input and reports an error directing users
-to CLR.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">clr_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_coda.html">auto_coda</a></span><span class="op">(</span><span class="va">clean_exp</span>, by <span class="op">=</span> <span class="st">"group"</span>, seed <span class="op">=</span> <span class="fl">123</span><span class="op">)</span></span>
-<span><span class="co"># Equivalent for a glycoproteomics experiment:</span></span>
-<span><span class="va">clr_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/transform_clr.html">transform_clr</a></span><span class="op">(</span><span class="va">clean_exp</span>, by <span class="op">=</span> <span class="st">"group"</span>, seed <span class="op">=</span> <span class="fl">123</span><span class="op">)</span></span></code></pre></div>
-<p>For glycomics, automatic selection is unchanged: more than 50
-features selects ALR, otherwise CLR. ALR can fall back to CLR when no
-suitable reference exists.</p>
+<p>The <code>glycoverse</code> ecosystem provides tools for these next
+steps.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
