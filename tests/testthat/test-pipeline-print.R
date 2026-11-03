@@ -16,25 +16,19 @@ print_test_pipeline <- function(parameters, fun = transform_clr) {
     class = c("glyclean_step", "list"))), class = c("glyclean_pipeline", "list"))
 }
 
-test_that("pipeline format returns printable lines without emitting output", {
-  withr::local_options(list(
-    cli.num_colors = 1,
-    cli.unicode = FALSE,
-    cli.width = 80,
-    width = 80,
-    cli.dynamic = FALSE
+test_that("pipeline print uses cli headings, lists and wrapped parameter text", {
+  pipeline <- glyclean_pipeline(
+    normalize_total_area(),
+    impute_min_prob(seed = 42)
+  )
+  expect_snapshot(cat(
+    capture_pipeline_print(pipeline, width = 60)$text,
+    "\n",
+    sep = ""
   ))
-  for (pipeline in list(
-    glyclean_pipeline(),
-    glyclean_pipeline(normalize_total_area(), impute_min_prob(seed = 42))
-  )) {
-    lines <- NULL
-    expect_output(lines <- format(pipeline), NA)
-    expect_type(lines, "character")
-    expect_gt(length(lines), 1L)
-    expect_false(any(grepl("\n", lines, fixed = TRUE)))
-    expect_identical(lines, capture_pipeline_print(pipeline)$lines)
-  }
+  literal <- "{.strong literal}"
+  shown <- capture_pipeline_print(print_test_pipeline(list(value = literal)))
+  expect_match(shown$text, literal, fixed = TRUE)
 })
 
 test_that("pipeline print shows its class, step count, names and scalar seeds", {
