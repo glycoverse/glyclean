@@ -6,6 +6,7 @@
 <url><loc>https://glycoverse.github.io/glyclean/dev/SUPPORT.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/dev/articles/glyclean.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/dev/articles/index.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/dev/articles/pipelines.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/dev/authors.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/dev/index.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/dev/news/index.html</loc></url>
@@ -26,6 +27,7 @@
 <url><loc>https://glycoverse.github.io/glyclean/dev/reference/dot-resolve_column_param.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/dev/reference/dot-validate_protein_seqs.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/dev/reference/glyclean-package.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/dev/reference/glyclean_pipeline.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/dev/reference/impute_bpca.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/dev/reference/impute_fw_knn.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/dev/reference/impute_half_sample_min.html</loc></url>

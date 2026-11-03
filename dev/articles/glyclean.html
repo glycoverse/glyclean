@@ -32,6 +32,12 @@
       <ul class="navbar-nav me-auto">
 <li class="active nav-item"><a class="nav-link" href="../articles/glyclean.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/pipelines.html">Reproducible single-assay pipelines</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -879,11 +885,11 @@ forwards the seed as well.</p>
 <span><span class="va">imputed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/impute_bpca.html">impute_bpca</a></span><span class="op">(</span><span class="va">exp</span>, cv <span class="op">=</span> <span class="st">"q2"</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span>
 <span><span class="va">knn</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/impute_sw_knn.html">impute_sw_knn</a></span><span class="op">(</span><span class="va">exp</span>, k <span class="op">=</span> <span class="fl">5</span>, maxp <span class="op">=</span> <span class="fl">1500</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span></code></pre></div>
 <p>For functions with <code>...</code>, newly added seeds must be named.
-Existing positional arguments forwarded through <code>...</code> retain
-their meaning. KNN’s historical <code>rng.seed</code> argument remains
-supported when <code>seed</code> is omitted. Supplying both with
-conflicting values is an error; the effective seed is passed to the
-backend rather than being overridden by its default.</p>
+Existing positional non-seed arguments forwarded through
+<code>...</code> retain their meaning. Configure KNN randomness with
+<code>seed</code>; the historical <code>rng.seed</code> argument is no
+longer accepted through <code>...</code>. The explicit seed reaches the
+backend’s partitioning algorithm.</p>
 <p>These calls restore the caller’s R random state, including on errors
 and when <code>.Random.seed</code> did not previously exist. A fixed
 seed supports reproducibility within the same R/RNG configuration and

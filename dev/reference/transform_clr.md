@@ -77,10 +77,7 @@ which always uses CLR. Both site identifiers must be present and
 non-missing. `by` continues to specify sample groups.
 
 The output preserves all rows, their original order, and their
-annotations. Metadata field `coda_site_transforms` records `protein`,
-`protein_site`, `transform`, and `reference` for each site; `reference`
-is always missing. `coda_transform` is `"clr"`, and `coda_reference` is
-`NULL`.
+annotations.
 
 With `gamma = 0`, a site containing a single feature returns one for
 positive abundances and zero for zeros. Samples with no positive
@@ -115,11 +112,10 @@ than before. In another words, the recommended workflow is:
 x <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
 x <- impute_zero(x[seq_len(6), ])
 result <- transform_clr(x, gamma = 0)
-S4Vectors::metadata(result)$coda_site_transforms
-#> # A tibble: 3 × 4
-#>   protein protein_site transform reference
-#>   <chr>          <int> <chr>     <chr>    
-#> 1 P08185           176 clr       NA       
-#> 2 P04196           344 clr       NA       
-#> 3 P10909           291 clr       NA       
+get_pipeline(result)
+#> ── <glyclean_pipeline> 2 steps ─────────────────────────────────────────────────
+#>   1. impute_zero
+#>      (no parameters)
+#>   2. transform_clr
+#>     by = NULL, gamma = 0, group_scales = NULL, seed = 123
 ```

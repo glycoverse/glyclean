@@ -23,6 +23,10 @@ than 50 variables and transform_clr() otherwise, following glycowork."><meta pro
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/glyclean.html">Get started</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/pipelines.html">Reproducible single-assay pipelines</a></li>
+  </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -110,9 +114,7 @@ ALR is not supported for glycoproteomics; use <code><a href="transform_clr.html"
 <code>auto_coda()</code>, which always uses CLR. Both site identifiers must be
 present and non-missing. <code>by</code> continues to specify sample groups.</p>
 <p>The output preserves all rows, their original order, and their
-annotations. Metadata field <code>coda_site_transforms</code> records <code>protein</code>,
-<code>protein_site</code>, <code>transform</code>, and <code>reference</code> for each site; <code>reference</code> is
-always missing. <code>coda_transform</code> is <code>"clr"</code>, and <code>coda_reference</code> is <code>NULL</code>.</p>
+annotations.</p>
 <p>With <code>gamma = 0</code>, a site containing a single feature returns one for
 positive abundances and zero for zeros. Samples with no positive abundance
 at a site remain zero for that site.</p>

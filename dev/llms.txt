@@ -94,6 +94,13 @@ and other steps that are necessary for downstream analysis.
 
 # Package index
 
+## Reproducible Pipelines
+
+- [`glyclean_pipeline()`](https://glycoverse.github.io/glyclean/dev/reference/glyclean_pipeline.md)
+  [`get_pipeline()`](https://glycoverse.github.io/glyclean/dev/reference/glyclean_pipeline.md)
+  [`apply_pipeline()`](https://glycoverse.github.io/glyclean/dev/reference/glyclean_pipeline.md)
+  : Reproducible preprocessing pipelines
+
 ## Automactic Processing
 
 - [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
@@ -230,3 +237,5 @@ and other steps that are necessary for downstream analysis.
 
 - [Get Started with
   glyclean](https://glycoverse.github.io/glyclean/dev/articles/glyclean.md):
+- [Reproducible single-assay
+  pipelines](https://glycoverse.github.io/glyclean/dev/articles/pipelines.md):

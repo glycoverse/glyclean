@@ -1,5 +1,12 @@
 # Package index
 
+## Reproducible Pipelines
+
+- [`glyclean_pipeline()`](https://glycoverse.github.io/glyclean/dev/reference/glyclean_pipeline.md)
+  [`get_pipeline()`](https://glycoverse.github.io/glyclean/dev/reference/glyclean_pipeline.md)
+  [`apply_pipeline()`](https://glycoverse.github.io/glyclean/dev/reference/glyclean_pipeline.md)
+  : Reproducible preprocessing pipelines
+
 ## Automactic Processing
 
 - [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)

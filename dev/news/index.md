@@ -2,6 +2,44 @@
 
 ## glyclean (development version)
 
+- Pipeline recording uses a shared helper across preprocessing
+  functions. Recipe construction uses tidy evaluation, and the pipeline
+  tutorial now starts with recorded processing history and replay before
+  introducing manual recipes.
+
+- CoDA operations now record their function and parameters only in the
+  preprocessing pipeline. They add no CoDA-specific metadata and
+  preserve all existing metadata unchanged, with no legacy-field
+  migration or cleanup.
+
+- Added list-based
+  [`glyclean_pipeline()`](https://glycoverse.github.io/glyclean/dev/reference/glyclean_pipeline.md),
+  [`apply_pipeline()`](https://glycoverse.github.io/glyclean/dev/reference/glyclean_pipeline.md),
+  and
+  [`get_pipeline()`](https://glycoverse.github.io/glyclean/dev/reference/glyclean_pipeline.md)
+  APIs. Processing records concrete reproducible steps in experiment
+  metadata while retaining one assay. Automatic preprocessing records
+  its selected operations; CoDA records its selected top-level function
+  and sequence annotation inputs are frozen for replay.
+
+- Pipeline printing now uses compact `cli` rendering with numbered
+  function names and parameter summaries; large inputs are summarized
+  rather than printed.
+
+- Single-sample character grouping values are recorded unambiguously as
+  factors, preserving grouped-history replay even when a value matches
+  another metadata column name.
+
+- Pipelines record explicit seeds (including defaults) as ordinary step
+  parameters, without storing or restoring RNG snapshots. Each seeded
+  operation manages its own random state through `withr`.
+
+- CoDA histories use ordinary function-and-parameter steps, including
+  the seed. ALR reference evaluation and fallback are re-executed on
+  replay; no per-site plan, saved reference, RNG snapshots, or derived
+  sub-seeds are needed. The existing seeded CoDA algorithm and
+  random-number sequence are preserved.
+
 - Added an explicit `seed = 123` to
   [`normalize_vsn()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_vsn.md),
   [`impute_sw_knn()`](https://glycoverse.github.io/glyclean/dev/reference/impute_sw_knn.md),
@@ -33,9 +71,9 @@
   [`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md)
   explicitly rejects glycoproteomics input. Each `protein` and
   `protein_site` combination remains an independent composition, all
-  rows are retained, and site metadata records CLR with no reference.
-  This replaces the per-site ALR selection introduced in \#34; glycomics
-  method selection and ALR behavior are unchanged.
+  rows are retained, and no reference is stored. This replaces the
+  per-site ALR selection introduced in \#34; glycomics method selection
+  and ALR behavior are unchanged.
 
 ## glyclean 0.16.0
 

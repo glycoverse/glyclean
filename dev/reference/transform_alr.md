@@ -82,10 +82,7 @@ which always uses CLR. Both site identifiers must be present and
 non-missing. `by` continues to specify sample groups.
 
 The output preserves all rows, their original order, and their
-annotations. Metadata field `coda_site_transforms` records `protein`,
-`protein_site`, `transform`, and `reference` for each site; `reference`
-is always missing. `coda_transform` is `"clr"`, and `coda_reference` is
-`NULL`.
+annotations.
 
 With `gamma = 0`, a site containing a single feature returns one for
 positive abundances and zero for zeros. Samples with no positive

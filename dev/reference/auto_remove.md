@@ -57,5 +57,5 @@ auto_remove(exp)
 #> ℹ Glycan type: N
 #> ℹ Row data fields: peptide <chr>, peptide_site <int>, protein <chr>, protein_site <int>, gene <chr>, glycan_composition <comp>, glycan_structure <struct>
 #> ℹ Column data fields: group <fct>
-#> ℹ Metadata fields: exp_type <chr>, glycan_type <chr>, quant_method <chr>
+#> ℹ Metadata fields: exp_type <chr>, glycan_type <chr>, quant_method <chr>, pipeline <glycln_p>
 ```
