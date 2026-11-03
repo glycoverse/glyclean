@@ -45,6 +45,91 @@ test_that("pipeline print shows its class, step count, names and scalar seeds", 
   expect_match(single$text, "seed = 123")
 })
 
+test_that("recorded history retains operation names across namespace reloads", {
+  x <- simple_exp(4, 3)
+  SummarizedExperiment::colData(x)$group <- factor(c("A", "A", "B"))
+  result <- suppressMessages(remove_rare(
+    x,
+    prop = 0.5,
+    by = "group",
+    min_n = 1
+  ))
+  result <- normalize_total_area(result)
+  result <- impute_min_prob(result)
+  result <- glyclean::aggregate(result, to_level = "g")
+  history <- get_pipeline(result)
+  # An installed package and load_all() have distinct environments and source
+  # references, even when their operation implementations are the same.
+  for (i in seq_along(history)) {
+    fun <- rlang::zap_srcref(history[[i]][["function"]])
+    environment(fun) <- new.env(parent = environment(fun))
+    history[[i]][["function"]] <- fun
+  }
+  expect_false(identical(history[[1]][["function"]], remove_rare))
+  before <- serialize(history, NULL)
+  shown <- capture_pipeline_print(unserialize(before), width = 120)
+  for (name in c(
+    "remove_rare",
+    "normalize_total_area",
+    "impute_min_prob",
+    "aggregate"
+  )) {
+    expect_match(shown$text, name, fixed = TRUE)
+  }
+  expect_false(grepl("recorded operation", shown$text, fixed = TRUE))
+  expect_match(shown$text, 'by = <factor [3]: "A" (2), "B" (1)>', fixed = TRUE)
+  expect_match(shown$text, "f = base::sum", fixed = TRUE)
+  expect_identical(serialize(history, NULL), before)
+})
+
+test_that("callback summaries identify named functions without executing them", {
+  pipeline <- print_test_pipeline(list(
+    f = base::sum,
+    average = base::mean,
+    middle = stats::median,
+    internal = .pipeline_function_names,
+    callback = function(x, ...) stop("must not execute")
+  ))
+  shown <- capture_pipeline_print(pipeline, width = 120)
+  expect_match(shown$text, "f = base::sum", fixed = TRUE)
+  expect_match(shown$text, "average = base::mean", fixed = TRUE)
+  expect_match(shown$text, "middle = stats::median", fixed = TRUE)
+  expect_match(
+    shown$text,
+    "internal = glyclean:::.pipeline_function_names",
+    fixed = TRUE
+  )
+  expect_match(shown$text, "callback = function(x, ...)", fixed = TRUE)
+  expect_false(grepl("must not execute", shown$text, fixed = TRUE))
+})
+
+test_that("factor summaries show bounded group counts including missing values", {
+  expect_identical(.pipeline_factor_summary(factor()), "<factor [0]>")
+  expect_identical(
+    .pipeline_factor_summary(factor(c(NA, NA))),
+    "<factor [2]: NA (2)>"
+  )
+  groups <- factor(c("A", "A", "B", NA), levels = c("A", "B", "unused"))
+  shown <- capture_pipeline_print(
+    print_test_pipeline(list(by = groups)),
+    width = 120
+  )
+  expect_match(
+    shown$text,
+    'by = <factor [4]: "A" (2), "B" (1), NA (1)>',
+    fixed = TRUE
+  )
+  expect_false(grepl("unused", shown$text, fixed = TRUE))
+  groups <- factor(paste0("group", seq_len(100)))
+  shown <- capture_pipeline_print(
+    print_test_pipeline(list(by = groups)),
+    width = 120
+  )
+  expect_match(shown$text, "factor [100]", fixed = TRUE)
+  expect_match(shown$text, "...", fixed = TRUE)
+  expect_false(grepl('"group99"', shown$text, fixed = TRUE))
+})
+
 test_that("pipeline print summarizes matrices, lists and sequences without dumping", {
   marker <- "DO_NOT_DUMP_PRIVATE_PARAMETER_CONTENT"
   pipeline <- print_test_pipeline(list(
@@ -59,7 +144,7 @@ test_that("pipeline print summarizes matrices, lists and sequences without dumpi
   expect_match(shown$text, "<character \\[100\\]>")
   expect_match(shown$text, "<list \\[3\\]>")
   expect_match(shown$text, "<character \\[1\\]>")
-  expect_match(shown$text, "<function>")
+  expect_match(shown$text, "function()", fixed = TRUE)
   expect_false(grepl(marker, shown$text, fixed = TRUE))
   expect_false(grepl("ACDEFGHIKLMNPQRSTVWY", shown$text, fixed = TRUE))
   expect_false(grepl("must not execute", shown$text, fixed = TRUE))

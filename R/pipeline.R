@@ -315,16 +315,94 @@ apply_pipeline <- function(exp, pipeline) {
   do.call(step[["function"]], c(list(exp), step$parameters))
 }
 
+.pipeline_operation_name <- function(fun) {
+  candidates <- .pipeline_function_names()
+  # Stored closures can come from an earlier namespace instance or an installed
+  # build without source references. This comparison is only for display;
+  # replay still uses the original function, environment and parameters.
+  fun <- rlang::zap_srcref(fun)
+  matches <- candidates[vapply(
+    candidates,
+    \(name) {
+      current <- get(name, envir = asNamespace("glyclean"))
+      identical(fun, rlang::zap_srcref(current), ignore.environment = TRUE)
+    },
+    logical(1)
+  )]
+  if (length(matches) == 1L) matches[[1L]] else "recorded operation"
+}
+
+.pipeline_callback_summary <- function(fun) {
+  env <- if (is.primitive(fun)) baseenv() else environment(fun)
+  if (identical(env, baseenv()) || isNamespace(env)) {
+    candidates <- ls(env, all.names = TRUE)
+    for (name in candidates) {
+      if (
+        !bindingIsActive(name, env) &&
+          identical(fun, get(name, envir = env, inherits = FALSE))
+      ) {
+        package <- if (identical(env, baseenv())) {
+          "base"
+        } else {
+          getNamespaceName(env)
+        }
+        separator <- if (name %in% getNamespaceExports(package)) "::" else ":::"
+        name <- if (make.names(name) == name) {
+          name
+        } else {
+          encodeString(name, quote = "`")
+        }
+        return(paste0(package, separator, name))
+      }
+    }
+  }
+  paste0("function(", paste(names(formals(fun)), collapse = ", "), ")")
+}
+
+.pipeline_factor_summary <- function(value) {
+  codes <- unclass(value)
+  attributes(codes) <- NULL
+  labels <- attr(value, "levels", exact = TRUE)
+  counts <- tabulate(codes, nbins = length(labels))
+  used <- which(counts > 0L)
+  shown <- utils::head(used, 6L)
+  groups <- if (length(shown)) {
+    paste0(
+      vapply(labels[shown], .pipeline_parameter_summary, character(1)),
+      " (",
+      counts[shown],
+      ")"
+    )
+  } else {
+    character()
+  }
+  if (length(used) > length(shown)) {
+    groups <- c(groups, "...")
+  }
+  missing <- sum(is.na(codes))
+  if (missing) {
+    groups <- c(groups, paste0("NA (", missing, ")"))
+  }
+  paste0(
+    "<factor [",
+    length(codes),
+    "]",
+    if (length(groups)) paste0(": ", paste(groups, collapse = ", ")),
+    ">"
+  )
+}
+
 # Compact, non-dispatching summaries: printing history must never run callbacks
 # or user-defined print/format methods, or expose large stored data.
 .pipeline_parameter_summary <- function(value) {
   if (is.null(value)) return("NULL")
-  if (is.function(value)) return("<function>")
+  if (is.function(value)) return(.pipeline_callback_summary(value))
   dimensions <- attr(value, "dim", exact = TRUE)
   if (!is.null(dimensions)) {
     kind <- if (length(dimensions) == 2L) "matrix" else "array"
     return(sprintf("<%s [%s]>", kind, paste(dimensions, collapse = " x ")))
   }
+  if (is.factor(value)) return(.pipeline_factor_summary(value))
   if (is.object(value)) {
     return(paste0("<", paste(attr(value, "class", exact = TRUE),
                             collapse = "/"), ">"))
@@ -356,18 +434,9 @@ print.glyclean_pipeline <- function(x, ...) {
     cli::cli_text("(empty)")
     return(invisible(x))
   }
-  candidates <- .pipeline_function_names()
   cli::cli_ol()
   for (step in x) {
-    fun <- step[["function"]]
-    hit <- candidates[vapply(
-      candidates,
-      function(nm) {
-        identical(fun, get(nm, envir = asNamespace("glyclean")))
-      },
-      logical(1)
-    )]
-    label <- if (length(hit)) hit[[1L]] else "recorded operation"
+    label <- .pipeline_operation_name(step[["function"]])
     cli::cli_li("{.strong {label}}")
     parameter_block <- cli::cli_div(theme = list(div = list("margin-left" = 3)))
     parameters <- step[["parameters"]]

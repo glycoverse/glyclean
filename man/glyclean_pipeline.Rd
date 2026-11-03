@@ -18,7 +18,7 @@ name every argument explicitly; positional and partially matched arguments
 are not accepted. Parameter expressions are evaluated once when building
 the pipeline, including default values, but processing functions are not run.
 Calls and parameter expressions support tidy-evaluation injection with
-\code{!!} and \code{!!!}.}
+\verb{!!} and \verb{!!!}.}
 
 \item{exp}{A supported glyclean experiment.}
 
