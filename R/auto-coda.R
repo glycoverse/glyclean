@@ -7,6 +7,7 @@
 #'
 #' @inheritParams transform_clr
 #' @inheritSection transform_clr Algorithmic details
+#' @inheritSection transform_clr Input requirements
 #' @inheritSection transform_clr Glycoproteomics
 #' @inheritSection transform_clr Motif quantification
 #' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
@@ -15,7 +16,8 @@
 #' @returns The input container with a CoDA-transformed expression matrix and
 #'   its class preserved. Glycoproteomics always uses site-wise CLR and retains
 #'   all rows. Other supported containers use ALR if there are more than 50
-#'   variables, or CLR otherwise.
+#'   variables, or CLR otherwise. Values remain on the `log2`-ratio scale,
+#'   with `scale = "log2"` in metadata.
 #' @export
 auto_coda <- function(
   x,

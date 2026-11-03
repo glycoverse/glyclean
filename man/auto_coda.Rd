@@ -28,7 +28,8 @@ multi-group data, provide a positive vector with one scale per group.}
 The input container with a CoDA-transformed expression matrix and
 its class preserved. Glycoproteomics always uses site-wise CLR and retains
 all rows. Other supported containers use ALR if there are more than 50
-variables, or CLR otherwise.
+variables, or CLR otherwise. Values remain on the \code{log2}-ratio scale,
+with \code{scale = "log2"} in metadata.
 }
 \description{
 For glycoproteomics, always call \code{\link[=transform_clr]{transform_clr()}} to transform each protein
@@ -40,14 +41,24 @@ than 50 variables and \code{\link[=transform_clr]{transform_clr()}} otherwise, f
 The stochastic branch follows \code{glycowork}: when \code{gamma > 0}, CLR noise is
 sampled per feature-sample entry rather than once per sample. Without
 informed scales, this corresponds to jittering around the sample-specific
-\code{log2} geometric mean of the non-zero components and then returning to ratio
-space.
+\code{log2} geometric mean of the components. The result remains on the
+log-ratio scale, without exponentiation.
 
 The \code{group_scales} argument is interpreted in the same way as
 \code{glycowork}'s \code{custom_scale}. For exactly two groups, provide the total-signal
 ratio of the second group relative to the first, either directly as a scalar
 or implicitly through two per-group scales. For multi-group data, provide one
 positive scale per group; these scales are used only in the stochastic branch.
+}
+
+\section{Input requirements}{
+CoDA requires finite, strictly positive abundances. Missing values, zeros,
+and negative values are rejected; no pseudo-count or automatic imputation
+is applied. If zeros represent missing observations, first call
+\code{\link[=zero_to_na]{zero_to_na()}}, then use an appropriate imputation function to obtain
+positive values. Choose the imputation method for your data; \code{\link[=impute_zero]{impute_zero()}}
+is not suitable before CoDA. Entirely missing features or samples may need
+filtering rather than imputation.
 }
 
 \section{Glycoproteomics}{
@@ -61,9 +72,8 @@ present and non-missing. \code{by} continues to specify sample groups.
 The output preserves all rows, their original order, and their
 annotations.
 
-With \code{gamma = 0}, a site containing a single feature returns one for
-positive abundances and zero for zeros. Samples with no positive abundance
-at a site remain zero for that site.
+With \code{gamma = 0} and no informed scales, a site containing a single
+positive feature returns zero on the log-ratio scale.
 }
 
 \section{Motif quantification}{
