@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Welcome to the Wild World of Data Preprocessing! 🧬
+## Welcome to the Wild World of Data Preprocessing!
 
 Every omics data analysis journey begins with the same challenge: 
 taming your raw data.
@@ -42,11 +42,9 @@ it's the go-to tool in the `glycoverse` ecosystem.
 ```{r setup}
 library(glyclean)
 library(glyexp)
-library(SummarizedExperiment)
-library(glyrepr)  # for printing glycan compositions and structures
 ```
 
-## Meet Our Star Player: Real Glycoproteomics Data 🌟
+## Meet Our Star Player: Real Glycoproteomics Data
 
 Let's dive in with a real-world dataset that will showcase what `glyclean` can do.
 We'll use the bundled `glyexp::real_experiment` dataset, which is a
@@ -72,7 +70,7 @@ What we have here is a beautiful N-glycoproteomics dataset featuring 500 PSMs (P
 These samples come from 3 different batches and represent 4 distinct biological groups – 
 a perfect playground for demonstrating preprocessing techniques!
 
-## The Magic Wand: One Function to Rule Them All ✨
+## The Magic Wand: One Function to Rule Them All
 
 Ready for some magic? 
 Watch this:
@@ -82,7 +80,7 @@ clean_exp <- auto_clean(exp)
 ```
 
 **That's it!** 
-Your data is now preprocessed and ready for analysis! 🎉
+Your data is now preprocessed and ready for analysis!
 
 But Wait, What Just Happened?
 `auto_clean()` isn't actually magic (sorry to disappoint) – 
@@ -148,7 +146,7 @@ clean_exp <- exp |>
   glyclean::aggregate()
 ```
 
-## Taking the Scenic Route: Step-by-Step Preprocessing 🚶‍♀️
+## Taking the Scenic Route: Step-by-Step Preprocessing
 
 While `auto_clean()` and other `auto_xxx()` functions are fantastic for getting started,
 you'll eventually want more control over your preprocessing pipeline.
@@ -194,15 +192,20 @@ custom_groups <- c("A", "A", "B", "B", "C", "C", "A", "A", "B", "B", "C", "C")
 normalized_exp <- normalize_median(exp, by = custom_groups)
 ```
 
-**Compositional Data: CLR, ALR, and Median Quotient Normalization**
+**Compositional Data: CLR and ALR**
 
-For glycomics data (where intensities represent relative abundances of glycans), standard normalization methods may not be appropriate. Instead, compositional data analysis techniques are recommended:
+For glycomics data (where intensities represent relative abundances of glycans),
+standard normalization methods may not be appropriate.
+Instead, compositional data analysis techniques are recommended:
 
-- **`normalize_median_quotient()`**: Median quotient normalization. A robust method specifically designed for compositional data, dividing each sample by its median quotient relative to a reference sample.
+- **`transform_clr()`**: Centered Log-Ratio transformation.
+  A robust method for compositional data analysis.
+  The result remains on the `log2`-ratio scale, with experiment metadata `scale = "log2"`.
 
-- **`transform_clr()`**: Centered Log-Ratio transformation with `glycowork`-compatible internal logic. The result remains on the `log2`-ratio scale, with experiment metadata `scale = "log2"`. The stochastic branch uses per-feature noise, matching `glycowork`.
-
-- **`transform_alr()`**: Additive Log-Ratio transformation with `glycowork`-compatible internal logic. The reference glycan is chosen based on Procrustes correlation to CLR geometry and minimal between-group variance, and the final result remains on the `log2`-ratio scale (`scale = "log2"`). If no suitable reference is found, ALR falls back to CLR.
+- **`transform_alr()`**: Additive Log-Ratio transformation.
+  The reference glycan is chosen based on Procrustes correlation to CLR geometry and minimal between-group variance,
+  and the final result remains on the `log2`-ratio scale (`scale = "log2"`).
+  If no suitable reference is found, ALR falls back to CLR.
 
 The CLR and ALR methods align with the best practices described in DOI: 10.1038/s41467-025-56249-3 for glycomics data preprocessing.
 
@@ -212,7 +215,7 @@ Here we do the median normalization manually:
 normed_exp <- normalize_median(exp)
 ```
 
-### Step 2: Variable Filtering – Saying Goodbye to the Unreliable 🧹
+### Step 2: Variable Filtering – Saying Goodbye to the Unreliable
 
 Some variables are like that friend who never shows up to plans – 
 they're missing most of the time and aren't very helpful.
@@ -234,7 +237,7 @@ Here we remove variables with more than 50% missing values in all samples:
 filtered_exp <- remove_rare(normed_exp, prop = 0.5)
 ```
 
-### Step 3: Imputation – Filling in the Blanks Intelligently 🔮
+### Step 3: Imputation – Filling in the Blanks Intelligently
 
 Here's where things get scientifically interesting! 
 Missing values in mass spectrometry aren't randomly distributed – 
@@ -267,7 +270,7 @@ let's use the simple zero imputation:
 imputed_exp <- impute_zero(filtered_exp)
 ```
 
-### Step 4: Aggregation – From Peptides to Glycoforms 🔄
+### Step 4: Aggregation – From Peptides to Glycoforms
 
 Here's where glycoproteomics gets uniquely challenging! 
 Search engines typically report results at the PSM or peptide level,
@@ -300,7 +303,7 @@ aggregated_exp <- glyclean::aggregate(imputed_exp, to_level = "gf")
 aggregated_exp2 <- normalize_median(aggregated_exp)
 ```
 
-### Step 5: Batch Effect Correction – Harmonizing Your Orchestra 🎼
+### Step 5: Batch Effect Correction – Harmonizing Your Orchestra
 
 Batch effects are the "different violinists playing the same piece" problem of omics data.
 Even when following identical protocols,
@@ -325,7 +328,7 @@ but we will correct it anyway for demonstration.
 corrected_exp <- correct_batch_effect(aggregated_exp2)
 ```
 
-### Step 6: Protein Expression Adjustment – Separating Signal from Noise 🎯
+### Step 6: Protein Expression Adjustment – Separating Signal from Noise
 
 Here's a fascinating biological puzzle: 
 when you measure a glycopeptide's intensity,
@@ -359,14 +362,14 @@ adjusted_exp <- adjust_protein(inferred_exp, pro_expr_mat)
 Wrap protein expression data in a `SummarizedExperiment` object before using
 `glyclean` preprocessing functions. Consistency is key!
 
-### 🎉 Mission Accomplished!
+### Mission Accomplished!
 
 Congratulations! 
 You now have beautifully preprocessed, analysis-ready glycoproteomics data.
 Your data has been normalized, filtered, imputed, aggregated, and batch-corrected – 
 it's ready to reveal its biological secrets!
 
-## Advanced Usage: Flexible Grouping with Custom Vectors 🔧
+## Advanced Usage: Flexible Grouping with Custom Vectors
 
 Many functions in `glyclean` accept a `by` parameter for stratified processing.
 This parameter offers maximum flexibility – 
@@ -385,9 +388,10 @@ This gives you complete control over grouping,
 even for custom groupings that aren't stored in your experiment object.
 Perfect for complex experimental designs or external grouping criteria!
 
-## Quality Control (QC) 📊
+## Quality Control (QC)
 
-`glyclean` provides a comprehensive suite of quality control plotting functions to help you visualize and assess the quality of your data at various stages of the preprocessing pipeline.
+`glyclean` provides a comprehensive suite of quality control plotting functions
+to help you visualize and assess the quality of your data at various stages of the preprocessing pipeline.
 
 **Available QC plotting functions in `glyclean`:**
 
@@ -415,6 +419,22 @@ library(patchwork)
 plot_missing_heatmap(exp) + plot_missing_heatmap(clean_exp)
 ```
 
+## Revisit the History
+
+All preprocessing steps applied to an experiment are recorded and stored as a pipeline object.
+You can get it with `get_pipeline()`.
+
+```{r}
+history <- get_pipeline(clean_exp)
+history
+```
+
+The pipeline is totally reproducible, so that re-applying it on the original experiment ensures the same result.
+
+```{r}
+identical(apply_pipeline(exp, history), clean_exp)
+```
+
 ## What's Next?
 
 With your clean data in hand,
@@ -426,48 +446,3 @@ you're ready to dive into the exciting world of glyco-omics analysis:
 - **Visualization**: Create stunning plots that tell your data's story
 
 The `glycoverse` ecosystem has tools for all of these and more!
-
-## Controlling random preprocessing
-
-Stochastic preprocessing functions expose a non-negative integer `seed`, with
-`123` as the default. This includes VSN subsampling (`normalize_vsn()`), both KNN
-imputation directions, BPCA/SVD cross-validation, PPCA, MinProb, MissForest and
-CoDA. Aggregation also accepts a seed for custom callbacks that use R's RNG.
-`auto_impute()` and `auto_clean()` pass their seed to the selected imputation
-method, and automatic aggregation forwards the seed as well.
-
-```{r, eval=FALSE}
-normalized <- normalize_vsn(exp, subsample = 100, seed = 42)
-imputed <- impute_bpca(exp, cv = "q2", seed = 42)
-knn <- impute_sw_knn(exp, k = 5, maxp = 1500, seed = 42)
-```
-
-For functions with `...`, newly added seeds must be named. Existing positional
-non-seed arguments forwarded through `...` retain their meaning. Configure KNN
-randomness with `seed`; the historical `rng.seed` argument is no longer accepted
-through `...`. The explicit seed reaches the backend's partitioning algorithm.
-
-These calls restore the caller's R random state, including on errors and when
-`.Random.seed` did not previously exist. A fixed seed supports reproducibility
-within the same R/RNG configuration and dependency versions. External random
-generators, backend changes, parallel computation and arbitrary side effects in
-custom callbacks may require additional controls; a seed alone is not a promise
-of bitwise identity across platforms or package versions.
-
-
-## Compositional transformation for glycoproteomics
-
-For glycoproteomics, `auto_coda()` always applies CLR separately to each
-`protein` and `protein_site` combination, regardless of the number of features
-at a site. It is equivalent to `transform_clr()` with the same parameters and
-seed, and preserves all feature rows. `transform_alr()` does not support
-glycoproteomics input and reports an error directing users to CLR.
-
-```{r, eval=FALSE}
-clr_exp <- auto_coda(clean_exp, by = "group", seed = 123)
-# Equivalent for a glycoproteomics experiment:
-clr_exp <- transform_clr(clean_exp, by = "group", seed = 123)
-```
-
-For glycomics, automatic selection is unchanged: more than 50 features selects
-ALR, otherwise CLR. ALR can fall back to CLR when no suitable reference exists.
