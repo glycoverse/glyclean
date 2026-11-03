@@ -1,5 +1,7 @@
 # glyclean (development version)
 
+* CoDA metadata now retains only `coda_reference` for successful ALR. CLR and ALR fallback clear the reference; every CoDA execution removes legacy `coda_transform` and `coda_site_transforms` fields while preserving other metadata and pipeline history.
+
 * Added list-based `glyclean_pipeline()`, `apply_pipeline()`, and `get_pipeline()` APIs. Processing records concrete reproducible steps in experiment metadata while retaining one assay. Automatic preprocessing records its selected operations; CoDA records its selected top-level function and sequence annotation inputs are frozen for replay.
 * Pipeline printing now uses compact `cli` rendering with numbered function names and parameter summaries; large inputs are summarized rather than printed.
 * Single-sample character grouping values are recorded unambiguously as factors, preserving grouped-history replay even when a value matches another metadata column name.
@@ -8,7 +10,7 @@
 * Added an explicit `seed = 123` to `normalize_vsn()`, `impute_sw_knn()`, `impute_fw_knn()`, `impute_bpca()`, `impute_svd()`, and `aggregate()` (for stochastic callbacks). Newly seeded functions preserve the caller's R random state. `auto_impute()`, `auto_aggregate()`, and `auto_clean()` propagate the seed to their concrete operations.
 * KNN seeds now reach `impute::impute.knn(rng.seed = ...)`, including its random large-matrix splitting. Configure random seeds only with the explicit `seed` argument; legacy `rng.seed` values passed through `...` are no longer supported. The default effective KNN seed changes from the backend default `362436069` to `123`, so split-based results can change. Other forwarded backend arguments remain supported.
 
-* Glycoproteomics CoDA now always uses CLR: `auto_coda()` delegates to `transform_clr()` regardless of site size, and `transform_alr()` explicitly rejects glycoproteomics input. Each `protein` and `protein_site` combination remains an independent composition, all rows are retained, and site metadata records CLR with no reference. This replaces the per-site ALR selection introduced in #34; glycomics method selection and ALR behavior are unchanged.
+* Glycoproteomics CoDA now always uses CLR: `auto_coda()` delegates to `transform_clr()` regardless of site size, and `transform_alr()` explicitly rejects glycoproteomics input. Each `protein` and `protein_site` combination remains an independent composition, all rows are retained, and no reference is stored. This replaces the per-site ALR selection introduced in #34; glycomics method selection and ALR behavior are unchanged.
 
 # glyclean 0.16.0
 

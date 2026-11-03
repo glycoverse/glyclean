@@ -30,9 +30,9 @@
 #' present and non-missing. `by` continues to specify sample groups.
 #'
 #' The output preserves all rows, their original order, and their
-#' annotations. Metadata field `coda_site_transforms` records `protein`,
-#' `protein_site`, `transform`, and `reference` for each site; `reference` is
-#' always missing. `coda_transform` is `"clr"`, and `coda_reference` is `NULL`.
+#' annotations. CLR clears `coda_reference`; successful glycomics ALR records
+#' its reference glycan in that field. Legacy `coda_transform` and
+#' `coda_site_transforms` metadata fields are removed during CoDA processing.
 #'
 #' With `gamma = 0`, a site containing a single feature returns one for
 #' positive abundances and zero for zeros. Samples with no positive abundance
@@ -85,7 +85,7 @@
 #' x <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
 #' x <- impute_zero(x[seq_len(6), ])
 #' result <- transform_clr(x, gamma = 0)
-#' S4Vectors::metadata(result)$coda_site_transforms
+#' S4Vectors::metadata(result)$coda_reference
 #' @export
 transform_clr <- function(
   x,
@@ -518,7 +518,8 @@ transform_alr <- function(
     group_scales = group_scales
   )
   metadata <- .get_container_metadata(exp)
-  metadata$coda_transform <- "clr"
+  metadata$coda_transform <- NULL
+  metadata$coda_site_transforms <- NULL
   metadata$coda_reference <- NULL
   .rebuild_container(exp, expr_mat = transformed, metadata = metadata)
 }
@@ -838,17 +839,17 @@ transform_alr <- function(
   )
 
   metadata <- .get_container_metadata(exp)
+  metadata$coda_transform <- NULL
+  metadata$coda_site_transforms <- NULL
   var_info <- .get_var_info(exp)
   if (nrow(transformed) < nrow(expr_mat)) {
     keep_idx <- original_rows %in% rownames(transformed)
     var_info <- var_info[keep_idx, , drop = FALSE]
-    metadata$coda_transform <- "alr"
     metadata$coda_reference <- setdiff(
       original_rows,
       rownames(transformed)
     )
   } else {
-    metadata$coda_transform <- "clr"
     metadata$coda_reference <- NULL
   }
 
@@ -906,9 +907,6 @@ transform_alr <- function(
     seq_len(nrow(expr_mat)),
     factor(site_ids, levels = unique(site_ids))
   )
-  sites <- var_info[!duplicated(site_ids), site_cols, drop = FALSE]
-  sites$transform <- rep("clr", nrow(sites))
-  sites$reference <- rep(NA_character_, nrow(sites))
   transformed <- expr_mat
 
   for (i in seq_along(site_rows)) {
@@ -924,9 +922,9 @@ transform_alr <- function(
   }
 
   metadata <- .get_container_metadata(exp)
-  metadata$coda_transform <- "clr"
+  metadata$coda_transform <- NULL
+  metadata$coda_site_transforms <- NULL
   metadata$coda_reference <- NULL
-  metadata$coda_site_transforms <- sites
   .rebuild_container(
     exp,
     expr_mat = transformed,

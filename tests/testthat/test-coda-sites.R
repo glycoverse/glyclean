@@ -54,17 +54,8 @@ test_that("CLR centers by both protein and site while preserving row order", {
   )
   meta <- S4Vectors::metadata(result)
   expect_identical(meta$custom, "preserved")
-  expect_identical(meta$coda_transform, "clr")
-  expect_null(meta$coda_reference)
-  expect_equal(
-    meta$coda_site_transforms,
-    tibble::tibble(
-      protein = c("P1", "P1", "P2"),
-      protein_site = c(10L, 20L, 10L),
-      transform = rep("clr", 3),
-      reference = rep(NA_character_, 3)
-    )
-  )
+  expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
+                     names(meta)))
 
   SummarizedExperiment::assay(x)[c(2, 5), ] <- c(1e6, 1e9)
   changed <- transform_clr(x, gamma = 0)
@@ -120,9 +111,8 @@ test_that("auto_coda uses CLR at every site regardless of the 50-feature boundar
   expect_identical(rownames(result), rownames(x))
   expect_identical(result, transform_clr(x, by = "group", gamma = 0))
   meta <- S4Vectors::metadata(result)
-  expect_identical(meta$coda_transform, "clr")
-  expect_null(meta$coda_reference)
-  expect_identical(meta$coda_site_transforms$transform, rep("clr", 3))
+  expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
+                     names(meta)))
 })
 
 test_that("singleton sites and all-zero site samples keep zeros", {
@@ -190,10 +180,9 @@ test_that("legacy glycoproteomics experiments use the same site-wise transform",
     expected <- suppressMessages(fn(x, by = "group", gamma = 0))
     expect_s3_class(result, "glyexp_experiment")
     expect_equal(result$expr_mat, SummarizedExperiment::assay(expected))
-    expect_equal(
-      result$meta_data$coda_site_transforms,
-      S4Vectors::metadata(expected)$coda_site_transforms
-    )
+    expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
+                       names(result$meta_data)))
+    expect_identical(apply_pipeline(legacy, get_pipeline(result)), result)
   }
 })
 

@@ -168,17 +168,25 @@ test_that("type-specific automatic preprocessing rejects plain others SE", {
   )
 })
 
-test_that("CoDA transformations preserve class and store SE metadata", {
+test_that("CoDA transformations preserve class and only store an ALR reference", {
   x <- simple_glycomic_se()
 
   clr <- transform_clr(x, gamma = 0)
   alr <- suppressWarnings(transform_alr(x, gamma = 0))
 
   expect_s4_class(clr, "GlycomicSE")
-  expect_identical(S4Vectors::metadata(clr)$coda_transform, "clr")
+  expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
+                     names(S4Vectors::metadata(clr))))
   expect_s4_class(alr, "GlycomicSE")
-  expect_true(S4Vectors::metadata(alr)$coda_transform %in% c("alr", "clr"))
+  expect_false(any(c("coda_transform", "coda_site_transforms") %in%
+                     names(S4Vectors::metadata(alr))))
   expect_true(nrow(alr) %in% c(nrow(x) - 1, nrow(x)))
+  if (nrow(alr) < nrow(x)) {
+    expect_identical(S4Vectors::metadata(alr)$coda_reference,
+                     setdiff(rownames(x), rownames(alr)))
+  } else {
+    expect_false("coda_reference" %in% names(S4Vectors::metadata(alr)))
+  }
 })
 
 test_that("batch functions accept and preserve glyco SE subclasses", {
