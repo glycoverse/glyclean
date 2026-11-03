@@ -1,0 +1,92 @@
+---
+title: "Reproducible single-assay pipelines"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Reproducible single-assay pipelines}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+## Discover the pipeline after preprocessing
+
+A pipeline records the preprocessing steps applied to an experiment. Start by
+normalizing and imputing the bundled glycoproteomics experiment with ordinary
+function calls:
+
+```{r}
+library(glyclean)
+
+original <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
+cleaned <- normalize_total_area(original)
+cleaned <- impute_min_prob(cleaned, q = 0.01, seed = 42)
+```
+
+These calls automatically add a pipeline to the experiment's metadata. Use
+`get_pipeline()` to retrieve it and print the recorded steps:
+
+```{r}
+history <- get_pipeline(cleaned)
+history
+
+identical(history, S4Vectors::metadata(cleaned)$pipeline)
+```
+
+A `glyclean_pipeline` is a list of steps. Each step contains a `function` and its
+`parameters`, in the order they were applied. The printed summary shows the
+function names and their parameters.
+
+Automatic functions record the actual functions chosen. For example,
+`auto_normalize()` selects median normalization for this glycoproteomics
+experiment, so its history contains `normalize_median()`:
+
+```{r}
+automatically_normalized <- auto_normalize(original)
+get_pipeline(automatically_normalized)
+```
+
+## Reproduce preprocessing from its history
+
+Apply the recorded history to the same original experiment to reproduce the
+preprocessing exactly:
+
+```{r}
+replayed <- apply_pipeline(original, history)
+identical(replayed, cleaned)
+stopifnot(identical(replayed, cleaned))
+```
+
+This compares the whole experiment, including its assay, annotations and
+pipeline metadata. Exact replay assumes the same original input, package
+versions and random-number generator configuration; seeds are recorded in the
+step parameters.
+
+## Create a pipeline manually
+
+When you already know the steps you want, define a recipe with
+`glyclean_pipeline()`. Omit the experiment argument and use full argument names
+for any parameters:
+
+```{r}
+recipe <- glyclean_pipeline(
+  normalize_total_area(),
+  impute_min_prob(q = 0.01, seed = 42)
+)
+recipe
+```
+
+Building the recipe does not preprocess any data. Supply the experiment when
+you apply it:
+
+```{r}
+from_recipe <- apply_pipeline(original, recipe)
+identical(from_recipe, cleaned)
+stopifnot(identical(from_recipe, cleaned))
+```
+
+Recipes can also include `auto_*()` calls to choose methods when they are
+applied. The resulting experiment's history records the concrete operations
+that ran, ready to inspect or replay.

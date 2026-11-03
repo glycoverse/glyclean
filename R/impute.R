@@ -8,7 +8,10 @@
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_zero <- function(x) {
-  .update_expr_mat(x, .impute_zero)
+  record <- .pipeline_recorder(x)
+  record({
+    .update_expr_mat(x, .impute_zero)
+  })
 }
 
 
@@ -25,7 +28,10 @@ impute_zero <- function(x) {
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_sample_min <- function(x) {
-  .update_expr_mat(x, .impute_sample_min)
+  record <- .pipeline_recorder(x)
+  record({
+    .update_expr_mat(x, .impute_sample_min)
+  })
 }
 
 
@@ -42,7 +48,10 @@ impute_sample_min <- function(x) {
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_half_sample_min <- function(x) {
-  .update_expr_mat(x, .impute_half_sample_min)
+  record <- .pipeline_recorder(x)
+  record({
+    .update_expr_mat(x, .impute_half_sample_min)
+  })
 }
 
 
@@ -67,12 +76,13 @@ impute_half_sample_min <- function(x) {
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_sw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
+  record <- .pipeline_recorder(x)
   checkmate::assert_int(seed, lower = 0)
-  withr::with_seed(
+  record(withr::with_seed(
     seed,
     .update_expr_mat(x, .impute_sw_knn, by = by, k = k,
                      rng.seed = seed, ...)
-  )
+  ))
 }
 
 
@@ -94,12 +104,13 @@ impute_sw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_fw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
+  record <- .pipeline_recorder(x)
   checkmate::assert_int(seed, lower = 0)
-  withr::with_seed(
+  record(withr::with_seed(
     seed,
     .update_expr_mat(x, .impute_fw_knn, by = by, k = k,
                      rng.seed = seed, ...)
-  )
+  ))
 }
 
 
@@ -124,11 +135,14 @@ impute_fw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_bpca <- function(x, by = NULL, ..., seed = 123) {
-  checkmate::assert_int(seed, lower = 0)
-  withr::with_seed(
-    seed,
-    .update_expr_mat(x, .impute_bpca, by = by, ...)
-  )
+  record <- .pipeline_recorder(x)
+  record({
+    checkmate::assert_int(seed, lower = 0)
+    withr::with_seed(
+      seed,
+      .update_expr_mat(x, .impute_bpca, by = by, ...)
+    )
+  })
 }
 
 
@@ -149,11 +163,14 @@ impute_bpca <- function(x, by = NULL, ..., seed = 123) {
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_ppca <- function(x, by = NULL, ..., seed = 123) {
-  checkmate::assert_int(seed, lower = 0)
-  withr::with_seed(
-    seed,
-    .update_expr_mat(x, .impute_ppca, by = by, ...)
-  )
+  record <- .pipeline_recorder(x)
+  record({
+    checkmate::assert_int(seed, lower = 0)
+    withr::with_seed(
+      seed,
+      .update_expr_mat(x, .impute_ppca, by = by, ...)
+    )
+  })
 }
 
 
@@ -175,11 +192,14 @@ impute_ppca <- function(x, by = NULL, ..., seed = 123) {
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_svd <- function(x, by = NULL, ..., seed = 123) {
-  checkmate::assert_int(seed, lower = 0)
-  withr::with_seed(
-    seed,
-    .update_expr_mat(x, .impute_svd, by = by, ...)
-  )
+  record <- .pipeline_recorder(x)
+  record({
+    checkmate::assert_int(seed, lower = 0)
+    withr::with_seed(
+      seed,
+      .update_expr_mat(x, .impute_svd, by = by, ...)
+    )
+  })
 }
 
 
@@ -212,18 +232,21 @@ impute_min_prob <- function(
   ...,
   seed = 123
 ) {
-  checkmate::assert_int(seed, lower = 0)
-  withr::with_seed(
-    seed,
-    .update_expr_mat(
-      x,
-      .impute_min_prob,
-      by = by,
-      q = q,
-      tune.sigma = tune.sigma,
-      ...
+  record <- .pipeline_recorder(x)
+  record({
+    checkmate::assert_int(seed, lower = 0)
+    withr::with_seed(
+      seed,
+      .update_expr_mat(
+        x,
+        .impute_min_prob,
+        by = by,
+        q = q,
+        tune.sigma = tune.sigma,
+        ...
+      )
     )
-  )
+  })
 }
 
 
@@ -244,16 +267,19 @@ impute_min_prob <- function(
 #' @return A container of the same class as `x`, with missing values imputed.
 #' @export
 impute_miss_forest <- function(x, by = NULL, seed = 123, ...) {
-  checkmate::assert_int(seed, lower = 0)
-  withr::with_seed(
-    seed,
-    .update_expr_mat(
-      x,
-      .impute_miss_forest,
-      by = by,
-      ...
+  record <- .pipeline_recorder(x)
+  record({
+    checkmate::assert_int(seed, lower = 0)
+    withr::with_seed(
+      seed,
+      .update_expr_mat(
+        x,
+        .impute_miss_forest,
+        by = by,
+        ...
+      )
     )
-  )
+  })
 }
 
 # ===== Implementation =====

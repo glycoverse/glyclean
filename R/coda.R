@@ -30,9 +30,7 @@
 #' present and non-missing. `by` continues to specify sample groups.
 #'
 #' The output preserves all rows, their original order, and their
-#' annotations. Metadata field `coda_site_transforms` records `protein`,
-#' `protein_site`, `transform`, and `reference` for each site; `reference` is
-#' always missing. `coda_transform` is `"clr"`, and `coda_reference` is `NULL`.
+#' annotations.
 #'
 #' With `gamma = 0`, a site containing a single feature returns one for
 #' positive abundances and zero for zeros. Samples with no positive abundance
@@ -85,7 +83,7 @@
 #' x <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
 #' x <- impute_zero(x[seq_len(6), ])
 #' result <- transform_clr(x, gamma = 0)
-#' S4Vectors::metadata(result)$coda_site_transforms
+#' get_pipeline(result)
 #' @export
 transform_clr <- function(
   x,
@@ -94,16 +92,19 @@ transform_clr <- function(
   group_scales = NULL,
   seed = 123
 ) {
-  checkmate::assert_int(seed, lower = 0)
-  withr::with_seed(
-    seed,
-    .transform_clr_exp(
-      x,
-      by = by,
-      gamma = gamma,
-      group_scales = group_scales
+  record <- .pipeline_recorder(x)
+  record({
+    checkmate::assert_int(seed, lower = 0)
+    withr::with_seed(
+      seed,
+      .transform_clr_exp(
+        x,
+        by = by,
+        gamma = gamma,
+        group_scales = group_scales
+      )
     )
-  )
+  })
 }
 
 
@@ -135,16 +136,19 @@ transform_alr <- function(
   group_scales = NULL,
   seed = 123
 ) {
-  checkmate::assert_int(seed, lower = 0)
-  withr::with_seed(
-    seed,
-    .transform_alr_exp(
-      x,
-      by = by,
-      gamma = gamma,
-      group_scales = group_scales
+  record <- .pipeline_recorder(x)
+  record({
+    checkmate::assert_int(seed, lower = 0)
+    withr::with_seed(
+      seed,
+      .transform_alr_exp(
+        x,
+        by = by,
+        gamma = gamma,
+        group_scales = group_scales
+      )
     )
-  )
+  })
 }
 
 #' Validate compositional inputs used by CLR and ALR
@@ -511,10 +515,7 @@ transform_alr <- function(
     gamma = gamma,
     group_scales = group_scales
   )
-  metadata <- .get_container_metadata(exp)
-  metadata$coda_transform <- "clr"
-  metadata$coda_reference <- NULL
-  .rebuild_container(exp, expr_mat = transformed, metadata = metadata)
+  .rebuild_container(exp, expr_mat = transformed)
 }
 
 #' Compute between-group variance for a candidate ALR reference
@@ -831,26 +832,16 @@ transform_alr <- function(
     group_scales = group_scales
   )
 
-  metadata <- .get_container_metadata(exp)
   var_info <- .get_var_info(exp)
   if (nrow(transformed) < nrow(expr_mat)) {
     keep_idx <- original_rows %in% rownames(transformed)
     var_info <- var_info[keep_idx, , drop = FALSE]
-    metadata$coda_transform <- "alr"
-    metadata$coda_reference <- setdiff(
-      original_rows,
-      rownames(transformed)
-    )
-  } else {
-    metadata$coda_transform <- "clr"
-    metadata$coda_reference <- NULL
   }
 
   .rebuild_container(
     exp,
     expr_mat = transformed,
-    var_info = var_info,
-    metadata = metadata
+    var_info = var_info
   )
 }
 
@@ -858,7 +849,7 @@ transform_alr <- function(
 #'
 #' @param exp A glycoproteomics container.
 #' @inheritParams transform_clr
-#' @return A container with site-wise transformations and reference metadata.
+#' @return A container with site-wise transformations.
 #' @noRd
 .transform_clr_sites <- function(
   exp,
@@ -900,9 +891,6 @@ transform_alr <- function(
     seq_len(nrow(expr_mat)),
     factor(site_ids, levels = unique(site_ids))
   )
-  sites <- var_info[!duplicated(site_ids), site_cols, drop = FALSE]
-  sites$transform <- rep("clr", nrow(sites))
-  sites$reference <- rep(NA_character_, nrow(sites))
   transformed <- expr_mat
 
   for (i in seq_along(site_rows)) {
@@ -917,13 +905,8 @@ transform_alr <- function(
     transformed[idx, ] <- result
   }
 
-  metadata <- .get_container_metadata(exp)
-  metadata$coda_transform <- "clr"
-  metadata$coda_reference <- NULL
-  metadata$coda_site_transforms <- sites
   .rebuild_container(
     exp,
-    expr_mat = transformed,
-    metadata = metadata
+    expr_mat = transformed
   )
 }

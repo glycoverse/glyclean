@@ -105,6 +105,7 @@ adjust_protein.default <- function(
   method = c("ratio", "reg"),
   error_call = rlang::caller_call()
 ) {
+  record <- .pipeline_recorder(exp)
   # Check arguments
   .assert_glycoproteomics_container(exp, error_call = error_call)
   method <- rlang::arg_match(method)
@@ -142,7 +143,9 @@ adjust_protein.default <- function(
     )
   }
 
-  new_exp
+  record(new_exp, .new_pipeline_step(adjust_protein, list(
+    pro_expr_mat = pro_expr_mat, method = method
+  )))
 }
 
 .adjust_protein_ratio <- function(exp, pro_expr_mat) {

@@ -47,5 +47,5 @@
       i Glycan type: N
       i Row data fields: glycan_composition <comp>
       i Column data fields: batch <chr>, group <chr>
-      i Metadata fields: glycan_type <chr>
+      i Metadata fields: glycan_type <chr>, scale <chr>, pipeline <glycln_p>
 

@@ -443,10 +443,9 @@ knn <- impute_sw_knn(exp, k = 5, maxp = 1500, seed = 42)
 ```
 
 For functions with `...`, newly added seeds must be named. Existing positional
-arguments forwarded through `...` retain their meaning. KNN's historical
-`rng.seed` argument remains supported when `seed` is omitted. Supplying both
-with conflicting values is an error; the effective seed is passed to the
-backend rather than being overridden by its default.
+non-seed arguments forwarded through `...` retain their meaning. Configure KNN
+randomness with `seed`; the historical `rng.seed` argument is no longer accepted
+through `...`. The explicit seed reaches the backend's partitioning algorithm.
 
 These calls restore the caller's R random state, including on errors and when
 `.Random.seed` did not previously exist. A fixed seed supports reproducibility

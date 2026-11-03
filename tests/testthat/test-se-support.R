@@ -6,11 +6,12 @@ test_that("assay preprocessing preserves glyco SE subclasses", {
     normalized <- normalize_median(x)
     imputed <- impute_zero(x)
 
+    expect_length(get_pipeline(normalized), 1L)
     expect_s4_class(normalized, class_name)
     expect_s4_class(imputed, class_name)
     expect_false(anyNA(SummarizedExperiment::assay(imputed)))
     expect_identical(
-      S4Vectors::metadata(normalized),
+      S4Vectors::metadata(normalized)[names(S4Vectors::metadata(x))],
       S4Vectors::metadata(x)
     )
   }
@@ -40,7 +41,10 @@ test_that("non-auto preprocessing accepts plain SummarizedExperiment objects", {
     expect_identical(as.character(class(result)), "SummarizedExperiment")
   }
   expect_false(anyNA(SummarizedExperiment::assay(imputed)))
-  expect_identical(S4Vectors::metadata(normalized), S4Vectors::metadata(x))
+  expect_identical(
+    S4Vectors::metadata(normalized)[names(S4Vectors::metadata(x))],
+    S4Vectors::metadata(x)
+  )
 })
 
 test_that("assay preprocessing preserves a nonstandard assay name", {
@@ -164,17 +168,28 @@ test_that("type-specific automatic preprocessing rejects plain others SE", {
   )
 })
 
-test_that("CoDA transformations preserve class and store SE metadata", {
+test_that("CoDA transformations preserve class without adding CoDA metadata", {
   x <- simple_glycomic_se()
 
   clr <- transform_clr(x, gamma = 0)
   alr <- suppressWarnings(transform_alr(x, gamma = 0))
 
   expect_s4_class(clr, "GlycomicSE")
-  expect_identical(S4Vectors::metadata(clr)$coda_transform, "clr")
+  expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
+                     names(S4Vectors::metadata(clr))))
   expect_s4_class(alr, "GlycomicSE")
-  expect_true(S4Vectors::metadata(alr)$coda_transform %in% c("alr", "clr"))
+  expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
+                     names(S4Vectors::metadata(alr))))
   expect_true(nrow(alr) %in% c(nrow(x) - 1, nrow(x)))
+  expect_length(setdiff(rownames(x), rownames(alr)), nrow(x) - nrow(alr))
+  expect_identical(rownames(alr), rownames(x)[rownames(x) %in% rownames(alr)])
+  input_metadata <- S4Vectors::metadata(x)
+  for (result in list(clr, alr)) {
+    metadata <- S4Vectors::metadata(result)
+    expect_identical(metadata[setdiff(names(metadata), "pipeline")],
+                     input_metadata[setdiff(names(input_metadata), "pipeline")])
+    expect_identical(suppressWarnings(apply_pipeline(x, get_pipeline(result))), result)
+  }
 })
 
 test_that("batch functions accept and preserve glyco SE subclasses", {

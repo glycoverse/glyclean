@@ -65,9 +65,11 @@ correct_batch_effect <- function(
   confounding_threshold = 0.4,
   method = c("combat", "limma")
 ) {
+  method <- match.arg(method)
+  record <- .pipeline_recorder(x)
+  record((function() {
   .assert_glyclean_container(x)
   rlang::check_installed("sva", reason = "to use `correct_batch_effect()`")
-  method <- match.arg(method)
 
   batch_group_info <- .extract_batch_group_from_experiment(
     x,
@@ -100,6 +102,7 @@ correct_batch_effect <- function(
   }
 
   .rebuild_container(x, expr_mat = corrected_expr_mat)
+  })())
 }
 
 
