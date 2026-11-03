@@ -204,13 +204,6 @@ For glycomics data (where intensities represent relative abundances of glycans),
 
 - **`transform_alr()`**: Additive Log-Ratio transformation with `glycowork`-compatible internal logic. The reference glycan is chosen based on Procrustes correlation to CLR geometry and minimal between-group variance, and the final result remains on the `log2`-ratio scale (`scale = "log2"`). If no suitable reference is found, ALR falls back to CLR.
 
-CoDA requires finite, strictly positive values. When zeros represent missing
-observations, use `zero_to_na()` first, then choose a suitable imputation method
-to obtain positive abundances. For example, `impute_half_sample_min()` may be
-appropriate for low-abundance missingness when each sample has positive observed
-values. CoDA never adds a pseudo-count or imputes automatically; `impute_zero()`
-cannot be used to prepare missing values for CoDA.
-
 The CLR and ALR methods align with the best practices described in DOI: 10.1038/s41467-025-56249-3 for glycomics data preprocessing.
 
 Here we do the median normalization manually:

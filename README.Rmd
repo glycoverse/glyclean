@@ -26,15 +26,6 @@ Omics data cleaning and preprocessing is a critical yet cumbersome step.
 **glyclean** helps you perform these tasks with ease,
 so you can focus on the fun part: downstream analysis!
 
-## Development dependency
-
-The current development version requires glyexp >= 0.18.0.9000, which accepts
-negative log-ratio coordinates when `scale = "log2"`. The released glyexp
-0.18.0 does not support this yet. `DESCRIPTION` temporarily pins the compatible
-GitHub commit through `Remotes` for development installs with pak/remotes and CI.
-Ordinary repository installation requires a future compatible glyexp release;
-remove the development pin and update the minimum version before release.
-
 ## Installation
 
 ### Install glycoverse

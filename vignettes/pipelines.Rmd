@@ -62,9 +62,7 @@ stopifnot(identical(replayed, cleaned))
 This compares the whole experiment, including its assay, annotations and
 pipeline metadata. Exact replay assumes the same original input, package
 versions and random-number generator configuration; seeds are recorded in the
-step parameters. CoDA steps now return log2-ratio values and set `scale = "log2"`.
-Replaying an older history with this version uses these updated semantics;
-retain the original package environment when reproducing pre-change results.
+step parameters.
 
 ## Create a pipeline manually
 
