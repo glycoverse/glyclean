@@ -11,10 +11,66 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
-## Define a recipe without running it
+## Discover the pipeline after preprocessing
+
+A pipeline records the preprocessing steps applied to an experiment. Start by
+normalizing and imputing the bundled glycoproteomics experiment with ordinary
+function calls:
 
 ```{r}
 library(glyclean)
+
+original <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
+cleaned <- normalize_total_area(original)
+cleaned <- impute_min_prob(cleaned, q = 0.01, seed = 42)
+```
+
+These calls automatically add a pipeline to the experiment's metadata. Use
+`get_pipeline()` to retrieve it and print the recorded steps:
+
+```{r}
+history <- get_pipeline(cleaned)
+history
+
+identical(history, S4Vectors::metadata(cleaned)$pipeline)
+```
+
+A `glyclean_pipeline` is a list of steps. Each step contains a `function` and its
+`parameters`, in the order they were applied. The printed summary shows the
+function names and their parameters.
+
+Automatic functions record the actual functions chosen. For example,
+`auto_normalize()` selects median normalization for this glycoproteomics
+experiment, so its history contains `normalize_median()`:
+
+```{r}
+automatically_normalized <- auto_normalize(original)
+get_pipeline(automatically_normalized)
+```
+
+## Reproduce preprocessing from its history
+
+Apply the recorded history to the same original experiment to reproduce the
+preprocessing exactly:
+
+```{r}
+replayed <- apply_pipeline(original, history)
+identical(replayed, cleaned)
+stopifnot(identical(replayed, cleaned))
+```
+
+This compares the whole experiment, including its assay, annotations and
+pipeline metadata. Exact replay assumes the same original input, package
+versions and random-number generator configuration; seeds are recorded in the
+step parameters.
+
+## Create a pipeline manually
+
+When you already know the steps you want, define a recipe with
+`glyclean_pipeline()`. Omit the experiment argument and use full argument names
+for any parameters:
+
+```{r}
 recipe <- glyclean_pipeline(
   normalize_total_area(),
   impute_min_prob(q = 0.01, seed = 42)
@@ -22,86 +78,15 @@ recipe <- glyclean_pipeline(
 recipe
 ```
 
-The recipe is an ordinary list, with one `glyclean_step` per call. Each step
-contains exactly `function` (the function object) and `parameters` (a list).
-The experiment is supplied only to `apply_pipeline()`. All step arguments must
-use their full keyword names. Argument expressions are evaluated once when the
-recipe is built; processing starts only when it is applied.
+Building the recipe does not preprocess any data. Supply the experiment when
+you apply it:
 
 ```{r}
-original <- glyexp::real_experiment
-cleaned <- apply_pipeline(original, recipe)
-history <- get_pipeline(cleaned)
-history
+from_recipe <- apply_pipeline(original, recipe)
+identical(from_recipe, cleaned)
+stopifnot(identical(from_recipe, cleaned))
 ```
 
-The existing abundance assay is replaced, not duplicated. The input object is
-unchanged. The history lives in `S4Vectors::metadata(cleaned)$pipeline`; legacy
-experiments use `cleaned$meta_data$pipeline`. Existing metadata is retained.
-
-## Direct calls and automatic choices
-
-Direct normalization, imputation, filtering, aggregation, CoDA, protein
-adjustment, batch correction and site-sequence annotation also append records.
-There is no need to wrap existing scripts in a recipe to obtain a history.
-
-```{r}
-manual <- normalize_total_area(original)
-get_pipeline(manual)
-```
-
-The `auto_*()` functions record the concrete operations actually selected,
-rather than a second automatic wrapper step. A skipped automatic operation
-adds no transformation. Plotting and QC summaries do not add processing steps.
-
-## Replaying a recorded analysis
-
-```{r}
-replayed <- apply_pipeline(original, history)
-stopifnot(isTRUE(all.equal(
-  SummarizedExperiment::assay(cleaned),
-  SummarizedExperiment::assay(replayed)
-)))
-```
-
-Recipes and histories serve different purposes. A recipe can select methods on
-new data. A recorded history captures resolved arguments and concrete choices
-for replay on the **same original input**, with compatible package versions
-and the same RNG configuration.
-CoDA histories use the same function-and-parameters structure as other steps:
-`history[[i]][["function"]]` is `transform_clr` or `transform_alr`, and
-`history[[i]]$parameters$seed` contains the actual seed, including the default.
-`auto_coda()` records its selected top-level function: CLR for glycoproteomics,
-and CLR or ALR for glycomics. If ALR internally falls back to CLR, the recorded
-function remains `transform_alr`, so replay repeats the same reference evaluation,
-random draws and fallback decision on the original input. There is no per-site
-replay plan or saved reference in the pipeline. CoDA only appends the operation
-to pipeline history and preserves all other input metadata unchanged.
-Neither the original assay nor intermediate assay matrices are stored in history.
-
-Site-sequence annotation stores the sequences used, so replay does not depend
-on a FASTA file still existing or a remote UniProt response staying unchanged.
-A protein-adjustment step includes its supplied protein expression matrix,
-which is a necessary external input rather than an intermediate assay.
-
-Seeds are ordinary step parameters, including defaults when omitted. Replay
-passes them directly to the recorded function; no RNG-state snapshots are stored.
-Each seeded function restores the caller's random state, including on errors.
-Steps carry a package-version attribute in addition to their two fields.
-Pipelines can be saved with `saveRDS()` and reloaded with `readRDS()`.
-As with other R objects containing functions, only load histories from trusted
-sources. Preserve the original data and an R dependency lockfile alongside the
-pipeline for long-term reproducibility.
-
-Custom aggregation callbacks have their statically referenced lexical values frozen.
-Dynamic lookup (`get()`, `eval()`, or caller/global-environment access) is rejected.
-They must be self-contained: external side effects, mutable reference objects,
-and recursive callback environments are unsupported. A history is not an
-archive of external services or a substitute for versioning dependencies.
-
-## Inspecting a pipeline
-
-Printing a pipeline uses `cli` to show its step count, numbered public function
-names, and concise parameter summaries. Scalar values such as `seed` are visible;
-matrices, sequences and other large inputs are summarized by type and size.
-Printing never runs a processing step and leaves the pipeline unchanged.
+Recipes can also include `auto_*()` calls to choose methods when they are
+applied. The resulting experiment's history records the concrete operations
+that ran, ready to inspect or replay.

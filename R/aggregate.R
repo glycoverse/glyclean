@@ -163,7 +163,7 @@ glyclean_aggregate.GlycoproteomicSE <- function(
   seed = 123,
   error_call = rlang::caller_call()
 ) {
-  .previous <- get_pipeline(exp)
+  record <- .pipeline_recorder(exp)
   # Check arguments
   .assert_aggregation_container(exp, error_call = error_call)
   checkmate::assert_int(seed, lower = 0)
@@ -316,7 +316,7 @@ glyclean_aggregate.GlycoproteomicSE <- function(
   if (standardize_variable) {
     new_exp <- suppressMessages(glyexp::standardize_variable(new_exp))
   }
-  .append_pipeline_step(new_exp, step, previous = .previous)
+  record(new_exp, step)
 }
 
 #' Get aggregation group identifiers

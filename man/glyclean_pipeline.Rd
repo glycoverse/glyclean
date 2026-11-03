@@ -16,7 +16,9 @@ apply_pipeline(exp, pipeline)
 \item{...}{Calls to glyclean processing functions. Omit the experiment and
 name every argument explicitly; positional and partially matched arguments
 are not accepted. Parameter expressions are evaluated once when building
-the pipeline, including default values, but processing functions are not run.}
+the pipeline, including default values, but processing functions are not run.
+Calls and parameter expressions support tidy-evaluation injection with
+\code{!!} and \code{!!!}.}
 
 \item{exp}{A supported glyclean experiment.}
 
@@ -49,10 +51,7 @@ parameters directly to the operation. Steps carry package-version information
 as an attribute; no random-generator state is stored. Callback functions and parameter
 values are captured at construction/recording time; external files, network
 side effects and mutable references in arbitrary callbacks are not supported.
-Site-sequence annotation records the actual sequences. CoDA records the
-selected top-level CLR or ALR function and its parameters, including seed.
-Replaying ALR repeats its reference evaluation and any CLR fallback using
-that seed; no per-site plan or reference selection is stored in history.
+Site-sequence annotation records the actual sequences.
 }
 \examples{
 pipeline <- glyclean_pipeline(normalize_total_area(), impute_min_prob(seed = 42))

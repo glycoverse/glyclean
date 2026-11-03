@@ -63,9 +63,8 @@ remove_rare <- function(
   strict = FALSE,
   min_n = NULL
 ) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  .result <- {
+  record <- .pipeline_recorder(x)
+  record({
     .filter_exp(
       x,
       by,
@@ -75,8 +74,7 @@ remove_rare <- function(
       n = n,
       min_n = min_n
     )
-  }
-  .append_pipeline_step(.result, .step, previous = .previous)
+  })
 }
 
 .filter_matrix_rare <- function(
@@ -305,12 +303,10 @@ remove_rare <- function(
 #' @seealso [remove_low_cv()], [remove_constant()]
 #' @export
 remove_low_var <- function(x, var_cutoff = 0, by = NULL, strict = FALSE) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  .result <- {
+  record <- .pipeline_recorder(x)
+  record({
     .filter_exp(x, by, strict, .filter_matrix_low_var, var_cutoff = var_cutoff)
-  }
-  .append_pipeline_step(.result, .step, previous = .previous)
+  })
 }
 
 .filter_matrix_low_var <- function(
@@ -366,12 +362,10 @@ remove_low_var <- function(x, var_cutoff = 0, by = NULL, strict = FALSE) {
 #' @seealso [remove_low_var()]
 #' @export
 remove_low_cv <- function(x, cv_cutoff = 0, by = NULL, strict = FALSE) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  .result <- {
+  record <- .pipeline_recorder(x)
+  record({
     .filter_exp(x, by, strict, .filter_matrix_low_cv, cv_cutoff = cv_cutoff)
-  }
-  .append_pipeline_step(.result, .step, previous = .previous)
+  })
 }
 
 .filter_matrix_low_cv <- function(x, by = NULL, strict = FALSE, cv_cutoff = 0) {
@@ -460,12 +454,10 @@ remove_low_cv <- function(x, cv_cutoff = 0, by = NULL, strict = FALSE) {
 #' @seealso [remove_low_var()]
 #' @export
 remove_constant <- function(x, by = NULL, strict = FALSE) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  .result <- {
+  record <- .pipeline_recorder(x)
+  record({
     remove_low_var(x, var_cutoff = 0, by = by, strict = strict)
-  }
-  .append_pipeline_step(.result, .step, previous = .previous)
+  })
 }
 
 # ===== Remove Low Expression =====
@@ -486,12 +478,10 @@ remove_constant <- function(x, by = NULL, strict = FALSE) {
 #' @returns A container of the same class as `x`, with filtered variables.
 #' @export
 remove_low_expr <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  .result <- {
+  record <- .pipeline_recorder(x)
+  record({
     .filter_exp(x, by, strict, .filter_matrix_low_expr, percentile = percentile)
-  }
-  .append_pipeline_step(.result, .step, previous = .previous)
+  })
 }
 
 .filter_matrix_low_expr <- function(

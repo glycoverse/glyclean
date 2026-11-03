@@ -22,12 +22,10 @@
 #'   matrix.
 #' @export
 normalize_median <- function(x) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  .result <- {
+  record <- .pipeline_recorder(x)
+  record({
     .update_expr_mat(x, .normalize_median)
-  }
-  .append_pipeline_step(.result, .step, previous = .previous)
+  })
 }
 
 
@@ -43,12 +41,10 @@ normalize_median <- function(x) {
 #'   matrix.
 #' @export
 normalize_median_abs <- function(x) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  .result <- {
+  record <- .pipeline_recorder(x)
+  record({
     .update_expr_mat(x, .normalize_median_abs)
-  }
-  .append_pipeline_step(.result, .step, previous = .previous)
+  })
 }
 
 
@@ -68,12 +64,10 @@ normalize_median_abs <- function(x) {
 #'   matrix.
 #' @export
 normalize_total_area <- function(x) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  .result <- {
+  record <- .pipeline_recorder(x)
+  record({
     .update_expr_mat(x, .normalize_total_area)
-  }
-  .append_pipeline_step(.result, .step, previous = .previous)
+  })
 }
 
 
@@ -97,12 +91,10 @@ normalize_total_area <- function(x) {
 #'   matrix.
 #' @export
 normalize_quantile <- function(x, by = NULL, ...) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  .result <- {
+  record <- .pipeline_recorder(x)
+  record({
     .update_expr_mat(x, .normalize_quantile, by = by, ...)
-  }
-  .append_pipeline_step(.result, .step, previous = .previous)
+  })
 }
 
 
@@ -126,12 +118,10 @@ normalize_quantile <- function(x, by = NULL, ...) {
 #'   matrix.
 #' @export
 normalize_loessf <- function(x, by = NULL, ...) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  .result <- {
+  record <- .pipeline_recorder(x)
+  record({
     .update_expr_mat(x, .normalize_loessf, by = by, ...)
-  }
-  .append_pipeline_step(.result, .step, previous = .previous)
+  })
 }
 
 
@@ -154,12 +144,10 @@ normalize_loessf <- function(x, by = NULL, ...) {
 #'   matrix.
 #' @export
 normalize_loesscyc <- function(x, by = NULL, ...) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  .result <- {
+  record <- .pipeline_recorder(x)
+  record({
     .update_expr_mat(x, .normalize_loesscyc, by = by, ...)
-  }
-  .append_pipeline_step(.result, .step, previous = .previous)
+  })
 }
 
 
@@ -191,14 +179,11 @@ normalize_loesscyc <- function(x, by = NULL, ...) {
 #'   matrix.
 #' @export
 normalize_vsn <- function(x, by = NULL, ..., seed = 123) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  .result <- {
-  checkmate::assert_int(seed, lower = 0)
-  withr::with_seed(seed, .update_expr_mat(x, .normalize_vsn, by = by, ...))
-
-  }
-  .append_pipeline_step(.result, .step, previous = .previous)
+  record <- .pipeline_recorder(x)
+  record({
+    checkmate::assert_int(seed, lower = 0)
+    withr::with_seed(seed, .update_expr_mat(x, .normalize_vsn, by = by, ...))
+  })
 }
 
 
@@ -226,12 +211,10 @@ normalize_vsn <- function(x, by = NULL, ..., seed = 123) {
 #'   matrix.
 #' @export
 normalize_median_quotient <- function(x, by = NULL) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  .result <- {
+  record <- .pipeline_recorder(x)
+  record({
     .update_expr_mat(x, .normalize_median_quotient, by = by)
-  }
-  .append_pipeline_step(.result, .step, previous = .previous)
+  })
 }
 
 
@@ -256,12 +239,10 @@ normalize_median_quotient <- function(x, by = NULL) {
 #'   matrix.
 #' @export
 normalize_rlr <- function(x, by = NULL) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  .result <- {
+  record <- .pipeline_recorder(x)
+  record({
     .update_expr_mat(x, .normalize_rlr, by = by)
-  }
-  .append_pipeline_step(.result, .step, previous = .previous)
+  })
 }
 
 
@@ -282,12 +263,10 @@ normalize_rlr <- function(x, by = NULL) {
 #'   matrix.
 #' @export
 normalize_rlrma <- function(x, by = NULL) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  .result <- {
+  record <- .pipeline_recorder(x)
+  record({
     .update_expr_mat(x, .normalize_rlrma, by = by)
-  }
-  .append_pipeline_step(.result, .step, previous = .previous)
+  })
 }
 
 
@@ -312,12 +291,10 @@ normalize_rlrma <- function(x, by = NULL) {
 #'   matrix.
 #' @export
 normalize_rlrmacyc <- function(x, n_iter = 3, by = NULL) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  .result <- {
+  record <- .pipeline_recorder(x)
+  record({
     .update_expr_mat(x, .normalize_rlrmacyc, by = by, n_iter = n_iter)
-  }
-  .append_pipeline_step(.result, .step, previous = .previous)
+  })
 }
 
 

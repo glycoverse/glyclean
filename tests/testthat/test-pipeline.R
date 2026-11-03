@@ -391,3 +391,139 @@ test_that("single-sample character grouping values are unambiguous on replay", {
     expect_identical(apply_pipeline(x, unserialize(serialize(history, NULL))), result)
   }
 })
+
+test_that("forwarded pipeline calls retain their original caller environments", {
+  forward <- function(...) glyclean_pipeline(...)
+  pipeline <- local({
+    probability <- 0.04
+    seed <- 719
+    processor <- impute_min_prob
+    forward(processor(q = probability, seed = seed))
+  })
+  expect_identical(pipeline[[1L]][["function"]], impute_min_prob)
+  expect_identical(pipeline[[1L]]$parameters$q, 0.04)
+  expect_identical(pipeline[[1L]]$parameters$seed, 719)
+  expect_identical(pipeline[[1L]]$parameters$tune.sigma, 1)
+})
+
+test_that("pipeline capture supports injected calls, arguments and nested quosures", {
+  captured_call <- local({
+    threshold <- 0.6
+    rlang::quo(remove_rare(prop = threshold))
+  })
+  probability <- local({
+    value <- 0.04
+    rlang::quo(value)
+  })
+  parameters <- list(seed = 92, tune.sigma = 0.5)
+  calls <- list(rlang::expr(normalize_total_area()), captured_call)
+  pipeline <- glyclean_pipeline(
+    !!!calls,
+    impute_min_prob(q = (!!probability) + 0.01, !!!parameters)
+  )
+  expect_length(pipeline, 3L)
+  expect_identical(pipeline[[1L]][["function"]], normalize_total_area)
+  expect_identical(pipeline[[2L]][["function"]], remove_rare)
+  expect_identical(pipeline[[2L]]$parameters$prop, 0.6)
+  expect_identical(pipeline[[3L]][["function"]], impute_min_prob)
+  expect_equal(pipeline[[3L]]$parameters$q, 0.05)
+  expect_identical(pipeline[[3L]]$parameters$seed, 92)
+  expect_identical(pipeline[[3L]]$parameters$tune.sigma, 0.5)
+  parameters$seed <- 100
+  expect_identical(pipeline[[3L]]$parameters$seed, 92)
+})
+
+test_that("tidy injection keeps keyword-only argument validation", {
+  expect_error(
+    glyclean_pipeline(remove_rare(!!!list(0.5))),
+    "keyword names"
+  )
+  expect_error(
+    glyclean_pipeline(remove_rare(!!!list(prop = 0.5, prop = 0.8))),
+    "keyword names"
+  )
+  expect_error(
+    glyclean_pipeline(remove_rare(!!!list(pro = 0.5))),
+    "partially matched"
+  )
+  expect_error(
+    glyclean_pipeline(normalize_total_area(!!!list(x = pipeline_test_exp()))),
+    "Omit the experiment"
+  )
+  expect_error(
+    glyclean_pipeline(normalize_total_area(!!!list(unknown = TRUE))),
+    "Unknown"
+  )
+})
+
+test_that("tidy capture evaluates parameters once without running processing", {
+  parameter_evaluations <- 0L
+  processing_calls <- 0L
+  local_mocked_bindings(.update_expr_mat = function(x, ...) {
+    processing_calls <<- processing_calls + 1L
+    x
+  })
+  pipeline <- glyclean_pipeline(impute_min_prob(
+    q = { parameter_evaluations <- parameter_evaluations + 1L; 0.05 }
+  ))
+  expect_identical(parameter_evaluations, 1L)
+  expect_identical(processing_calls, 0L)
+  expect_identical(pipeline[[1L]]$parameters$seed, 123)
+  result <- apply_pipeline(pipeline_test_exp(), pipeline)
+  expect_identical(processing_calls, 1L)
+  expect_identical(parameter_evaluations, 1L)
+  history <- get_pipeline(result)
+  expect_length(history, 1L)
+  expect_identical(history[[1L]][["function"]], impute_min_prob)
+  expect_identical(history[[1L]]$parameters$q, 0.05)
+  expect_identical(history[[1L]]$parameters$seed, 123)
+})
+
+test_that("shared recording preserves public identity and prior concrete history", {
+  original <- pipeline_test_exp()
+  x <- normalize_total_area(original)
+  prior <- get_pipeline(x)
+  operations <- list(
+    list(fun = impute_zero, parameters = list()),
+    list(fun = impute_half_sample_min, parameters = list()),
+    list(fun = impute_min_prob, parameters = list(seed = 947)),
+    list(fun = normalize_median, parameters = list()),
+    list(fun = remove_rare, parameters = list(prop = 0.5, by = "group")),
+    list(fun = remove_constant, parameters = list()),
+    list(fun = transform_clr, parameters = list(gamma = 0, seed = 947))
+  )
+  for (operation in operations) {
+    result <- suppressMessages(do.call(
+      operation$fun, c(list(x), operation$parameters)
+    ))
+    history <- get_pipeline(result)
+    expect_length(history, 2L)
+    expect_identical(history[[1L]], prior[[1L]])
+    expect_identical(history[[2L]][["function"]], operation$fun)
+    expect_identical(names(history[[2L]]), c("function", "parameters"))
+    expect_identical(suppressMessages(apply_pipeline(original, history)), result)
+    expect_identical(get_pipeline(x), prior)
+  }
+})
+
+test_that("shared recording retains batch no-op steps and excludes auto recipes", {
+  x <- pipeline_test_exp()
+  SummarizedExperiment::colData(x)$batch <- c("A", "A", "B")
+  local_mocked_bindings(.apply_batch_correction = function(...) NULL)
+  result <- correct_batch_effect(x)
+  expect_identical(SummarizedExperiment::assay(result),
+                   SummarizedExperiment::assay(x))
+  history <- get_pipeline(result)
+  expect_length(history, 1L)
+  expect_identical(history[[1L]][["function"]], correct_batch_effect)
+  expect_identical(history[[1L]]$parameters$method, "combat")
+  expect_identical(suppressMessages(apply_pipeline(x, history)), result)
+
+  recipe <- glyclean_pipeline(auto_normalize(), auto_impute())
+  cleaned <- suppressMessages(apply_pipeline(simple_exp(4, 3), recipe))
+  history <- get_pipeline(cleaned)
+  expect_true(length(history) > 0L)
+  expect_false(any(vapply(history, function(step) {
+    .is_auto_pipeline_function(step[["function"]])
+  }, logical(1))))
+})

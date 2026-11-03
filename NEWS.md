@@ -1,5 +1,7 @@
 # glyclean (development version)
 
+* Pipeline recording uses a shared helper across preprocessing functions. Recipe construction uses tidy evaluation, and the pipeline tutorial now starts with recorded processing history and replay before introducing manual recipes.
+
 * CoDA operations now record their function and parameters only in the preprocessing pipeline. They add no CoDA-specific metadata and preserve all existing metadata unchanged, with no legacy-field migration or cleanup.
 
 * Added list-based `glyclean_pipeline()`, `apply_pipeline()`, and `get_pipeline()` APIs. Processing records concrete reproducible steps in experiment metadata while retaining one assay. Automatic preprocessing records its selected operations; CoDA records its selected top-level function and sequence annotation inputs are frozen for replay.

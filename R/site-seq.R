@@ -93,7 +93,7 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
   taxid = 9606,
   error_call = rlang::caller_call()
 ) {
-  .previous <- get_pipeline(exp)
+  record <- .pipeline_recorder(exp)
   # Check arguments
   .assert_glycoproteomics_container(exp, error_call = error_call)
 
@@ -199,7 +199,9 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
 
   # Update experiment
   .result <- .rebuild_container(exp, var_info = var_info)
-  .append_pipeline_step(.result, .new_pipeline_step(add_site_seq, list(fasta = protein_seqs, n_aa = n_aa, taxid = taxid)), previous = .previous)
+  record(.result, .new_pipeline_step(add_site_seq, list(
+    fasta = protein_seqs, n_aa = n_aa, taxid = taxid
+  )))
 }
 
 # Helper function to read FASTA file using seqinr

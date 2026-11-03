@@ -30,9 +30,7 @@
 #' present and non-missing. `by` continues to specify sample groups.
 #'
 #' The output preserves all rows, their original order, and their
-#' annotations. CoDA preserves input metadata and records the operation only
-#' in the preprocessing pipeline. No CoDA-specific metadata is added or
-#' modified.
+#' annotations.
 #'
 #' With `gamma = 0`, a site containing a single feature returns one for
 #' positive abundances and zero for zeros. Samples with no positive abundance
@@ -94,19 +92,19 @@ transform_clr <- function(
   group_scales = NULL,
   seed = 123
 ) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  checkmate::assert_int(seed, lower = 0)
-  .result <- withr::with_seed(
-    seed,
-    .transform_clr_exp(
-      x,
-      by = by,
-      gamma = gamma,
-      group_scales = group_scales
+  record <- .pipeline_recorder(x)
+  record({
+    checkmate::assert_int(seed, lower = 0)
+    withr::with_seed(
+      seed,
+      .transform_clr_exp(
+        x,
+        by = by,
+        gamma = gamma,
+        group_scales = group_scales
+      )
     )
-  )
-  .append_pipeline_step(.result, .step, previous = .previous)
+  })
 }
 
 
@@ -138,19 +136,19 @@ transform_alr <- function(
   group_scales = NULL,
   seed = 123
 ) {
-  .previous <- get_pipeline(x)
-  .step <- .capture_pipeline_step(sys.function(), environment())
-  checkmate::assert_int(seed, lower = 0)
-  .result <- withr::with_seed(
-    seed,
-    .transform_alr_exp(
-      x,
-      by = by,
-      gamma = gamma,
-      group_scales = group_scales
+  record <- .pipeline_recorder(x)
+  record({
+    checkmate::assert_int(seed, lower = 0)
+    withr::with_seed(
+      seed,
+      .transform_alr_exp(
+        x,
+        by = by,
+        gamma = gamma,
+        group_scales = group_scales
+      )
     )
-  )
-  .append_pipeline_step(.result, .step, previous = .previous)
+  })
 }
 
 #' Validate compositional inputs used by CLR and ALR
@@ -851,7 +849,7 @@ transform_alr <- function(
 #'
 #' @param exp A glycoproteomics container.
 #' @inheritParams transform_clr
-#' @return A container with site-wise transformations and preserved metadata.
+#' @return A container with site-wise transformations.
 #' @noRd
 .transform_clr_sites <- function(
   exp,

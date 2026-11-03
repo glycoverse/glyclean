@@ -7,6 +7,8 @@
 #'   name every argument explicitly; positional and partially matched arguments
 #'   are not accepted. Parameter expressions are evaluated once when building
 #'   the pipeline, including default values, but processing functions are not run.
+#'   Calls and parameter expressions support tidy-evaluation injection with
+#'   `!!` and `!!!`.
 #' @param exp A supported glyclean experiment.
 #' @param pipeline A `glyclean_pipeline` list.
 #' @details
@@ -28,10 +30,7 @@
 #' as an attribute; no random-generator state is stored. Callback functions and parameter
 #' values are captured at construction/recording time; external files, network
 #' side effects and mutable references in arbitrary callbacks are not supported.
-#' Site-sequence annotation records the actual sequences. CoDA records the
-#' selected top-level CLR or ALR function and its parameters, including seed.
-#' Replaying ALR repeats its reference evaluation and any CLR fallback using
-#' that seed; no per-site plan or reference selection is stored in history.
+#' Site-sequence annotation records the actual sequences.
 #'
 #' @return `glyclean_pipeline()` and `get_pipeline()` return a
 #'   `glyclean_pipeline` list. `apply_pipeline()` returns a processed experiment.
@@ -41,19 +40,21 @@
 #' history <- get_pipeline(cleaned)
 #' @export
 glyclean_pipeline <- function(...) {
-  calls <- as.list(substitute(list(...)))[-1L]
-  caller <- parent.frame()
-  steps <- lapply(calls, function(expr) {
-    if (!is.call(expr)) {
+  calls <- rlang::enquos(..., .named = NULL, .ignore_empty = "none")
+  steps <- lapply(calls, function(call) {
+    expr <- rlang::quo_get_expr(call)
+    caller <- rlang::quo_get_env(call)
+    if (!rlang::is_call(expr)) {
       stop("Each pipeline step must be a function call.", call. = FALSE)
     }
-    fun <- eval(expr[[1L]], caller)
+    fun <- .eval_pipeline_expr(expr[[1L]], caller)
     if (!is.function(fun) || !.is_pipeline_function(fun)) {
       stop("Pipeline calls must use glyclean processing functions.", call. = FALSE)
     }
-    args <- as.list(expr)[-1L]
+    args <- rlang::call_args(expr)
     .check_pipeline_names(args)
-    fml <- names(formals(fun))
+    defaults <- rlang::fn_fmls(fun)
+    fml <- names(defaults)
     if (length(args) && fml[[1L]] %in% names(args)) {
       stop("Omit the experiment argument from pipeline steps.", call. = FALSE)
     }
@@ -66,15 +67,14 @@ glyclean_pipeline <- function(...) {
         stop("Use complete argument names in pipeline steps.", call. = FALSE)
       }
     }
-    parameters <- lapply(args, eval, envir = caller)
-    defaults <- formals(fun)
-    bindings <- list2env(parameters, parent = environment(fun))
+    parameters <- lapply(args, .eval_pipeline_expr, env = caller)
+    bindings <- rlang::env(rlang::fn_env(fun), !!!parameters)
     for (nm in setdiff(names(defaults)[-1L], "...")) {
       if (!nm %in% names(parameters)) {
-        if (identical(defaults[[nm]], quote(expr = ))) {
+        if (rlang::is_missing(defaults[[nm]])) {
           stop(sprintf("Missing required pipeline argument: %s.", nm), call. = FALSE)
         }
-        value <- eval(defaults[[nm]], bindings)
+        value <- rlang::eval_bare(defaults[[nm]], bindings)
         parameters[nm] <- list(value)
         assign(nm, value, bindings)
       }
@@ -82,6 +82,22 @@ glyclean_pipeline <- function(...) {
     .new_pipeline_step(fun, parameters)
   })
   structure(steps, class = c("glyclean_pipeline", "list"))
+}
+
+# Ordinary expressions retain their caller-scope side effects. Quosures need
+# tidy evaluation, including when injected inside a larger parameter expression.
+.eval_pipeline_expr <- function(expr, env) {
+  if (.has_pipeline_quosure(expr)) {
+    rlang::eval_tidy(expr, env = env)
+  } else {
+    rlang::eval_bare(expr, env = env)
+  }
+}
+
+.has_pipeline_quosure <- function(expr) {
+  rlang::is_quosure(expr) ||
+    (rlang::is_call(expr) &&
+       any(vapply(as.list(expr), .has_pipeline_quosure, logical(1))))
 }
 
 #' @rdname glyclean_pipeline
@@ -238,6 +254,20 @@ apply_pipeline <- function(exp, pipeline) {
   }
   .check_pipeline_names(dots)
   dots
+}
+
+# Capture the input history once, then record only successful results. Keeping
+# capture inside the returned recorder lets callers validate first, or supply
+# an explicit step after resolving effective parameters (for example FASTA data).
+.pipeline_recorder <- function(exp) {
+  previous <- get_pipeline(exp)
+  fun <- sys.function(-1L)
+  frame <- parent.frame()
+  function(result, step = .capture_pipeline_step(fun, frame)) {
+    force(step)
+    result <- force(result)
+    .append_pipeline_step(result, step, previous = previous)
+  }
 }
 
 .capture_pipeline_step <- function(fun, frame) {

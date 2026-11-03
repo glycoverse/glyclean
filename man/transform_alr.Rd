@@ -62,9 +62,7 @@ ALR is not supported for glycoproteomics; use \code{transform_clr()} or
 present and non-missing. \code{by} continues to specify sample groups.
 
 The output preserves all rows, their original order, and their
-annotations. CoDA preserves input metadata and records the operation only
-in the preprocessing pipeline. No CoDA-specific metadata is added or
-modified.
+annotations.
 
 With \code{gamma = 0}, a site containing a single feature returns one for
 positive abundances and zero for zeros. Samples with no positive abundance
