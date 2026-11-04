@@ -16,7 +16,10 @@ add_site_seq(exp, fasta = NULL, n_aa = 7, taxid = 9606)
 \item{exp}{A \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} object.}
 
 \item{fasta}{Either a file path to a FASTA file, a named character vector
-with protein IDs as names and sequences as value, or \code{NULL} to fetch from UniProt.}
+with protein IDs as names and sequences as value, or \code{NULL} to fetch from UniProt.
+An empty character vector is an empty sequence snapshot (no lookup).
+Sequences are uppercased and whitespace is removed; missing or blank
+sequences are rejected before annotation and pipeline recording.}
 
 \item{n_aa}{The number of amino acids to the left and right of the glycosylation site.
 For example, if \code{n_aa = 5}, the resulting sequence will contain 11 amino acids.}
