@@ -12,6 +12,9 @@
 #' @param exp A [glyexp::GlycoproteomicSE()] object.
 #' @param fasta Either a file path to a FASTA file, a named character vector
 #'   with protein IDs as names and sequences as value, or `NULL` to fetch from UniProt.
+#'   An empty character vector is an empty sequence snapshot (no lookup).
+#'   Sequences are uppercased and whitespace is removed; missing or blank
+#'   sequences are rejected before annotation and pipeline recording.
 #' @param n_aa The number of amino acids to the left and right of the glycosylation site.
 #' For example, if `n_aa = 5`, the resulting sequence will contain 11 amino acids.
 #' @param taxid NCBI taxonomy ID for UniProt lookup. Default: `9606` (human).
@@ -113,7 +116,8 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
     protein_seqs <- .fetch_uniprot_sequences(unique_proteins, taxid)
   } else {
     is_file <- checkmate::test_file_exists(fasta)
-    is_named_char <- is.character(fasta) && !is.null(names(fasta))
+    is_named_char <- is.character(fasta) &&
+      (length(fasta) == 0L || !is.null(names(fasta)))
     if (!is_file && !is_named_char) {
       cli::cli_abort(
         "{.arg fasta} must be a file path, a named character vector, or NULL."
@@ -123,9 +127,11 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
     if (is_file) {
       protein_seqs <- .read_fasta_file(fasta)
     } else {
-      protein_seqs <- .validate_protein_seqs(fasta)
+      protein_seqs <- fasta
     }
   }
+
+  protein_seqs <- .validate_protein_seqs(protein_seqs)
 
   checkmate::assert_int(n_aa, lower = 1)
 
@@ -261,15 +267,14 @@ add_site_seq.default <- function(exp, fasta = NULL, n_aa = 7, taxid = 9606) {
 #' Validate and normalize a named character vector of protein sequences
 #' @keywords internal
 .validate_protein_seqs <- function(seqs) {
-  if (any(nchar(seqs) == 0)) {
-    cli::cli_abort("All protein sequences must be non-empty strings.")
+  if (!length(seqs)) {
+    return(stats::setNames(character(), character()))
   }
-  purrr::map_chr(
-    seqs,
-    ~ .x %>%
-      stringr::str_to_upper() %>%
-      stringr::str_remove_all("\\s")
-  )
+  normalized <- stringr::str_remove_all(stringr::str_to_upper(seqs), "\\s")
+  if (anyNA(normalized) || any(!nzchar(normalized))) {
+    cli::cli_abort("All protein sequences must be non-empty strings after removing whitespace.")
+  }
+  stats::setNames(normalized, names(seqs))
 }
 
 # Helper function to extract site sequence
