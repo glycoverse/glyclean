@@ -33,7 +33,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="glyclean-development-version">glyclean (development version)<a class="anchor" aria-label="anchor" href="#glyclean-development-version"></a></h2>
-<div class="section level3">
+<ul><li>
+<code><a href="../reference/adjust_protein.html">adjust_protein()</a></code> gains <code>pro_scale</code> to describe protein matrix values independently of the experiment scale, supporting <code>raw</code>, <code>log</code>, <code>log2</code>, and <code>log10</code> inputs while preserving the experiment representation and recording replayable parameters. Both inputs reject <code>logx</code>. (#40)</li>
+</ul><div class="section level3">
 <h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
 <ul><li>
 <code><a href="../reference/auto_coda.html">auto_coda()</a></code> now always uses site-wise CLR for glycoproteomics, and <code><a href="../reference/transform_alr.html">transform_alr()</a></code> rejects glycoproteomics input. Use <code><a href="../reference/transform_clr.html">transform_clr()</a></code> or <code><a href="../reference/auto_coda.html">auto_coda()</a></code> to transform each <code>protein</code> and <code>protein_site</code> combination independently while retaining all rows. (#34, #37)</li>
