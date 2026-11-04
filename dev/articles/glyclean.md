@@ -227,13 +227,19 @@ clean_exp <- exp |>
 
 ## Input scales
 
-1.  `glyclean` automatically performs the appropriate scale
-    transformations when needed.
-2.  The input scale is preserved whenever possible.
-3.  See [the scale
-    reference](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
-    ([`?data_scales`](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md))
-    for special cases and supported scales.
+For supported `raw`, `log`, `log2`, and `log10` inputs, `glyclean`
+performs the scale conversions required by the selected method. You do
+not need to convert the data to its working scale manually.
+
+Most preprocessing methods preserve the input scale, while filters
+retain the original values. CoDA and VSN instead return log-like
+coordinates marked as `logx`.
+
+Supported input scales vary by method, including whether `logx` is
+accepted. See [the scale
+reference](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+([`?data_scales`](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md))
+for supported inputs, working scales, and exceptions.
 
 ## Step-by-Step Preprocessing
 

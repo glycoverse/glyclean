@@ -260,14 +260,17 @@ different orders:</p>
 <div class="section level2">
 <h2 id="input-scales">Input scales<a class="anchor" aria-label="anchor" href="#input-scales"></a>
 </h2>
-<ol style="list-style-type: decimal">
-<li>
-<code>glyclean</code> automatically performs the appropriate scale
-transformations when needed.</li>
-<li>The input scale is preserved whenever possible.</li>
-<li>See <a href="../reference/data_scales.html">the scale reference</a>
-(<code><a href="../reference/data_scales.html">?data_scales</a></code>) for special cases and supported scales.</li>
-</ol>
+<p>For supported <code>raw</code>, <code>log</code>, <code>log2</code>,
+and <code>log10</code> inputs, <code>glyclean</code> performs the scale
+conversions required by the selected method. You do not need to convert
+the data to its working scale manually.</p>
+<p>Most preprocessing methods preserve the input scale, while filters
+retain the original values. CoDA and VSN instead return log-like
+coordinates marked as <code>logx</code>.</p>
+<p>Supported input scales vary by method, including whether
+<code>logx</code> is accepted. See <a href="../reference/data_scales.html">the scale reference</a>
+(<code><a href="../reference/data_scales.html">?data_scales</a></code>) for supported inputs, working scales, and
+exceptions.</p>
 </div>
 <div class="section level2">
 <h2 id="step-by-step-preprocessing">Step-by-Step Preprocessing<a class="anchor" aria-label="anchor" href="#step-by-step-preprocessing"></a>
