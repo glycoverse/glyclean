@@ -64,6 +64,12 @@ finite coordinate zero and other non-finite values; it rejects `logx`.
 
 ## Transformations and automatic processing
 
+[`transform_log()`](https://glycoverse.github.io/glyclean/dev/reference/transform_log.md)
+explicitly converts ordinary abundance scales to `log`, `log2`, or
+`log10`, updating metadata without adding a pseudocount. It is generally
+unnecessary for downstream Glycoverse analyses and plots that already
+transform their inputs; see its documentation for input contracts.
+
 [`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md),
 [`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md),
 [`auto_coda()`](https://glycoverse.github.io/glyclean/dev/reference/auto_coda.md)

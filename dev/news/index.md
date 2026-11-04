@@ -73,6 +73,13 @@
 
 ### New features
 
+- New
+  [`transform_log()`](https://glycoverse.github.io/glyclean/dev/reference/transform_log.md)
+  explicitly converts abundances to natural, base-2, or base-10
+  logarithms, updates scale metadata, and records a replayable pipeline
+  step. Manual log transformation is generally unnecessary for
+  Glycoverse analyses and plots that already transform their inputs.
+  (#43)
 - [`adjust_protein()`](https://glycoverse.github.io/glyclean/dev/reference/adjust_protein.md)
   gains `pro_scale` to describe protein matrix values independently of
   the experiment scale, supporting `raw`, `log`, `log2`, and `log10`

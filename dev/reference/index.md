@@ -105,6 +105,11 @@
 - [`plot_batch_pca()`](https://glycoverse.github.io/glyclean/dev/reference/plot_batch_pca.md)
   : Plot PCA Score by Batch
 
+## Log Transformation
+
+- [`transform_log()`](https://glycoverse.github.io/glyclean/dev/reference/transform_log.md)
+  : Transform Abundances to a Logarithmic Scale
+
 ## Compositional Data Analysis (CoDA)
 
 - [`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md)

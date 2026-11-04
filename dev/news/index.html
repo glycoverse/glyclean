@@ -46,7 +46,8 @@
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
-<ul><li>
+<ul><li>New <code><a href="../reference/transform_log.html">transform_log()</a></code> explicitly converts abundances to natural, base-2, or base-10 logarithms, updates scale metadata, and records a replayable pipeline step. Manual log transformation is generally unnecessary for Glycoverse analyses and plots that already transform their inputs. (#43)</li>
+<li>
 <code><a href="../reference/adjust_protein.html">adjust_protein()</a></code> gains <code>pro_scale</code> to describe protein matrix values independently of the experiment scale, supporting <code>raw</code>, <code>log</code>, <code>log2</code>, and <code>log10</code> inputs while preserving the experiment representation and recording replayable parameters. Both inputs reject <code>logx</code>. (#40)</li>
 <li>
 <code><a href="../reference/aggregate.html">aggregate()</a></code>, <code><a href="../reference/impute_bpca.html">impute_bpca()</a></code>, <code><a href="../reference/impute_fw_knn.html">impute_fw_knn()</a></code>, <code><a href="../reference/impute_svd.html">impute_svd()</a></code>, <code><a href="../reference/impute_sw_knn.html">impute_sw_knn()</a></code>, and <code><a href="../reference/normalize_vsn.html">normalize_vsn()</a></code> gain an explicit <code>seed = 123</code> for reproducible stochastic processing while preserving the caller’s random state. <code><a href="../reference/auto_impute.html">auto_impute()</a></code>, <code><a href="../reference/auto_aggregate.html">auto_aggregate()</a></code>, and <code><a href="../reference/auto_clean.html">auto_clean()</a></code> forward the seed to the selected operations. (#35)</li>
