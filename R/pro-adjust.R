@@ -378,6 +378,7 @@ adjust_protein.default <- function(
     result$expr_mat <- expr_mat
   } else {
     SummarizedExperiment::assay(result, 1) <- expr_mat
+    methods::validObject(result)
   }
   result
 }
