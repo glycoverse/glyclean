@@ -94,6 +94,10 @@ parameters directly to the operation. Steps carry package-version information
 as an attribute; no random-generator state is stored. Callback functions and parameter
 values are captured at construction/recording time; external files, network
 side effects and mutable references in arbitrary callbacks are not supported.
+Captured values are checked recursively, including attributes and S4 slots;
+environments, external pointers, and weak references are rejected. Ordinary
+value objects and captured closures are copied for replay. Recursive callback
+environments and excessively nested values are rejected.
 Site-sequence annotation records the actual sequences.</p>
     </div>
     <div class="section level2">

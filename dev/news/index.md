@@ -116,6 +116,10 @@
 
 ### Minor improvements and bug fixes
 
+- Pipelines recursively freeze callback values in attributes and S4
+  slots, rejecting hidden mutable references instead of recording
+  histories whose results change when external state is modified. (#46)
+
 - [`add_site_seq()`](https://glycoverse.github.io/glyclean/dev/reference/add_site_seq.md)
   records replayable empty sequence snapshots and rejects missing or
   whitespace-only sequences after normalization, including fetched
