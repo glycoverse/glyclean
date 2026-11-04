@@ -31,3 +31,6 @@ individuals are imputable to diﬀerent amounts of the biological material
 in the collected samples.
 See \href{https://dx.doi.org/10.1021/ac051632c}{this paper} for more information.
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

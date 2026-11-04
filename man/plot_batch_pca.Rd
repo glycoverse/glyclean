@@ -30,3 +30,6 @@ colData(exp)$batch <- batch
 plot_batch_pca(exp, batch_col = "batch")
 
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

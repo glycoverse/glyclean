@@ -53,3 +53,6 @@ exp <- glyexp::real_experiment
 exp <- auto_correct_batch_effect(exp)
 
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

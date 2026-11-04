@@ -30,3 +30,6 @@ subspace may have the same reconstruction error.
 BPCA defines a likelihood function such that the likelihood for data far from
 the training set is much lower, even if they are close to the principal subspace.
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

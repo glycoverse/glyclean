@@ -10,7 +10,8 @@
 #' Median Normalization
 #'
 #' Normalize the expression matrix by dividing each column (sample) by the median
-#' of that column (NA ignored), so that the median of each column is 1.
+#' of that column (NA ignored), rescaling to the geometric mean of the column
+#' medians, as implemented by `limma::normalizeMedianValues()`.
 #' This is the most common normalization method for proteomics data.
 #' It effectively and robustly removes the bias introduced by total protein abundance,
 #' and removes batch effects in part.
@@ -20,11 +21,17 @@
 #'
 #' @return A container of the same class as `x`, with a normalized expression
 #'   matrix.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 normalize_median <- function(x) {
   record <- .pipeline_recorder(x)
   record({
-    .update_expr_mat(x, .normalize_median)
+    .reject_logx(x)
+    if (.get_scale(x) == "raw") {
+      .update_scaled_expr_mat(x, .normalize_median)
+    } else {
+      .normalize_known_log(x, "median")
+    }
   })
 }
 
@@ -32,18 +39,25 @@ normalize_median <- function(x) {
 #' Absolute Median Normalization
 #'
 #' Normalize the expression matrix by dividing each column (sample) by the absolute
-#' median of that column (NA ignored), so that the absolute median of each column is 1.
+#' median of that column (NA ignored), retaining the geometric mean of the
+#' absolute column medians.
 #'
 #' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #'
 #' @return A container of the same class as `x`, with a normalized expression
 #'   matrix.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 normalize_median_abs <- function(x) {
   record <- .pipeline_recorder(x)
   record({
-    .update_expr_mat(x, .normalize_median_abs)
+    .reject_logx(x)
+    if (.get_scale(x) == "raw") {
+      .update_scaled_expr_mat(x, .normalize_median_abs)
+    } else {
+      .normalize_known_log(x, "median_abs")
+    }
   })
 }
 
@@ -62,11 +76,17 @@ normalize_median_abs <- function(x) {
 #'
 #' @return A container of the same class as `x`, with a normalized expression
 #'   matrix.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 normalize_total_area <- function(x) {
   record <- .pipeline_recorder(x)
   record({
-    .update_expr_mat(x, .normalize_total_area)
+    .reject_logx(x)
+    if (.get_scale(x) == "raw") {
+      .update_scaled_expr_mat(x, .normalize_total_area)
+    } else {
+      .normalize_known_log(x, "total_area")
+    }
   })
 }
 
@@ -89,11 +109,18 @@ normalize_total_area <- function(x) {
 #'
 #' @return A container of the same class as `x`, with a normalized expression
 #'   matrix.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 normalize_quantile <- function(x, by = NULL, ...) {
   record <- .pipeline_recorder(x)
   record({
-    .update_expr_mat(x, .normalize_quantile, by = by, ...)
+    .update_scaled_expr_mat(
+      x,
+      .normalize_quantile,
+      allow_logx = TRUE,
+      by = by,
+      ...
+    )
   })
 }
 
@@ -116,11 +143,20 @@ normalize_quantile <- function(x, by = NULL, ...) {
 #'
 #' @return A container of the same class as `x`, with a normalized expression
 #'   matrix.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 normalize_loessf <- function(x, by = NULL, ...) {
   record <- .pipeline_recorder(x)
   record({
-    .update_expr_mat(x, .normalize_loessf, by = by, ...)
+    .update_scaled_expr_mat(
+      x,
+      .normalize_loessf,
+      work_scale = "log2",
+      allow_logx = TRUE,
+      .log_input = TRUE,
+      by = by,
+      ...
+    )
   })
 }
 
@@ -142,11 +178,20 @@ normalize_loessf <- function(x, by = NULL, ...) {
 #'
 #' @return A container of the same class as `x`, with a normalized expression
 #'   matrix.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 normalize_loesscyc <- function(x, by = NULL, ...) {
   record <- .pipeline_recorder(x)
   record({
-    .update_expr_mat(x, .normalize_loesscyc, by = by, ...)
+    .update_scaled_expr_mat(
+      x,
+      .normalize_loesscyc,
+      work_scale = "log2",
+      allow_logx = TRUE,
+      .log_input = TRUE,
+      by = by,
+      ...
+    )
   })
 }
 
@@ -177,12 +222,22 @@ normalize_loesscyc <- function(x, by = NULL, ...) {
 #'
 #' @return A container of the same class as `x`, with a normalized expression
 #'   matrix.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 normalize_vsn <- function(x, by = NULL, ..., seed = 123) {
   record <- .pipeline_recorder(x)
   record({
     checkmate::assert_int(seed, lower = 0)
-    withr::with_seed(seed, .update_expr_mat(x, .normalize_vsn, by = by, ...))
+    withr::with_seed(
+      seed,
+      .update_scaled_expr_mat(
+        x,
+        .normalize_vsn,
+        output_scale = "logx",
+        by = by,
+        ...
+      )
+    )
   })
 }
 
@@ -209,11 +264,17 @@ normalize_vsn <- function(x, by = NULL, ..., seed = 123) {
 #'
 #' @return A container of the same class as `x`, with a normalized expression
 #'   matrix.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 normalize_median_quotient <- function(x, by = NULL) {
   record <- .pipeline_recorder(x)
   record({
-    .update_expr_mat(x, .normalize_median_quotient, by = by)
+    .reject_logx(x)
+    if (.get_scale(x) == "raw") {
+      .update_scaled_expr_mat(x, .normalize_median_quotient, by = by)
+    } else {
+      .normalize_known_log(x, "median_quotient", by)
+    }
   })
 }
 
@@ -237,11 +298,19 @@ normalize_median_quotient <- function(x, by = NULL) {
 #'
 #' @return A container of the same class as `x`, with a normalized expression
 #'   matrix.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 normalize_rlr <- function(x, by = NULL) {
   record <- .pipeline_recorder(x)
   record({
-    .update_expr_mat(x, .normalize_rlr, by = by)
+    .update_scaled_expr_mat(
+      x,
+      .normalize_rlr,
+      work_scale = "log2",
+      allow_logx = TRUE,
+      .log_input = TRUE,
+      by = by
+    )
   })
 }
 
@@ -261,11 +330,19 @@ normalize_rlr <- function(x, by = NULL) {
 #'
 #' @return A container of the same class as `x`, with a normalized expression
 #'   matrix.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 normalize_rlrma <- function(x, by = NULL) {
   record <- .pipeline_recorder(x)
   record({
-    .update_expr_mat(x, .normalize_rlrma, by = by)
+    .update_scaled_expr_mat(
+      x,
+      .normalize_rlrma,
+      work_scale = "log2",
+      allow_logx = TRUE,
+      .log_input = TRUE,
+      by = by
+    )
   })
 }
 
@@ -289,11 +366,20 @@ normalize_rlrma <- function(x, by = NULL) {
 #'
 #' @return A container of the same class as `x`, with a normalized expression
 #'   matrix.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 normalize_rlrmacyc <- function(x, n_iter = 3, by = NULL) {
   record <- .pipeline_recorder(x)
   record({
-    .update_expr_mat(x, .normalize_rlrmacyc, by = by, n_iter = n_iter)
+    .update_scaled_expr_mat(
+      x,
+      .normalize_rlrmacyc,
+      work_scale = "log2",
+      allow_logx = TRUE,
+      .log_input = TRUE,
+      by = by,
+      n_iter = n_iter
+    )
   })
 }
 
@@ -327,6 +413,13 @@ normalize_rlrmacyc <- function(x, n_iter = 3, by = NULL) {
 
 
 .normalize_quantile <- function(mat, ...) {
+  if (ncol(mat) == 1L) {
+    return(mat)
+  }
+  if (nrow(mat) == 1L) {
+    mat[!is.na(mat)] <- mean(mat, na.rm = TRUE)
+    return(mat)
+  }
   normed <- limma::normalizeQuantiles(mat, ...)
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
@@ -334,21 +427,21 @@ normalize_rlrmacyc <- function(x, n_iter = 3, by = NULL) {
 }
 
 
-.normalize_loessf <- function(mat, ...) {
-  log_mat <- log2(mat)
+.normalize_loessf <- function(mat, ..., .log_input = FALSE) {
+  log_mat <- if (.log_input) mat else log2(mat)
   normed <- limma::normalizeCyclicLoess(log_mat, method = "fast", ...)
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
-  2^normed
+  if (.log_input) normed else 2^normed
 }
 
 
-.normalize_loesscyc <- function(mat, ...) {
-  log_mat <- log2(mat)
+.normalize_loesscyc <- function(mat, ..., .log_input = FALSE) {
+  log_mat <- if (.log_input) mat else log2(mat)
   normed <- limma::normalizeCyclicLoess(log_mat, method = "pairs", ...)
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
-  2^normed
+  if (.log_input) normed else 2^normed
 }
 
 
@@ -381,9 +474,9 @@ normalize_rlrmacyc <- function(x, n_iter = 3, by = NULL) {
 }
 
 
-.normalize_rlr <- function(mat) {
+.normalize_rlr <- function(mat, .log_input = FALSE) {
   rlang::check_installed("MASS", reason = "to use `normalize_rlr()`")
-  normed <- log2(mat)
+  normed <- if (.log_input) mat else log2(mat)
   ref_sample <- matrixStats::rowMedians(normed, na.rm = TRUE, useNames = TRUE)
   for (i in seq_len(ncol(normed))) {
     sample <- normed[, i]
@@ -398,13 +491,13 @@ normalize_rlrmacyc <- function(x, n_iter = 3, by = NULL) {
   }
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
-  2^normed
+  if (.log_input) normed else 2^normed
 }
 
 
-.normalize_rlrma <- function(mat) {
+.normalize_rlrma <- function(mat, .log_input = FALSE) {
   rlang::check_installed("MASS", reason = "to use `normalize_rlrma()`")
-  normed <- log2(mat)
+  normed <- if (.log_input) mat else log2(mat)
   ref_sample <- matrixStats::rowMedians(normed, na.rm = TRUE, useNames = TRUE)
   for (i in seq_len(ncol(normed))) {
     sample <- normed[, i]
@@ -419,13 +512,13 @@ normalize_rlrmacyc <- function(x, n_iter = 3, by = NULL) {
   }
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
-  2^normed
+  if (.log_input) normed else 2^normed
 }
 
 
-.normalize_rlrmacyc <- function(mat, n_iter = 3) {
+.normalize_rlrmacyc <- function(mat, n_iter = 3, .log_input = FALSE) {
   rlang::check_installed("MASS", reason = "to use `normalize_rlrmacyc()`")
-  normed <- log2(mat)
+  normed <- if (.log_input) mat else log2(mat)
   for (k in seq_len(n_iter)) {
     for (j in seq_len(ncol(normed))) {
       if (j == ncol(normed)) {
@@ -449,5 +542,5 @@ normalize_rlrmacyc <- function(x, n_iter = 3, by = NULL) {
   }
   colnames(normed) <- colnames(mat)
   rownames(normed) <- rownames(mat)
-  2^normed
+  if (.log_input) normed else 2^normed
 }

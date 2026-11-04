@@ -43,3 +43,6 @@ available for manual use, but they are not selected automatically.
 library(glyexp)
 exp_imputed <- auto_impute(real_experiment)
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

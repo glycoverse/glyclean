@@ -25,3 +25,6 @@ A container of the same class as \code{x}, with filtered variables.
 Filters variables based on median expression values.
 Variables with median expression values below certain percentile will be removed.
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

@@ -33,3 +33,6 @@ Impute missing values using random draws from the left-censored
 gaussian distribution. Missing values are imputed on the log2 intensity
 scale and then transformed back to the original scale.
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

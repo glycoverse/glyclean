@@ -186,7 +186,7 @@ test_that("CoDA transformations preserve class without adding CoDA metadata", {
   input_metadata <- S4Vectors::metadata(x)
   for (result in list(clr, alr)) {
     metadata <- S4Vectors::metadata(result)
-    expect_identical(metadata$scale, "log2")
+    expect_identical(metadata$scale, "logx")
     expect_identical(metadata[setdiff(names(metadata), c("pipeline", "scale"))],
                      input_metadata[setdiff(names(input_metadata), c("pipeline", "scale"))])
     expect_identical(suppressWarnings(apply_pipeline(x, get_pipeline(result))), result)

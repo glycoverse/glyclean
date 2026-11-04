@@ -37,3 +37,6 @@ See \href{https://doi.org/10.1093/bib/bbw095}{this paper} for more information.
 At least 42 variables should be provided for this method.
 This follows the convention of the \code{vsn} package.
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

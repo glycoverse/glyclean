@@ -2,9 +2,14 @@
 
 ## Breaking changes
 
+* Preprocessing and QC now honor `raw`, `log`, `log2`, and `log10` metadata, restoring the input scale after processing and preserving original values when filtering. Previously log inputs could be logged again; pipelines replay with the corrected behavior. Preserve the original package environment to reproduce older results, and see `?data_scales` for working domains and `logx` support.
+* `impute_zero()` now accepts only `raw`; `zero_to_na()` converts `-Inf` to `NA` on ordinary log scales while preserving finite log zero. Use an appropriate scale-aware imputation method for logged input; both functions reject `logx`.
+* `normalize_vsn()` now returns `scale = "logx"`, and CoDA outputs also use `logx`. Repeated CoDA/VSN and abundance-based processing reject `logx`; coordinate-based methods use its negative and zero values directly. This requires glyexp with logx support (the merged glycoverse/glyexp#40 commit pinned in `Remotes`).
+* `transform_alr()` now records actual CLR when reference selection falls back, restarting from the supplied seed for replay. Stochastic fallback results can change; preserve the previous package environment to reproduce earlier output.
+
 * `auto_coda()` now always uses site-wise CLR for glycoproteomics, and `transform_alr()` rejects glycoproteomics input. Use `transform_clr()` or `auto_coda()` to transform each `protein` and `protein_site` combination independently while retaining all rows. (#34, #37)
 * `impute_fw_knn()` and `impute_sw_knn()` now use `seed = 123` for all random operations, including large-matrix splitting, replacing the backend default of `362436069`. Split-based results can change; use `seed = 362436069` to retain the previous seed, and replace `rng.seed` in `...` with the explicit `seed` argument. (#35, #36)
-* `transform_alr()`, `transform_clr()`, and `auto_coda()` now return log2-ratio coordinates instead of exponentiated ratios and set `scale = "log2"` in experiment metadata, requiring glyexp >= 0.18.0.9000. Saved pipelines also produce the new values on replay; preserve the original package environment to reproduce earlier numerical results. (#39)
+* `transform_alr()`, `transform_clr()`, and `auto_coda()` now return log2-ratio coordinates instead of exponentiated ratios and set `scale = "logx"` in experiment metadata, requiring glyexp >= 0.18.0.9000. Saved pipelines also produce the new values on replay; preserve the original package environment to reproduce earlier numerical results. (#39)
 * `transform_alr()`, `transform_clr()`, and `auto_coda()` now reject zero abundances and require finite, strictly positive input. Use `zero_to_na()` followed by appropriate imputation before CoDA when zeros represent missing values; CoDA does not add pseudo-counts or impute values. (#39)
 
 ## New features
@@ -14,6 +19,11 @@
 * New `zero_to_na()` replaces exact zeros in the abundance assay with missing values while preserving annotations and recording a replayable pipeline step. (#38)
 
 ## Minor improvements and bug fixes
+
+* `detect_batch_effect()` now uses the same `log2(raw + 1e-6)` working domain as batch correction, correcting raw-domain ANOVA results; ordinary-scale correction restores the input scale and `logx` correction retains negative coordinates.
+* `aggregate()` sums known-log input without exponentiating extreme abundances, while custom aggregation functions receive raw values. All-missing sums remain zero (`-Inf` on ordinary log scales).
+* `impute_sample_min()` and `impute_half_sample_min()` now preserve all-missing columns as missing and retain matrix dimensions for singleton inputs.
+* `normalize_median()` and `normalize_median_abs()` documentation now describes rescaling to the geometric mean of sample medians, matching the existing limma algorithms.
 
 * `auto_coda()` and `auto_impute()` now select preprocessing strategies for legacy experiment objects without triggering deprecated dimension-accessor warnings.
 * `auto_coda()` and `transform_clr()` now transform glycoproteomics data independently at each protein site using CLR, retaining all rows. (#34, #37)

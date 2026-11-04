@@ -124,6 +124,41 @@ clean_exp <- exp |>
   glyclean::aggregate()
 ```
 
+## Input scales
+
+Preprocessing reads `metadata(exp)$scale`: `"raw"`, `"log"` (natural log),
+`"log2"`, or `"log10"`. Each algorithm works in the appropriate raw or log2
+domain and returns the input scale. Filters retain the original numeric
+representation. Missing scale metadata means raw; invalid scale metadata errors.
+
+`"logx"` describes coordinates such as CLR/ALR and VSN whose original abundance
+cannot be recovered from the scale alone. Coordinate methods (loess, robust
+regression, quantile normalization, KNN/PCA/MissForest/sample-minimum imputation,
+batch models, boxplots, RLE, PCA and replicate plots) use these values directly,
+including negative values and zeros. Abundance methods (total-area and median
+normalization, aggregation, MinProb and half-minimum imputation, variance/CV/
+expression filters, TIC/CV/rank plots) reject `logx`. `auto_normalize()` and
+`auto_clean()` also reject it; other automatic methods inherit their selected
+algorithm's policy. See `?data_scales` for the complete contract.
+
+`zero_to_na()` replaces raw zero or ordinary-log `-Inf` with `NA`, while retaining
+finite log zero. It rejects `logx`. `impute_zero()` accepts only raw input.
+No other algorithm automatically adds a pseudocount: handle zero and missing
+values explicitly before log-domain algorithms. An entirely missing sample
+remains missing after sample-minimum or half-minimum imputation.
+
+CoDA and VSN are deliberate scale changes: they accept ordinary scales, return
+`scale = "logx"`, and reject repeated transformation of `logx`. CoDA requires
+positive, finite abundances without missing values. Pipelines record each actual
+operation with its parameters and seed; replay uses the input scale at each step.
+ALR fallback records CLR and restarts from its supplied seed.
+
+Batch detection and correction both use `log2(raw + 1e-6)` on ordinary inputs.
+Correction reverses the offset, truncating negative abundances to zero; `logx`
+uses its coordinates directly without truncation. Skipped/failed corrections
+preserve the original assay exactly. Protein adjustment retains its separate
+existing contract and is not included in these scale conversions.
+
 ## Step-by-Step Preprocessing
 
 The `auto_xxx()` functions offer a convenient starting point.
@@ -138,7 +173,7 @@ Normalization helps make intensities more comparable across samples.
 | Function | Description | Best For |
 |----------|-------------|----------|
 | `normalize_median()` | Median-based normalization | General use, robust to outliers |
-| `normalize_median_abs()` | Median absolute deviation | When you need extra robustness |
+| `normalize_median_abs()` | Absolute median normalization | When you need extra robustness |
 | `normalize_median_quotient()` | Median quotient method | Glycomics data (compositional) |
 | `normalize_quantile()` | Quantile normalization | When you want identical distributions |
 | `normalize_total_area()` | Total area normalization | Relative abundance data |
@@ -159,7 +194,7 @@ including a grouping that is not stored in the experiment object.
 # Example: Using by parameter with a custom vector
 # Normalize within custom groups (e.g., based on some external criteria)
 custom_groups <- c("A", "A", "B", "B", "C", "C", "A", "A", "B", "B", "C", "C")
-normalized_exp <- normalize_median(exp, by = custom_groups)
+normalized_exp <- normalize_median_quotient(exp, by = custom_groups)
 ```
 
 **Compositional Data: CLR and ALR**
@@ -170,11 +205,11 @@ Instead, compositional data analysis techniques are recommended:
 
 - **`transform_clr()`**: Centered Log-Ratio transformation.
   A robust method for compositional data analysis.
-  The result remains on the `log2`-ratio scale, with experiment metadata `scale = "log2"`.
+  The result remains on the `log2`-ratio scale, with experiment metadata `scale = "logx"`.
 
 - **`transform_alr()`**: Additive Log-Ratio transformation.
   The reference glycan is chosen based on Procrustes correlation to CLR geometry and minimal between-group variance,
-  and the final result remains on the `log2`-ratio scale (`scale = "log2"`).
+  and the final result remains on the `log2`-ratio scale (`scale = "logx"`).
   If no suitable reference is found, ALR falls back to CLR.
 
 The CLR and ALR methods align with the best practices described in DOI: 10.1038/s41467-025-56249-3 for glycomics data preprocessing.
@@ -310,11 +345,11 @@ It accepts both column names from the sample metadata and vectors.
 
 ```{r eval=FALSE}
 # Using column names (standard approach)
-normalized_exp <- normalize_median(exp, by = "group")
+normalized_exp <- normalize_median_quotient(exp, by = "group")
 
 # Using custom vectors (advanced approach)
 custom_groups <- c("A", "A", "B", "B", "C", "C", "A", "A", "B", "B", "C", "C")
-normalized_exp <- normalize_median(exp, by = custom_groups)
+normalized_exp <- normalize_median_quotient(exp, by = custom_groups)
 ```
 
 This also lets you use groupings that are not stored in the experiment object.

@@ -26,3 +26,6 @@ A wrapper around the \code{\link[pcaMethods:pca]{pcaMethods::pca()}}.
 Impute missing values using probabilistic principal component analysis (PPCA).
 PPCA allows to perform PCA on incomplete data and may be used for missing value estimation.
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

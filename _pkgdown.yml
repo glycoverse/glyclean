@@ -9,6 +9,7 @@ reference:
   - title: Reproducible Pipelines
     contents:
       - glyclean_pipeline
+      - data_scales
   - title: Automactic Processing
     contents:
       - auto_clean

@@ -45,7 +45,9 @@ from the sva package or removeBatchEffect from the limma package.
 \details{
 This function performs batch effect correction using either the ComBat algorithm
 or the limma removeBatchEffect function. It requires batch information provided
-via the \code{batch} parameter. If no batch information is available, the function
+via the \code{batch} parameter. Both detection and correction use
+\code{log2(raw + 1e-6)} for ordinary scales, restoring the original scale after
+correction. \code{logx} is used directly and its negative coordinates are retained. If no batch information is available, the function
 will return the original data unchanged.
 
 If group information is provided via \code{group},
@@ -74,4 +76,7 @@ corrected_exp <- correct_batch_effect(
   exp, batch = "batch", group = "group", method = "limma"
 )
 
+}
+\seealso{
+\link{data_scales} for working domains and supported input scales.
 }

@@ -16,5 +16,9 @@ matrix.
 }
 \description{
 Normalize the expression matrix by dividing each column (sample) by the absolute
-median of that column (NA ignored), so that the absolute median of each column is 1.
+median of that column (NA ignored), retaining the geometric mean of the
+absolute column medians.
+}
+\seealso{
+\link{data_scales} for working domains and supported input scales.
 }

@@ -54,6 +54,7 @@
 #'
 #' @seealso [auto_normalize()], [auto_remove()], [auto_impute()], [aggregate()],
 #'   [auto_correct_batch_effect()]
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 auto_clean <- function(
   exp,
@@ -67,6 +68,7 @@ auto_clean <- function(
   seed = 123
 ) {
   .assert_auto_container(exp)
+  .reject_logx(exp)
   checkmate::assert_string(group_col, null.ok = TRUE)
   checkmate::assert_string(batch_col, null.ok = TRUE)
   checkmate::assert_choice(remove_preset, c("simple", "discovery", "biomarker"))

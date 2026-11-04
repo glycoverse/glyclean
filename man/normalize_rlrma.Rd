@@ -24,3 +24,6 @@ First, the median of each variable's abundance across all measured samples
 is subtracted from the sample's abundance values. Then, it's like the
 \code{\link[=normalize_rlr]{normalize_rlr()}} method.
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

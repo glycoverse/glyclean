@@ -23,6 +23,7 @@
 #' exp <- real_experiment
 #' auto_remove(exp)
 #'
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 auto_remove <- function(
   exp,

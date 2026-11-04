@@ -33,3 +33,6 @@ The automatic strategy uses these defaults:
 library(glyexp)
 exp_normed <- auto_normalize(real_experiment)
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

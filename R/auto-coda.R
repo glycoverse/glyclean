@@ -17,7 +17,8 @@
 #'   its class preserved. Glycoproteomics always uses site-wise CLR and retains
 #'   all rows. Other supported containers use ALR if there are more than 50
 #'   variables, or CLR otherwise. Values remain on the `log2`-ratio scale,
-#'   with `scale = "log2"` in metadata.
+#'   with `scale = "logx"` in metadata.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 auto_coda <- function(
   x,

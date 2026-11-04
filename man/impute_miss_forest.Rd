@@ -26,3 +26,6 @@ A wrapper around the \code{\link[missForest:missForest]{missForest::missForest()
 Impute missing values using recursive running of random forests until convergence.
 This is a non-parametric method and works for both MAR and MNAR missing data.
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

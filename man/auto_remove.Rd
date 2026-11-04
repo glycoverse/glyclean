@@ -36,3 +36,6 @@ exp <- real_experiment
 auto_remove(exp)
 
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

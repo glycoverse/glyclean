@@ -41,7 +41,7 @@ test_that("CoDA records public functions and ordinary complete parameters", {
     expect_null(attr(history[[1L]], "rng_kind"))
     expect_false("site_plan" %in% names(history[[1L]]$parameters))
     expect_length(SummarizedExperiment::assays(result), 1L)
-    expect_identical(S4Vectors::metadata(result)$scale, "log2")
+    expect_identical(S4Vectors::metadata(result)$scale, "logx")
     expect_identical(S4Vectors::metadata(result)$custom, "keep")
     expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
                        names(S4Vectors::metadata(result))))
@@ -70,12 +70,12 @@ test_that("direct and recorded CoDA return identical complete experiments", {
   expect_equal(nrow(alr), nrow(x) - 1L)
 })
 
-test_that("ALR fallback records ALR and repeats the full reference assessment", {
+test_that("ALR fallback records CLR and replays without reference assessment", {
   original_select <- .select_alr_reference
   calls <- 0L
-  local_mocked_bindings(.select_alr_reference = function(mat, by_values = NULL) {
+  local_mocked_bindings(.select_alr_reference = function(mat, by_values = NULL, .log_input = FALSE) {
     calls <<- calls + 1L
-    selected <- original_select(mat, by_values)
+    selected <- original_select(mat, by_values, .log_input = .log_input)
     selected$procrustes <- 0
     selected
   })
@@ -88,23 +88,22 @@ test_that("ALR fallback records ALR and repeats the full reference assessment", 
                    "falling back to CLR")
     expect_identical(calls, 1L)
     metadata <- S4Vectors::metadata(result)
-    expect_identical(metadata$scale, "log2")
+    expect_identical(metadata$scale, "logx")
     expect_identical(metadata[setdiff(names(metadata), c("pipeline", "scale"))],
                      input_metadata[setdiff(names(input_metadata), c("pipeline", "scale"))])
     expect_identical(rownames(result), rownames(x))
     history <- get_pipeline(result)
     expect_length(history, 2L)
     expect_identical(history[[1L]], get_pipeline(x)[[1L]])
-    expect_identical(history[[2L]][["function"]], transform_alr)
+    expect_identical(history[[2L]][["function"]], transform_clr)
     expect_identical(history[[2L]]$parameters$seed, 712)
     set.seed(921)
-    expect_warning(replay <- apply_pipeline(original, history), "falling back to CLR")
-    expect_identical(calls, 2L)
+    expect_no_warning(replay <- apply_pipeline(original, history))
+    expect_identical(calls, 1L)
     expect_identical(replay, result)
-    # The assessment consumes RNG before fallback; replacing ALR with CLR would
-    # reset the stream at the wrong point and change the actual transformed assay.
+    # Fallback starts from its recorded seed and replays the concrete CLR.
     clr <- transform_clr(x, by = "group", gamma = 0.3, seed = 712)
-    expect_false(identical(SummarizedExperiment::assay(clr),
+    expect_true(identical(SummarizedExperiment::assay(clr),
                            SummarizedExperiment::assay(result)))
   }
 })
@@ -117,15 +116,15 @@ test_that("ALR fallback without an eligible reference preserves existing metadat
     expect_warning(result <- transform_alr(x, by = "group", gamma = 0.2, seed = 712),
                    "at least two glycans")
     metadata <- S4Vectors::metadata(result)
-    expect_identical(metadata$scale, "log2")
+    expect_identical(metadata$scale, "logx")
     expect_identical(metadata[setdiff(names(metadata), c("pipeline", "scale"))],
                      input_metadata[setdiff(names(input_metadata), c("pipeline", "scale"))])
     expect_identical(rownames(result), rownames(original))
     history <- get_pipeline(result)
     expect_length(history, 2L)
     expect_identical(history[[1L]], get_pipeline(x)[[1L]])
-    expect_identical(history[[2L]][["function"]], transform_alr)
-    expect_warning(replay <- apply_pipeline(original, history), "at least two glycans")
+    expect_identical(history[[2L]][["function"]], transform_clr)
+    expect_no_warning(replay <- apply_pipeline(original, history))
     expect_identical(replay, result)
   }
 })
@@ -135,7 +134,7 @@ test_that("glycomic auto CoDA records its selected public transformation", {
     x <- coda_pipeline_input(large)
     result <- suppressMessages(auto_coda(x, by = "group", gamma = 0.2, seed = 828))
     history <- get_pipeline(result)
-    expect_identical(S4Vectors::metadata(result)$scale, "log2")
+    expect_identical(S4Vectors::metadata(result)$scale, "logx")
     expected <- if (large) transform_alr else transform_clr
     expect_length(history, 1L)
     expect_identical(history[[1L]][["function"]], expected)
@@ -218,7 +217,7 @@ test_that("CoDA preserves metadata and replays complete containers", {
     for (fun in transforms) {
       result <- suppressMessages(fun(x, by = "group", gamma = 0.2, seed = 981))
       metadata <- .get_container_metadata(result)
-      expect_identical(metadata$scale, "log2")
+      expect_identical(metadata$scale, "logx")
       expect_identical(metadata[setdiff(names(metadata), c("pipeline", "scale"))], input_metadata[keep])
       if (identical(fun, transform_alr)) {
         expect_identical(setdiff(rownames(.get_expr_mat(x)),
@@ -298,19 +297,19 @@ test_that("deterministic CoDA returns mathematical base-2 log ratios", {
   expect_equal(SummarizedExperiment::assay(clr), expected_clr)
   expect_equal(unname(colSums(SummarizedExperiment::assay(clr))), rep(0, ncol(x)),
                tolerance = 1e-12)
-  expect_identical(S4Vectors::metadata(clr)$scale, "log2")
+  expect_identical(S4Vectors::metadata(clr)$scale, "logx")
 
   alr <- transform_alr(x, by = "group", gamma = 0)
   expect_identical(setdiff(rownames(x), rownames(alr)), "V1")
   expected_alr <- log2(sweep(mat[-1L, , drop = FALSE], 2L, mat[1L, ], "/"))
   expect_equal(SummarizedExperiment::assay(alr), expected_alr)
-  expect_identical(S4Vectors::metadata(alr)$scale, "log2")
+  expect_identical(S4Vectors::metadata(alr)$scale, "logx")
 })
 
-test_that("automatic ALR fallback records log2 scale and replays its assessment", {
+test_that("automatic ALR fallback records logx scale and replays its assessment", {
   original_select <- .select_alr_reference
-  local_mocked_bindings(.select_alr_reference = function(mat, by_values = NULL) {
-    selected <- original_select(mat, by_values)
+  local_mocked_bindings(.select_alr_reference = function(mat, by_values = NULL, .log_input = FALSE) {
+    selected <- original_select(mat, by_values, .log_input = .log_input)
     selected$procrustes <- 0
     selected
   })
@@ -322,16 +321,16 @@ test_that("automatic ALR fallback records log2 scale and replays its assessment"
   mat <- SummarizedExperiment::assay(x)
   expect_equal(SummarizedExperiment::assay(result),
                sweep(log2(mat), 2L, colMeans(log2(mat)), "-"))
-  expect_identical(S4Vectors::metadata(result)$scale, "log2")
+  expect_identical(S4Vectors::metadata(result)$scale, "logx")
   keep <- setdiff(names(S4Vectors::metadata(x)), c("pipeline", "scale"))
   expect_identical(S4Vectors::metadata(result)[keep], S4Vectors::metadata(x)[keep])
   history <- get_pipeline(result)
-  expect_identical(history[[1L]][["function"]], transform_alr)
-  expect_warning(replay <- apply_pipeline(x, history), "falling back to CLR")
+  expect_identical(history[[1L]][["function"]], transform_clr)
+  expect_no_warning(replay <- apply_pipeline(x, history))
   expect_identical(replay, result)
 })
 
-test_that("complete manual CoDA recipes and recorded histories retain log2 scale", {
+test_that("complete manual CoDA recipes and recorded histories retain logx scale", {
   original <- coda_pipeline_existing_metadata_input(coda_pipeline_input())
   recipes <- list(
     glyclean_pipeline(impute_zero(), transform_clr(by = "group", gamma = 0.2, seed = 981)),
@@ -345,7 +344,7 @@ test_that("complete manual CoDA recipes and recorded histories retain log2 scale
       impute_zero(original), by = "group", gamma = 0.2, seed = 981
     ))
     expect_identical(manual, direct)
-    expect_identical(S4Vectors::metadata(manual)$scale, "log2")
+    expect_identical(S4Vectors::metadata(manual)$scale, "logx")
     history <- get_pipeline(manual)
     expect_length(history, 2L)
     expect_identical(history[[1L]][["function"]], impute_zero)
@@ -426,7 +425,7 @@ test_that("zero conversion and positive imputation replay before log-ratio CoDA"
     direct <- suppressMessages(transforms[[i]](imputed, by = "group", gamma = 0, seed = 981))
     manual <- suppressMessages(apply_pipeline(original, recipes[[i]]))
     expect_identical(manual, direct)
-    expect_identical(S4Vectors::metadata(manual)$scale, "log2")
+    expect_identical(S4Vectors::metadata(manual)$scale, "logx")
     expect_true(all(is.finite(SummarizedExperiment::assay(manual))))
     history <- get_pipeline(manual)
     expect_length(history, 3L)

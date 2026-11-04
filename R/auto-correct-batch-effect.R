@@ -31,6 +31,7 @@
 #' exp <- glyexp::real_experiment
 #' exp <- auto_correct_batch_effect(exp)
 #'
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 auto_correct_batch_effect <- function(
   exp,

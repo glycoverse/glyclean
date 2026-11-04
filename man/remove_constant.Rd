@@ -20,8 +20,10 @@ A container of the same class as \code{x}, with filtered variables.
 }
 \description{
 Constant variables are variables with the same value in all samples.
-This function is equivalent to \code{remove_low_var(x, var_cutoff = 0, by = by, strict = strict)}.
+Constancy is tested in the current coordinates, including \code{logx}.
 }
 \seealso{
 \code{\link[=remove_low_var]{remove_low_var()}}
+
+\link{data_scales} for working domains and supported input scales.
 }

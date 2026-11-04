@@ -27,3 +27,6 @@ Impute missing values using singular value decomposition (SVD) imputation.
 SVD is a matrix factorization technique that factors a matrix into three matrices:
 U, Σ, and V. SVD is used to find the best lower rank approximation of the original matrix.
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

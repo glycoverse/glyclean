@@ -88,4 +88,6 @@ auto_clean(exp)
 \seealso{
 \code{\link[=auto_normalize]{auto_normalize()}}, \code{\link[=auto_remove]{auto_remove()}}, \code{\link[=auto_impute]{auto_impute()}}, \code{\link[=aggregate]{aggregate()}},
 \code{\link[=auto_correct_batch_effect]{auto_correct_batch_effect()}}
+
+\link{data_scales} for working domains and supported input scales.
 }

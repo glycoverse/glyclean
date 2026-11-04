@@ -1062,7 +1062,7 @@ test_that("batch detection uses matching complete cases and handles confounding"
     assays = list(abundance = rbind(feature = y)),
     colData = S4Vectors::DataFrame(group, batch)
   )
-  df <- na.omit(data.frame(y, group, batch))
+  df <- na.omit(data.frame(y = log2(y + 1e-6), group, batch))
   fit <- lm(y ~ group + batch, df)
   expected <- drop1(fit, test = "F")["batch", "Pr(>F)"]
   expect_equal(
@@ -1071,7 +1071,7 @@ test_that("batch detection uses matching complete cases and handles confounding"
   )
   expect_equal(
     unname(suppressMessages(detect_batch_effect(exp))),
-    anova(lm(y ~ batch))$`Pr(>F)`[1]
+    anova(lm(log2(y + 1e-6) ~ batch))$`Pr(>F)`[1]
   )
 
   SummarizedExperiment::colData(exp)$batch <- group

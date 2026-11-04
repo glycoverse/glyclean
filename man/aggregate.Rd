@@ -49,7 +49,8 @@ See Details for more information.}
 after aggregation. Set to \code{FALSE} to skip network calls for faster testing.
 Default is \code{TRUE}.}
 
-\item{f}{A function applied to each group's values separately for each sample.
+\item{f}{A function applied to each group's raw abundance values separately
+for each sample, regardless of the input's ordinary scale. \code{logx} is rejected.
 Defaults to \code{sum}. Missing values are removed before calling \code{f}, which
 must return one numeric value, including for an empty vector when all values
 are missing. For example, use \code{mean}, \code{max}, or \code{function(x) mean(x, trim = 0.1)}.}
@@ -105,4 +106,7 @@ For each "glycoform" (unique combination of "protein", "protein_site", and "glyc
 there should be only one "gene" value, therefore it is kept for "gf" level.
 On the other hand, the "peptide" column is removed for "gf" level,
 as one "glycoform" can contain multiple "peptides".
+}
+\seealso{
+\link{data_scales} for working domains and supported input scales.
 }

@@ -56,7 +56,8 @@
 #' @param standardize_variable Whether to call [glyexp::standardize_variable()]
 #'   after aggregation. Set to `FALSE` to skip network calls for faster testing.
 #'   Default is `TRUE`.
-#' @param f A function applied to each group's values separately for each sample.
+#' @param f A function applied to each group's raw abundance values separately
+#'   for each sample, regardless of the input's ordinary scale. `logx` is rejected.
 #'   Defaults to `sum`. Missing values are removed before calling `f`, which
 #'   must return one numeric value, including for an empty vector when all values
 #'   are missing. For example, use `mean`, `max`, or `function(x) mean(x, trim = 0.1)`.
@@ -64,6 +65,7 @@
 #'   `123`. The caller's random state is restored, including on errors.
 #' @returns A modified container with the same class as `exp`, an aggregated
 #'   expression matrix, and updated variable information.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 aggregate <- function(
   exp,
@@ -110,6 +112,7 @@ glyclean_aggregate.glyexp_experiment <- function(
   )
 }
 
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 #' @noRd
 glyclean_aggregate.GlycomicSE <- function(
@@ -129,6 +132,7 @@ glyclean_aggregate.GlycomicSE <- function(
   )
 }
 
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 #' @noRd
 glyclean_aggregate.GlycoproteomicSE <- function(
@@ -263,13 +267,28 @@ glyclean_aggregate.GlycoproteomicSE <- function(
   group_id <- .get_aggregation_group_id(var_info, var_info_cols)
   var_info_df <- .get_aggr_var_info(var_info, var_info_cols, group_id) |>
     dplyr::mutate(variable = paste0("V", dplyr::row_number()), .before = 1)
-  step <- .new_pipeline_step(aggregate, list(
-    to_level = to_level, standardize_variable = standardize_variable, f = f, seed = seed
-  ))
+  step <- .new_pipeline_step(
+    aggregate,
+    list(
+      to_level = to_level,
+      standardize_variable = standardize_variable,
+      f = f,
+      seed = seed
+    )
+  )
   f <- step$parameters$f
-  input_mat <- .get_expr_mat(exp)
+  .reject_logx(exp)
+  scale <- .get_scale(exp)
+  stable_sum <- identical(f, base::sum) && scale != "raw"
+  input_mat <- if (stable_sum) {
+    .to_work_scale(.get_expr_mat(exp), scale, "log2")
+  } else {
+    .work_matrix(exp, "raw")
+  }
   expr_mat <- withr::with_seed(seed, {
-    if (identical(f, base::sum)) {
+    if (stable_sum) {
+      expr_mat <- .aggregate_log_sum(input_mat, group_id)
+    } else if (identical(f, base::sum)) {
       expr_mat <- rowsum(input_mat, group_id, reorder = FALSE, na.rm = TRUE)
     } else {
       groups <- split(seq_len(nrow(input_mat)), group_id)
@@ -301,6 +320,11 @@ glyclean_aggregate.GlycoproteomicSE <- function(
     }
     expr_mat
   })
+  expr_mat <- .from_work_scale(
+    expr_mat,
+    scale,
+    if (stable_sum) "log2" else "raw"
+  )
   rownames(expr_mat) <- var_info_df$variable
   sample_info_df <- .get_sample_info(exp)
   expr_mat <- expr_mat[
@@ -389,4 +413,32 @@ glyclean_aggregate.default <- function(
   )
   var_info[!duplicated(group_id), , drop = FALSE] |>
     dplyr::select(tidyselect::all_of(c(aggr_cols, kept_cols)))
+}
+
+# A sum with na.rm = TRUE is zero for an all-missing group. Its logarithm is
+# -Inf; using log-sum-exp also handles zeros and avoids overflowing abundance.
+.aggregate_log_sum <- function(mat, group_id) {
+  if (any(is.nan(mat)) || any(mat == Inf, na.rm = TRUE)) {
+    cli::cli_abort(
+      "Aggregation requires finite log abundances or -Inf for zero abundance."
+    )
+  }
+  groups <- split(
+    seq_len(nrow(mat)),
+    factor(group_id, levels = unique(group_id))
+  )
+  result <- matrix(
+    NA_real_,
+    length(groups),
+    ncol(mat),
+    dimnames = list(NULL, colnames(mat))
+  )
+  for (j in seq_len(ncol(mat))) {
+    result[, j] <- vapply(
+      groups,
+      function(rows) .log2_sum(mat[rows, j]),
+      numeric(1)
+    )
+  }
+  result
 }

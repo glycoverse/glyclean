@@ -29,3 +29,6 @@ to the differences against the averages of the two samples. The fitted model
 is then used to normalize the two samples. The process is repeated for a
 number of iterations.
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

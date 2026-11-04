@@ -54,6 +54,7 @@
 #' @importFrom rlang .data
 #'
 #' @return A container of the same class as `x`, with filtered variables.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 remove_rare <- function(
   x,
@@ -301,11 +302,19 @@ remove_rare <- function(
 #' @returns A container of the same class as `x`, with filtered variables.
 #'
 #' @seealso [remove_low_cv()], [remove_constant()]
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 remove_low_var <- function(x, var_cutoff = 0, by = NULL, strict = FALSE) {
   record <- .pipeline_recorder(x)
   record({
-    .filter_exp(x, by, strict, .filter_matrix_low_var, var_cutoff = var_cutoff)
+    .filter_exp(
+      x,
+      by,
+      strict,
+      .filter_matrix_low_var,
+      work_scale = "raw",
+      var_cutoff = var_cutoff
+    )
   })
 }
 
@@ -360,11 +369,19 @@ remove_low_var <- function(x, var_cutoff = 0, by = NULL, strict = FALSE) {
 #' @returns A container of the same class as `x`, with filtered variables.
 #'
 #' @seealso [remove_low_var()]
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 remove_low_cv <- function(x, cv_cutoff = 0, by = NULL, strict = FALSE) {
   record <- .pipeline_recorder(x)
   record({
-    .filter_exp(x, by, strict, .filter_matrix_low_cv, cv_cutoff = cv_cutoff)
+    .filter_exp(
+      x,
+      by,
+      strict,
+      .filter_matrix_low_cv,
+      work_scale = "raw",
+      cv_cutoff = cv_cutoff
+    )
   })
 }
 
@@ -441,7 +458,7 @@ remove_low_cv <- function(x, cv_cutoff = 0, by = NULL, strict = FALSE) {
 #' Remove Constant Variables
 #'
 #' Constant variables are variables with the same value in all samples.
-#' This function is equivalent to `remove_low_var(x, var_cutoff = 0, by = by, strict = strict)`.
+#' Constancy is tested in the current coordinates, including `logx`.
 #'
 #' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
@@ -452,11 +469,19 @@ remove_low_cv <- function(x, cv_cutoff = 0, by = NULL, strict = FALSE) {
 #' @returns A container of the same class as `x`, with filtered variables.
 #'
 #' @seealso [remove_low_var()]
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 remove_constant <- function(x, by = NULL, strict = FALSE) {
   record <- .pipeline_recorder(x)
   record({
-    remove_low_var(x, var_cutoff = 0, by = by, strict = strict)
+    .filter_exp(
+      x,
+      by,
+      strict,
+      .filter_matrix_constant,
+      work_scale = "current",
+      allow_logx = TRUE
+    )
   })
 }
 
@@ -476,11 +501,19 @@ remove_constant <- function(x, by = NULL, strict = FALSE) {
 #'   If `TRUE`, remove a variable if it passes the abundance thresholds in any group. Defaults to FALSE.
 #'
 #' @returns A container of the same class as `x`, with filtered variables.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 remove_low_expr <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
   record <- .pipeline_recorder(x)
   record({
-    .filter_exp(x, by, strict, .filter_matrix_low_expr, percentile = percentile)
+    .filter_exp(
+      x,
+      by,
+      strict,
+      .filter_matrix_low_expr,
+      work_scale = "raw",
+      percentile = percentile
+    )
   })
 }
 
@@ -609,7 +642,15 @@ remove_low_expr <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
 #' @param ... Additional arguments to pass to `filter_mat_fun`.
 #' @returns A modified `glyexp_experiment` object.
 #' @noRd
-.filter_exp <- function(x, by = NULL, strict = FALSE, filter_mat_fun, ...) {
+.filter_exp <- function(
+  x,
+  by = NULL,
+  strict = FALSE,
+  filter_mat_fun,
+  ...,
+  work_scale = "current",
+  allow_logx = TRUE
+) {
   .assert_glyclean_container(x)
 
   expr_mat <- .get_expr_mat(x)
@@ -622,7 +663,13 @@ remove_low_expr <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
     n_samples = ncol(expr_mat),
     allow_null = TRUE
   )
-  new_expr_mat <- filter_mat_fun(expr_mat, by_values, strict, ...)
+  work_mat <- .work_matrix(
+    x,
+    work_scale,
+    allow_logx = if (work_scale == "raw") FALSE else allow_logx
+  )
+  selected <- filter_mat_fun(work_mat, by_values, strict, ...)
+  new_expr_mat <- expr_mat[rownames(selected), , drop = FALSE]
   var_info <- .get_var_info(x) |>
     dplyr::filter(.data$variable %in% rownames(new_expr_mat))
   .rebuild_container(x, expr_mat = new_expr_mat, var_info = var_info)
@@ -636,4 +683,16 @@ remove_low_expr <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
       "Removed {.val {n_remove}} of {.val {n_before}} ({.val {prop_remove}}%) variables."
     )
   }
+}
+
+.filter_matrix_constant <- function(x, by = NULL, strict = FALSE) {
+  checkmate::assert_flag(strict)
+  constant <- function(values) {
+    values <- values[!is.na(values)]
+    length(values) >= 2L && all(values == values[[1L]])
+  }
+  cond <- .summarize_vars_mat(x, constant, by)
+  remove <- if (is.null(by)) cond else apply(cond, 1, if (strict) any else all)
+  .inform_filter_result(nrow(x), sum(!remove))
+  x[!remove, , drop = FALSE]
 }

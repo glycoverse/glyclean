@@ -25,3 +25,6 @@ Columns (samples) are clustered using hierarchical clustering.
 plot_missing_heatmap(glyexp::real_experiment)
 
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

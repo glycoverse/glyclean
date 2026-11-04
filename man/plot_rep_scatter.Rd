@@ -36,3 +36,6 @@ colData(exp)$replicate <- replicate
 plot_rep_scatter(exp, rep_col = "replicate", n_pairs = 4)
 
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

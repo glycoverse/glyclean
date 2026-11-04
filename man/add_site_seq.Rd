@@ -38,3 +38,6 @@ This function requires the following columns in the variable information tibble:
 \item "protein_site": The site on the protein sequence.
 }
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

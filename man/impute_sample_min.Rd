@@ -19,3 +19,6 @@ This method assumes that missing values are MCAR,
 i.e. missing values are induced by an ion below the detection limit.
 See also \code{\link[=impute_half_sample_min]{impute_half_sample_min()}}.
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}
