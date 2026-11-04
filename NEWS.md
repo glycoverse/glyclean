@@ -1,5 +1,7 @@
 # glyclean (development version)
 
+* `auto_remove()` preserves the actual filtered rows when feature names are absent or duplicated instead of selecting the original object again by name. Rare-variable filtering ignores unused factor levels so recorded preset steps can be replayed with the original group annotations.
+
 ## Breaking changes
 
 * Preprocessing and QC now honor `raw`, `log`, `log2`, and `log10` metadata, restoring the input scale after processing and preserving original values when filtering. Previously log inputs could be logged again; pipelines replay with the corrected behavior. Preserve the original package environment to reproduce older results, and see `?data_scales` for working domains and `logx` support. (#41)
