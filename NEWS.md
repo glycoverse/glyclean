@@ -22,7 +22,7 @@
 
 ## Minor improvements and bug fixes
 
-* Pipelines recursively freeze callback values in attributes and S4 slots, rejecting hidden mutable references instead of recording histories whose results change when external state is modified.
+* Pipelines recursively freeze callback values in attributes and S4 slots, rejecting hidden mutable references instead of recording histories whose results change when external state is modified. (#46)
 
 * `detect_batch_effect()` now uses the same `log2(raw + 1e-6)` working domain as batch correction, correcting raw-domain ANOVA results; ordinary-scale correction restores the input scale and `logx` correction retains negative coordinates. (#41)
 * `aggregate()` sums known-log input without exponentiating extreme abundances, while custom aggregation functions receive raw values. All-missing sums remain zero (`-Inf` on ordinary log scales). (#41)
