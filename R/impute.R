@@ -1,15 +1,20 @@
 #' Zero Imputation
 #'
 #' Impute missing values in an expression matrix by replacing them with zeros.
+#' Only `glyexp` experiments with `scale = "raw"` are supported.
 #'
 #' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 impute_zero <- function(x) {
   record <- .pipeline_recorder(x)
   record({
+    if (.get_scale(x) != "raw") {
+      cli::cli_abort("impute_zero() only supports scale = 'raw'.")
+    }
     .update_expr_mat(x, .impute_zero)
   })
 }
@@ -26,11 +31,17 @@ impute_zero <- function(x) {
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 impute_sample_min <- function(x) {
   record <- .pipeline_recorder(x)
   record({
-    .update_expr_mat(x, .impute_sample_min)
+    .update_scaled_expr_mat(
+      x,
+      .impute_sample_min,
+      work_scale = "current",
+      allow_logx = TRUE
+    )
   })
 }
 
@@ -46,11 +57,22 @@ impute_sample_min <- function(x) {
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 impute_half_sample_min <- function(x) {
   record <- .pipeline_recorder(x)
   record({
-    .update_expr_mat(x, .impute_half_sample_min)
+    .reject_logx(x)
+    if (.get_scale(x) == "raw") {
+      .update_expr_mat(x, .impute_half_sample_min)
+    } else {
+      .update_scaled_expr_mat(
+        x,
+        .impute_half_sample_min_log,
+        work_scale = "current",
+        .half_log = log(2) / .log_base(.get_scale(x))
+      )
+    }
   })
 }
 
@@ -74,14 +96,24 @@ impute_half_sample_min <- function(x) {
 #' @param ... Additional arguments to pass to `impute::impute.knn()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 impute_sw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
   record <- .pipeline_recorder(x)
   checkmate::assert_int(seed, lower = 0)
   record(withr::with_seed(
     seed,
-    .update_expr_mat(x, .impute_sw_knn, by = by, k = k,
-                     rng.seed = seed, ...)
+    .update_scaled_expr_mat(
+      x,
+      .impute_sw_knn,
+      work_scale = "log2",
+      allow_logx = TRUE,
+      .log_input = TRUE,
+      by = by,
+      k = k,
+      rng.seed = seed,
+      ...
+    )
   ))
 }
 
@@ -102,14 +134,24 @@ impute_sw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
 #' @param ... Additional arguments to pass to `impute::impute.knn()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 impute_fw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
   record <- .pipeline_recorder(x)
   checkmate::assert_int(seed, lower = 0)
   record(withr::with_seed(
     seed,
-    .update_expr_mat(x, .impute_fw_knn, by = by, k = k,
-                     rng.seed = seed, ...)
+    .update_scaled_expr_mat(
+      x,
+      .impute_fw_knn,
+      work_scale = "log2",
+      allow_logx = TRUE,
+      .log_input = TRUE,
+      by = by,
+      k = k,
+      rng.seed = seed,
+      ...
+    )
   ))
 }
 
@@ -133,6 +175,7 @@ impute_fw_knn <- function(x, k = 5, by = NULL, ..., seed = 123) {
 #' @param ... Additional arguments to pass to `pcaMethods::pca()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 impute_bpca <- function(x, by = NULL, ..., seed = 123) {
   record <- .pipeline_recorder(x)
@@ -140,7 +183,15 @@ impute_bpca <- function(x, by = NULL, ..., seed = 123) {
     checkmate::assert_int(seed, lower = 0)
     withr::with_seed(
       seed,
-      .update_expr_mat(x, .impute_bpca, by = by, ...)
+      .update_scaled_expr_mat(
+        x,
+        .impute_bpca,
+        work_scale = "log2",
+        allow_logx = TRUE,
+        .log_input = TRUE,
+        by = by,
+        ...
+      )
     )
   })
 }
@@ -161,6 +212,7 @@ impute_bpca <- function(x, by = NULL, ..., seed = 123) {
 #' @param ... Additional arguments to pass to `pcaMethods::pca()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 impute_ppca <- function(x, by = NULL, ..., seed = 123) {
   record <- .pipeline_recorder(x)
@@ -168,7 +220,15 @@ impute_ppca <- function(x, by = NULL, ..., seed = 123) {
     checkmate::assert_int(seed, lower = 0)
     withr::with_seed(
       seed,
-      .update_expr_mat(x, .impute_ppca, by = by, ...)
+      .update_scaled_expr_mat(
+        x,
+        .impute_ppca,
+        work_scale = "log2",
+        allow_logx = TRUE,
+        .log_input = TRUE,
+        by = by,
+        ...
+      )
     )
   })
 }
@@ -190,6 +250,7 @@ impute_ppca <- function(x, by = NULL, ..., seed = 123) {
 #' @param ... Additional arguments to pass to `pcaMethods::pca()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 impute_svd <- function(x, by = NULL, ..., seed = 123) {
   record <- .pipeline_recorder(x)
@@ -197,7 +258,15 @@ impute_svd <- function(x, by = NULL, ..., seed = 123) {
     checkmate::assert_int(seed, lower = 0)
     withr::with_seed(
       seed,
-      .update_expr_mat(x, .impute_svd, by = by, ...)
+      .update_scaled_expr_mat(
+        x,
+        .impute_svd,
+        work_scale = "log2",
+        allow_logx = TRUE,
+        .log_input = TRUE,
+        by = by,
+        ...
+      )
     )
   })
 }
@@ -223,6 +292,7 @@ impute_svd <- function(x, by = NULL, ..., seed = 123) {
 #'   supported.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 impute_min_prob <- function(
   x,
@@ -237,9 +307,11 @@ impute_min_prob <- function(
     checkmate::assert_int(seed, lower = 0)
     withr::with_seed(
       seed,
-      .update_expr_mat(
+      .update_scaled_expr_mat(
         x,
         .impute_min_prob,
+        work_scale = "log2",
+        .log_input = TRUE,
         by = by,
         q = q,
         tune.sigma = tune.sigma,
@@ -265,6 +337,7 @@ impute_min_prob <- function(
 #' @param ... Additional arguments to pass to `missForest::missForest()`.
 #'
 #' @return A container of the same class as `x`, with missing values imputed.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 impute_miss_forest <- function(x, by = NULL, seed = 123, ...) {
   record <- .pipeline_recorder(x)
@@ -272,9 +345,10 @@ impute_miss_forest <- function(x, by = NULL, seed = 123, ...) {
     checkmate::assert_int(seed, lower = 0)
     withr::with_seed(
       seed,
-      .update_expr_mat(
+      .update_scaled_expr_mat(
         x,
         .impute_miss_forest,
+        allow_logx = TRUE,
         by = by,
         ...
       )
@@ -291,66 +365,80 @@ impute_miss_forest <- function(x, by = NULL, seed = 123, ...) {
 
 
 .impute_sample_min <- function(mat) {
-  apply(mat, 2, function(col) {
-    col[is.na(col)] <- min(col, na.rm = TRUE)
-    col
-  })
+  for (j in seq_len(ncol(mat))) {
+    col <- mat[, j]
+    if (!all(is.na(col))) {
+      col[is.na(col)] <- min(col, na.rm = TRUE)
+    }
+    mat[, j] <- col
+  }
+  mat
 }
-
 
 .impute_half_sample_min <- function(mat) {
-  apply(mat, 2, function(col) {
-    col[is.na(col)] <- min(col, na.rm = TRUE) / 2
-    col
-  })
+  result <- .impute_sample_min(mat)
+  result[is.na(mat)] <- result[is.na(mat)] / 2
+  result
+}
+
+.impute_half_sample_min_log <- function(mat, .half_log = 1) {
+  result <- .impute_sample_min(mat)
+  result[is.na(mat)] <- result[is.na(mat)] - .half_log
+  result
 }
 
 
-.impute_sw_knn <- function(mat, k = 5, ...) {
+.impute_sw_knn <- function(mat, k = 5, ..., .log_input = FALSE) {
   rlang::check_installed("impute", reason = "to use `impute_sw_knn()`")
-  normed <- log2(mat)
+  normed <- if (.log_input) mat else log2(mat)
   normed <- impute::impute.knn(normed, k = k, ...)$data
-  2^normed
+  if (.log_input) normed else 2^normed
 }
 
 
-.impute_fw_knn <- function(mat, k = 5, ...) {
+.impute_fw_knn <- function(mat, k = 5, ..., .log_input = FALSE) {
   rlang::check_installed("impute", reason = "to use `impute_fw_knn()`")
-  normed <- log2(mat)
+  normed <- if (.log_input) mat else log2(mat)
   normed <- t(impute::impute.knn(t(normed), k = k, ...)$data)
-  2^normed
+  if (.log_input) normed else 2^normed
 }
 
 
-.impute_bpca <- function(mat, ...) {
+.impute_bpca <- function(mat, ..., .log_input = FALSE) {
   rlang::check_installed("pcaMethods", reason = "to use `impute_bpca()`")
-  .pca_methods_wrapper(mat, "bpca", ...)
+  .pca_methods_wrapper(mat, "bpca", ..., .log_input = .log_input)
 }
 
 
-.impute_ppca <- function(mat, ...) {
+.impute_ppca <- function(mat, ..., .log_input = FALSE) {
   rlang::check_installed("pcaMethods", reason = "to use `impute_ppca()`")
-  .pca_methods_wrapper(mat, "ppca", ...)
+  .pca_methods_wrapper(mat, "ppca", ..., .log_input = .log_input)
 }
 
 
-.impute_svd <- function(mat, ...) {
+.impute_svd <- function(mat, ..., .log_input = FALSE) {
   rlang::check_installed("pcaMethods", reason = "to use `impute_svd()`")
-  .pca_methods_wrapper(mat, "svdImpute", ...)
+  .pca_methods_wrapper(mat, "svdImpute", ..., .log_input = .log_input)
 }
 
 
-.pca_methods_wrapper <- function(mat, method, ...) {
-  normed <- log2(mat)
+.pca_methods_wrapper <- function(mat, method, ..., .log_input = FALSE) {
+  normed <- if (.log_input) mat else log2(mat)
   normed <- withr::with_output_sink(
     tempfile(),
     pcaMethods::pca(normed, nPcs = 5, method = method, ...)@completeObs
   )
-  2^normed
+  if (.log_input) normed else 2^normed
 }
 
 
-.impute_min_prob <- function(mat, q = 0.01, tune.sigma = 1, ...) {
+.impute_min_prob <- function(
+  mat,
+  q = 0.01,
+  tune.sigma = 1,
+  ...,
+  .log_input = FALSE
+) {
   .check_impute_min_prob_dots(...)
   checkmate::assert_number(q, lower = 0, upper = 1, finite = TRUE)
   checkmate::assert_number(tune.sigma, lower = 0, finite = TRUE)
@@ -359,7 +447,7 @@ impute_miss_forest <- function(x, by = NULL, seed = 123, ...) {
     return(mat)
   }
 
-  normed <- log2(mat)
+  normed <- if (.log_input) mat else log2(mat)
   sample_centers <- .min_prob_sample_centers(normed, q)
   draw_sd <- .min_prob_draw_sd(normed, tune.sigma)
 
@@ -381,7 +469,7 @@ impute_miss_forest <- function(x, by = NULL, seed = 123, ...) {
 
   imputed <- do.call(cbind, imputed_cols)
   dimnames(imputed) <- dimnames(mat)
-  2^imputed
+  if (.log_input) imputed else 2^imputed
 }
 
 

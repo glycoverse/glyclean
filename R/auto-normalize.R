@@ -19,6 +19,7 @@
 #' @examples
 #' library(glyexp)
 #' exp_normed <- auto_normalize(real_experiment)
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 auto_normalize <- function(
   exp,

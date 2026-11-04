@@ -18,6 +18,7 @@
 #'
 #' @returns A [glyexp::GlycoproteomicSE()] object with the new `site_sequence`
 #'   column in its row data.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 #'
 #' @importFrom magrittr %>%
@@ -43,6 +44,7 @@ add_site_seq.glyexp_experiment <- function(
   )
 }
 
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 #' @noRd
 add_site_seq.GlycomicSE <- function(
@@ -60,6 +62,7 @@ add_site_seq.GlycomicSE <- function(
   )
 }
 
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 #' @noRd
 add_site_seq.GlycoproteomicSE <- function(

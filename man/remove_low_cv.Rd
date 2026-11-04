@@ -26,4 +26,6 @@ Default behavior is to remove variables with zero coefficient of variation.
 }
 \seealso{
 \code{\link[=remove_low_var]{remove_low_var()}}
+
+\link{data_scales} for working domains and supported input scales.
 }

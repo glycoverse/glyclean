@@ -40,6 +40,7 @@
 #' pipeline <- glyclean_pipeline(normalize_total_area(), impute_min_prob(seed = 42))
 #' cleaned <- apply_pipeline(glyexp::real_experiment, pipeline)
 #' history <- get_pipeline(cleaned)
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 glyclean_pipeline <- function(...) {
   calls <- rlang::enquos(..., .named = NULL, .ignore_empty = "none")

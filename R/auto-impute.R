@@ -28,6 +28,7 @@
 #' @examples
 #' library(glyexp)
 #' exp_imputed <- auto_impute(real_experiment)
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 auto_impute <- function(
   exp,

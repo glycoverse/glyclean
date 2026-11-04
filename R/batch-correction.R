@@ -8,7 +8,9 @@
 #' @details
 #' This function performs batch effect correction using either the ComBat algorithm
 #' or the limma removeBatchEffect function. It requires batch information provided
-#' via the `batch` parameter. If no batch information is available, the function
+#' via the `batch` parameter. Both detection and correction use
+#' `log2(raw + 1e-6)` for ordinary scales, restoring the original scale after
+#' correction. `logx` is used directly and its negative coordinates are retained. If no batch information is available, the function
 #' will return the original data unchanged.
 #'
 #' If group information is provided via `group`,
@@ -56,6 +58,7 @@
 #' )
 #'
 #' @importFrom utils capture.output
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 correct_batch_effect <- function(
   x,
@@ -68,47 +71,49 @@ correct_batch_effect <- function(
   method <- match.arg(method)
   record <- .pipeline_recorder(x)
   record((function() {
-  .assert_glyclean_container(x)
-  rlang::check_installed("sva", reason = "to use `correct_batch_effect()`")
+    .assert_glyclean_container(x)
+    rlang::check_installed("sva", reason = "to use `correct_batch_effect()`")
 
-  batch_group_info <- .extract_batch_group_from_experiment(
-    x,
-    batch,
-    group,
-    require_batch = TRUE
-  )
-  if (is.null(batch_group_info)) {
-    cli::cli_alert_info(
-      "No batch information found in column '{batch}' of sample_info. Returning original experiment unchanged."
+    batch_group_info <- .extract_batch_group_from_experiment(
+      x,
+      batch,
+      group,
+      require_batch = TRUE
     )
-    return(x)
-  }
+    if (is.null(batch_group_info)) {
+      cli::cli_alert_info(
+        "No batch information found in column '{batch}' of sample_info. Returning original experiment unchanged."
+      )
+      return(x)
+    }
 
-  corrected_expr_mat <- .apply_batch_correction(
-    .get_expr_mat(x),
-    batch_group_info$batch,
-    batch_group_info$group,
-    check_confounding = check_confounding,
-    confounding_threshold = confounding_threshold,
-    method = method
-  )
+    work_mat <- .batch_work_matrix(x)
+    corrected_expr_mat <- .apply_batch_correction(
+      work_mat,
+      batch_group_info$batch,
+      batch_group_info$group,
+      check_confounding = check_confounding,
+      confounding_threshold = confounding_threshold,
+      method = method
+    )
 
-  if (is.null(corrected_expr_mat)) {
-    return(x)
-  }
+    if (
+      is.null(corrected_expr_mat) || identical(corrected_expr_mat, work_mat)
+    ) {
+      return(x)
+    }
 
-  if (!inherits(x, "glyexp_experiment")) {
-    corrected_expr_mat[corrected_expr_mat < 0] <- 0
-  }
+    corrected_expr_mat <- .batch_from_work(corrected_expr_mat, .get_scale(x))
 
-  .rebuild_container(x, expr_mat = corrected_expr_mat)
+    .rebuild_container(x, expr_mat = corrected_expr_mat)
   })())
 }
 
 
 #' Detect batch effect
 #'
-#' Use ANOVA to detect if batch effect is present in the data.
+#' Use ANOVA on `log2(raw + 1e-6)` (or direct `logx` coordinates) to detect
+#' if batch effect is present in the data.
 #' If `group` is provided, a partial F-test compares models with and without
 #' batch after accounting for group. Both models use the same complete samples
 #' for each variable. Non-estimable batch effects return `NA`.
@@ -137,6 +142,7 @@ correct_batch_effect <- function(
 #' colData(exp)$group <- group
 #' p_values <- detect_batch_effect(exp, batch = "batch", group = "group")
 #'
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 detect_batch_effect <- function(x, batch = "batch", group = NULL) {
   .assert_glyclean_container(x)
@@ -152,7 +158,7 @@ detect_batch_effect <- function(x, batch = "batch", group = NULL) {
   }
 
   .perform_batch_effect_detection(
-    .get_expr_mat(x),
+    .batch_work_matrix(x),
     batch_group_info$batch,
     batch_group_info$group
   )
@@ -292,7 +298,7 @@ detect_batch_effect <- function(x, batch = "batch", group = NULL) {
   }
 
   # Log transform
-  log_expr_mat <- log2(expr_mat + 1e-6)
+  log_expr_mat <- expr_mat
 
   # Create model matrix
   if (!is.null(group)) {
@@ -351,8 +357,7 @@ detect_batch_effect <- function(x, batch = "batch", group = NULL) {
     return(expr_mat)
   }
 
-  # Convert back from log space
-  2^corrected_log_expr_mat - 1e-6
+  corrected_log_expr_mat
 }
 
 .perform_batch_effect_detection <- function(expr_mat, batch, group = NULL) {

@@ -33,7 +33,9 @@ aggregate(
 \arguments{
 \item{exp}{A glycomics or glycoproteomics container: a
 \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
-\code{glyexp_experiment} object.}
+\code{glyexp_experiment} object.
+Ordinary scales (\code{raw}, \code{log}, \code{log2}, and \code{log10}) are converted internally
+to raw abundances for aggregation. \code{logx} is rejected.}
 
 \item{to_level}{The aggregation level. If \code{NULL} (the default), glycomics data
 uses "gs" when \code{glycan_structure} is present and "g" otherwise;
@@ -105,4 +107,7 @@ For each "glycoform" (unique combination of "protein", "protein_site", and "glyc
 there should be only one "gene" value, therefore it is kept for "gf" level.
 On the other hand, the "peptide" column is removed for "gf" level,
 as one "glycoform" can contain multiple "peptides".
+}
+\seealso{
+\link{data_scales} for working domains and supported input scales.
 }

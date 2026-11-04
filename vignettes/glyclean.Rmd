@@ -124,6 +124,13 @@ clean_exp <- exp |>
   glyclean::aggregate()
 ```
 
+## Input scales
+
+1. `glyclean` automatically performs the appropriate scale transformations when needed.
+2. The input scale is preserved whenever possible.
+3. See [the scale reference](../reference/data_scales.html) (`?data_scales`)
+   for special cases and supported scales.
+
 ## Step-by-Step Preprocessing
 
 The `auto_xxx()` functions offer a convenient starting point.
@@ -138,7 +145,7 @@ Normalization helps make intensities more comparable across samples.
 | Function | Description | Best For |
 |----------|-------------|----------|
 | `normalize_median()` | Median-based normalization | General use, robust to outliers |
-| `normalize_median_abs()` | Median absolute deviation | When you need extra robustness |
+| `normalize_median_abs()` | Absolute median normalization | When you need extra robustness |
 | `normalize_median_quotient()` | Median quotient method | Glycomics data (compositional) |
 | `normalize_quantile()` | Quantile normalization | When you want identical distributions |
 | `normalize_total_area()` | Total area normalization | Relative abundance data |
@@ -159,7 +166,7 @@ including a grouping that is not stored in the experiment object.
 # Example: Using by parameter with a custom vector
 # Normalize within custom groups (e.g., based on some external criteria)
 custom_groups <- c("A", "A", "B", "B", "C", "C", "A", "A", "B", "B", "C", "C")
-normalized_exp <- normalize_median(exp, by = custom_groups)
+normalized_exp <- normalize_median_quotient(exp, by = custom_groups)
 ```
 
 **Compositional Data: CLR and ALR**
@@ -170,11 +177,11 @@ Instead, compositional data analysis techniques are recommended:
 
 - **`transform_clr()`**: Centered Log-Ratio transformation.
   A robust method for compositional data analysis.
-  The result remains on the `log2`-ratio scale, with experiment metadata `scale = "log2"`.
+  The result remains on the `log2`-ratio scale, with experiment metadata `scale = "logx"`.
 
 - **`transform_alr()`**: Additive Log-Ratio transformation.
   The reference glycan is chosen based on Procrustes correlation to CLR geometry and minimal between-group variance,
-  and the final result remains on the `log2`-ratio scale (`scale = "log2"`).
+  and the final result remains on the `log2`-ratio scale (`scale = "logx"`).
   If no suitable reference is found, ALR falls back to CLR.
 
 The CLR and ALR methods align with the best practices described in DOI: 10.1038/s41467-025-56249-3 for glycomics data preprocessing.
@@ -310,11 +317,11 @@ It accepts both column names from the sample metadata and vectors.
 
 ```{r eval=FALSE}
 # Using column names (standard approach)
-normalized_exp <- normalize_median(exp, by = "group")
+normalized_exp <- normalize_median_quotient(exp, by = "group")
 
 # Using custom vectors (advanced approach)
 custom_groups <- c("A", "A", "B", "B", "C", "C", "A", "A", "B", "B", "C", "C")
-normalized_exp <- normalize_median(exp, by = custom_groups)
+normalized_exp <- normalize_median_quotient(exp, by = custom_groups)
 ```
 
 This also lets you use groupings that are not stored in the experiment object.

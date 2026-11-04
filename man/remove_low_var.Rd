@@ -27,4 +27,6 @@ Default behavior is to remove variables with zero variance.
 }
 \seealso{
 \code{\link[=remove_low_cv]{remove_low_cv()}}, \code{\link[=remove_constant]{remove_constant()}}
+
+\link{data_scales} for working domains and supported input scales.
 }

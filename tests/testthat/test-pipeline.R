@@ -459,7 +459,7 @@ test_that("tidy injection keeps keyword-only argument validation", {
 test_that("tidy capture evaluates parameters once without running processing", {
   parameter_evaluations <- 0L
   processing_calls <- 0L
-  local_mocked_bindings(.update_expr_mat = function(x, ...) {
+  local_mocked_bindings(.update_scaled_expr_mat = function(x, ...) {
     processing_calls <<- processing_calls + 1L
     x
   })

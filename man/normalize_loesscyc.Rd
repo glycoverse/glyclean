@@ -27,3 +27,6 @@ Each pair of columns is normalized mutually to each other.
 See \href{https://doi.org/10.1093/bib/bbw095}{this paper} for more information.
 Also see \code{\link[limma:normalizeCyclicLoess]{limma::normalizeCyclicLoess()}}.
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

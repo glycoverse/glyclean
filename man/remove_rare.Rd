@@ -70,3 +70,6 @@ assay(remove_rare(exp, prop = 0))
 assay(remove_rare(exp, min_n = 4))
 
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

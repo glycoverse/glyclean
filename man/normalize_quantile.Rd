@@ -28,3 +28,6 @@ Proteomics data rarely uses this method, but it is common in microarray data.
 See \href{https://en.wikipedia.org/wiki/Quantile_normalization}{wikipedia}
 for more information.
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

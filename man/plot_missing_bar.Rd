@@ -24,3 +24,6 @@ Items are ordered from low to high missing proportion.
 plot_missing_bar(glyexp::real_experiment)
 
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

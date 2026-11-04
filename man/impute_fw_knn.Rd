@@ -28,3 +28,6 @@ A wrapper around the \code{\link[impute:impute.knn]{impute::impute.knn()}}.
 Impute missing values with values from the k-nearest neighbors of the
 corresponding feature.
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

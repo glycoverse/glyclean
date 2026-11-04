@@ -15,8 +15,9 @@ zero_to_na(x)
 A container of the same class as \code{x}, with zeros replaced by \code{NA}.
 }
 \description{
-Replace exact zeros (including negative zero) in the abundance assay with
-\code{NA}. Nonzero values and existing missing values are unchanged. This is an
+Replace exact zeros (including negative zero) on \code{raw}, or \code{-Inf} on
+ordinary log scales, with \code{NA}. Finite coordinate zero on log scales is
+preserved. \code{logx} is rejected. Other values and existing missing values are unchanged. This is an
 explicit preprocessing step: use it only when zeros represent missing
 measurements, before choosing an appropriate imputation method.
 }
@@ -29,4 +30,6 @@ memory use substantially.
 }
 \seealso{
 \code{\link[=impute_zero]{impute_zero()}}, \code{\link[=glyclean_pipeline]{glyclean_pipeline()}}, \code{\link[=get_pipeline]{get_pipeline()}}
+
+\link{data_scales} for working domains and supported input scales.
 }

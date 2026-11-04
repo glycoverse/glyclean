@@ -26,3 +26,6 @@ plot_int_boxplot(glyexp::real_experiment)
 plot_int_boxplot(glyexp::real_experiment, by = "group")
 
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

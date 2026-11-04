@@ -28,3 +28,6 @@ abundance values. The underlying assumption is that the diﬀerent intensities
 observed across individuals are imputable to diﬀerent amounts of the biological
 material in the collected samples.
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

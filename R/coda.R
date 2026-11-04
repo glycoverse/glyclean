@@ -3,7 +3,7 @@
 #' This function implements a glycoWork-compatible CLR preprocessing strategy.
 #' Data are transformed on the `log2` scale following
 #' `glycowork::clr_transformation()`. The log-ratio coordinates are returned
-#' directly, with the experiment's `scale` metadata set to `"log2"`.
+#' directly, with the experiment's `scale` metadata set to `"logx"`.
 #'
 #' @details
 #' # Algorithmic details
@@ -22,9 +22,12 @@
 #'
 #' # Input requirements
 #'
-#' CoDA requires finite, strictly positive abundances. Missing values, zeros,
-#' and negative values are rejected; no pseudo-count or automatic imputation
-#' is applied. If zeros represent missing observations, first call
+#' CoDA accepts `raw`, `log`, `log2`, and `log10` inputs, and rejects `logx`.
+#' On raw input, abundances must be finite and strictly positive. On ordinary
+#' log input, finite zero and negative coordinates are valid; `-Inf` represents
+#' zero abundance and is rejected. Missing values and other non-finite values
+#' are rejected on all input scales; no pseudo-count or automatic imputation
+#' is applied. If zero abundances represent missing observations, first call
 #' [zero_to_na()], then use an appropriate imputation function to obtain
 #' positive values. Choose the imputation method for your data; [impute_zero()]
 #' is not suitable before CoDA. Entirely missing features or samples may need
@@ -87,13 +90,14 @@
 #'
 #' @return A container of the same class as `x`, with a transformed expression
 #'   matrix.
-#'   The returned values are `log2`-ratio coordinates, with `scale = "log2"`
+#'   The returned values are `log2`-ratio coordinates, with `scale = "logx"`
 #'   in metadata. Other metadata are preserved, apart from pipeline recording.
 #' @examples
 #' x <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
 #' x <- impute_half_sample_min(zero_to_na(x[seq_len(6), ]))
 #' result <- transform_clr(x, gamma = 0)
 #' get_pipeline(result)
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 transform_clr <- function(
   x,
@@ -123,7 +127,7 @@ transform_clr <- function(
 #' This function implements a glycoWork-compatible ALR preprocessing strategy.
 #' Internally, the data are transformed relative to an automatically selected
 #' reference glycan using glycoWork-style ALR logic. The `log2`-ratio
-#' coordinates are returned directly, with `scale = "log2"` in metadata.
+#' coordinates are returned directly, with `scale = "logx"` in metadata.
 #'
 #' @inheritSection transform_clr Algorithmic details
 #' @inheritSection transform_clr Input requirements
@@ -136,9 +140,11 @@ transform_clr <- function(
 #'   expression matrix.
 #'   When ALR succeeds, the reference glycan is excluded from the result and the
 #'   output therefore has one fewer row. CLR fallback keeps the original
-#'   dimensions. Glycoproteomics input is not supported. The
-#'   returned values are `log2`-ratio coordinates, corresponding to
+#'   dimensions. Fallback records CLR and starts from the supplied seed, so its
+#'   random stream is independent of reference assessment. Glycoproteomics input is not supported. The
+#'   returned values are `log2`-ratio coordinates with `scale = "logx"`, corresponding to
 #'   `log2(x / x_ref)` when `gamma = 0` and no informed scales are supplied.
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 transform_alr <- function(
   x,
@@ -148,19 +154,30 @@ transform_alr <- function(
   seed = 123
 ) {
   record <- .pipeline_recorder(x)
-  record({
-    checkmate::assert_int(seed, lower = 0)
-    withr::with_seed(
-      seed,
-      .transform_alr_exp(
-        x,
-        by = by,
-        gamma = gamma,
-        group_scales = group_scales
-      )
+  checkmate::assert_int(seed, lower = 0)
+  result <- withr::with_seed(
+    seed,
+    .transform_alr_exp(
+      x,
+      by = by,
+      gamma = gamma,
+      group_scales = group_scales
     )
-  })
+  )
+  if (nrow(.get_expr_mat(result)) == nrow(.get_expr_mat(x))) {
+    # Reference assessment is not a processing step. Restart from the supplied
+    # seed so recording CLR alone faithfully reproduces the actual fallback.
+    return(transform_clr(
+      x,
+      by = by,
+      gamma = gamma,
+      group_scales = group_scales,
+      seed = seed
+    ))
+  }
+  record(result)
 }
+
 
 #' Validate compositional inputs used by CLR and ALR
 #'
@@ -263,7 +280,9 @@ transform_alr <- function(
 
   checkmate::assert_numeric(group_scales, any.missing = FALSE)
   if (any(!is.finite(group_scales) | group_scales <= 0)) {
-    cli::cli_abort("{.arg group_scales} must contain only finite, strictly positive values.")
+    cli::cli_abort(
+      "{.arg group_scales} must contain only finite, strictly positive values."
+    )
   }
 
   if (is.null(by_values)) {
@@ -307,7 +326,9 @@ transform_alr <- function(
 
     ratio <- unname(scale_map[unique_groups[2]] / scale_map[unique_groups[1]])
     if (!is.finite(ratio) || ratio <= 0) {
-      cli::cli_abort("The ratio derived from {.arg group_scales} must be finite and strictly positive.")
+      cli::cli_abort(
+        "The ratio derived from {.arg group_scales} must be finite and strictly positive."
+      )
     }
     return(list(type = "numeric", value = ratio))
   }
@@ -383,12 +404,13 @@ transform_alr <- function(
   mat,
   by_values = NULL,
   gamma = 0.1,
-  group_scales = NULL
+  group_scales = NULL,
+  .log_input = FALSE
 ) {
   groups <- .resolve_coda_groups(by_values, ncol(mat))
   custom_scale <- .resolve_custom_scale(by_values, group_scales)
-  geometric_mean <- .column_geometric_mean(mat)
-  log_mat <- log2(mat)
+  log_mat <- if (.log_input) mat else log2(mat)
+  log_geometric_mean <- colMeans(log_mat)
   clr_adjusted <- matrix(0, nrow = nrow(mat), ncol = ncol(mat))
 
   if (gamma > 0 && custom_scale$type != "dict") {
@@ -398,7 +420,7 @@ transform_alr <- function(
     } else {
       group1_idx
     }
-    geometric_mean <- -log2(geometric_mean)
+    geometric_mean <- -log_geometric_mean
 
     if (length(groups$group2_idx) > 0) {
       if (custom_scale$type == "numeric") {
@@ -456,7 +478,7 @@ transform_alr <- function(
         )
     }
   } else {
-    clr_adjusted <- sweep(log_mat, 2, log2(geometric_mean), "-")
+    clr_adjusted <- sweep(log_mat, 2, log_geometric_mean, "-")
   }
 
   colnames(clr_adjusted) <- colnames(mat)
@@ -478,9 +500,14 @@ transform_alr <- function(
   mat,
   by = NULL,
   gamma = 0.1,
-  group_scales = NULL
+  group_scales = NULL,
+  .log_input = FALSE
 ) {
-  .validate_coda_input(mat, "CLR")
+  if (.log_input) {
+    .assert_finite_coda_log(mat)
+  } else {
+    .validate_coda_input(mat, "CLR")
+  }
   checkmate::assert_number(gamma, lower = 0, finite = TRUE)
 
   by_values <- .resolve_column_param(
@@ -491,6 +518,7 @@ transform_alr <- function(
     allow_null = TRUE
   )
   result <- .glycowork_clr_log(
+    .log_input = .log_input,
     mat,
     by_values = by_values,
     gamma = gamma,
@@ -518,6 +546,7 @@ transform_alr <- function(
   group_scales = NULL
 ) {
   .assert_glyclean_container(exp)
+  .reject_logx(exp)
 
   if (identical(.get_exp_type(exp), "glycoproteomics")) {
     return(.transform_clr_sites(
@@ -528,7 +557,7 @@ transform_alr <- function(
     ))
   }
 
-  expr_mat <- .get_expr_mat(exp)
+  expr_mat <- .coda_log_matrix(exp)
   sample_info <- .get_sample_info(exp)
 
   by_values <- .resolve_column_param(
@@ -540,13 +569,14 @@ transform_alr <- function(
   )
 
   transformed <- .transform_clr_mat(
+    .log_input = TRUE,
     expr_mat,
     by = by_values,
     gamma = gamma,
     group_scales = group_scales
   )
   metadata <- .get_container_metadata(exp)
-  metadata$scale <- "log2"
+  metadata$scale <- "logx"
   .rebuild_container(exp, expr_mat = transformed, metadata = metadata)
 }
 
@@ -558,8 +588,12 @@ transform_alr <- function(
 #' @return A non-negative scalar variance.
 #' @keywords internal
 #' @noRd
-.between_group_variance <- function(values, by_values = NULL) {
-  log_values <- log2(values)
+.between_group_variance <- function(
+  values,
+  by_values = NULL,
+  .log_input = FALSE
+) {
+  log_values <- if (.log_input) values else log2(values)
   groups <- .resolve_coda_groups(by_values, length(values))
 
   if (length(groups$group2_idx) > 0) {
@@ -585,11 +619,12 @@ transform_alr <- function(
   ref_idx,
   by_values = NULL,
   gamma = 0.1,
-  group_scales = NULL
+  group_scales = NULL,
+  .log_input = FALSE
 ) {
   groups <- .resolve_coda_groups(by_values, ncol(mat))
   custom_scale <- .resolve_custom_scale(by_values, group_scales)
-  log_mat <- log2(mat)
+  log_mat <- if (.log_input) mat else log2(mat)
   ref_log <- log_mat[ref_idx, , drop = TRUE]
   result <- matrix(0, nrow = nrow(mat), ncol = ncol(mat))
   group1_idx <- groups$group1_idx
@@ -717,8 +752,12 @@ transform_alr <- function(
 #' @return A list describing the best reference candidate.
 #' @keywords internal
 #' @noRd
-.select_alr_reference <- function(mat, by_values = NULL) {
-  candidate_idx <- which(rowSums(mat <= 0, na.rm = TRUE) == 0)
+.select_alr_reference <- function(mat, by_values = NULL, .log_input = FALSE) {
+  candidate_idx <- if (.log_input) {
+    seq_len(nrow(mat))
+  } else {
+    which(rowSums(mat <= 0, na.rm = TRUE) == 0)
+  }
 
   if (length(candidate_idx) < 2) {
     return(NULL)
@@ -726,6 +765,7 @@ transform_alr <- function(
 
   scoring_mat <- mat[candidate_idx, , drop = FALSE]
   clr_mat <- .glycowork_clr_log(
+    .log_input = .log_input,
     scoring_mat,
     by_values = by_values,
     gamma = 0.01
@@ -735,13 +775,18 @@ transform_alr <- function(
     seq_len(nrow(scoring_mat)),
     function(idx) {
       alr_mat <- .apply_alr_reference(
+        .log_input = .log_input,
         scoring_mat,
         idx,
         by_values = by_values,
         gamma = 0.01
       )
       proc_corr <- .procrustes_correlation(clr_mat, alr_mat)
-      ref_var <- .between_group_variance(scoring_mat[idx, ], by_values)
+      ref_var <- .between_group_variance(
+        scoring_mat[idx, ],
+        by_values,
+        .log_input = .log_input
+      )
 
       list(
         ref_idx = candidate_idx[idx],
@@ -754,6 +799,9 @@ transform_alr <- function(
   )
 
   scores <- purrr::map_dbl(stats_list, "score")
+  if (all(is.na(scores))) {
+    return(NULL)
+  }
   stats_list[[which.max(scores)]]
 }
 
@@ -771,9 +819,14 @@ transform_alr <- function(
   mat,
   by = NULL,
   gamma = 0.1,
-  group_scales = NULL
+  group_scales = NULL,
+  .log_input = FALSE
 ) {
-  .validate_coda_input(mat, "ALR")
+  if (.log_input) {
+    .assert_finite_coda_log(mat)
+  } else {
+    .validate_coda_input(mat, "ALR")
+  }
   checkmate::assert_number(gamma, lower = 0, finite = TRUE)
 
   by_values <- .resolve_column_param(
@@ -784,12 +837,17 @@ transform_alr <- function(
     allow_null = TRUE
   )
 
-  ref_stats <- .select_alr_reference(mat, by_values = by_values)
+  ref_stats <- .select_alr_reference(
+    mat,
+    by_values = by_values,
+    .log_input = .log_input
+  )
   if (is.null(ref_stats)) {
     cli::cli_warn(
       "ALR requires at least two glycans with positive values in every sample; falling back to CLR."
     )
     return(.transform_clr_mat(
+      .log_input = .log_input,
       mat,
       by = by_values,
       gamma = gamma,
@@ -803,6 +861,7 @@ transform_alr <- function(
       "i" = "Procrustes correlation = {.val {signif(ref_stats$procrustes, 4)}}, between-group variance = {.val {signif(ref_stats$variance, 4)}}."
     ))
     return(.transform_clr_mat(
+      .log_input = .log_input,
       mat,
       by = by_values,
       gamma = gamma,
@@ -811,6 +870,7 @@ transform_alr <- function(
   }
 
   .apply_alr_reference(
+    .log_input = .log_input,
     mat,
     ref_stats$ref_idx,
     by_values = by_values,
@@ -836,6 +896,7 @@ transform_alr <- function(
   group_scales = NULL
 ) {
   .assert_glyclean_container(exp)
+  .reject_logx(exp)
 
   if (identical(.get_exp_type(exp), "glycoproteomics")) {
     cli::cli_abort(c(
@@ -844,7 +905,7 @@ transform_alr <- function(
     ))
   }
 
-  expr_mat <- .get_expr_mat(exp)
+  expr_mat <- .coda_log_matrix(exp)
   sample_info <- .get_sample_info(exp)
 
   by_values <- .resolve_column_param(
@@ -858,6 +919,7 @@ transform_alr <- function(
   original_rows <- rownames(expr_mat)
   transformed <- .transform_alr_mat(
     expr_mat,
+    .log_input = TRUE,
     by = by_values,
     gamma = gamma,
     group_scales = group_scales
@@ -870,7 +932,7 @@ transform_alr <- function(
   }
 
   metadata <- .get_container_metadata(exp)
-  metadata$scale <- "log2"
+  metadata$scale <- "logx"
   .rebuild_container(
     exp,
     expr_mat = transformed,
@@ -891,7 +953,7 @@ transform_alr <- function(
   gamma = 0.1,
   group_scales = NULL
 ) {
-  expr_mat <- .get_expr_mat(exp)
+  expr_mat <- .coda_log_matrix(exp)
   var_info <- .get_var_info(exp)
   site_cols <- c("protein", "protein_site")
   if (!all(site_cols %in% names(var_info))) {
@@ -909,7 +971,7 @@ transform_alr <- function(
     )
   }
 
-  .validate_coda_input(expr_mat, "CLR")
+  .assert_finite_coda_log(expr_mat)
   checkmate::assert_number(gamma, lower = 0, finite = TRUE)
   by_values <- .resolve_column_param(
     by,
@@ -931,6 +993,7 @@ transform_alr <- function(
     idx <- site_rows[[i]]
     site_mat <- expr_mat[idx, , drop = FALSE]
     result <- .transform_clr_mat(
+      .log_input = TRUE,
       site_mat,
       by = by_values,
       gamma = gamma,
@@ -940,10 +1003,31 @@ transform_alr <- function(
   }
 
   metadata <- .get_container_metadata(exp)
-  metadata$scale <- "log2"
+  metadata$scale <- "logx"
   .rebuild_container(
     exp,
     expr_mat = transformed,
     metadata = metadata
   )
+}
+
+.assert_finite_coda_log <- function(mat) {
+  if (anyNA(mat) || any(!is.finite(mat))) {
+    cli::cli_abort(c(
+      "CoDA requires finite log abundances with no missing values.",
+      "i" = "Use zero_to_na() for zero abundances (-Inf on ordinary log scales), then impute or filter missing values before CoDA."
+    ))
+  }
+  invisible(mat)
+}
+
+.coda_log_matrix <- function(x) {
+  .reject_logx(x)
+  mat <- .get_expr_mat(x)
+  if (.get_scale(x) == "raw") {
+    .validate_coda_input(mat, "CoDA")
+  }
+  result <- .to_work_scale(mat, .get_scale(x), "log2")
+  .assert_finite_coda_log(result)
+  result
 }

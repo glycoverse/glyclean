@@ -60,3 +60,6 @@ pipeline <- glyclean_pipeline(normalize_total_area(), impute_min_prob(seed = 42)
 cleaned <- apply_pipeline(glyexp::real_experiment, pipeline)
 history <- get_pipeline(cleaned)
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

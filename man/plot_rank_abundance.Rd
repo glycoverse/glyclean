@@ -21,3 +21,6 @@ Proteins are ordered from high to low mean intensity along the x-axis.
 plot_rank_abundance(glyexp::real_experiment)
 
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

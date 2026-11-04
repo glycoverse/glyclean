@@ -21,3 +21,6 @@ ordered from high to low TIC from left to right.
 plot_tic_bar(glyexp::real_experiment)
 
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

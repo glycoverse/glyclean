@@ -28,6 +28,7 @@
 #' aggregate(exp)
 #'
 #' @keywords internal
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 auto_aggregate <- function(exp, standardize_variable = TRUE, seed = 123) {
   lifecycle::deprecate_warn("0.16.0", "auto_aggregate()", "aggregate()")

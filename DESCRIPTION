@@ -71,4 +71,4 @@ Depends:
     R (>= 4.1)
 VignetteBuilder: knitr
 Remotes:
-    glycoverse/glyexp@9ebee140cd471bcfced422aff48173dd61849a42
+    glycoverse/glyexp@4832078727e41de7de99c15ccf4f5c99b2d8162b

@@ -14,6 +14,7 @@
 #' @examples
 #' plot_missing_heatmap(glyexp::real_experiment)
 #'
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 plot_missing_heatmap <- function(exp, ...) {
   .assert_glyclean_container(exp)
@@ -63,6 +64,7 @@ plot_missing_heatmap <- function(exp, ...) {
 #' @examples
 #' plot_missing_bar(glyexp::real_experiment)
 #'
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 plot_missing_bar <- function(exp, on = "sample") {
   .assert_glyclean_container(exp)
@@ -109,11 +111,12 @@ plot_missing_bar <- function(exp, on = "sample") {
 #' @examples
 #' plot_tic_bar(glyexp::real_experiment)
 #'
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 plot_tic_bar <- function(exp) {
   .assert_glyclean_container(exp)
 
-  mat <- .get_expr_mat(exp)
+  mat <- .work_matrix(exp, "raw")
   sample_names <- .get_sample_names(mat)
 
   tic <- colSums(mat, na.rm = TRUE)
@@ -144,13 +147,14 @@ plot_tic_bar <- function(exp) {
 #' @examples
 #' plot_rank_abundance(glyexp::real_experiment)
 #'
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 plot_rank_abundance <- function(exp) {
   .assert_glyclean_container(exp)
 
   mat <- .get_expr_mat(exp)
   var_info <- .get_var_info(exp)
-  log_mat <- .log2_matrix(mat)
+  log_mat <- .qc_log_matrix(exp, allow_logx = FALSE)
   var_names <- .get_var_names(mat)
 
   protein_names <- if ("protein" %in% colnames(var_info)) {
@@ -212,13 +216,14 @@ plot_rank_abundance <- function(exp) {
 #' plot_int_boxplot(glyexp::real_experiment)
 #' plot_int_boxplot(glyexp::real_experiment, by = "group")
 #'
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 plot_int_boxplot <- function(exp, by = NULL) {
   .assert_glyclean_container(exp)
 
   mat <- .get_expr_mat(exp)
   sample_names <- .get_sample_names(mat)
-  log_mat <- .log2_matrix(mat, sample_names = sample_names)
+  log_mat <- .qc_log_matrix(exp, sample_names = sample_names)
 
   by_values <- .resolve_column_param(
     by,
@@ -245,7 +250,7 @@ plot_int_boxplot <- function(exp, by = NULL) {
     plot <- plot + ggplot2::geom_boxplot()
   }
 
-  plot + ggplot2::labs(x = "Sample", y = "Log2 intensity")
+  plot + ggplot2::labs(x = "Sample", y = .qc_log_label(exp))
 }
 
 #' Plot Relative Log Expression (RLE) Boxplots
@@ -265,13 +270,14 @@ plot_int_boxplot <- function(exp, by = NULL) {
 #' plot_rle(glyexp::real_experiment)
 #' plot_rle(glyexp::real_experiment, by = "group")
 #'
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 plot_rle <- function(exp, by = NULL) {
   .assert_glyclean_container(exp)
 
   mat <- .get_expr_mat(exp)
   sample_names <- .get_sample_names(mat)
-  log_mat <- .log2_matrix(mat, sample_names = sample_names)
+  log_mat <- .qc_log_matrix(exp, sample_names = sample_names)
   row_medians <- matrixStats::rowMedians(log_mat, na.rm = TRUE)
   rle_mat <- sweep(log_mat, 1, row_medians, "-")
 
@@ -300,7 +306,15 @@ plot_rle <- function(exp, by = NULL) {
     plot <- plot + ggplot2::geom_boxplot()
   }
 
-  plot + ggplot2::labs(x = "Sample", y = "Relative log expression")
+  plot +
+    ggplot2::labs(
+      x = "Sample",
+      y = if (.get_scale(exp) == "logx") {
+        "Relative log-like coordinate"
+      } else {
+        "Relative log expression"
+      }
+    )
 }
 
 #' Plot CV Density
@@ -326,11 +340,12 @@ plot_rle <- function(exp, by = NULL) {
 #' colData(exp)$group <- group
 #' plot_cv_dent(exp, by = "group")
 #'
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 plot_cv_dent <- function(exp, by = NULL) {
   .assert_glyclean_container(exp)
 
-  mat <- .get_expr_mat(exp)
+  mat <- .work_matrix(exp, "raw")
   var_names <- .get_var_names(mat)
 
   by_values <- .resolve_column_param(
@@ -401,6 +416,7 @@ plot_cv_dent <- function(exp, by = NULL) {
 #' colData(exp)$batch <- batch
 #' plot_batch_pca(exp, batch_col = "batch")
 #'
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 plot_batch_pca <- function(exp, batch_col = "batch") {
   .assert_glyclean_container(exp)
@@ -426,8 +442,7 @@ plot_batch_pca <- function(exp, batch_col = "batch") {
     factor(as.character(batch_values))
   }
 
-  log_mat <- log2(mat)
-  log_mat[!is.finite(log_mat)] <- NA_real_
+  log_mat <- .qc_log_matrix(exp)
   complete_rows <- stats::complete.cases(log_mat)
   if (!any(complete_rows)) {
     cli::cli_abort(
@@ -487,6 +502,7 @@ plot_batch_pca <- function(exp, batch_col = "batch") {
 #' colData(exp)$replicate <- replicate
 #' plot_rep_scatter(exp, rep_col = "replicate", n_pairs = 4)
 #'
+#' @seealso [data_scales] for working domains and supported input scales.
 #' @export
 plot_rep_scatter <- function(exp, rep_col, n_pairs = 9, seed = 123) {
   .assert_glyclean_container(exp)
@@ -546,7 +562,7 @@ plot_rep_scatter <- function(exp, rep_col, n_pairs = 9, seed = 123) {
     pairs[sample.int(length(pairs), size = n_pairs)]
   )
 
-  log_mat <- .log2_matrix(mat, sample_names = sample_names)
+  log_mat <- .qc_log_matrix(exp, sample_names = sample_names)
 
   plots <- purrr::map(selected_pairs, function(pair) {
     plot_data <- tibble::tibble(
@@ -575,8 +591,8 @@ plot_rep_scatter <- function(exp, rep_col, n_pairs = 9, seed = 123) {
     ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$x, y = .data$y)) +
       ggplot2::geom_point(alpha = 0.7) +
       ggplot2::labs(
-        x = paste0(pair[1], " log2 intensity"),
-        y = paste0(pair[2], " log2 intensity"),
+        x = paste(pair[1], tolower(.qc_log_label(exp))),
+        y = paste(pair[2], tolower(.qc_log_label(exp))),
         title = paste(pair[1], "vs", pair[2]),
         subtitle = subtitle
       )

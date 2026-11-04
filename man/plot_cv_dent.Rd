@@ -32,3 +32,6 @@ colData(exp)$group <- group
 plot_cv_dent(exp, by = "group")
 
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

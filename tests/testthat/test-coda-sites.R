@@ -53,7 +53,7 @@ test_that("CLR centers by both protein and site while preserving row order", {
     SummarizedExperiment::colData(x)
   )
   meta <- S4Vectors::metadata(result)
-  expect_identical(meta$scale, "log2")
+  expect_identical(meta$scale, "logx")
   expect_identical(meta$custom, "preserved")
   expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
                      names(meta)))
@@ -113,7 +113,7 @@ test_that("auto_coda uses CLR at every site regardless of the 50-feature boundar
   expect_identical(rownames(result), rownames(x))
   expect_identical(result, transform_clr(x, by = "group", gamma = 0))
   meta <- S4Vectors::metadata(result)
-  expect_identical(meta$scale, "log2")
+  expect_identical(meta$scale, "logx")
   expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
                      names(meta)))
   expect_identical(apply_pipeline(x, get_pipeline(result)), result)

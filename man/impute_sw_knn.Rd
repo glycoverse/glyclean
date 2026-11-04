@@ -31,3 +31,6 @@ If there are strong patterns among the samples (such as group clustering
 relationships or experimental conditions), this method can better utilize
 the overall relationships among samples.
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

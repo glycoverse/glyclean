@@ -30,7 +30,7 @@ The input container with a CoDA-transformed expression matrix and
 its class preserved. Glycoproteomics always uses site-wise CLR and retains
 all rows. Other supported containers use ALR if there are more than 50
 variables, or CLR otherwise. Values remain on the \code{log2}-ratio scale,
-with \code{scale = "log2"} in metadata.
+with \code{scale = "logx"} in metadata.
 }
 \description{
 For glycoproteomics, always call \code{\link[=transform_clr]{transform_clr()}} to transform each protein
@@ -53,9 +53,12 @@ positive scale per group; these scales are used only in the stochastic branch.
 }
 
 \section{Input requirements}{
-CoDA requires finite, strictly positive abundances. Missing values, zeros,
-and negative values are rejected; no pseudo-count or automatic imputation
-is applied. If zeros represent missing observations, first call
+CoDA accepts \code{raw}, \code{log}, \code{log2}, and \code{log10} inputs, and rejects \code{logx}.
+On raw input, abundances must be finite and strictly positive. On ordinary
+log input, finite zero and negative coordinates are valid; \code{-Inf} represents
+zero abundance and is rejected. Missing values and other non-finite values
+are rejected on all input scales; no pseudo-count or automatic imputation
+is applied. If zero abundances represent missing observations, first call
 \code{\link[=zero_to_na]{zero_to_na()}}, then use an appropriate imputation function to obtain
 positive values. Choose the imputation method for your data; \code{\link[=impute_zero]{impute_zero()}}
 is not suitable before CoDA. Entirely missing features or samples may need
@@ -107,3 +110,6 @@ In another words, the recommended workflow is:
 }\if{html}{\out{</div>}}
 }
 
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

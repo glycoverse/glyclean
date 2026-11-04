@@ -22,3 +22,6 @@ It removes the bias introduced by total glycan abundance.
 However, it results in compositional data, which may result in unrealistic
 downstream analysis results.
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

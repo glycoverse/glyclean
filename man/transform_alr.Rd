@@ -30,15 +30,16 @@ A container of the same class as \code{x}, with an ALR-transformed
 expression matrix.
 When ALR succeeds, the reference glycan is excluded from the result and the
 output therefore has one fewer row. CLR fallback keeps the original
-dimensions. Glycoproteomics input is not supported. The
-returned values are \code{log2}-ratio coordinates, corresponding to
+dimensions. Fallback records CLR and starts from the supplied seed, so its
+random stream is independent of reference assessment. Glycoproteomics input is not supported. The
+returned values are \code{log2}-ratio coordinates with \code{scale = "logx"}, corresponding to
 \code{log2(x / x_ref)} when \code{gamma = 0} and no informed scales are supplied.
 }
 \description{
 This function implements a glycoWork-compatible ALR preprocessing strategy.
 Internally, the data are transformed relative to an automatically selected
 reference glycan using glycoWork-style ALR logic. The \code{log2}-ratio
-coordinates are returned directly, with \code{scale = "log2"} in metadata.
+coordinates are returned directly, with \code{scale = "logx"} in metadata.
 }
 \section{Algorithmic details}{
 The stochastic branch follows \code{glycowork}: when \code{gamma > 0}, CLR noise is
@@ -55,9 +56,12 @@ positive scale per group; these scales are used only in the stochastic branch.
 }
 
 \section{Input requirements}{
-CoDA requires finite, strictly positive abundances. Missing values, zeros,
-and negative values are rejected; no pseudo-count or automatic imputation
-is applied. If zeros represent missing observations, first call
+CoDA accepts \code{raw}, \code{log}, \code{log2}, and \code{log10} inputs, and rejects \code{logx}.
+On raw input, abundances must be finite and strictly positive. On ordinary
+log input, finite zero and negative coordinates are valid; \code{-Inf} represents
+zero abundance and is rejected. Missing values and other non-finite values
+are rejected on all input scales; no pseudo-count or automatic imputation
+is applied. If zero abundances represent missing observations, first call
 \code{\link[=zero_to_na]{zero_to_na()}}, then use an appropriate imputation function to obtain
 positive values. Choose the imputation method for your data; \code{\link[=impute_zero]{impute_zero()}}
 is not suitable before CoDA. Entirely missing features or samples may need
@@ -109,3 +113,6 @@ In another words, the recommended workflow is:
 }\if{html}{\out{</div>}}
 }
 
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}

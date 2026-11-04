@@ -84,7 +84,7 @@
     samples_grouped <- split(samples, by_values)
     mats_grouped <- purrr::map(samples_grouped, ~ mat[, .x, drop = FALSE])
     new_mats_grouped <- purrr::map(mats_grouped, matrix_func, ...)
-    result_mat <- do.call(cbind, new_mats_grouped)[, samples]
+    result_mat <- do.call(cbind, new_mats_grouped)[, samples, drop = FALSE]
     return(result_mat)
   }
 }

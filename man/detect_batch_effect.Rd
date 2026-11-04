@@ -24,7 +24,8 @@ A double vector of p-values for each variable, with the same length
 as \code{nrow(x)}.
 }
 \description{
-Use ANOVA to detect if batch effect is present in the data.
+Use ANOVA on \code{log2(raw + 1e-6)} (or direct \code{logx} coordinates) to detect
+if batch effect is present in the data.
 If \code{group} is provided, a partial F-test compares models with and without
 batch after accounting for group. Both models use the same complete samples
 for each variable. Non-estimable batch effects return \code{NA}.
@@ -40,4 +41,7 @@ colData(exp)$batch <- batch
 colData(exp)$group <- group
 p_values <- detect_batch_effect(exp, batch = "batch", group = "group")
 
+}
+\seealso{
+\link{data_scales} for working domains and supported input scales.
 }

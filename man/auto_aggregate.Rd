@@ -39,4 +39,7 @@ exp <- real_experiment
 aggregate(exp)
 
 }
+\seealso{
+\link{data_scales} for working domains and supported input scales.
+}
 \keyword{internal}
