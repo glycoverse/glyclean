@@ -1,5 +1,7 @@
 # glyclean (development version)
 
+* Protein adjustment and internal SE subsetting keep feature annotations aligned by position when feature names are missing or duplicated.
+
 ## Breaking changes
 
 * Preprocessing and QC now honor `raw`, `log`, `log2`, and `log10` metadata, restoring the input scale after processing and preserving original values when filtering. Previously log inputs could be logged again; pipelines replay with the corrected behavior. Preserve the original package environment to reproduce older results, and see `?data_scales` for working domains and `logx` support. (#41)
