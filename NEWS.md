@@ -22,6 +22,7 @@
 
 ## Minor improvements and bug fixes
 
+* Pipelines recursively freeze callback values in attributes and S4 slots, rejecting hidden mutable references instead of recording histories whose results change when external state is modified. (#46)
 * `add_site_seq()` records replayable empty sequence snapshots and rejects missing or whitespace-only sequences after normalization, including fetched sequences. (#45)
 * Filtering functions preserve the correct rows and annotations when a plain `SummarizedExperiment` has absent or duplicate row names, retaining the original abundance representation. (#44)
 

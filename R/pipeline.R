@@ -32,6 +32,10 @@
 #' as an attribute; no random-generator state is stored. Callback functions and parameter
 #' values are captured at construction/recording time; external files, network
 #' side effects and mutable references in arbitrary callbacks are not supported.
+#' Captured values are checked recursively, including attributes and S4 slots;
+#' environments, external pointers, and weak references are rejected. Ordinary
+#' value objects and captured closures are copied for replay. Recursive callback
+#' environments and excessively nested values are rejected.
 #' Site-sequence annotation records the actual sequences.
 #'
 #' @return `glyclean_pipeline()` and `get_pipeline()` return a
@@ -172,18 +176,63 @@ apply_pipeline <- function(exp, pipeline) {
 
 # Snapshot only referenced lexical bindings, never an entire caller frame.
 .freeze_pipeline_value <- function(value, depth = 0L) {
-  if (depth > 30L) stop("Recursive callback environments are not supported.", call. = FALSE)
-  if (is.environment(value) || typeof(value) %in% c("externalptr", "weakref")) {
-    stop("Mutable reference parameters cannot be recorded reproducibly.", call. = FALSE)
+  if (depth > 30L) {
+    stop(
+      "Recursive callback environments or excessively nested values are not supported.",
+      call. = FALSE
+    )
   }
+  if (is.environment(value) || typeof(value) %in% c("externalptr", "weakref")) {
+    stop(
+      "Mutable reference parameters cannot be recorded reproducibly.",
+      call. = FALSE
+    )
+  }
+  # Source references contain diagnostic environments, not callback state.
+  if (is.function(value)) {
+    value <- rlang::zap_srcref(value)
+  }
+  # Slots and attributes can hide references even on an atomic value. Freeze
+  # them before returning a value or a closure; do not only inspect list items.
+  slots <- if (isS4(value)) methods::slotNames(value) else character()
+  for (nm in slots) {
+    methods::slot(value, nm) <- .freeze_pipeline_value(
+      methods::slot(value, nm),
+      depth + 1L
+    )
+  }
+  attrs <- attributes(value)
+  for (nm in setdiff(names(attrs), slots)) {
+    attrs[nm] <- list(.freeze_pipeline_value(attrs[[nm]], depth + 1L))
+  }
+  # Setting dim alone drops dimnames, so restore the attributes together.
+  attributes(value) <- attrs
   if (is.function(value) && !is.primitive(value)) {
     env <- environment(value)
-    if (!isNamespace(env) && !identical(env, baseenv()) && !identical(env, emptyenv())) {
+    if (
+      !isNamespace(env) &&
+        !identical(env, baseenv()) &&
+        !identical(env, emptyenv())
+    ) {
       bindings <- codetools::findGlobals(value, merge = TRUE)
-      dynamic <- c("get", "get0", "mget", "assign", "eval", "evalq", "source",
-                   "parent.frame", "sys.frame", "globalenv", "<<-")
+      dynamic <- c(
+        "get",
+        "get0",
+        "mget",
+        "assign",
+        "eval",
+        "evalq",
+        "source",
+        "parent.frame",
+        "sys.frame",
+        "globalenv",
+        "<<-"
+      )
       if (any(bindings %in% dynamic)) {
-        stop("Callbacks must use static lexical bindings, not dynamic environment access.", call. = FALSE)
+        stop(
+          "Callbacks must use static lexical bindings, not dynamic environment access.",
+          call. = FALSE
+        )
       }
       frozen <- new.env(parent = baseenv())
       for (nm in bindings) {
@@ -199,8 +248,24 @@ apply_pipeline <- function(exp, pipeline) {
     }
     return(value)
   }
-  if (is.list(value)) {
+  if (is.list(value) && !is.pairlist(value)) {
     value[] <- lapply(value, .freeze_pipeline_value, depth = depth + 1L)
+  } else if (is.pairlist(value) || is.expression(value) || is.call(value)) {
+    attrs <- attributes(value)
+    elements <- lapply(as.list(value), function(element) {
+      if (rlang::is_missing(element)) {
+        return(rlang::missing_arg())
+      }
+      .freeze_pipeline_value(element, depth + 1L)
+    })
+    value <- if (is.call(value)) {
+      as.call(elements)
+    } else if (is.pairlist(value)) {
+      as.pairlist(elements)
+    } else {
+      as.expression(elements)
+    }
+    attributes(value) <- attrs
   }
   value
 }
