@@ -668,11 +668,18 @@ remove_low_expr <- function(x, percentile = 0.05, by = NULL, strict = FALSE) {
     work_scale,
     allow_logx = if (work_scale == "raw") FALSE else allow_logx
   )
+  # Temporary unique keys track positions even with absent or duplicate names.
+  row_keys <- as.character(seq_len(nrow(work_mat)))
+  rownames(work_mat) <- row_keys
   selected <- filter_mat_fun(work_mat, by_values, strict, ...)
-  new_expr_mat <- expr_mat[rownames(selected), , drop = FALSE]
-  var_info <- .get_var_info(x) |>
-    dplyr::filter(.data$variable %in% rownames(new_expr_mat))
-  .rebuild_container(x, expr_mat = new_expr_mat, var_info = var_info)
+  keep <- match(rownames(selected), row_keys)
+  if (inherits(x, "glyexp_experiment")) {
+    x$expr_mat <- expr_mat[keep, , drop = FALSE]
+    x$var_info <- x$var_info[keep, , drop = FALSE]
+    return(x)
+  }
+  # Subset the original object to preserve values, annotations and dimnames.
+  x[keep, , drop = FALSE]
 }
 
 .inform_filter_result <- function(n_before, n_after) {
