@@ -36,6 +36,9 @@ reference:
       - correct_batch_effect
       - detect_batch_effect
       - plot_batch_pca
+  - title: Log Transformation
+    contents:
+      - transform_log
   - title: Compositional Data Analysis (CoDA)
     contents:
       - transform_clr

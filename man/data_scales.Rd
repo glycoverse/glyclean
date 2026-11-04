@@ -63,6 +63,11 @@ other non-finite values; it rejects \code{logx}.
 
 \section{Transformations and automatic processing}{
 
+\code{\link[=transform_log]{transform_log()}} explicitly converts ordinary abundance scales to \code{log},
+\code{log2}, or \code{log10}, updating metadata without adding a pseudocount. It is
+generally unnecessary for downstream Glycoverse analyses and plots that
+already transform their inputs; see its documentation for input contracts.
+
 \code{\link[=transform_clr]{transform_clr()}}, \code{\link[=transform_alr]{transform_alr()}}, \code{\link[=auto_coda]{auto_coda()}} and \code{\link[=normalize_vsn]{normalize_vsn()}}
 accept ordinary scales and deliberately produce \code{scale = "logx"}. CoDA
 returns log2-ratio coordinates and VSN returns its log-like coordinates.
