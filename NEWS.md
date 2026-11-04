@@ -22,6 +22,8 @@
 
 ## Minor improvements and bug fixes
 
+* Grouped preprocessing now tracks samples by column position, preserving values and order with missing or duplicated sample names; unused group levels are ignored and missing grouping values are rejected.
+
 * Filtering functions preserve the correct rows and annotations when a plain `SummarizedExperiment` has absent or duplicate row names, retaining the original abundance representation. (#44)
 
 * `detect_batch_effect()` now uses the same `log2(raw + 1e-6)` working domain as batch correction, correcting raw-domain ANOVA results; ordinary-scale correction restores the input scale and `logx` correction retains negative coordinates. (#41)
