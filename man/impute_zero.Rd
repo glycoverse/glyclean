@@ -15,7 +15,7 @@ A container of the same class as \code{x}, with missing values imputed.
 }
 \description{
 Impute missing values in an expression matrix by replacing them with zeros.
-Only \code{scale = "raw"} is supported.
+Only \code{glyexp} experiments with \code{scale = "raw"} are supported.
 }
 \seealso{
 \link{data_scales} for working domains and supported input scales.

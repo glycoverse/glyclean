@@ -33,7 +33,9 @@ aggregate(
 \arguments{
 \item{exp}{A glycomics or glycoproteomics container: a
 \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}}, \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}}, or legacy
-\code{glyexp_experiment} object.}
+\code{glyexp_experiment} object.
+Ordinary scales (\code{raw}, \code{log}, \code{log2}, and \code{log10}) are converted internally
+to raw abundances for aggregation. \code{logx} is rejected.}
 
 \item{to_level}{The aggregation level. If \code{NULL} (the default), glycomics data
 uses "gs" when \code{glycan_structure} is present and "g" otherwise;
@@ -49,8 +51,7 @@ See Details for more information.}
 after aggregation. Set to \code{FALSE} to skip network calls for faster testing.
 Default is \code{TRUE}.}
 
-\item{f}{A function applied to each group's raw abundance values separately
-for each sample, regardless of the input's ordinary scale. \code{logx} is rejected.
+\item{f}{A function applied to each group's values separately for each sample.
 Defaults to \code{sum}. Missing values are removed before calling \code{f}, which
 must return one numeric value, including for an empty vector when all values
 are missing. For example, use \code{mean}, \code{max}, or \code{function(x) mean(x, trim = 0.1)}.}

@@ -2,10 +2,12 @@
 #'
 #' Glyclean reads `scale` from experiment metadata. An absent field defaults to
 #' `"raw"`; explicitly invalid values are rejected. `"log"` is the natural
-#' logarithm, while `"log2"` and `"log10"` use their named bases. Ordinary
-#' processing converts to the algorithm's working domain and restores the input
-#' scale. Filters return subsets of the original assay without a numeric round
-#' trip. These conventions apply to legacy experiments, glyco subclasses, and
+#' logarithm, while `"log2"` and `"log10"` use their named bases. `"logx"` denotes
+#' log-like coordinates whose original abundances cannot be recovered from
+#' scale metadata alone. Ordinary processing converts to the algorithm's working
+#' domain and restores the input scale. Filters return subsets of the original
+#' assay without a numeric round trip. These conventions apply to legacy
+#' experiments, glyco subclasses, and
 #' plain `SummarizedExperiment` objects wherever the operation supports them.
 #'
 #' @section Working domains:
@@ -18,14 +20,16 @@
 #' * Log2 abundance: loess and robust-regression normalization; KNN, BPCA, PPCA,
 #'   SVD and MinProb imputation; rank abundance, intensity boxplots, RLE, PCA and
 #'   replicate scatter plots. RLE subtracts the row median in this working domain.
-#' * Batch detection and correction both use `log2(raw + 1e-6)`.
-#'   Correction reverses this offset and truncates negative corrected abundances
-#'   to zero (`-Inf` on ordinary log scales). Skipped or failed corrections keep
-#'   the original assay exactly.
-#' * Missingness and constancy are evaluated in the current representation.
-#'   Sample-minimum imputation also uses the current representation; wholly
-#'   missing samples remain missing. Half-minimum imputation likewise leaves
-#'   wholly missing samples missing.
+#'
+#' Batch detection and correction both use `log2(raw + 1e-6)`.
+#' Correction reverses this offset and truncates negative corrected abundances
+#' to zero (`-Inf` on ordinary log scales). Skipped or failed corrections keep
+#' the original assay exactly.
+#'
+#' Missingness and constancy are evaluated in the current representation.
+#' Sample-minimum imputation also uses the current representation; wholly
+#' missing samples remain missing. Half-minimum imputation likewise leaves
+#' wholly missing samples missing.
 #'
 #' @section Log-like coordinates:
 #' `"logx"` denotes log-like coordinates whose original abundance cannot be

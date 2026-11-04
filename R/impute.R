@@ -1,7 +1,7 @@
 #' Zero Imputation
 #'
 #' Impute missing values in an expression matrix by replacing them with zeros.
-#' Only `scale = "raw"` is supported.
+#' Only `glyexp` experiments with `scale = "raw"` are supported.
 #'
 #' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.

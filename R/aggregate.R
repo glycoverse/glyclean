@@ -44,6 +44,8 @@
 #' @param exp A glycomics or glycoproteomics container: a
 #'   [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or legacy
 #'   `glyexp_experiment` object.
+#'   Ordinary scales (`raw`, `log`, `log2`, and `log10`) are converted internally
+#'   to raw abundances for aggregation. `logx` is rejected.
 #' @param to_level The aggregation level. If `NULL` (the default), glycomics data
 #'   uses "gs" when `glycan_structure` is present and "g" otherwise;
 #'   glycoproteomics data uses "gfs" when `glycan_structure` is present and "gf"
@@ -56,8 +58,7 @@
 #' @param standardize_variable Whether to call [glyexp::standardize_variable()]
 #'   after aggregation. Set to `FALSE` to skip network calls for faster testing.
 #'   Default is `TRUE`.
-#' @param f A function applied to each group's raw abundance values separately
-#'   for each sample, regardless of the input's ordinary scale. `logx` is rejected.
+#' @param f A function applied to each group's values separately for each sample.
 #'   Defaults to `sum`. Missing values are removed before calling `f`, which
 #'   must return one numeric value, including for an empty vector when all values
 #'   are missing. For example, use `mean`, `max`, or `function(x) mean(x, trim = 0.1)`.

@@ -6,10 +6,12 @@
 \description{
 Glyclean reads \code{scale} from experiment metadata. An absent field defaults to
 \code{"raw"}; explicitly invalid values are rejected. \code{"log"} is the natural
-logarithm, while \code{"log2"} and \code{"log10"} use their named bases. Ordinary
-processing converts to the algorithm's working domain and restores the input
-scale. Filters return subsets of the original assay without a numeric round
-trip. These conventions apply to legacy experiments, glyco subclasses, and
+logarithm, while \code{"log2"} and \code{"log10"} use their named bases. \code{"logx"} denotes
+log-like coordinates whose original abundances cannot be recovered from
+scale metadata alone. Ordinary processing converts to the algorithm's working
+domain and restores the input scale. Filters return subsets of the original
+assay without a numeric round trip. These conventions apply to legacy
+experiments, glyco subclasses, and
 plain \code{SummarizedExperiment} objects wherever the operation supports them.
 }
 \section{Working domains}{
@@ -24,15 +26,17 @@ zero, represented as \code{-Inf} on ordinary log scales.
 \item Log2 abundance: loess and robust-regression normalization; KNN, BPCA, PPCA,
 SVD and MinProb imputation; rank abundance, intensity boxplots, RLE, PCA and
 replicate scatter plots. RLE subtracts the row median in this working domain.
-\item Batch detection and correction both use \code{log2(raw + 1e-6)}.
+}
+
+Batch detection and correction both use \code{log2(raw + 1e-6)}.
 Correction reverses this offset and truncates negative corrected abundances
 to zero (\code{-Inf} on ordinary log scales). Skipped or failed corrections keep
 the original assay exactly.
-\item Missingness and constancy are evaluated in the current representation.
+
+Missingness and constancy are evaluated in the current representation.
 Sample-minimum imputation also uses the current representation; wholly
 missing samples remain missing. Half-minimum imputation likewise leaves
 wholly missing samples missing.
-}
 }
 
 \section{Log-like coordinates}{
