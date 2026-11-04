@@ -167,10 +167,16 @@
   if (inherits(x, "glyexp_experiment")) {
     return(x$sample_info)
   }
-  tibble::as_tibble(
+  sample_info <- tibble::as_tibble(
     SummarizedExperiment::colData(x),
     rownames = "sample"
   )
+  # DataFrame-to-data.frame conversion makes duplicate row names unique.
+  # Keep the original SE sample identifiers when rebuilding the container.
+  if (!is.null(colnames(x))) {
+    sample_info$sample <- colnames(x)
+  }
+  sample_info
 }
 
 #' Extract variable information from a glyclean container

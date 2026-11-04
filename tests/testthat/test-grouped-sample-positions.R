@@ -45,6 +45,10 @@ test_that("grouped normalization keeps values aligned with sample metadata", {
     expect_equal(unname(SummarizedExperiment::assay(replay)), unname(expected))
     expect_identical(SummarizedExperiment::colData(result)$batch, groups)
     expect_identical(SummarizedExperiment::colData(result)$original_position, 1:4)
+    if (!is.null(sample_names)) {
+      expect_identical(colnames(result), sample_names)
+      expect_identical(colnames(replay), sample_names)
+    }
     expect_identical(SummarizedExperiment::assay(exp), values)
   }
 })
