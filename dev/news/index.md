@@ -116,6 +116,11 @@
 
 ### Minor improvements and bug fixes
 
+- [`add_site_seq()`](https://glycoverse.github.io/glyclean/dev/reference/add_site_seq.md)
+  records replayable empty sequence snapshots and rejects missing or
+  whitespace-only sequences after normalization, including fetched
+  sequences. (#45)
+
 - Filtering functions preserve the correct rows and annotations when a
   plain `SummarizedExperiment` has absent or duplicate row names,
   retaining the original abundance representation. (#44)

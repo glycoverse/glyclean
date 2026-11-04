@@ -75,7 +75,10 @@ If the head and tail amino acids of the peptide sequence are insufficient, fill 
 
 <dt id="arg-fasta">fasta<a class="anchor" aria-label="anchor" href="#arg-fasta"></a></dt>
 <dd><p>Either a file path to a FASTA file, a named character vector
-with protein IDs as names and sequences as value, or <code>NULL</code> to fetch from UniProt.</p></dd>
+with protein IDs as names and sequences as value, or <code>NULL</code> to fetch from UniProt.
+An empty character vector is an empty sequence snapshot (no lookup).
+Sequences are uppercased and whitespace is removed; missing or blank
+sequences are rejected before annotation and pipeline recording.</p></dd>
 
 
 <dt id="arg-n-aa">n_aa<a class="anchor" aria-label="anchor" href="#arg-n-aa"></a></dt>
