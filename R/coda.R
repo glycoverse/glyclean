@@ -23,9 +23,11 @@
 #' # Input requirements
 #'
 #' CoDA accepts `raw`, `log`, `log2`, and `log10` inputs, and rejects `logx`.
-#' It requires finite, strictly positive abundances (finite known-log coordinates). Missing values, zeros,
-#' and negative values are rejected; no pseudo-count or automatic imputation
-#' is applied. If zeros represent missing observations, first call
+#' On raw input, abundances must be finite and strictly positive. On ordinary
+#' log input, finite zero and negative coordinates are valid; `-Inf` represents
+#' zero abundance and is rejected. Missing values and other non-finite values
+#' are rejected on all input scales; no pseudo-count or automatic imputation
+#' is applied. If zero abundances represent missing observations, first call
 #' [zero_to_na()], then use an appropriate imputation function to obtain
 #' positive values. Choose the imputation method for your data; [impute_zero()]
 #' is not suitable before CoDA. Entirely missing features or samples may need
