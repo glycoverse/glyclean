@@ -145,7 +145,7 @@ apply_pipeline <- function(exp, pipeline) {
     "impute_min_prob", "impute_miss_forest", "remove_rare", "remove_low_var",
     "remove_low_cv", "remove_constant", "remove_low_expr", "aggregate",
     "adjust_protein", "add_site_seq", "correct_batch_effect",
-    "transform_clr", "transform_alr", "auto_normalize", "auto_impute",
+    "transform_clr", "transform_alr", "transform_log", "auto_normalize", "auto_impute",
     "auto_remove", "auto_aggregate", "auto_clean", "auto_coda",
     "auto_correct_batch_effect")
 }

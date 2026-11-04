@@ -52,6 +52,11 @@
 #' other non-finite values; it rejects `logx`.
 #'
 #' @section Transformations and automatic processing:
+#' [transform_log()] explicitly converts ordinary abundance scales to `log`,
+#' `log2`, or `log10`, updating metadata without adding a pseudocount. It is
+#' generally unnecessary for downstream Glycoverse analyses and plots that
+#' already transform their inputs; see its documentation for input contracts.
+#'
 #' [transform_clr()], [transform_alr()], [auto_coda()] and [normalize_vsn()]
 #' accept ordinary scales and deliberately produce `scale = "logx"`. CoDA
 #' returns log2-ratio coordinates and VSN returns its log-like coordinates.

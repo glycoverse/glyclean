@@ -14,6 +14,7 @@
 
 ## New features
 
+* New `transform_log()` explicitly converts abundances to natural, base-2, or base-10 logarithms, updates scale metadata, and records a replayable pipeline step. Manual log transformation is generally unnecessary for Glycoverse analyses and plots that already transform their inputs. (#43)
 * `adjust_protein()` gains `pro_scale` to describe protein matrix values independently of the experiment scale, supporting `raw`, `log`, `log2`, and `log10` inputs while preserving the experiment representation and recording replayable parameters. Both inputs reject `logx`. (#40)
 * `aggregate()`, `impute_bpca()`, `impute_fw_knn()`, `impute_svd()`, `impute_sw_knn()`, and `normalize_vsn()` gain an explicit `seed = 123` for reproducible stochastic processing while preserving the caller's random state. `auto_impute()`, `auto_aggregate()`, and `auto_clean()` forward the seed to the selected operations. (#35)
 * New `glyclean_pipeline()`, `apply_pipeline()`, and `get_pipeline()` create, replay, and retrieve preprocessing pipelines stored in experiment metadata while retaining a single assay. Automatic preprocessing records the selected operations, seeds are stored as step parameters, and sequence annotation inputs are frozen for replay. Pipelines print numbered steps with compact parameter summaries. (#36)
