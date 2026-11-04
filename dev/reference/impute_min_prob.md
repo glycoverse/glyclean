@@ -50,3 +50,8 @@ impute_min_prob(x, by = NULL, q = 0.01, tune.sigma = 1, ..., seed = 123)
 ## Value
 
 A container of the same class as `x`, with missing values imputed.
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.

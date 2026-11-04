@@ -6,6 +6,8 @@
   [`get_pipeline()`](https://glycoverse.github.io/glyclean/dev/reference/glyclean_pipeline.md)
   [`apply_pipeline()`](https://glycoverse.github.io/glyclean/dev/reference/glyclean_pipeline.md)
   : Reproducible preprocessing pipelines
+- [`data_scales`](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+  : Abundance scales in preprocessing and quality control
 
 ## Automactic Processing
 

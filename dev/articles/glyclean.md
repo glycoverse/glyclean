@@ -138,7 +138,7 @@ clean_exp <- auto_clean(exp)
 #> 
 #> ── Correcting batch effects ──
 #> 
-#> ℹ Batch effects detected in "2.1%" of variables (<= "30.0%"). Skipping batch correction.
+#> ℹ Batch effects detected in "2.5%" of variables (<= "30.0%"). Skipping batch correction.
 #> ✔ Batch correction completed.
 ```
 
@@ -225,6 +225,16 @@ clean_exp <- exp |>
 #> ℹ Reason: default for "glycoproteomics" with n_samples < 30.
 ```
 
+## Input scales
+
+1.  `glyclean` automatically performs the appropriate scale
+    transformations when needed.
+2.  The input scale is preserved whenever possible.
+3.  See [the scale
+    reference](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+    ([`?data_scales`](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md))
+    for special cases and supported scales.
+
 ## Step-by-Step Preprocessing
 
 The `auto_xxx()` functions offer a convenient starting point. For more
@@ -239,7 +249,7 @@ Normalization helps make intensities more comparable across samples.
 | Function | Description | Best For |
 |----|----|----|
 | [`normalize_median()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_median.md) | Median-based normalization | General use, robust to outliers |
-| [`normalize_median_abs()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_median_abs.md) | Median absolute deviation | When you need extra robustness |
+| [`normalize_median_abs()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_median_abs.md) | Absolute median normalization | When you need extra robustness |
 | [`normalize_median_quotient()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_median_quotient.md) | Median quotient method | Glycomics data (compositional) |
 | [`normalize_quantile()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_quantile.md) | Quantile normalization | When you want identical distributions |
 | [`normalize_total_area()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_total_area.md) | Total area normalization | Relative abundance data |
@@ -262,7 +272,7 @@ object.
 # Example: Using by parameter with a custom vector
 # Normalize within custom groups (e.g., based on some external criteria)
 custom_groups <- c("A", "A", "B", "B", "C", "C", "A", "A", "B", "B", "C", "C")
-normalized_exp <- normalize_median(exp, by = custom_groups)
+normalized_exp <- normalize_median_quotient(exp, by = custom_groups)
 ```
 
 **Compositional Data: CLR and ALR**
@@ -274,13 +284,13 @@ Instead, compositional data analysis techniques are recommended:
 - **[`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md)**:
   Centered Log-Ratio transformation. A robust method for compositional
   data analysis. The result remains on the `log2`-ratio scale, with
-  experiment metadata `scale = "log2"`.
+  experiment metadata `scale = "logx"`.
 
 - **[`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md)**:
   Additive Log-Ratio transformation. The reference glycan is chosen
   based on Procrustes correlation to CLR geometry and minimal
   between-group variance, and the final result remains on the
-  `log2`-ratio scale (`scale = "log2"`). If no suitable reference is
+  `log2`-ratio scale (`scale = "logx"`). If no suitable reference is
   found, ALR falls back to CLR.
 
 The CLR and ALR methods align with the best practices described in DOI:
@@ -392,14 +402,14 @@ design allows batch and biological effects to be distinguished.
 # To detect batch effects:
 p_values <- detect_batch_effect(aggregated_exp2)
 #> ℹ Detecting batch effects using ANOVA for 2738 variables...
-#> ✔ Batch effect detection completed. 19 out of 2738 variables show significant batch effects (p < 0.05).
+#> ✔ Batch effect detection completed. 15 out of 2738 variables show significant batch effects (p < 0.05).
 p_values[1:5]
 #> P08185-176-Hex(5)HexNAc(4)NeuAc(2) P04196-344-Hex(5)HexNAc(4)NeuAc(1) 
-#>                          0.6998998                          0.3951691 
+#>                          0.4665611                          0.3007360 
 #>         P04196-344-Hex(5)HexNAc(4)         P10909-291-Hex(6)HexNAc(5) 
-#>                          0.4852698                          0.3329619 
+#>                          0.5136274                          0.3010584 
 #> P04196-344-Hex(5)HexNAc(4)NeuAc(2) 
-#>                          0.4907154
+#>                          0.4419162
 ```
 
 For demonstration, we can also apply batch effect correction to this
@@ -449,11 +459,11 @@ vectors.
 ``` r
 
 # Using column names (standard approach)
-normalized_exp <- normalize_median(exp, by = "group")
+normalized_exp <- normalize_median_quotient(exp, by = "group")
 
 # Using custom vectors (advanced approach)
 custom_groups <- c("A", "A", "B", "B", "C", "C", "A", "A", "B", "B", "C", "C")
-normalized_exp <- normalize_median(exp, by = custom_groups)
+normalized_exp <- normalize_median_quotient(exp, by = custom_groups)
 ```
 
 This also lets you use groupings that are not stored in the experiment

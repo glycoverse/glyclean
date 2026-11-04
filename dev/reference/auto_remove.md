@@ -43,6 +43,11 @@ auto_remove(exp, preset = "discovery", group_col = "group")
 
 The filtered input container, with its class preserved.
 
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.
+
 ## Examples
 
 ``` r

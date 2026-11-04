@@ -52,3 +52,8 @@ matrix.
 
 At least 42 variables should be provided for this method. This follows
 the convention of the `vsn` package.
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.

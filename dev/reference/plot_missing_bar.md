@@ -29,6 +29,11 @@ plot_missing_bar(exp, on = "sample")
 
 A ggplot object of missing value proportions by item.
 
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.
+
 ## Examples
 
 ``` r

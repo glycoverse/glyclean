@@ -123,6 +123,9 @@ A modified container with the same subclass as `exp`.
 [`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md),
 [`auto_correct_batch_effect()`](https://glycoverse.github.io/glyclean/dev/reference/auto_correct_batch_effect.md)
 
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.
+
 ## Examples
 
 ``` r

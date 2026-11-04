@@ -10,6 +10,34 @@
 
 ### Breaking changes
 
+- Preprocessing and QC now honor `raw`, `log`, `log2`, and `log10`
+  metadata, restoring the input scale after processing and preserving
+  original values when filtering. Previously log inputs could be logged
+  again; pipelines replay with the corrected behavior. Preserve the
+  original package environment to reproduce older results, and see
+  [`?data_scales`](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+  for working domains and `logx` support. (#41)
+
+- [`impute_zero()`](https://glycoverse.github.io/glyclean/dev/reference/impute_zero.md)
+  now accepts only `raw`;
+  [`zero_to_na()`](https://glycoverse.github.io/glyclean/dev/reference/zero_to_na.md)
+  converts `-Inf` to `NA` on ordinary log scales while preserving finite
+  log zero. Use an appropriate scale-aware imputation method for logged
+  input; both functions reject `logx`. (#41)
+
+- [`normalize_vsn()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_vsn.md)
+  now returns `scale = "logx"`, and CoDA outputs also use `logx`.
+  Repeated CoDA/VSN and abundance-based processing reject `logx`;
+  coordinate-based methods use its negative and zero values directly.
+  This requires glyexp with logx support (the merged
+  glycoverse/glyexp#40 commit pinned in `Remotes`). (#41)
+
+- [`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md)
+  now records actual CLR when reference selection falls back, restarting
+  from the supplied seed for replay. Stochastic fallback results can
+  change; preserve the previous package environment to reproduce earlier
+  output. (#41)
+
 - [`auto_coda()`](https://glycoverse.github.io/glyclean/dev/reference/auto_coda.md)
   now always uses site-wise CLR for glycoproteomics, and
   [`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md)
@@ -19,6 +47,7 @@
   [`auto_coda()`](https://glycoverse.github.io/glyclean/dev/reference/auto_coda.md)
   to transform each `protein` and `protein_site` combination
   independently while retaining all rows. (#34, \#37)
+
 - [`impute_fw_knn()`](https://glycoverse.github.io/glyclean/dev/reference/impute_fw_knn.md)
   and
   [`impute_sw_knn()`](https://glycoverse.github.io/glyclean/dev/reference/impute_sw_knn.md)
@@ -27,15 +56,17 @@
   results can change; use `seed = 362436069` to retain the previous
   seed, and replace `rng.seed` in `...` with the explicit `seed`
   argument. (#35, \#36)
+
 - [`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md),
   [`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md),
   and
   [`auto_coda()`](https://glycoverse.github.io/glyclean/dev/reference/auto_coda.md)
   now return log2-ratio coordinates instead of exponentiated ratios and
-  set `scale = "log2"` in experiment metadata, requiring glyexp \>=
+  set `scale = "logx"` in experiment metadata, requiring glyexp \>=
   0.18.0.9000. Saved pipelines also produce the new values on replay;
   preserve the original package environment to reproduce earlier
-  numerical results. (#39)
+  numerical results. (#39, \#41)
+
 - [`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md),
   [`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md),
   and
@@ -80,21 +111,47 @@
 
 ### Minor improvements and bug fixes
 
+- [`detect_batch_effect()`](https://glycoverse.github.io/glyclean/dev/reference/detect_batch_effect.md)
+  now uses the same `log2(raw + 1e-6)` working domain as batch
+  correction, correcting raw-domain ANOVA results; ordinary-scale
+  correction restores the input scale and `logx` correction retains
+  negative coordinates. (#41)
+
+- [`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md)
+  sums known-log input without exponentiating extreme abundances, while
+  custom aggregation functions receive raw values. All-missing sums
+  remain zero (`-Inf` on ordinary log scales). (#41)
+
+- [`impute_sample_min()`](https://glycoverse.github.io/glyclean/dev/reference/impute_sample_min.md)
+  and
+  [`impute_half_sample_min()`](https://glycoverse.github.io/glyclean/dev/reference/impute_half_sample_min.md)
+  now preserve all-missing columns as missing and retain matrix
+  dimensions for singleton inputs. (#41)
+
+- [`normalize_median()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_median.md)
+  and
+  [`normalize_median_abs()`](https://glycoverse.github.io/glyclean/dev/reference/normalize_median_abs.md)
+  documentation now describes rescaling to the geometric mean of sample
+  medians, matching the existing limma algorithms. (#41)
+
 - [`auto_coda()`](https://glycoverse.github.io/glyclean/dev/reference/auto_coda.md)
   and
   [`auto_impute()`](https://glycoverse.github.io/glyclean/dev/reference/auto_impute.md)
   now select preprocessing strategies for legacy experiment objects
   without triggering deprecated dimension-accessor warnings.
+
 - [`auto_coda()`](https://glycoverse.github.io/glyclean/dev/reference/auto_coda.md)
   and
   [`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md)
   now transform glycoproteomics data independently at each protein site
   using CLR, retaining all rows. (#34, \#37)
+
 - [`impute_fw_knn()`](https://glycoverse.github.io/glyclean/dev/reference/impute_fw_knn.md)
   and
   [`impute_sw_knn()`](https://glycoverse.github.io/glyclean/dev/reference/impute_sw_knn.md)
   now forward `seed` to the backend, including random large-matrix
   splitting; use `seed` instead of `rng.seed` in `...`. (#35, \#36)
+
 - [`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md),
   [`transform_clr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_clr.md),
   and

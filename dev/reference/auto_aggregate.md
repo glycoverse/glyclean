@@ -39,6 +39,11 @@ auto_aggregate(exp, standardize_variable = TRUE, seed = 123)
 A modified container with the same class as `exp`, an aggregated
 expression matrix, and updated variable information.
 
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.
+
 ## Examples
 
 ``` r

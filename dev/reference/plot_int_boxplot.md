@@ -31,6 +31,11 @@ plot_int_boxplot(exp, by = NULL)
 
 A ggplot object of log-intensity boxplots.
 
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.
+
 ## Examples
 
 ``` r

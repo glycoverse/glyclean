@@ -64,6 +64,11 @@ and
 remain available for manual use, but they are not selected
 automatically.
 
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.
+
 ## Examples
 
 ``` r

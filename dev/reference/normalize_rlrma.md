@@ -34,3 +34,8 @@ normalize_rlrma(x, by = NULL)
 
 A container of the same class as `x`, with a normalized expression
 matrix.
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.

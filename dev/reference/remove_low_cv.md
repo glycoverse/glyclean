@@ -42,3 +42,6 @@ A container of the same class as `x`, with filtered variables.
 ## See also
 
 [`remove_low_var()`](https://glycoverse.github.io/glyclean/dev/reference/remove_low_var.md)
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.

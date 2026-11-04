@@ -88,7 +88,7 @@ scales and any derived two-group ratio must be finite and strictly positive.</p>
 its class preserved. Glycoproteomics always uses site-wise CLR and retains
 all rows. Other supported containers use ALR if there are more than 50
 variables, or CLR otherwise. Values remain on the <code>log2</code>-ratio scale,
-with <code>scale = "log2"</code> in metadata.</p>
+with <code>scale = "logx"</code> in metadata.</p>
     </div>
     <div class="section level2">
     <h2 id="algorithmic-details">Algorithmic details<a class="anchor" aria-label="anchor" href="#algorithmic-details"></a></h2>
@@ -105,9 +105,12 @@ positive scale per group; these scales are used only in the stochastic branch.</
     </div>
     <div class="section level2">
     <h2 id="input-requirements">Input requirements<a class="anchor" aria-label="anchor" href="#input-requirements"></a></h2>
-    <p>CoDA requires finite, strictly positive abundances. Missing values, zeros,
-and negative values are rejected; no pseudo-count or automatic imputation
-is applied. If zeros represent missing observations, first call
+    <p>CoDA accepts <code>raw</code>, <code>log</code>, <code>log2</code>, and <code>log10</code> inputs, and rejects <code>logx</code>.
+On raw input, abundances must be finite and strictly positive. On ordinary
+log input, finite zero and negative coordinates are valid; <code>-Inf</code> represents
+zero abundance and is rejected. Missing values and other non-finite values
+are rejected on all input scales; no pseudo-count or automatic imputation
+is applied. If zero abundances represent missing observations, first call
 <code><a href="zero_to_na.html">zero_to_na()</a></code>, then use an appropriate imputation function to obtain
 positive values. Choose the imputation method for your data; <code><a href="impute_zero.html">impute_zero()</a></code>
 is not suitable before CoDA. Entirely missing features or samples may need
@@ -135,6 +138,10 @@ In another words, the recommended workflow is:</p><ol><li><p>Perform data prepro
 </ol><p></p><div class="sourceCode r"><pre><code><span><span class="va">motif_exp</span> <span class="op">&lt;-</span> <span class="fu">glydet</span><span class="fu">::</span><span class="fu">quantify_motifs</span><span class="op">(</span><span class="va">clean_exp</span>, <span class="va">motifs</span><span class="op">)</span></span></code></pre><p></p></div><ol><li><p>Perform ALR/CLR transformation on the motif-quantified experiment.</p></li>
 </ol><p></p><div class="sourceCode r"><pre><code><span><span class="va">coda_motif_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_coda.html">auto_coda</a></span><span class="op">(</span><span class="va">motif_exp</span>, by <span class="op">=</span> <span class="st">"group"</span>, gamma <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></code></pre><p></p></div><ol><li><p>Proceed with downstream analyses on the transformed motif experiment.</p></li>
 </ol><p></p><div class="sourceCode r"><pre><code><span><span class="va">dea_res</span> <span class="op">&lt;-</span> <span class="fu">glystats</span><span class="fu">::</span><span class="fu">gly_ttest</span><span class="op">(</span><span class="va">coda_motif_exp</span><span class="op">)</span></span></code></pre><p></p></div>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><a href="data_scales.html">data_scales</a> for working domains and supported input scales.</p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

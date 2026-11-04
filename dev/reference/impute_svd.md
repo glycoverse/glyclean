@@ -43,3 +43,8 @@ impute_svd(x, by = NULL, ..., seed = 123)
 ## Value
 
 A container of the same class as `x`, with missing values imputed.
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.

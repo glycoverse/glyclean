@@ -20,6 +20,7 @@
 <url><loc>https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/dev/reference/auto_remove.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/dev/reference/correct_batch_effect.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyclean/dev/reference/data_scales.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/dev/reference/detect_batch_effect.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/dev/reference/dot-apply_by_groups.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyclean/dev/reference/dot-fetch_uniprot_sequences.html</loc></url>

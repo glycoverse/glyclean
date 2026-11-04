@@ -180,7 +180,9 @@ as one "glycoform" can contain multiple "peptides".</p>
 <dl><dt id="arg-exp">exp<a class="anchor" aria-label="anchor" href="#arg-exp"></a></dt>
 <dd><p>A glycomics or glycoproteomics container: a
 <code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE()</a></code>, <code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE()</a></code>, or legacy
-<code>glyexp_experiment</code> object.</p></dd>
+<code>glyexp_experiment</code> object.
+Ordinary scales (<code>raw</code>, <code>log</code>, <code>log2</code>, and <code>log10</code>) are converted internally
+to raw abundances for aggregation. <code>logx</code> is rejected.</p></dd>
 
 
 <dt id="arg-to-level">to_level<a class="anchor" aria-label="anchor" href="#arg-to-level"></a></dt>
@@ -217,6 +219,10 @@ are missing. For example, use <code>mean</code>, <code>max</code>, or <code>func
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A modified container with the same class as <code>exp</code>, an aggregated
 expression matrix, and updated variable information.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><a href="data_scales.html">data_scales</a> for working domains and supported input scales.</p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

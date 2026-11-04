@@ -94,7 +94,9 @@ glyclean_aggregate(
   A glycomics or glycoproteomics container: a
   [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
   [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
-  or legacy `glyexp_experiment` object.
+  or legacy `glyexp_experiment` object. Ordinary scales (`raw`, `log`,
+  `log2`, and `log10`) are converted internally to raw abundances for
+  aggregation. `logx` is rejected.
 
 - to_level:
 
@@ -130,3 +132,8 @@ glyclean_aggregate(
 
 A modified container with the same class as `exp`, an aggregated
 expression matrix, and updated variable information.
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.

@@ -4,7 +4,7 @@ This function implements a glycoWork-compatible ALR preprocessing
 strategy. Internally, the data are transformed relative to an
 automatically selected reference glycan using glycoWork-style ALR logic.
 The `log2`-ratio coordinates are returned directly, with
-`scale = "log2"` in metadata.
+`scale = "logx"` in metadata.
 
 ## Usage
 
@@ -51,8 +51,10 @@ transform_alr(x, by = NULL, gamma = 0.1, group_scales = NULL, seed = 123)
 A container of the same class as `x`, with an ALR-transformed expression
 matrix. When ALR succeeds, the reference glycan is excluded from the
 result and the output therefore has one fewer row. CLR fallback keeps
-the original dimensions. Glycoproteomics input is not supported. The
-returned values are `log2`-ratio coordinates, corresponding to
+the original dimensions. Fallback records CLR and starts from the
+supplied seed, so its random stream is independent of reference
+assessment. Glycoproteomics input is not supported. The returned values
+are `log2`-ratio coordinates with `scale = "logx"`, corresponding to
 `log2(x / x_ref)` when `gamma = 0` and no informed scales are supplied.
 
 ## Algorithmic details
@@ -72,10 +74,13 @@ used only in the stochastic branch.
 
 ## Input requirements
 
-CoDA requires finite, strictly positive abundances. Missing values,
-zeros, and negative values are rejected; no pseudo-count or automatic
-imputation is applied. If zeros represent missing observations, first
-call
+CoDA accepts `raw`, `log`, `log2`, and `log10` inputs, and rejects
+`logx`. On raw input, abundances must be finite and strictly positive.
+On ordinary log input, finite zero and negative coordinates are valid;
+`-Inf` represents zero abundance and is rejected. Missing values and
+other non-finite values are rejected on all input scales; no
+pseudo-count or automatic imputation is applied. If zero abundances
+represent missing observations, first call
 [`zero_to_na()`](https://glycoverse.github.io/glyclean/dev/reference/zero_to_na.md),
 then use an appropriate imputation function to obtain positive values.
 Choose the imputation method for your data;
@@ -123,3 +128,8 @@ than before. In another words, the recommended workflow is:
     experiment.
 
     dea_res <- glystats::gly_ttest(coda_motif_exp)
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.

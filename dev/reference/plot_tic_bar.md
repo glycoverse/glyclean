@@ -24,6 +24,11 @@ plot_tic_bar(exp)
 
 A ggplot object of total intensity by sample.
 
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.
+
 ## Examples
 
 ``` r

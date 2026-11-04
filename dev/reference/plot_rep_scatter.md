@@ -41,6 +41,11 @@ plot_rep_scatter(exp, rep_col, n_pairs = 9, seed = 123)
 
 A patchwork object containing replicate scatter plots.
 
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.
+
 ## Examples
 
 ``` r

@@ -63,6 +63,11 @@ construction/recording time; external files, network side effects and
 mutable references in arbitrary callbacks are not supported.
 Site-sequence annotation records the actual sequences.
 
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.
+
 ## Examples
 
 ``` r

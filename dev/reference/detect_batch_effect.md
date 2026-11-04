@@ -1,9 +1,10 @@
 # Detect batch effect
 
-Use ANOVA to detect if batch effect is present in the data. If `group`
-is provided, a partial F-test compares models with and without batch
-after accounting for group. Both models use the same complete samples
-for each variable. Non-estimable batch effects return `NA`.
+Use ANOVA on `log2(raw + 1e-6)` (or direct `logx` coordinates) to detect
+if batch effect is present in the data. If `group` is provided, a
+partial F-test compares models with and without batch after accounting
+for group. Both models use the same complete samples for each variable.
+Non-estimable batch effects return `NA`.
 
 ## Usage
 
@@ -39,6 +40,11 @@ detect_batch_effect(x, batch = "batch", group = NULL)
 
 A double vector of p-values for each variable, with the same length as
 `nrow(x)`.
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.
 
 ## Examples
 

@@ -180,7 +180,7 @@ preprocessing:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Correcting batch effects</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Batch effects detected in <span style="color: #0000BB;">"2.1%"</span> of variables (&lt;= <span style="color: #0000BB;">"30.0%"</span>). Skipping batch correction.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Batch effects detected in <span style="color: #0000BB;">"2.5%"</span> of variables (&lt;= <span style="color: #0000BB;">"30.0%"</span>). Skipping batch correction.</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Batch correction completed.</span></span></code></pre></div>
 <p>The function applies a sequence of preprocessing steps using
 automatic defaults. You can inspect those steps and adjust your workflow
@@ -258,6 +258,18 @@ different orders:</p>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reason: default for <span style="color: #0000BB;">"glycoproteomics"</span> with n_samples &lt; 30.</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="input-scales">Input scales<a class="anchor" aria-label="anchor" href="#input-scales"></a>
+</h2>
+<ol style="list-style-type: decimal">
+<li>
+<code>glyclean</code> automatically performs the appropriate scale
+transformations when needed.</li>
+<li>The input scale is preserved whenever possible.</li>
+<li>See <a href="../reference/data_scales.html">the scale reference</a>
+(<code><a href="../reference/data_scales.html">?data_scales</a></code>) for special cases and supported scales.</li>
+</ol>
+</div>
+<div class="section level2">
 <h2 id="step-by-step-preprocessing">Step-by-Step Preprocessing<a class="anchor" aria-label="anchor" href="#step-by-step-preprocessing"></a>
 </h2>
 <p>The <code>auto_xxx()</code> functions offer a convenient starting
@@ -289,7 +301,7 @@ samples.</p>
 </tr>
 <tr class="even">
 <td><code><a href="../reference/normalize_median_abs.html">normalize_median_abs()</a></code></td>
-<td>Median absolute deviation</td>
+<td>Absolute median normalization</td>
 <td>When you need extra robustness</td>
 </tr>
 <tr class="odd">
@@ -358,7 +370,7 @@ experiment object.</p>
 <code class="sourceCode R"><span><span class="co"># Example: Using by parameter with a custom vector</span></span>
 <span><span class="co"># Normalize within custom groups (e.g., based on some external criteria)</span></span>
 <span><span class="va">custom_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"C"</span>, <span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"C"</span><span class="op">)</span></span>
-<span><span class="va">normalized_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">exp</span>, by <span class="op">=</span> <span class="va">custom_groups</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">normalized_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median_quotient.html">normalize_median_quotient</a></span><span class="op">(</span><span class="va">exp</span>, by <span class="op">=</span> <span class="va">custom_groups</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Compositional Data: CLR and ALR</strong></p>
 <p>For glycomics data (where intensities represent relative abundances
 of glycans), standard normalization methods may not be appropriate.
@@ -367,12 +379,12 @@ Instead, compositional data analysis techniques are recommended:</p>
 <li><p><strong><code><a href="../reference/transform_clr.html">transform_clr()</a></code></strong>: Centered Log-Ratio
 transformation. A robust method for compositional data analysis. The
 result remains on the <code>log2</code>-ratio scale, with experiment
-metadata <code>scale = "log2"</code>.</p></li>
+metadata <code>scale = "logx"</code>.</p></li>
 <li><p><strong><code><a href="../reference/transform_alr.html">transform_alr()</a></code></strong>: Additive Log-Ratio
 transformation. The reference glycan is chosen based on Procrustes
 correlation to CLR geometry and minimal between-group variance, and the
 final result remains on the <code>log2</code>-ratio scale
-(<code>scale = "log2"</code>). If no suitable reference is found, ALR
+(<code>scale = "logx"</code>). If no suitable reference is found, ALR
 falls back to CLR.</p></li>
 </ul>
 <p>The CLR and ALR methods align with the best practices described in
@@ -556,14 +568,14 @@ design allows batch and biological effects to be distinguished.</p>
 <code class="sourceCode R"><span><span class="co"># To detect batch effects:</span></span>
 <span><span class="va">p_values</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detect_batch_effect.html">detect_batch_effect</a></span><span class="op">(</span><span class="va">aggregated_exp2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Detecting batch effects using ANOVA for 2738 variables...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Batch effect detection completed. 19 out of 2738 variables show significant batch effects (p &lt; 0.05).</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Batch effect detection completed. 15 out of 2738 variables show significant batch effects (p &lt; 0.05).</span></span>
 <span><span class="va">p_values</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span>
 <span><span class="co">#&gt; P08185-176-Hex(5)HexNAc(4)NeuAc(2) P04196-344-Hex(5)HexNAc(4)NeuAc(1) </span></span>
-<span><span class="co">#&gt;                          0.6998998                          0.3951691 </span></span>
+<span><span class="co">#&gt;                          0.4665611                          0.3007360 </span></span>
 <span><span class="co">#&gt;         P04196-344-Hex(5)HexNAc(4)         P10909-291-Hex(6)HexNAc(5) </span></span>
-<span><span class="co">#&gt;                          0.4852698                          0.3329619 </span></span>
+<span><span class="co">#&gt;                          0.5136274                          0.3010584 </span></span>
 <span><span class="co">#&gt; P04196-344-Hex(5)HexNAc(4)NeuAc(2) </span></span>
-<span><span class="co">#&gt;                          0.4907154</span></span></code></pre></div>
+<span><span class="co">#&gt;                          0.4419162</span></span></code></pre></div>
 <p>For demonstration, we can also apply batch effect correction to this
 dataset:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -604,11 +616,11 @@ parameter for stratified processing. It accepts both column names from
 the sample metadata and vectors.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Using column names (standard approach)</span></span>
-<span><span class="va">normalized_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">exp</span>, by <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span>
+<span><span class="va">normalized_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median_quotient.html">normalize_median_quotient</a></span><span class="op">(</span><span class="va">exp</span>, by <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Using custom vectors (advanced approach)</span></span>
 <span><span class="va">custom_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"C"</span>, <span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"C"</span><span class="op">)</span></span>
-<span><span class="va">normalized_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median.html">normalize_median</a></span><span class="op">(</span><span class="va">exp</span>, by <span class="op">=</span> <span class="va">custom_groups</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">normalized_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_median_quotient.html">normalize_median_quotient</a></span><span class="op">(</span><span class="va">exp</span>, by <span class="op">=</span> <span class="va">custom_groups</span><span class="op">)</span></span></code></pre></div>
 <p>This also lets you use groupings that are not stored in the
 experiment object.</p>
 </div>

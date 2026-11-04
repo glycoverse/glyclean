@@ -53,3 +53,8 @@ add_site_seq(exp, fasta = NULL, n_aa = 7, taxid = 9606)
 A
 [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
 object with the new `site_sequence` column in its row data.
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.

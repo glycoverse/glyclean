@@ -1,8 +1,8 @@
 # Absolute Median Normalization
 
 Normalize the expression matrix by dividing each column (sample) by the
-absolute median of that column (NA ignored), so that the absolute median
-of each column is 1.
+absolute median of that column (NA ignored), retaining the geometric
+mean of the absolute column medians.
 
 ## Usage
 
@@ -25,3 +25,8 @@ normalize_median_abs(x)
 
 A container of the same class as `x`, with a normalized expression
 matrix.
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.

@@ -1,8 +1,7 @@
 # Remove Constant Variables
 
 Constant variables are variables with the same value in all samples.
-This function is equivalent to
-`remove_low_var(x, var_cutoff = 0, by = by, strict = strict)`.
+Constancy is tested in the current coordinates, including `logx`.
 
 ## Usage
 
@@ -39,3 +38,6 @@ A container of the same class as `x`, with filtered variables.
 ## See also
 
 [`remove_low_var()`](https://glycoverse.github.io/glyclean/dev/reference/remove_low_var.md)
+
+[data_scales](https://glycoverse.github.io/glyclean/dev/reference/data_scales.md)
+for working domains and supported input scales.
