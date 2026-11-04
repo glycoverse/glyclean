@@ -1,6 +1,6 @@
 # glyclean (development version)
 
-* `adjust_protein()` gains `pro_scale` to describe protein matrix values independently of the experiment scale, supporting `raw`, `log`, `log2`, and `log10` inputs while preserving the experiment representation and recording replayable parameters. Both inputs reject `logx`.
+* `adjust_protein()` gains `pro_scale` to describe protein matrix values independently of the experiment scale, supporting `raw`, `log`, `log2`, and `log10` inputs while preserving the experiment representation and recording replayable parameters. Both inputs reject `logx`. (#40)
 
 ## Breaking changes
 
