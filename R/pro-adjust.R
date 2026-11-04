@@ -14,7 +14,8 @@
 #' `GP-adj` = (`GP` / `PRO`) / (median(`GP`) / median(`PRO`))
 #'
 #' The first part is to adjust glycopeptide expression by protein expression.
-#' The second part is to rescale the expression to the original scale.
+#' The second part normalizes the ratios by the ratio of the row medians.
+#' The result is a normalized ratio, not an absolute abundance.
 #'
 #' ## "reg" method
 #'
@@ -22,22 +23,52 @@
 #' Both glycopeptide and protein expression values are log2-transformed (with +1 to avoid log(0))
 #' before fitting the linear model: log2(GP+1) ~ log2(PRO+1).
 #' The residuals represent the glycosylation-specific signal and are converted back to the
-#' original scale using 2^residuals, ensuring all adjusted values are positive.
+#' abundance domain using 2^residuals, giving positive exponentiated residuals.
+#' Rows with fewer than three paired observations or failed fits retain their
+#' original glycopeptide values.
 #'
-#' In both methods, only glycoproteins identified in both `exp` and `pro_expr_mat` will be retained.
+#' In both methods, only glycoproteins and samples identified in both `exp` and
+#' `pro_expr_mat` are retained, with samples aligned by name.
+#'
+#' Both inputs may independently use ordinary `raw`, `log` (natural logarithm),
+#' `log2`, or `log10` representations. Logarithms are decoded to raw abundances
+#' before applying the formulas above; these are ordinary logarithms, not
+#' `log2(x + 1)` working values. Results use the original representation and
+#' scale metadata of `exp`. The `logx` label is rejected for either input because
+#' it does not identify an invertible abundance transformation.
+#'
+#' Abundances must be nonnegative and finite or missing. Negative log values
+#' represent abundances below one and are allowed; `-Inf` represents raw zero.
+#' Log values that overflow or underflow when decoded to raw are rejected.
+#' The ratio method preserves ordinary division behavior at zero denominators
+#' or zero medians, including non-finite results; it does not impute zeros.
 #'
 #' @param exp A [glyexp::GlycoproteomicSE()] object.
 #' @param pro_expr_mat A matrix of protein expression.
-#'  Columns are samples, rows are uniprot protein accessions.
+#'  Columns are named samples, rows are named UniProt protein accessions that
+#'  match the `protein` annotation in `exp`.
 #' @param method The method to use for protein adjustment.
 #'  Either "ratio" or "reg". Default is "ratio".
+#' @param pro_scale Representation of `pro_expr_mat`, independently of the scale
+#'   metadata of `exp`: `"raw"` (default), `"log"`, `"log2"`, or `"log10"`.
 #'
 #' @return A [glyexp::GlycoproteomicSE()] object with adjusted protein
-#'   expression.
+#'   expression, represented on the input scale of `exp`.
+#' @examples
+#' exp <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
+#' proteins <- unique(SummarizedExperiment::rowData(exp)$protein)
+#' pro <- matrix(1, length(proteins), ncol(exp),
+#'   dimnames = list(proteins, colnames(exp)))
+#' adjusted <- adjust_protein(exp, log2(pro), pro_scale = "log2")
 #' @export
 #'
 #' @importFrom rlang .data
-adjust_protein <- function(exp, pro_expr_mat, method = c("ratio", "reg")) {
+adjust_protein <- function(
+  exp,
+  pro_expr_mat,
+  method = c("ratio", "reg"),
+  pro_scale = "raw"
+) {
   UseMethod("adjust_protein")
 }
 
@@ -46,12 +77,14 @@ adjust_protein <- function(exp, pro_expr_mat, method = c("ratio", "reg")) {
 adjust_protein.glyexp_experiment <- function(
   exp,
   pro_expr_mat,
-  method = c("ratio", "reg")
+  method = c("ratio", "reg"),
+  pro_scale = "raw"
 ) {
   .adjust_protein_experiment(
     exp,
     pro_expr_mat = pro_expr_mat,
     method = method,
+    pro_scale = pro_scale,
     error_call = quote(adjust_protein())
   )
 }
@@ -61,12 +94,14 @@ adjust_protein.glyexp_experiment <- function(
 adjust_protein.GlycomicSE <- function(
   exp,
   pro_expr_mat,
-  method = c("ratio", "reg")
+  method = c("ratio", "reg"),
+  pro_scale = "raw"
 ) {
   .adjust_protein_experiment(
     exp,
     pro_expr_mat = pro_expr_mat,
     method = method,
+    pro_scale = pro_scale,
     error_call = quote(adjust_protein())
   )
 }
@@ -76,12 +111,14 @@ adjust_protein.GlycomicSE <- function(
 adjust_protein.GlycoproteomicSE <- function(
   exp,
   pro_expr_mat,
-  method = c("ratio", "reg")
+  method = c("ratio", "reg"),
+  pro_scale = "raw"
 ) {
   .adjust_protein_experiment(
     exp,
     pro_expr_mat = pro_expr_mat,
     method = method,
+    pro_scale = pro_scale,
     error_call = quote(adjust_protein())
   )
 }
@@ -91,7 +128,8 @@ adjust_protein.GlycoproteomicSE <- function(
 adjust_protein.default <- function(
   exp,
   pro_expr_mat,
-  method = c("ratio", "reg")
+  method = c("ratio", "reg"),
+  pro_scale = "raw"
 ) {
   cli::cli_abort(c(
     "{.arg exp} must be a {.cls glyexp_experiment} object or a {.cls GlycoproteomicSE} object.",
@@ -103,12 +141,32 @@ adjust_protein.default <- function(
   exp,
   pro_expr_mat,
   method = c("ratio", "reg"),
+  pro_scale = "raw",
   error_call = rlang::caller_call()
 ) {
   record <- .pipeline_recorder(exp)
   # Check arguments
   .assert_glycoproteomics_container(exp, error_call = error_call)
   method <- rlang::arg_match(method)
+  pro_scale <- .protein_scale(pro_scale, "pro_scale")
+  exp_scale <- .get_container_metadata(exp)$scale
+  if (is.null(exp_scale)) {
+    exp_scale <- "raw"
+  }
+  exp_scale <- .protein_scale(exp_scale, "exp scale")
+  checkmate::assert_matrix(pro_expr_mat, mode = "numeric")
+  checkmate::assert_character(
+    rownames(pro_expr_mat),
+    any.missing = FALSE,
+    unique = TRUE,
+    min.len = 1
+  )
+  checkmate::assert_character(
+    colnames(pro_expr_mat),
+    any.missing = FALSE,
+    unique = TRUE,
+    min.len = 1
+  )
 
   # Check if the protein column exists
   var_info <- .get_var_info(exp)
@@ -132,8 +190,8 @@ adjust_protein.default <- function(
 
   new_exp <- switch(
     method,
-    ratio = .adjust_protein_ratio(exp, pro_expr_mat),
-    reg = .adjust_protein_reg(exp, pro_expr_mat)
+    ratio = .adjust_protein_ratio(exp, pro_expr_mat, exp_scale, pro_scale),
+    reg = .adjust_protein_reg(exp, pro_expr_mat, exp_scale, pro_scale)
   )
 
   n_dropped <- original_n_vars - nrow(.get_var_info(new_exp))
@@ -143,12 +201,20 @@ adjust_protein.default <- function(
     )
   }
 
-  record(new_exp, .new_pipeline_step(adjust_protein, list(
-    pro_expr_mat = pro_expr_mat, method = method
-  )))
+  record(
+    new_exp,
+    .new_pipeline_step(
+      adjust_protein,
+      list(
+        pro_expr_mat = pro_expr_mat,
+        method = method,
+        pro_scale = pro_scale
+      )
+    )
+  )
 }
 
-.adjust_protein_ratio <- function(exp, pro_expr_mat) {
+.adjust_protein_ratio <- function(exp, pro_expr_mat, exp_scale, pro_scale) {
   # Get the glycopeptide expression matrix
   gp_expr_mat <- .get_expr_mat(exp)
   var_info <- .get_var_info(exp)
@@ -165,6 +231,8 @@ adjust_protein.default <- function(
   # Subset and reorder to match samples
   gp_expr_mat <- gp_expr_mat[, common_samples, drop = FALSE]
   pro_expr_mat <- pro_expr_mat[, common_samples, drop = FALSE]
+  gp_expr_mat <- .protein_to_raw(gp_expr_mat, exp_scale, "exp")
+  pro_expr_mat <- .protein_to_raw(pro_expr_mat, pro_scale, "pro_expr_mat")
 
   # Apply ratio method for each glycopeptide using purrr
   adjusted_rows <- purrr::imap(seq_len(nrow(gp_expr_mat)), function(i, idx) {
@@ -175,7 +243,7 @@ adjust_protein.default <- function(
     ratio_values <- gp_values / pro_values
     scaling_factor <- stats::median(gp_values, na.rm = TRUE) /
       stats::median(pro_values, na.rm = TRUE)
-    ratio_values / scaling_factor
+    .protein_from_raw(ratio_values / scaling_factor, exp_scale)
   })
 
   # Reconstruct the matrix
@@ -197,7 +265,7 @@ adjust_protein.default <- function(
   )
 }
 
-.adjust_protein_reg <- function(exp, pro_expr_mat) {
+.adjust_protein_reg <- function(exp, pro_expr_mat, exp_scale, pro_scale) {
   # Get the glycopeptide expression matrix
   gp_expr_mat <- .get_expr_mat(exp)
   var_info <- .get_var_info(exp)
@@ -214,6 +282,9 @@ adjust_protein.default <- function(
   # Subset and reorder to match samples
   gp_expr_mat <- gp_expr_mat[, common_samples, drop = FALSE]
   pro_expr_mat <- pro_expr_mat[, common_samples, drop = FALSE]
+  original_gp <- gp_expr_mat
+  gp_expr_mat <- .protein_to_raw(gp_expr_mat, exp_scale, "exp")
+  pro_expr_mat <- .protein_to_raw(pro_expr_mat, pro_scale, "pro_expr_mat")
 
   # Apply regression method for each glycopeptide using purrr
   adjusted_rows <- purrr::imap(seq_len(nrow(gp_expr_mat)), function(i, idx) {
@@ -231,7 +302,7 @@ adjust_protein.default <- function(
       cli::cli_warn(
         "Variable {.field {var_name}} has fewer than 3 valid samples. Keeping original values."
       )
-      return(gp_values)
+      return(original_gp[i, ])
     }
 
     # Log2 transform values before regression (add 1 to avoid log(0))
@@ -259,7 +330,7 @@ adjust_protein.default <- function(
     if (!is.null(fit)) {
       # Use residuals as adjusted values for valid samples
       # Residuals represent the glycosylation-specific signal in log2 space
-      # Convert back to original scale using 2^residuals (always positive)
+      # Exponentiate residuals to the abundance domain (always positive)
       residuals <- stats::residuals(fit)
 
       # Create adjusted values vector
@@ -267,9 +338,9 @@ adjust_protein.default <- function(
       adjusted_values[valid_samples] <- 2^residuals
       adjusted_values[!valid_samples] <- NA
 
-      return(adjusted_values)
+      return(.protein_from_raw(adjusted_values, exp_scale))
     } else {
-      return(gp_values)
+      return(original_gp[i, ])
     }
   })
 
@@ -290,4 +361,33 @@ adjust_protein.default <- function(
     expr_mat = adjusted_expr_mat,
     sample_info = sample_info
   )
+}
+
+# Protein-specific conversions are kept local so the two inputs remain independent.
+.protein_scale <- function(scale, arg) {
+  if (identical(scale, "logx")) {
+    cli::cli_abort(
+      "{.arg {arg}} cannot be {.val logx}: raw abundances cannot be recovered from this label."
+    )
+  }
+  rlang::arg_match0(scale, c("raw", "log", "log2", "log10"), arg_nm = arg)
+}
+
+.protein_to_raw <- function(x, scale, arg) {
+  raw <- switch(scale, raw = x, log = exp(x), log2 = 2^x, log10 = 10^x)
+  if (any(!is.na(raw) & (!is.finite(raw) | raw < 0))) {
+    cli::cli_abort(
+      "{.arg {arg}} must decode to finite, nonnegative raw abundances or missing values."
+    )
+  }
+  if (scale != "raw" && any(is.finite(x) & raw == 0, na.rm = TRUE)) {
+    cli::cli_abort(
+      "{.arg {arg}} contains log values that underflow when decoded to raw abundances."
+    )
+  }
+  raw
+}
+
+.protein_from_raw <- function(x, scale) {
+  switch(scale, raw = x, log = log(x), log2 = log2(x), log10 = log10(x))
 }

@@ -6,24 +6,43 @@
 \alias{adjust_protein.default}
 \title{Adjust Protein Expression}
 \usage{
-adjust_protein(exp, pro_expr_mat, method = c("ratio", "reg"))
+adjust_protein(
+  exp,
+  pro_expr_mat,
+  method = c("ratio", "reg"),
+  pro_scale = "raw"
+)
 
-\method{adjust_protein}{glyexp_experiment}(exp, pro_expr_mat, method = c("ratio", "reg"))
+\method{adjust_protein}{glyexp_experiment}(
+  exp,
+  pro_expr_mat,
+  method = c("ratio", "reg"),
+  pro_scale = "raw"
+)
 
-\method{adjust_protein}{default}(exp, pro_expr_mat, method = c("ratio", "reg"))
+\method{adjust_protein}{default}(
+  exp,
+  pro_expr_mat,
+  method = c("ratio", "reg"),
+  pro_scale = "raw"
+)
 }
 \arguments{
 \item{exp}{A \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} object.}
 
 \item{pro_expr_mat}{A matrix of protein expression.
-Columns are samples, rows are uniprot protein accessions.}
+Columns are named samples, rows are named UniProt protein accessions that
+match the \code{protein} annotation in \code{exp}.}
 
 \item{method}{The method to use for protein adjustment.
 Either "ratio" or "reg". Default is "ratio".}
+
+\item{pro_scale}{Representation of \code{pro_expr_mat}, independently of the scale
+metadata of \code{exp}: \code{"raw"} (default), \code{"log"}, \code{"log2"}, or \code{"log10"}.}
 }
 \value{
 A \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} object with adjusted protein
-expression.
+expression, represented on the input scale of \code{exp}.
 }
 \description{
 This function adjusts the glycopeptide expression by the protein expression.
@@ -38,7 +57,8 @@ and protein expression is denoted as \code{PRO}.
 \code{GP-adj} = (\code{GP} / \code{PRO}) / (median(\code{GP}) / median(\code{PRO}))
 
 The first part is to adjust glycopeptide expression by protein expression.
-The second part is to rescale the expression to the original scale.
+The second part normalizes the ratios by the ratio of the row medians.
+The result is a normalized ratio, not an absolute abundance.
 }
 
 \subsection{"reg" method}{
@@ -47,8 +67,31 @@ Use linear regression to remove the protein expression from the glycopeptide exp
 Both glycopeptide and protein expression values are log2-transformed (with +1 to avoid log(0))
 before fitting the linear model: log2(GP+1) ~ log2(PRO+1).
 The residuals represent the glycosylation-specific signal and are converted back to the
-original scale using 2^residuals, ensuring all adjusted values are positive.
+abundance domain using 2^residuals, giving positive exponentiated residuals.
+Rows with fewer than three paired observations or failed fits retain their
+original glycopeptide values.
 
-In both methods, only glycoproteins identified in both \code{exp} and \code{pro_expr_mat} will be retained.
+In both methods, only glycoproteins and samples identified in both \code{exp} and
+\code{pro_expr_mat} are retained, with samples aligned by name.
+
+Both inputs may independently use ordinary \code{raw}, \code{log} (natural logarithm),
+\code{log2}, or \code{log10} representations. Logarithms are decoded to raw abundances
+before applying the formulas above; these are ordinary logarithms, not
+\code{log2(x + 1)} working values. Results use the original representation and
+scale metadata of \code{exp}. The \code{logx} label is rejected for either input because
+it does not identify an invertible abundance transformation.
+
+Abundances must be nonnegative and finite or missing. Negative log values
+represent abundances below one and are allowed; \code{-Inf} represents raw zero.
+Log values that overflow or underflow when decoded to raw are rejected.
+The ratio method preserves ordinary division behavior at zero denominators
+or zero medians, including non-finite results; it does not impute zeros.
 }
+}
+\examples{
+exp <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
+proteins <- unique(SummarizedExperiment::rowData(exp)$protein)
+pro <- matrix(1, length(proteins), ncol(exp),
+  dimnames = list(proteins, colnames(exp)))
+adjusted <- adjust_protein(exp, log2(pro), pro_scale = "log2")
 }
