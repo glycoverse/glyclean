@@ -2,12 +2,6 @@
 
 ## glyclean (development version)
 
-- [`adjust_protein()`](https://glycoverse.github.io/glyclean/dev/reference/adjust_protein.md)
-  gains `pro_scale` to describe protein matrix values independently of
-  the experiment scale, supporting `raw`, `log`, `log2`, and `log10`
-  inputs while preserving the experiment representation and recording
-  replayable parameters. Both inputs reject `logx`. (#40)
-
 ### Breaking changes
 
 - Preprocessing and QC now honor `raw`, `log`, `log2`, and `log10`
@@ -29,8 +23,7 @@
   now returns `scale = "logx"`, and CoDA outputs also use `logx`.
   Repeated CoDA/VSN and abundance-based processing reject `logx`;
   coordinate-based methods use its negative and zero values directly.
-  This requires glyexp with logx support (the merged
-  glycoverse/glyexp#40 commit pinned in `Remotes`). (#41)
+  This requires glyexp \>= 0.19.0. (#41)
 
 - [`transform_alr()`](https://glycoverse.github.io/glyclean/dev/reference/transform_alr.md)
   now records actual CLR when reference selection falls back, restarting
@@ -63,7 +56,7 @@
   [`auto_coda()`](https://glycoverse.github.io/glyclean/dev/reference/auto_coda.md)
   now return log2-ratio coordinates instead of exponentiated ratios and
   set `scale = "logx"` in experiment metadata, requiring glyexp \>=
-  0.18.0.9000. Saved pipelines also produce the new values on replay;
+  0.19.0. Saved pipelines also produce the new values on replay;
   preserve the original package environment to reproduce earlier
   numerical results. (#39, \#41)
 
@@ -80,6 +73,11 @@
 
 ### New features
 
+- [`adjust_protein()`](https://glycoverse.github.io/glyclean/dev/reference/adjust_protein.md)
+  gains `pro_scale` to describe protein matrix values independently of
+  the experiment scale, supporting `raw`, `log`, `log2`, and `log10`
+  inputs while preserving the experiment representation and recording
+  replayable parameters. Both inputs reject `logx`. (#40)
 - [`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md),
   [`impute_bpca()`](https://glycoverse.github.io/glyclean/dev/reference/impute_bpca.md),
   [`impute_fw_knn()`](https://glycoverse.github.io/glyclean/dev/reference/impute_fw_knn.md),

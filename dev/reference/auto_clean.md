@@ -171,5 +171,5 @@ auto_clean(exp)
 #> ℹ Glycan type: N
 #> ℹ Row data fields: protein <chr>, glycan_composition <comp>, glycan_structure <struct>, protein_site <int>, gene <chr>
 #> ℹ Column data fields: group <fct>
-#> ℹ Metadata fields: exp_type <chr>, glycan_type <chr>, quant_method <chr>, scale <chr>, pipeline <glycln_p>
+#> ℹ Metadata fields: glycan_type <chr>, quant_method <chr>, scale <chr>, pipeline <glycln_p>
 ```
