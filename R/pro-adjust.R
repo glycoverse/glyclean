@@ -237,7 +237,7 @@ adjust_protein.default <- function(
   # Apply ratio method for each glycopeptide using purrr
   adjusted_rows <- purrr::imap(seq_len(nrow(gp_expr_mat)), function(i, idx) {
     var_name <- rownames(gp_expr_mat)[i]
-    protein <- var_info$protein[var_info$variable == var_name]
+    protein <- var_info$protein[[i]]
     gp_values <- gp_expr_mat[i, ]
     pro_values <- pro_expr_mat[protein, ]
     ratio_values <- gp_values / pro_values
@@ -251,18 +251,7 @@ adjust_protein.default <- function(
   rownames(adjusted_expr_mat) <- rownames(gp_expr_mat)
   colnames(adjusted_expr_mat) <- colnames(gp_expr_mat)
 
-  # Update the expression matrix in the experiment object
-  sample_info <- .get_sample_info(exp)
-  sample_info <- sample_info[
-    match(common_samples, sample_info$sample),
-    ,
-    drop = FALSE
-  ]
-  .rebuild_container(
-    exp,
-    expr_mat = adjusted_expr_mat,
-    sample_info = sample_info
-  )
+  .replace_protein_adjusted_matrix(exp, adjusted_expr_mat, common_samples)
 }
 
 .adjust_protein_reg <- function(exp, pro_expr_mat, exp_scale, pro_scale) {
@@ -289,7 +278,7 @@ adjust_protein.default <- function(
   # Apply regression method for each glycopeptide using purrr
   adjusted_rows <- purrr::imap(seq_len(nrow(gp_expr_mat)), function(i, idx) {
     var_name <- rownames(gp_expr_mat)[i]
-    protein <- var_info$protein[var_info$variable == var_name]
+    protein <- var_info$protein[[i]]
 
     gp_values <- gp_expr_mat[i, ]
     pro_values <- pro_expr_mat[protein, ]
@@ -349,18 +338,7 @@ adjust_protein.default <- function(
   rownames(adjusted_expr_mat) <- rownames(gp_expr_mat)
   colnames(adjusted_expr_mat) <- colnames(gp_expr_mat)
 
-  # Update the expression matrix in the experiment object
-  sample_info <- .get_sample_info(exp)
-  sample_info <- sample_info[
-    match(common_samples, sample_info$sample),
-    ,
-    drop = FALSE
-  ]
-  .rebuild_container(
-    exp,
-    expr_mat = adjusted_expr_mat,
-    sample_info = sample_info
-  )
+  .replace_protein_adjusted_matrix(exp, adjusted_expr_mat, common_samples)
 }
 
 # Protein-specific conversions are kept local so the two inputs remain independent.
@@ -390,4 +368,17 @@ adjust_protein.default <- function(
 
 .protein_from_raw <- function(x, scale) {
   switch(scale, raw = x, log = log(x), log2 = log2(x), log10 = log10(x))
+}
+
+# Preserve row annotations and optional/duplicated identifiers by position.
+.replace_protein_adjusted_matrix <- function(exp, expr_mat, samples) {
+  sample_positions <- match(samples, colnames(.get_expr_mat(exp)))
+  result <- .subset_container(exp, cols = sample_positions)
+  if (inherits(result, "glyexp_experiment")) {
+    result$expr_mat <- expr_mat
+  } else {
+    SummarizedExperiment::assay(result, 1) <- expr_mat
+    methods::validObject(result)
+  }
+  result
 }

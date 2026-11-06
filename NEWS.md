@@ -1,6 +1,7 @@
 # glyclean (development version)
 
 * `auto_remove()` preserves the actual filtered rows when feature names are absent or duplicated instead of selecting the original object again by name. Rare-variable filtering ignores unused factor levels so recorded preset steps can be replayed with the original group annotations.
+* Protein adjustment and internal SE subsetting keep feature annotations aligned by position when feature names are missing or duplicated.
 
 ## Breaking changes
 
@@ -23,6 +24,8 @@
 * New `zero_to_na()` replaces exact zeros in the abundance assay with missing values while preserving annotations and recording a replayable pipeline step. (#38)
 
 ## Minor improvements and bug fixes
+
+* Grouped preprocessing now tracks samples by column position, preserving values and order with missing or duplicated sample names; unused group levels are ignored and missing grouping values are rejected.
 
 * Pipelines recursively freeze callback values in attributes and S4 slots, rejecting hidden mutable references instead of recording histories whose results change when external state is modified. (#46)
 * `add_site_seq()` records replayable empty sequence snapshots and rejects missing or whitespace-only sequences after normalization, including fetched sequences. (#45)
