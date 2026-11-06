@@ -77,14 +77,19 @@
     return(matrix_func(mat, ...))
   } else {
     # Apply function by groups
-    samples <- colnames(mat)
-    if (is.null(samples)) {
-      samples <- seq_len(ncol(mat))
+    if (anyNA(by_values)) {
+      cli::cli_abort("Grouping values cannot contain missing values.")
     }
-    samples_grouped <- split(samples, by_values)
-    mats_grouped <- purrr::map(samples_grouped, ~ mat[, .x, drop = FALSE])
+    # Names are optional and may be duplicated in SummarizedExperiment.
+    # Group and restore by column position so each sample keeps its own values.
+    positions_grouped <- split(seq_len(ncol(mat)), by_values, drop = TRUE)
+    mats_grouped <- purrr::map(positions_grouped, ~ mat[, .x, drop = FALSE])
     new_mats_grouped <- purrr::map(mats_grouped, matrix_func, ...)
-    result_mat <- do.call(cbind, new_mats_grouped)[, samples, drop = FALSE]
+    grouped_positions <- unlist(positions_grouped, use.names = FALSE)
+    result_mat <- do.call(cbind, new_mats_grouped)[
+      , order(grouped_positions), drop = FALSE
+    ]
+    dimnames(result_mat) <- dimnames(mat)
     return(result_mat)
   }
 }
@@ -162,10 +167,16 @@
   if (inherits(x, "glyexp_experiment")) {
     return(x$sample_info)
   }
-  tibble::as_tibble(
+  sample_info <- tibble::as_tibble(
     SummarizedExperiment::colData(x),
     rownames = "sample"
   )
+  # DataFrame-to-data.frame conversion makes duplicate row names unique.
+  # Keep the original SE sample identifiers when rebuilding the container.
+  if (!is.null(colnames(x))) {
+    sample_info$sample <- colnames(x)
+  }
+  sample_info
 }
 
 #' Extract variable information from a glyclean container
