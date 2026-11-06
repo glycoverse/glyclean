@@ -2,6 +2,9 @@
 
 ## glyclean (development version)
 
+- Protein adjustment and internal SE subsetting keep feature annotations
+  aligned by position when feature names are missing or duplicated.
+
 ### Breaking changes
 
 - Preprocessing and QC now honor `raw`, `log`, `log2`, and `log10`

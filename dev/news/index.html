@@ -33,7 +33,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="glyclean-development-version">glyclean (development version)<a class="anchor" aria-label="anchor" href="#glyclean-development-version"></a></h2>
-<div class="section level3">
+<ul><li>Protein adjustment and internal SE subsetting keep feature annotations aligned by position when feature names are missing or duplicated.</li>
+</ul><div class="section level3">
 <h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
 <ul><li><p>Preprocessing and QC now honor <code>raw</code>, <code>log</code>, <code>log2</code>, and <code>log10</code> metadata, restoring the input scale after processing and preserving original values when filtering. Previously log inputs could be logged again; pipelines replay with the corrected behavior. Preserve the original package environment to reproduce older results, and see <code><a href="../reference/data_scales.html">?data_scales</a></code> for working domains and <code>logx</code> support. (#41)</p></li>
 <li><p><code><a href="../reference/impute_zero.html">impute_zero()</a></code> now accepts only <code>raw</code>; <code><a href="../reference/zero_to_na.html">zero_to_na()</a></code> converts <code>-Inf</code> to <code>NA</code> on ordinary log scales while preserving finite log zero. Use an appropriate scale-aware imputation method for logged input; both functions reject <code>logx</code>. (#41)</p></li>
