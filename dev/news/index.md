@@ -116,6 +116,11 @@
 
 ### Minor improvements and bug fixes
 
+- Grouped preprocessing now tracks samples by column position,
+  preserving values and order with missing or duplicated sample names;
+  unused group levels are ignored and missing grouping values are
+  rejected.
+
 - Pipelines recursively freeze callback values in attributes and S4
   slots, rejecting hidden mutable references instead of recording
   histories whose results change when external state is modified. (#46)
