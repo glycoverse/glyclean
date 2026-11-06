@@ -361,6 +361,13 @@
 #' @return A container with the same class as `x`.
 #' @noRd
 .subset_container <- function(x, rows = NULL, cols = NULL) {
+  .assert_glyclean_container(x)
+  if (methods::is(x, "SummarizedExperiment")) {
+    if (is.null(rows)) rows <- seq_len(nrow(x))
+    if (is.null(cols)) cols <- seq_len(ncol(x))
+    return(x[rows, cols, drop = FALSE])
+  }
+
   mat <- .get_expr_mat(x)
   if (is.null(rows)) {
     rows <- seq_len(nrow(mat))
