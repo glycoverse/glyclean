@@ -88,6 +88,11 @@ remove_rare <- function(
 ) {
   checkmate::assert_flag(strict)
 
+  # There is nothing to compare when every grouping value is missing.
+  if (!is.null(by) && !any(!is.na(by))) {
+    cli::cli_abort("Grouping values must contain at least one observed group.")
+  }
+
   # Validate and standardize parameters
   params <- .validate_filter_params(prop, n, min_n)
 
@@ -167,7 +172,7 @@ remove_rare <- function(
     return(list(global = global_min_n, by_group = NULL))
   } else {
     # Group-wise min_n calculation
-    groups <- split(seq_len(n_samples), by_values)
+    groups <- split(seq_len(n_samples), by_values, drop = TRUE)
     group_sizes <- sapply(groups, length)
     group_min_n <- ifelse(group_sizes <= 3, group_sizes, 3)
     return(list(global = NULL, by_group = group_min_n))
@@ -188,7 +193,7 @@ remove_rare <- function(
     }
   } else {
     # Group-wise validation
-    groups <- split(seq_len(n_samples), by_values)
+    groups <- split(seq_len(n_samples), by_values, drop = TRUE)
     group_sizes <- sapply(groups, length)
 
     if (is.null(min_n_values$global)) {
@@ -245,7 +250,7 @@ remove_rare <- function(
   min_n_values,
   strict
 ) {
-  groups <- split(seq_len(ncol(expr_mat)), by_values)
+  groups <- split(seq_len(ncol(expr_mat)), by_values, drop = TRUE)
 
   group_results <- lapply(names(groups), function(group_name) {
     idx <- groups[[group_name]]

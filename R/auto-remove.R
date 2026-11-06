@@ -40,7 +40,12 @@ auto_remove <- function(
   exp_filtered <- exp
   if (has_group && is.factor(sample_info[[group_col]])) {
     sample_info[[group_col]] <- droplevels(sample_info[[group_col]])
-    exp_filtered <- .rebuild_container(exp_filtered, sample_info = sample_info)
+    if (methods::is(exp_filtered, "SummarizedExperiment")) {
+      SummarizedExperiment::colData(exp_filtered)[[group_col]] <-
+        sample_info[[group_col]]
+    } else {
+      exp_filtered$sample_info <- sample_info
+    }
   }
 
   use_group_col <- if (has_group) group_col else NULL
@@ -81,14 +86,11 @@ auto_remove <- function(
     ))
   }
 
-  kept_vars <- rownames(.get_expr_mat(exp_filtered))
   n_before <- nrow(.get_expr_mat(exp))
-  n_after <- length(kept_vars)
+  n_after <- nrow(.get_expr_mat(exp_filtered))
   n_removed <- n_before - n_after
 
   if (n_removed > 0) {
-    exp <- .subset_container(exp, rows = kept_vars)
-
     prop_removed <- round(n_removed / n_before * 100, 2)
     cli::cli_alert_info(
       "Total removed: {.val {n_removed}} ({.val {prop_removed}}%) variables."
@@ -99,5 +101,14 @@ auto_remove <- function(
 
   metadata <- .get_container_metadata(exp)
   metadata$pipeline <- get_pipeline(exp_filtered)
-  .rebuild_container(exp, metadata = metadata)
+  # The filtering functions already preserve row positions. Do not subset the
+  # original again by names, which may be absent or duplicated in an SE.
+  if (methods::is(exp_filtered, "SummarizedExperiment")) {
+    SummarizedExperiment::colData(exp_filtered) <- SummarizedExperiment::colData(exp)
+    S4Vectors::metadata(exp_filtered) <- metadata
+  } else {
+    exp_filtered$sample_info <- exp$sample_info
+    exp_filtered$meta_data <- metadata
+  }
+  exp_filtered
 }
