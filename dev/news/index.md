@@ -2,6 +2,11 @@
 
 ## glyclean (development version)
 
+- [`auto_remove()`](https://glycoverse.github.io/glyclean/dev/reference/auto_remove.md)
+  preserves the actual filtered rows when feature names are absent or
+  duplicated instead of selecting the original object again by name.
+  Rare-variable filtering ignores unused factor levels so recorded
+  preset steps can be replayed with the original group annotations.
 - Protein adjustment and internal SE subsetting keep feature annotations
   aligned by position when feature names are missing or duplicated.
 
