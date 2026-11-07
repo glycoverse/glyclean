@@ -30,7 +30,7 @@ auto_remove <- function(
   preset = "discovery",
   group_col = "group"
 ) {
-  .assert_glyclean_container(exp)
+  exp <- .ensure_scale_metadata(exp)
   checkmate::assert_choice(preset, c("simple", "discovery", "biomarker"))
   checkmate::assert_string(group_col, null.ok = TRUE)
 

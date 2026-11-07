@@ -41,7 +41,9 @@ lists, not callable functions: use \code{apply_pipeline(exp, pipeline)}.
 Successful processing calls append to \code{metadata(exp)$pipeline} (or
 \code{exp$meta_data$pipeline} for legacy experiments). Automatic operations record
 the concrete operations they execute. QC summaries and plots do not modify
-history. The experiment still contains only one abundance assay; history
+history. Applying even an empty pipeline fills absent \code{scale} metadata with
+\code{"raw"} in older glyco SE results, without modifying the input. The experiment
+still contains only one abundance assay; history
 contains parameters, not copies of intermediate assays.
 Grouping values are frozen for replay. When \code{by} is supplied as a column
 name, that original name is retained for printing the recorded step.

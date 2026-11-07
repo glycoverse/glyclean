@@ -24,6 +24,7 @@ measurements, before choosing an appropriate imputation method.
 \details{
 Only the abundance assay is changed. Annotations and metadata are
 preserved, with this operation appended to the preprocessing pipeline.
+Absent \code{scale} metadata in older glyco SE results is recorded as \code{"raw"}.
 Integer assays retain integer storage. Replacing implicit zeros in a sparse
 assay requires storing those entries as missing values and can increase
 memory use substantially.

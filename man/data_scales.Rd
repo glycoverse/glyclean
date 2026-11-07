@@ -13,6 +13,12 @@ domain and restores the input scale. Filters return subsets of the original
 assay without a numeric round trip. These conventions apply to legacy
 experiments, glyco subclasses, and
 plain \code{SummarizedExperiment} objects wherever the operation supports them.
+Processing results from older \code{GlycomicSE} and \code{GlycoproteomicSE} objects
+record an absent \code{scale} field as \code{"raw"} to satisfy current S4 validity,
+including filters, skipped operations, and empty pipelines. The input is not
+modified. Legacy S3 and plain SE containers retain an absent \code{scale} field
+when no scale change is required. Read-only QC and history access do not
+modify metadata.
 }
 \section{Working domains}{
 

@@ -9,6 +9,12 @@
 #' assay without a numeric round trip. These conventions apply to legacy
 #' experiments, glyco subclasses, and
 #' plain `SummarizedExperiment` objects wherever the operation supports them.
+#' Processing results from older `GlycomicSE` and `GlycoproteomicSE` objects
+#' record an absent `scale` field as `"raw"` to satisfy current S4 validity,
+#' including filters, skipped operations, and empty pipelines. The input is not
+#' modified. Legacy S3 and plain SE containers retain an absent `scale` field
+#' when no scale change is required. Read-only QC and history access do not
+#' modify metadata.
 #'
 #' @section Working domains:
 #' * Raw abundance: total-area, median, absolute-median, median-quotient and
@@ -81,12 +87,29 @@ NULL
 # exponentiated: it is a coordinate system, not a known logarithm of abundance.
 .get_scale <- function(x) {
   metadata <- .get_container_metadata(x)
+  # Only a missing field denotes a legacy raw object, not an explicit NULL.
   if (!"scale" %in% names(metadata)) {
     return("raw")
   }
-  scale <- metadata$scale
+  scale <- metadata[["scale"]]
   checkmate::assert_choice(scale, c("raw", "log", "log2", "log10", "logx"))
   scale
+}
+
+
+# Materialize the legacy default only where current glyco S4 validity requires
+# it. Ordinary SE and legacy S3 containers can retain their original metadata.
+# Read through .get_scale() first so an explicit invalid value is never repaired.
+.ensure_scale_metadata <- function(x) {
+  scale <- .get_scale(x)
+  if (methods::is(x, "GlycomicSE") || methods::is(x, "GlycoproteomicSE")) {
+    metadata <- .get_container_metadata(x)
+    if (!"scale" %in% names(metadata)) {
+      metadata$scale <- scale
+      S4Vectors::metadata(x) <- metadata
+    }
+  }
+  x
 }
 
 .reject_logx <- function(x) {

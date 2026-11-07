@@ -34,7 +34,10 @@
 #' `log2`, or `log10` representations. Logarithms are decoded to raw abundances
 #' before applying the formulas above; these are ordinary logarithms, not
 #' `log2(x + 1)` working values. Results use the original representation and
-#' scale metadata of `exp`. The `logx` label is rejected for either input because
+#' scale metadata of `exp`. An absent experiment `scale` field is treated as
+#' `"raw"`; explicitly invalid values are rejected. For older SE inputs without
+#' this field, the result records `scale = "raw"` so it remains a valid object.
+#' The `logx` label is rejected for either input because
 #' it does not identify an invertible abundance transformation.
 #'
 #' Abundances must be nonnegative and finite or missing. Negative log values
@@ -149,11 +152,7 @@ adjust_protein.default <- function(
   .assert_glycoproteomics_container(exp, error_call = error_call)
   method <- rlang::arg_match(method)
   pro_scale <- .protein_scale(pro_scale, "pro_scale")
-  exp_scale <- .get_container_metadata(exp)$scale
-  if (is.null(exp_scale)) {
-    exp_scale <- "raw"
-  }
-  exp_scale <- .protein_scale(exp_scale, "exp scale")
+  exp_scale <- .protein_scale(.get_scale(exp), "exp scale")
   checkmate::assert_matrix(pro_expr_mat, mode = "numeric")
   checkmate::assert_character(
     rownames(pro_expr_mat),
@@ -378,6 +377,7 @@ adjust_protein.default <- function(
     result$expr_mat <- expr_mat
   } else {
     SummarizedExperiment::assay(result, 1) <- expr_mat
+    result <- .ensure_scale_metadata(result)
     methods::validObject(result)
   }
   result

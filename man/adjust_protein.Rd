@@ -78,7 +78,10 @@ Both inputs may independently use ordinary \code{raw}, \code{log} (natural logar
 \code{log2}, or \code{log10} representations. Logarithms are decoded to raw abundances
 before applying the formulas above; these are ordinary logarithms, not
 \code{log2(x + 1)} working values. Results use the original representation and
-scale metadata of \code{exp}. The \code{logx} label is rejected for either input because
+scale metadata of \code{exp}. An absent experiment \code{scale} field is treated as
+\code{"raw"}; explicitly invalid values are rejected. For older SE inputs without
+this field, the result records \code{scale = "raw"} so it remains a valid object.
+The \code{logx} label is rejected for either input because
 it does not identify an invertible abundance transformation.
 
 Abundances must be nonnegative and finite or missing. Negative log values

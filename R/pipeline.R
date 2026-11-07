@@ -20,7 +20,9 @@
 #' Successful processing calls append to `metadata(exp)$pipeline` (or
 #' `exp$meta_data$pipeline` for legacy experiments). Automatic operations record
 #' the concrete operations they execute. QC summaries and plots do not modify
-#' history. The experiment still contains only one abundance assay; history
+#' history. Applying even an empty pipeline fills absent `scale` metadata with
+#' `"raw"` in older glyco SE results, without modifying the input. The experiment
+#' still contains only one abundance assay; history
 #' contains parameters, not copies of intermediate assays.
 #' Grouping values are frozen for replay. When `by` is supplied as a column
 #' name, that original name is retained for printing the recorded step.
@@ -126,7 +128,7 @@ get_pipeline <- function(exp) {
 apply_pipeline <- function(exp, pipeline) {
   .assert_glyclean_container(exp)
   .validate_pipeline(pipeline)
-  result <- exp
+  result <- .ensure_scale_metadata(exp)
   for (step in pipeline) {
     before <- get_pipeline(result)
     result <- .replay_pipeline_step(result, step)
@@ -330,6 +332,7 @@ apply_pipeline <- function(exp, pipeline) {
 # capture inside the returned recorder lets callers validate first, or supply
 # an explicit step after resolving effective parameters (for example FASTA data).
 .pipeline_recorder <- function(exp) {
+  .get_scale(exp)
   previous <- get_pipeline(exp)
   fun <- sys.function(-1L)
   frame <- parent.frame()
@@ -377,6 +380,7 @@ apply_pipeline <- function(exp, pipeline) {
 
 .append_pipeline_step <- function(result, step, previous = get_pipeline(result)) {
   .validate_pipeline(previous)
+  result <- .ensure_scale_metadata(result)
   history <- structure(c(unclass(previous), list(step)),
                        class = c("glyclean_pipeline", "list"))
   metadata <- .get_container_metadata(result)

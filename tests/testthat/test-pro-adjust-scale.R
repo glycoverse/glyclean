@@ -101,6 +101,68 @@ test_that("ordinary input scales agree independently for SE and legacy inputs", 
   }
 })
 
+test_that("absent experiment scale defaults to raw in protein adjustment", {
+  for (legacy in c(FALSE, TRUE)) {
+    d <- protein_scale_fixture(legacy = legacy)
+    x <- d$exp
+    metadata <- .get_container_metadata(x)
+    metadata$scale <- NULL
+    if (legacy) {
+      x$meta_data <- metadata
+    } else {
+      S4Vectors::metadata(x) <- metadata
+    }
+    x <- unserialize(serialize(x, NULL))
+    for (method in c("ratio", "reg")) {
+      for (pro_scale in c("raw", "log", "log2", "log10")) {
+        pro <- protein_encode(d$pro, pro_scale)
+        expected <- adjust_protein(d$exp, pro, method, pro_scale)
+        result <- adjust_protein(x, pro, method, pro_scale)
+        expect_equal(.get_expr_mat(result), .get_expr_mat(expected))
+        expect_identical(class(result), class(x))
+        expect_identical(.get_scale(result), "raw")
+        if (legacy) {
+          expect_false("scale" %in% names(.get_container_metadata(result)))
+        } else {
+          expect_identical(.get_container_metadata(result)$scale, "raw")
+          expect_true(methods::validObject(result))
+        }
+        expect_identical(.get_container_metadata(result)$custom, "preserved")
+        expect_identical(apply_pipeline(x, get_pipeline(result)), result)
+      }
+    }
+    expect_identical(.get_container_metadata(x), metadata)
+  }
+})
+
+test_that("protein adjustment rejects explicit invalid experiment scales", {
+  for (legacy in c(FALSE, TRUE)) {
+    d <- protein_scale_fixture(legacy = legacy)
+    for (scale in list(
+      NULL,
+      character(),
+      NA_character_,
+      "invalid",
+      2,
+      c("raw", "log2"),
+      list("raw")
+    )) {
+      x <- d$exp
+      metadata <- .get_container_metadata(x)
+      # List subassignment retains the field even when its value is NULL.
+      metadata["scale"] <- list(scale)
+      if (legacy) {
+        x$meta_data <- metadata
+      } else {
+        S4Vectors::metadata(x) <- metadata
+      }
+      for (method in c("ratio", "reg")) {
+        expect_error(adjust_protein(x, d$pro, method), "scale|choices|element")
+      }
+    }
+  }
+})
+
 test_that("pipeline stores the supplied protein representation and replays it", {
   for (legacy in c(FALSE, TRUE)) {
     for (method in c("ratio", "reg")) {
