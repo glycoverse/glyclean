@@ -1,32 +1,27 @@
 # glyclean (development version)
 
-* Preprocessing accepts older glyco SE objects without `scale` metadata and records `"raw"` in returned objects, including filtering, skipped operations, and empty pipelines, without changing the input. Processing rejects explicitly invalid scales. (#53)
-* `auto_remove()` preserves the actual filtered rows when feature names are absent or duplicated instead of selecting the original object again by name. Rare-variable filtering ignores unused factor levels so recorded preset steps can be replayed with the original group annotations.
-* Protein adjustment and internal SE subsetting keep feature annotations aligned by position when feature names are missing or duplicated.
-
 ## Breaking changes
 
-* Preprocessing and QC now honor `raw`, `log`, `log2`, and `log10` metadata, restoring the input scale after processing and preserving original values when filtering. Previously log inputs could be logged again; pipelines replay with the corrected behavior. Preserve the original package environment to reproduce older results, and see `?data_scales` for working domains and `logx` support. (#41)
-* `impute_zero()` now accepts only `raw`; `zero_to_na()` converts `-Inf` to `NA` on ordinary log scales while preserving finite log zero. Use an appropriate scale-aware imputation method for logged input; both functions reject `logx`. (#41)
-* `normalize_vsn()` now returns `scale = "logx"`, and CoDA outputs also use `logx`. Repeated CoDA/VSN and abundance-based processing reject `logx`; coordinate-based methods use its negative and zero values directly. This requires glyexp >= 0.19.0. (#41)
-* `transform_alr()` now records actual CLR when reference selection falls back, restarting from the supplied seed for replay. Stochastic fallback results can change; preserve the previous package environment to reproduce earlier output. (#41)
-* `auto_coda()` now always uses site-wise CLR for glycoproteomics, and `transform_alr()` rejects glycoproteomics input. Use `transform_clr()` or `auto_coda()` to transform each `protein` and `protein_site` combination independently while retaining all rows. (#34, #37)
-* `impute_fw_knn()` and `impute_sw_knn()` now use `seed = 123` for all random operations, including large-matrix splitting, replacing the backend default of `362436069`. Split-based results can change; use `seed = 362436069` to retain the previous seed, and replace `rng.seed` in `...` with the explicit `seed` argument. (#35, #36)
-* `transform_alr()`, `transform_clr()`, and `auto_coda()` now return log2-ratio coordinates instead of exponentiated ratios and set `scale = "logx"` in experiment metadata, requiring glyexp >= 0.19.0. Saved pipelines also produce the new values on replay; preserve the original package environment to reproduce earlier numerical results. (#39, #41)
-* `transform_alr()`, `transform_clr()`, and `auto_coda()` now reject zero abundances and require finite, strictly positive input. Use `zero_to_na()` followed by appropriate imputation before CoDA when zeros represent missing values; CoDA does not add pseudo-counts or impute values. (#39)
+* Preprocessing and QC now honor `raw`, `log`, `log2`, and `log10` scale, restoring the input scale after processing and preserving original values when filtering. (#41)
+* `impute_zero()` now accepts only `raw` scale. (#41)
+* `zero_to_na()` converts `-Inf` to `NA` on ordinary log scales while preserving finite log zero. (#41)
+* `normalize_vsn()` and CoDA functions now returns a experiment with `scale = "logx"`. (#41)
+* `auto_coda()` now always uses site-wise CLR for glycoproteomics, and `transform_alr()` rejects glycoproteomics input. (#34, #37)
+* `aggregate()`, `impute_bpca()`, `impute_fw_knn()`, `impute_svd()`, `impute_sw_knn()`, and `normalize_vsn()` now use `seed = 123` for all random operations, replacing the backend default of `362436069`. The old `rng.seed` in `...` is not supported anymore. (#35, #36)
+* `transform_alr()`, `transform_clr()`, and `auto_coda()` now return log2-ratio coordinates instead of exponentiated ratios and set `scale = "logx"` in experiment metadata. (#39, #41)
+* `transform_alr()`, `transform_clr()`, and `auto_coda()` now reject zero abundances and require finite, strictly positive input. (#39)
 
 ## New features
 
-* New `transform_log()` explicitly converts abundances to natural, base-2, or base-10 logarithms, updates scale metadata, and records a replayable pipeline step. Manual log transformation is generally unnecessary for Glycoverse analyses and plots that already transform their inputs. (#43)
-* `adjust_protein()` gains `pro_scale` to describe protein matrix values independently of the experiment scale, supporting `raw`, `log`, `log2`, and `log10` inputs while preserving the experiment representation and recording replayable parameters. Both inputs reject `logx`. (#40)
-* `aggregate()`, `impute_bpca()`, `impute_fw_knn()`, `impute_svd()`, `impute_sw_knn()`, and `normalize_vsn()` gain an explicit `seed = 123` for reproducible stochastic processing while preserving the caller's random state. `auto_impute()`, `auto_aggregate()`, and `auto_clean()` forward the seed to the selected operations. (#35)
+* New `transform_log()` explicitly converts abundances to natural, base-2, or base-10 logarithms, updates scale metadata, and records a replayable pipeline step. (#43)
+* `adjust_protein()` gains `pro_scale` to describe protein matrix values independently of the experiment scale, supporting `raw`, `log`, `log2`, and `log10` inputs while preserving the experiment representation and recording replayable parameters. Both inputs reject `logx` scale. (#40)
 * New `glyclean_pipeline()`, `apply_pipeline()`, and `get_pipeline()` create, replay, and retrieve preprocessing pipelines stored in experiment metadata while retaining a single assay. Automatic preprocessing records the selected operations, seeds are stored as step parameters, and sequence annotation inputs are frozen for replay. Pipelines print numbered steps with compact parameter summaries. (#36)
 * New `zero_to_na()` replaces exact zeros in the abundance assay with missing values while preserving annotations and recording a replayable pipeline step. (#38)
 
 ## Minor improvements and bug fixes
 
+* Preprocessing accepts older glyco SE objects without `scale` metadata and records `"raw"` in returned objects, including filtering, skipped operations, and empty pipelines, without changing the input. Processing rejects explicitly invalid scales. (#53)
 * Grouped preprocessing now tracks samples by column position, preserving values and order with missing or duplicated sample names; unused group levels are ignored and missing grouping values are rejected.
-* Pipelines recursively freeze callback values in attributes and S4 slots, rejecting hidden mutable references instead of recording histories whose results change when external state is modified. (#46)
 * `add_site_seq()` records replayable empty sequence snapshots and rejects missing or whitespace-only sequences after normalization, including fetched sequences. (#45)
 * Filtering functions preserve the correct rows and annotations when a plain `SummarizedExperiment` has absent or duplicate row names, retaining the original abundance representation. (#44)
 * `detect_batch_effect()` now uses the same `log2(raw + 1e-6)` working domain as batch correction, correcting raw-domain ANOVA results; ordinary-scale correction restores the input scale and `logx` correction retains negative coordinates. (#41)
@@ -34,9 +29,9 @@
 * `impute_sample_min()` and `impute_half_sample_min()` now preserve all-missing columns as missing and retain matrix dimensions for singleton inputs. (#41)
 * `normalize_median()` and `normalize_median_abs()` documentation now describes rescaling to the geometric mean of sample medians, matching the existing limma algorithms. (#41)
 * `auto_coda()` and `auto_impute()` now select preprocessing strategies for legacy experiment objects without triggering deprecated dimension-accessor warnings.
-* `auto_coda()` and `transform_clr()` now transform glycoproteomics data independently at each protein site using CLR, retaining all rows. (#34, #37)
-* `impute_fw_knn()` and `impute_sw_knn()` now forward `seed` to the backend, including random large-matrix splitting; use `seed` instead of `rng.seed` in `...`. (#35, #36)
 * `transform_alr()`, `transform_clr()`, and `auto_coda()` now return log2-ratios and validate that abundances, `group_scales`, and derived two-group ratios are finite and strictly positive. (#39)
+* `auto_remove()` preserves the actual filtered rows when feature names are absent or duplicated instead of selecting the original object again by name. Rare-variable filtering ignores unused factor levels so recorded preset steps can be replayed with the original group annotations.
+* Protein adjustment and internal SE subsetting keep feature annotations aligned by position when feature names are missing or duplicated.
 
 # glyclean 0.16.0
 
