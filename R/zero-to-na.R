@@ -12,6 +12,7 @@
 #'
 #' @details Only the abundance assay is changed. Annotations and metadata are
 #'   preserved, with this operation appended to the preprocessing pipeline.
+#'   Absent `scale` metadata in older glyco SE results is recorded as `"raw"`.
 #'   Integer assays retain integer storage. Replacing implicit zeros in a sparse
 #'   assay requires storing those entries as missing values and can increase
 #'   memory use substantially.

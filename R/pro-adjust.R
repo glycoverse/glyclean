@@ -377,8 +377,7 @@ adjust_protein.default <- function(
     result$expr_mat <- expr_mat
   } else {
     SummarizedExperiment::assay(result, 1) <- expr_mat
-    # Older SE objects can lack scale metadata required by current validity checks.
-    S4Vectors::metadata(result)$scale <- .get_scale(result)
+    result <- .ensure_scale_metadata(result)
     methods::validObject(result)
   }
   result
