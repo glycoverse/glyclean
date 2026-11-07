@@ -33,42 +33,36 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="glyclean-development-version">glyclean (development version)<a class="anchor" aria-label="anchor" href="#glyclean-development-version"></a></h2>
-<ul><li>Preprocessing accepts older glyco SE objects without <code>scale</code> metadata and records <code>"raw"</code> in returned objects, including filtering, skipped operations, and empty pipelines, without changing the input. Processing rejects explicitly invalid scales. (#53)</li>
-<li>
-<code><a href="../reference/auto_remove.html">auto_remove()</a></code> preserves the actual filtered rows when feature names are absent or duplicated instead of selecting the original object again by name. Rare-variable filtering ignores unused factor levels so recorded preset steps can be replayed with the original group annotations.</li>
-<li>Protein adjustment and internal SE subsetting keep feature annotations aligned by position when feature names are missing or duplicated.</li>
-</ul><div class="section level3">
+<div class="section level3">
 <h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
-<ul><li>Preprocessing and QC now honor <code>raw</code>, <code>log</code>, <code>log2</code>, and <code>log10</code> metadata, restoring the input scale after processing and preserving original values when filtering. Previously log inputs could be logged again; pipelines replay with the corrected behavior. Preserve the original package environment to reproduce older results, and see <code><a href="../reference/data_scales.html">?data_scales</a></code> for working domains and <code>logx</code> support. (#41)</li>
+<ul><li>Preprocessing and QC now honor <code>raw</code>, <code>log</code>, <code>log2</code>, and <code>log10</code> scale, restoring the input scale after processing and preserving original values when filtering. (#41)</li>
 <li>
-<code><a href="../reference/impute_zero.html">impute_zero()</a></code> now accepts only <code>raw</code>; <code><a href="../reference/zero_to_na.html">zero_to_na()</a></code> converts <code>-Inf</code> to <code>NA</code> on ordinary log scales while preserving finite log zero. Use an appropriate scale-aware imputation method for logged input; both functions reject <code>logx</code>. (#41)</li>
+<code><a href="../reference/impute_zero.html">impute_zero()</a></code> now accepts only <code>raw</code> scale. (#41)</li>
 <li>
-<code><a href="../reference/normalize_vsn.html">normalize_vsn()</a></code> now returns <code>scale = "logx"</code>, and CoDA outputs also use <code>logx</code>. Repeated CoDA/VSN and abundance-based processing reject <code>logx</code>; coordinate-based methods use its negative and zero values directly. This requires glyexp &gt;= 0.19.0. (#41)</li>
+<code><a href="../reference/zero_to_na.html">zero_to_na()</a></code> converts <code>-Inf</code> to <code>NA</code> on ordinary log scales while preserving finite log zero. (#41)</li>
 <li>
-<code><a href="../reference/transform_alr.html">transform_alr()</a></code> now records actual CLR when reference selection falls back, restarting from the supplied seed for replay. Stochastic fallback results can change; preserve the previous package environment to reproduce earlier output. (#41)</li>
+<code><a href="../reference/normalize_vsn.html">normalize_vsn()</a></code> and CoDA functions now returns a experiment with <code>scale = "logx"</code>. (#41)</li>
 <li>
-<code><a href="../reference/auto_coda.html">auto_coda()</a></code> now always uses site-wise CLR for glycoproteomics, and <code><a href="../reference/transform_alr.html">transform_alr()</a></code> rejects glycoproteomics input. Use <code><a href="../reference/transform_clr.html">transform_clr()</a></code> or <code><a href="../reference/auto_coda.html">auto_coda()</a></code> to transform each <code>protein</code> and <code>protein_site</code> combination independently while retaining all rows. (#34, #37)</li>
+<code><a href="../reference/auto_coda.html">auto_coda()</a></code> now always uses site-wise CLR for glycoproteomics, and <code><a href="../reference/transform_alr.html">transform_alr()</a></code> rejects glycoproteomics input. (#34, #37)</li>
 <li>
-<code><a href="../reference/impute_fw_knn.html">impute_fw_knn()</a></code> and <code><a href="../reference/impute_sw_knn.html">impute_sw_knn()</a></code> now use <code>seed = 123</code> for all random operations, including large-matrix splitting, replacing the backend default of <code>362436069</code>. Split-based results can change; use <code>seed = 362436069</code> to retain the previous seed, and replace <code>rng.seed</code> in <code>...</code> with the explicit <code>seed</code> argument. (#35, #36)</li>
+<code><a href="../reference/aggregate.html">aggregate()</a></code>, <code><a href="../reference/impute_bpca.html">impute_bpca()</a></code>, <code><a href="../reference/impute_fw_knn.html">impute_fw_knn()</a></code>, <code><a href="../reference/impute_svd.html">impute_svd()</a></code>, <code><a href="../reference/impute_sw_knn.html">impute_sw_knn()</a></code>, and <code><a href="../reference/normalize_vsn.html">normalize_vsn()</a></code> now use <code>seed = 123</code> for all random operations, replacing the backend default of <code>362436069</code>. The old <code>rng.seed</code> in <code>...</code> is not supported anymore. (#35, #36)</li>
 <li>
-<code><a href="../reference/transform_alr.html">transform_alr()</a></code>, <code><a href="../reference/transform_clr.html">transform_clr()</a></code>, and <code><a href="../reference/auto_coda.html">auto_coda()</a></code> now return log2-ratio coordinates instead of exponentiated ratios and set <code>scale = "logx"</code> in experiment metadata, requiring glyexp &gt;= 0.19.0. Saved pipelines also produce the new values on replay; preserve the original package environment to reproduce earlier numerical results. (#39, #41)</li>
+<code><a href="../reference/transform_alr.html">transform_alr()</a></code>, <code><a href="../reference/transform_clr.html">transform_clr()</a></code>, and <code><a href="../reference/auto_coda.html">auto_coda()</a></code> now return log2-ratio coordinates instead of exponentiated ratios and set <code>scale = "logx"</code> in experiment metadata. (#39, #41)</li>
 <li>
-<code><a href="../reference/transform_alr.html">transform_alr()</a></code>, <code><a href="../reference/transform_clr.html">transform_clr()</a></code>, and <code><a href="../reference/auto_coda.html">auto_coda()</a></code> now reject zero abundances and require finite, strictly positive input. Use <code><a href="../reference/zero_to_na.html">zero_to_na()</a></code> followed by appropriate imputation before CoDA when zeros represent missing values; CoDA does not add pseudo-counts or impute values. (#39)</li>
+<code><a href="../reference/transform_alr.html">transform_alr()</a></code>, <code><a href="../reference/transform_clr.html">transform_clr()</a></code>, and <code><a href="../reference/auto_coda.html">auto_coda()</a></code> now reject zero abundances and require finite, strictly positive input. (#39)</li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
-<ul><li>New <code><a href="../reference/transform_log.html">transform_log()</a></code> explicitly converts abundances to natural, base-2, or base-10 logarithms, updates scale metadata, and records a replayable pipeline step. Manual log transformation is generally unnecessary for Glycoverse analyses and plots that already transform their inputs. (#43)</li>
+<ul><li>New <code><a href="../reference/transform_log.html">transform_log()</a></code> explicitly converts abundances to natural, base-2, or base-10 logarithms, updates scale metadata, and records a replayable pipeline step. (#43)</li>
 <li>
-<code><a href="../reference/adjust_protein.html">adjust_protein()</a></code> gains <code>pro_scale</code> to describe protein matrix values independently of the experiment scale, supporting <code>raw</code>, <code>log</code>, <code>log2</code>, and <code>log10</code> inputs while preserving the experiment representation and recording replayable parameters. Both inputs reject <code>logx</code>. (#40)</li>
-<li>
-<code><a href="../reference/aggregate.html">aggregate()</a></code>, <code><a href="../reference/impute_bpca.html">impute_bpca()</a></code>, <code><a href="../reference/impute_fw_knn.html">impute_fw_knn()</a></code>, <code><a href="../reference/impute_svd.html">impute_svd()</a></code>, <code><a href="../reference/impute_sw_knn.html">impute_sw_knn()</a></code>, and <code><a href="../reference/normalize_vsn.html">normalize_vsn()</a></code> gain an explicit <code>seed = 123</code> for reproducible stochastic processing while preserving the caller’s random state. <code><a href="../reference/auto_impute.html">auto_impute()</a></code>, <code><a href="../reference/auto_aggregate.html">auto_aggregate()</a></code>, and <code><a href="../reference/auto_clean.html">auto_clean()</a></code> forward the seed to the selected operations. (#35)</li>
+<code><a href="../reference/adjust_protein.html">adjust_protein()</a></code> gains <code>pro_scale</code> to describe protein matrix values independently of the experiment scale, supporting <code>raw</code>, <code>log</code>, <code>log2</code>, and <code>log10</code> inputs while preserving the experiment representation and recording replayable parameters. Both inputs reject <code>logx</code> scale. (#40)</li>
 <li>New <code><a href="../reference/glyclean_pipeline.html">glyclean_pipeline()</a></code>, <code><a href="../reference/glyclean_pipeline.html">apply_pipeline()</a></code>, and <code><a href="../reference/glyclean_pipeline.html">get_pipeline()</a></code> create, replay, and retrieve preprocessing pipelines stored in experiment metadata while retaining a single assay. Automatic preprocessing records the selected operations, seeds are stored as step parameters, and sequence annotation inputs are frozen for replay. Pipelines print numbered steps with compact parameter summaries. (#36)</li>
 <li>New <code><a href="../reference/zero_to_na.html">zero_to_na()</a></code> replaces exact zeros in the abundance assay with missing values while preserving annotations and recording a replayable pipeline step. (#38)</li>
 </ul></div>
 <div class="section level3">
 <h3 id="minor-improvements-and-bug-fixes-development-version">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-development-version"></a></h3>
-<ul><li>Grouped preprocessing now tracks samples by column position, preserving values and order with missing or duplicated sample names; unused group levels are ignored and missing grouping values are rejected.</li>
-<li>Pipelines recursively freeze callback values in attributes and S4 slots, rejecting hidden mutable references instead of recording histories whose results change when external state is modified. (#46)</li>
+<ul><li>Preprocessing accepts older glyco SE objects without <code>scale</code> metadata and records <code>"raw"</code> in returned objects, including filtering, skipped operations, and empty pipelines, without changing the input. Processing rejects explicitly invalid scales. (#53)</li>
+<li>Grouped preprocessing now tracks samples by column position, preserving values and order with missing or duplicated sample names; unused group levels are ignored and missing grouping values are rejected.</li>
 <li>
 <code><a href="../reference/add_site_seq.html">add_site_seq()</a></code> records replayable empty sequence snapshots and rejects missing or whitespace-only sequences after normalization, including fetched sequences. (#45)</li>
 <li>Filtering functions preserve the correct rows and annotations when a plain <code>SummarizedExperiment</code> has absent or duplicate row names, retaining the original abundance representation. (#44)</li>
@@ -83,11 +77,10 @@
 <li>
 <code><a href="../reference/auto_coda.html">auto_coda()</a></code> and <code><a href="../reference/auto_impute.html">auto_impute()</a></code> now select preprocessing strategies for legacy experiment objects without triggering deprecated dimension-accessor warnings.</li>
 <li>
-<code><a href="../reference/auto_coda.html">auto_coda()</a></code> and <code><a href="../reference/transform_clr.html">transform_clr()</a></code> now transform glycoproteomics data independently at each protein site using CLR, retaining all rows. (#34, #37)</li>
-<li>
-<code><a href="../reference/impute_fw_knn.html">impute_fw_knn()</a></code> and <code><a href="../reference/impute_sw_knn.html">impute_sw_knn()</a></code> now forward <code>seed</code> to the backend, including random large-matrix splitting; use <code>seed</code> instead of <code>rng.seed</code> in <code>...</code>. (#35, #36)</li>
-<li>
 <code><a href="../reference/transform_alr.html">transform_alr()</a></code>, <code><a href="../reference/transform_clr.html">transform_clr()</a></code>, and <code><a href="../reference/auto_coda.html">auto_coda()</a></code> now return log2-ratios and validate that abundances, <code>group_scales</code>, and derived two-group ratios are finite and strictly positive. (#39)</li>
+<li>
+<code><a href="../reference/auto_remove.html">auto_remove()</a></code> preserves the actual filtered rows when feature names are absent or duplicated instead of selecting the original object again by name. Rare-variable filtering ignores unused factor levels so recorded preset steps can be replayed with the original group annotations.</li>
+<li>Protein adjustment and internal SE subsetting keep feature annotations aligned by position when feature names are missing or duplicated.</li>
 </ul></div>
 </div>
     <div class="section level2">
