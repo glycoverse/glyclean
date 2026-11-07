@@ -127,7 +127,10 @@ original glycopeptide values.</p>
 <code>log2</code>, or <code>log10</code> representations. Logarithms are decoded to raw abundances
 before applying the formulas above; these are ordinary logarithms, not
 <code>log2(x + 1)</code> working values. Results use the original representation and
-scale metadata of <code>exp</code>. The <code>logx</code> label is rejected for either input because
+scale metadata of <code>exp</code>. An absent experiment <code>scale</code> field is treated as
+<code>"raw"</code>; explicitly invalid values are rejected. For older SE inputs without
+this field, the result records <code>scale = "raw"</code> so it remains a valid object.
+The <code>logx</code> label is rejected for either input because
 it does not identify an invertible abundance transformation.</p>
 <p>Abundances must be nonnegative and finite or missing. Negative log values
 represent abundances below one and are allowed; <code>-Inf</code> represents raw zero.

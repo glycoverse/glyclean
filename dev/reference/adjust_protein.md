@@ -95,8 +95,11 @@ Both inputs may independently use ordinary `raw`, `log` (natural
 logarithm), `log2`, or `log10` representations. Logarithms are decoded
 to raw abundances before applying the formulas above; these are ordinary
 logarithms, not `log2(x + 1)` working values. Results use the original
-representation and scale metadata of `exp`. The `logx` label is rejected
-for either input because it does not identify an invertible abundance
+representation and scale metadata of `exp`. An absent experiment `scale`
+field is treated as `"raw"`; explicitly invalid values are rejected. For
+older SE inputs without this field, the result records `scale = "raw"`
+so it remains a valid object. The `logx` label is rejected for either
+input because it does not identify an invertible abundance
 transformation.
 
 Abundances must be nonnegative and finite or missing. Negative log

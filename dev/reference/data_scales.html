@@ -7,7 +7,13 @@ scale metadata alone. Ordinary processing converts to the algorithm's working
 domain and restores the input scale. Filters return subsets of the original
 assay without a numeric round trip. These conventions apply to legacy
 experiments, glyco subclasses, and
-plain SummarizedExperiment objects wherever the operation supports them."><meta property="og:description" content="Glyclean reads scale from experiment metadata. An absent field defaults to
+plain SummarizedExperiment objects wherever the operation supports them.
+Processing results from older GlycomicSE and GlycoproteomicSE objects
+record an absent scale field as &quot;raw&quot; to satisfy current S4 validity,
+including filters, skipped operations, and empty pipelines. The input is not
+modified. Legacy S3 and plain SE containers retain an absent scale field
+when no scale change is required. Read-only QC and history access do not
+modify metadata."><meta property="og:description" content="Glyclean reads scale from experiment metadata. An absent field defaults to
 &quot;raw&quot;; explicitly invalid values are rejected. &quot;log&quot; is the natural
 logarithm, while &quot;log2&quot; and &quot;log10&quot; use their named bases. &quot;logx&quot; denotes
 log-like coordinates whose original abundances cannot be recovered from
@@ -15,7 +21,13 @@ scale metadata alone. Ordinary processing converts to the algorithm's working
 domain and restores the input scale. Filters return subsets of the original
 assay without a numeric round trip. These conventions apply to legacy
 experiments, glyco subclasses, and
-plain SummarizedExperiment objects wherever the operation supports them."><meta property="og:image" content="https://glycoverse.github.io/glyclean/logo.png"><meta name="robots" content="noindex"></head><body>
+plain SummarizedExperiment objects wherever the operation supports them.
+Processing results from older GlycomicSE and GlycoproteomicSE objects
+record an absent scale field as &quot;raw&quot; to satisfy current S4 validity,
+including filters, skipped operations, and empty pipelines. The input is not
+modified. Legacy S3 and plain SE containers retain an absent scale field
+when no scale change is required. Read-only QC and history access do not
+modify metadata."><meta property="og:image" content="https://glycoverse.github.io/glyclean/logo.png"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -57,7 +69,13 @@ scale metadata alone. Ordinary processing converts to the algorithm's working
 domain and restores the input scale. Filters return subsets of the original
 assay without a numeric round trip. These conventions apply to legacy
 experiments, glyco subclasses, and
-plain <code>SummarizedExperiment</code> objects wherever the operation supports them.</p>
+plain <code>SummarizedExperiment</code> objects wherever the operation supports them.
+Processing results from older <code>GlycomicSE</code> and <code>GlycoproteomicSE</code> objects
+record an absent <code>scale</code> field as <code>"raw"</code> to satisfy current S4 validity,
+including filters, skipped operations, and empty pipelines. The input is not
+modified. Legacy S3 and plain SE containers retain an absent <code>scale</code> field
+when no scale change is required. Read-only QC and history access do not
+modify metadata.</p>
     </div>
 
 
