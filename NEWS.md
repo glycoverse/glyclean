@@ -1,5 +1,7 @@
 # glyclean (development version)
 
+* `adjust_protein()` treats an absent experiment `scale` field as `"raw"`, returns valid older SE objects, and rejects explicitly invalid scales consistently with other preprocessing functions.
+
 * `auto_remove()` preserves the actual filtered rows when feature names are absent or duplicated instead of selecting the original object again by name. Rare-variable filtering ignores unused factor levels so recorded preset steps can be replayed with the original group annotations.
 * Protein adjustment and internal SE subsetting keep feature annotations aligned by position when feature names are missing or duplicated.
 

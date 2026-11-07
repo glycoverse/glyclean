@@ -81,10 +81,11 @@ NULL
 # exponentiated: it is a coordinate system, not a known logarithm of abundance.
 .get_scale <- function(x) {
   metadata <- .get_container_metadata(x)
+  # Only a missing field denotes a legacy raw object, not an explicit NULL.
   if (!"scale" %in% names(metadata)) {
     return("raw")
   }
-  scale <- metadata$scale
+  scale <- metadata[["scale"]]
   checkmate::assert_choice(scale, c("raw", "log", "log2", "log10", "logx"))
   scale
 }
