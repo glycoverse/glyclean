@@ -30,6 +30,11 @@ plot_batch_pca(exp, batch_col = "batch")
 
 A ggplot object of PCA scores.
 
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/reference/data_scales.md)
+for working domains and supported input scales.
+
 ## Examples
 
 ``` r

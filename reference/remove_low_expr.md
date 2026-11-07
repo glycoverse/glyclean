@@ -39,3 +39,8 @@ remove_low_expr(x, percentile = 0.05, by = NULL, strict = FALSE)
 ## Value
 
 A container of the same class as `x`, with filtered variables.
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/reference/data_scales.md)
+for working domains and supported input scales.

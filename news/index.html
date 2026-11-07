@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.16.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.17.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,6 +31,58 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.17.0" id="glyclean-0170">glyclean 0.17.0<a class="anchor" aria-label="anchor" href="#glyclean-0170"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-17-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-17-0"></a></h3>
+<ul><li>Preprocessing and QC now honor <code>raw</code>, <code>log</code>, <code>log2</code>, and <code>log10</code> scale, restoring the input scale after processing and preserving original values when filtering. (#41)</li>
+<li>
+<code><a href="../reference/aggregate.html">aggregate()</a></code>, <code><a href="../reference/impute_bpca.html">impute_bpca()</a></code>, <code><a href="../reference/impute_fw_knn.html">impute_fw_knn()</a></code>, <code><a href="../reference/impute_svd.html">impute_svd()</a></code>, <code><a href="../reference/impute_sw_knn.html">impute_sw_knn()</a></code>, and <code><a href="../reference/normalize_vsn.html">normalize_vsn()</a></code> now use <code>seed = 123</code> for all random operations, replacing the backend default of <code>362436069</code>. Pass <code>seed</code> directly to reproduce a chosen seed. (#35, #36)</li>
+<li>
+<code><a href="../reference/auto_coda.html">auto_coda()</a></code> now always uses site-wise CLR for glycoproteomics, and <code><a href="../reference/transform_alr.html">transform_alr()</a></code> rejects glycoproteomics input. (#34, #37)</li>
+<li>
+<code><a href="../reference/impute_zero.html">impute_zero()</a></code> now requires raw abundances. Supply an experiment on the <code>raw</code> scale for zero imputation. (#41)</li>
+<li>
+<code><a href="../reference/normalize_vsn.html">normalize_vsn()</a></code> now marks its output with <code>scale = "logx"</code>. Use the returned scale metadata for downstream processing. (#41)</li>
+<li>
+<code><a href="../reference/transform_alr.html">transform_alr()</a></code>, <code><a href="../reference/transform_clr.html">transform_clr()</a></code>, and <code><a href="../reference/auto_coda.html">auto_coda()</a></code> now return log2-ratio coordinates instead of exponentiated ratios and set <code>scale = "logx"</code> in experiment metadata. (#39, #41)</li>
+<li>
+<code><a href="../reference/transform_alr.html">transform_alr()</a></code>, <code><a href="../reference/transform_clr.html">transform_clr()</a></code>, and <code><a href="../reference/auto_coda.html">auto_coda()</a></code> now reject zero abundances and require finite, strictly positive input. (#39)</li>
+<li>
+<code><a href="../reference/zero_to_na.html">zero_to_na()</a></code> converts <code>-Inf</code> to <code>NA</code> on ordinary log scales while preserving finite log-scale zeros. (#41)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-0-17-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-17-0"></a></h3>
+<ul><li>
+<code><a href="../reference/adjust_protein.html">adjust_protein()</a></code> gains <code>pro_scale</code> to describe protein matrix values independently of the experiment scale, supporting <code>raw</code>, <code>log</code>, <code>log2</code>, and <code>log10</code> inputs while preserving the experiment representation and recording replayable parameters. Both inputs reject <code>logx</code> scale. (#40)</li>
+<li>New <code><a href="../reference/glyclean_pipeline.html">glyclean_pipeline()</a></code>, <code><a href="../reference/glyclean_pipeline.html">apply_pipeline()</a></code>, and <code><a href="../reference/glyclean_pipeline.html">get_pipeline()</a></code> create, replay, and retrieve preprocessing pipelines stored in experiment metadata while retaining a single assay. Automatic preprocessing records the selected operations, seeds are stored as step parameters, and sequence annotation inputs are frozen for replay. Pipelines print numbered steps with compact parameter summaries. (#36)</li>
+<li>New <code><a href="../reference/transform_log.html">transform_log()</a></code> explicitly converts abundances to natural, base-2, or base-10 logarithms, updates scale metadata, and records a replayable pipeline step. (#43)</li>
+<li>New <code><a href="../reference/zero_to_na.html">zero_to_na()</a></code> replaces exact zeros in the abundance assay on the raw scale and negative infinity on ordinary log scales with missing values, and records a replayable pipeline step. (#38)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-and-bug-fixes-0-17-0">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-0-17-0"></a></h3>
+<ul><li>Preprocessing accepts older glyco SE objects without <code>scale</code> metadata and records <code>"raw"</code> in returned objects, including filtering, skipped operations, and empty pipelines, without changing the input. Processing rejects explicitly invalid scales. (#53)</li>
+<li>Grouped preprocessing now tracks samples by column position, preserving values and order with missing or duplicated sample names; unused group levels are ignored and missing grouping values are rejected.</li>
+<li>Filtering functions preserve the correct rows and annotations when a plain <code>SummarizedExperiment</code> has absent or duplicate row names, retaining the original abundance representation. (#44)</li>
+<li>Protein adjustment and internal SE subsetting keep feature annotations aligned by position when feature names are missing or duplicated.</li>
+<li>
+<code><a href="../reference/add_site_seq.html">add_site_seq()</a></code> records replayable empty sequence snapshots and rejects missing or whitespace-only sequences after normalization, including fetched sequences. (#45)</li>
+<li>
+<code><a href="../reference/aggregate.html">aggregate()</a></code> sums known-log input without exponentiating extreme abundances, while custom aggregation functions receive raw values. All-missing sums remain zero (<code>-Inf</code> on ordinary log scales). (#41)</li>
+<li>
+<code><a href="../reference/auto_coda.html">auto_coda()</a></code> and <code><a href="../reference/auto_impute.html">auto_impute()</a></code> now select preprocessing strategies for legacy experiment objects without triggering deprecated dimension-accessor warnings.</li>
+<li>
+<code><a href="../reference/auto_remove.html">auto_remove()</a></code> preserves the actual filtered rows when feature names are absent or duplicated instead of selecting the original object again by name. Rare-variable filtering ignores unused factor levels so recorded preset steps can be replayed with the original group annotations.</li>
+<li>
+<code><a href="../reference/detect_batch_effect.html">detect_batch_effect()</a></code> now uses the same <code>log2(raw + 1e-6)</code> working domain as batch correction, correcting raw-domain ANOVA results; ordinary-scale correction restores the input scale and <code>logx</code> correction retains negative coordinates. (#41)</li>
+<li>
+<code><a href="../reference/impute_sample_min.html">impute_sample_min()</a></code> and <code><a href="../reference/impute_half_sample_min.html">impute_half_sample_min()</a></code> now preserve all-missing columns as missing and retain matrix dimensions for singleton inputs. (#41)</li>
+<li>
+<code><a href="../reference/normalize_median.html">normalize_median()</a></code> and <code><a href="../reference/normalize_median_abs.html">normalize_median_abs()</a></code> documentation now describes rescaling to the geometric mean of sample medians, matching the existing limma algorithms. (#41)</li>
+<li>
+<code><a href="../reference/transform_alr.html">transform_alr()</a></code>, <code><a href="../reference/transform_clr.html">transform_clr()</a></code>, and <code><a href="../reference/auto_coda.html">auto_coda()</a></code> now return log2-ratios and validate that abundances, <code>group_scales</code>, and derived two-group ratios are finite and strictly positive. (#39)</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.16.0" id="glyclean-0160">glyclean 0.16.0<a class="anchor" aria-label="anchor" href="#glyclean-0160"></a></h2>
 <div class="section level3">

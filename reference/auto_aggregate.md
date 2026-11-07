@@ -10,7 +10,7 @@ whether `glycan_structure` is present.
 ## Usage
 
 ``` r
-auto_aggregate(exp, standardize_variable = TRUE)
+auto_aggregate(exp, standardize_variable = TRUE, seed = 123)
 ```
 
 ## Arguments
@@ -29,10 +29,20 @@ auto_aggregate(exp, standardize_variable = TRUE)
   after aggregation. Set to `FALSE` to skip network calls for faster
   testing. Default is `TRUE`.
 
+- seed:
+
+  Non-negative integer seed for random number generation. Default is
+  `123`. The caller's random state is restored, including on errors.
+
 ## Value
 
 A modified container with the same class as `exp`, an aggregated
 expression matrix, and updated variable information.
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/reference/data_scales.md)
+for working domains and supported input scales.
 
 ## Examples
 
@@ -50,5 +60,5 @@ aggregate(exp)
 #> ℹ Glycan type: N
 #> ℹ Row data fields: protein <chr>, glycan_composition <comp>, glycan_structure <struct>, protein_site <int>, gene <chr>
 #> ℹ Column data fields: group <fct>
-#> ℹ Metadata fields: exp_type <chr>, glycan_type <chr>, quant_method <chr>
+#> ℹ Metadata fields: glycan_type <chr>, quant_method <chr>, scale <chr>, pipeline <glycln_p>
 ```

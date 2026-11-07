@@ -24,6 +24,11 @@ plot_rank_abundance(exp)
 
 A ggplot object of protein rank abundance.
 
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/reference/data_scales.md)
+for working domains and supported input scales.
+
 ## Examples
 
 ``` r

@@ -67,8 +67,11 @@ A container of the same class as `x`, with batch effects corrected.
 
 This function performs batch effect correction using either the ComBat
 algorithm or the limma removeBatchEffect function. It requires batch
-information provided via the `batch` parameter. If no batch information
-is available, the function will return the original data unchanged.
+information provided via the `batch` parameter. Both detection and
+correction use `log2(raw + 1e-6)` for ordinary scales, restoring the
+original scale after correction. `logx` is used directly and its
+negative coordinates are retained. If no batch information is available,
+the function will return the original data unchanged.
 
 If group information is provided via `group`, the function will check
 for confounding between batch and group variables. If batch and group
@@ -79,6 +82,11 @@ over-correction.
 When both batch and group information are available and not highly
 confounded, the group information will be included in the model to
 preserve biological variation while correcting for batch effects.
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/reference/data_scales.md)
+for working domains and supported input scales.
 
 ## Examples
 

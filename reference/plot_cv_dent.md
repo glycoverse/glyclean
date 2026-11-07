@@ -32,6 +32,11 @@ plot_cv_dent(exp, by = NULL)
 
 A ggplot object of CV density.
 
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/reference/data_scales.md)
+for working domains and supported input scales.
+
 ## Examples
 
 ``` r

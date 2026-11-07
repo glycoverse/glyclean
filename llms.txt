@@ -30,9 +30,16 @@ pak::pkg_install("glyclean")
 
 Or from [GitHub](https://github.com/glycoverse/glyclean):
 
+Install the latest releases of this package and its required Glycoverse
+dependencies together from GitHub:
+
 ``` r
 
-pak::pkg_install("glycoverse/glyclean@*release")
+pak::pkg_install(c(
+  "glycoverse/glyrepr@*release",
+  "glycoverse/glyexp@*release",
+  "glycoverse/glyclean@*release"
+))
 ```
 
 Or install the development version (NOT recommended):
@@ -87,6 +94,15 @@ and other steps that are necessary for downstream analysis.
 
 # Package index
 
+## Reproducible Pipelines
+
+- [`glyclean_pipeline()`](https://glycoverse.github.io/glyclean/reference/glyclean_pipeline.md)
+  [`get_pipeline()`](https://glycoverse.github.io/glyclean/reference/glyclean_pipeline.md)
+  [`apply_pipeline()`](https://glycoverse.github.io/glyclean/reference/glyclean_pipeline.md)
+  : Reproducible preprocessing pipelines
+- [`data_scales`](https://glycoverse.github.io/glyclean/reference/data_scales.md)
+  : Abundance scales in preprocessing and quality control
+
 ## Automactic Processing
 
 - [`auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.md)
@@ -135,8 +151,10 @@ and other steps that are necessary for downstream analysis.
 - [`normalize_vsn()`](https://glycoverse.github.io/glyclean/reference/normalize_vsn.md)
   : Variance Stabilizing Normalization
 
-## Imputation
+## Missing Values
 
+- [`zero_to_na()`](https://glycoverse.github.io/glyclean/reference/zero_to_na.md)
+  : Replace Zeros with Missing Values
 - [`impute_bpca()`](https://glycoverse.github.io/glyclean/reference/impute_bpca.md)
   : BPCA Imputation
 - [`impute_fw_knn()`](https://glycoverse.github.io/glyclean/reference/impute_fw_knn.md)
@@ -180,6 +198,11 @@ and other steps that are necessary for downstream analysis.
   : Detect batch effect
 - [`plot_batch_pca()`](https://glycoverse.github.io/glyclean/reference/plot_batch_pca.md)
   : Plot PCA Score by Batch
+
+## Log Transformation
+
+- [`transform_log()`](https://glycoverse.github.io/glyclean/reference/transform_log.md)
+  : Transform Abundances to a Logarithmic Scale
 
 ## Compositional Data Analysis (CoDA)
 

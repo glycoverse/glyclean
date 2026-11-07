@@ -36,7 +36,10 @@ add_site_seq(exp, fasta = NULL, n_aa = 7, taxid = 9606)
 
   Either a file path to a FASTA file, a named character vector with
   protein IDs as names and sequences as value, or `NULL` to fetch from
-  UniProt.
+  UniProt. An empty character vector is an empty sequence snapshot (no
+  lookup). Sequences are uppercased and whitespace is removed; missing
+  or blank sequences are rejected before annotation and pipeline
+  recording.
 
 - n_aa:
 
@@ -53,3 +56,8 @@ add_site_seq(exp, fasta = NULL, n_aa = 7, taxid = 9606)
 A
 [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
 object with the new `site_sequence` column in its row data.
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/reference/data_scales.md)
+for working domains and supported input scales.

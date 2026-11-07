@@ -60,13 +60,31 @@ removed for "gf" level, as one "glycoform" can contain multiple
 ## Usage
 
 ``` r
-aggregate(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
+aggregate(
+  exp,
+  to_level = NULL,
+  standardize_variable = TRUE,
+  f = sum,
+  seed = 123
+)
 
 # S3 method for class 'glyexp_experiment'
-glyclean_aggregate(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
+glyclean_aggregate(
+  exp,
+  to_level = NULL,
+  standardize_variable = TRUE,
+  f = sum,
+  seed = 123
+)
 
 # Default S3 method
-glyclean_aggregate(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
+glyclean_aggregate(
+  exp,
+  to_level = NULL,
+  standardize_variable = TRUE,
+  f = sum,
+  seed = 123
+)
 ```
 
 ## Arguments
@@ -76,7 +94,9 @@ glyclean_aggregate(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
   A glycomics or glycoproteomics container: a
   [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html),
   [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html),
-  or legacy `glyexp_experiment` object.
+  or legacy `glyexp_experiment` object. Ordinary scales (`raw`, `log`,
+  `log2`, and `log10`) are converted internally to raw abundances for
+  aggregation. `logx` is rejected.
 
 - to_level:
 
@@ -103,7 +123,17 @@ glyclean_aggregate(exp, to_level = NULL, standardize_variable = TRUE, f = sum)
   when all values are missing. For example, use `mean`, `max`, or
   `function(x) mean(x, trim = 0.1)`.
 
+- seed:
+
+  Non-negative integer seed for random number generation. Default is
+  `123`. The caller's random state is restored, including on errors.
+
 ## Value
 
 A modified container with the same class as `exp`, an aggregated
 expression matrix, and updated variable information.
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/reference/data_scales.md)
+for working domains and supported input scales.

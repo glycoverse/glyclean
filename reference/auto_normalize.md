@@ -44,6 +44,11 @@ The automatic strategy uses these defaults:
 - missing or other experiment types:
   [`normalize_median()`](https://glycoverse.github.io/glyclean/reference/normalize_median.md).
 
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/reference/data_scales.md)
+for working domains and supported input scales.
+
 ## Examples
 
 ``` r

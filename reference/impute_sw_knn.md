@@ -10,7 +10,7 @@ this method can better utilize the overall relationships among samples.
 ## Usage
 
 ``` r
-impute_sw_knn(x, k = 5, by = NULL, ...)
+impute_sw_knn(x, k = 5, by = NULL, ..., seed = 123)
 ```
 
 ## Arguments
@@ -39,6 +39,16 @@ impute_sw_knn(x, k = 5, by = NULL, ...)
   Additional arguments to pass to
   [`impute::impute.knn()`](https://rdrr.io/pkg/impute/man/impute.knn.html).
 
+- seed:
+
+  Non-negative integer seed for random number generation. Default is
+  `123`. The caller's random state is restored, including on errors.
+
 ## Value
 
 A container of the same class as `x`, with missing values imputed.
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/reference/data_scales.md)
+for working domains and supported input scales.

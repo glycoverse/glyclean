@@ -21,7 +21,7 @@ This function requires the following columns in the variable information tibble:
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.16.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.17.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,7 +75,10 @@ If the head and tail amino acids of the peptide sequence are insufficient, fill 
 
 <dt id="arg-fasta">fasta<a class="anchor" aria-label="anchor" href="#arg-fasta"></a></dt>
 <dd><p>Either a file path to a FASTA file, a named character vector
-with protein IDs as names and sequences as value, or <code>NULL</code> to fetch from UniProt.</p></dd>
+with protein IDs as names and sequences as value, or <code>NULL</code> to fetch from UniProt.
+An empty character vector is an empty sequence snapshot (no lookup).
+Sequences are uppercased and whitespace is removed; missing or blank
+sequences are rejected before annotation and pipeline recording.</p></dd>
 
 
 <dt id="arg-n-aa">n_aa<a class="anchor" aria-label="anchor" href="#arg-n-aa"></a></dt>
@@ -91,6 +94,10 @@ For example, if <code>n_aa = 5</code>, the resulting sequence will contain 11 am
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE()</a></code> object with the new <code>site_sequence</code>
 column in its row data.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><a href="data_scales.html">data_scales</a> for working domains and supported input scales.</p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -1,5 +1,131 @@
 # Changelog
 
+## glyclean 0.17.0
+
+### Breaking changes
+
+- Preprocessing and QC now honor `raw`, `log`, `log2`, and `log10`
+  scale, restoring the input scale after processing and preserving
+  original values when filtering. (#41)
+- [`aggregate()`](https://glycoverse.github.io/glyclean/reference/aggregate.md),
+  [`impute_bpca()`](https://glycoverse.github.io/glyclean/reference/impute_bpca.md),
+  [`impute_fw_knn()`](https://glycoverse.github.io/glyclean/reference/impute_fw_knn.md),
+  [`impute_svd()`](https://glycoverse.github.io/glyclean/reference/impute_svd.md),
+  [`impute_sw_knn()`](https://glycoverse.github.io/glyclean/reference/impute_sw_knn.md),
+  and
+  [`normalize_vsn()`](https://glycoverse.github.io/glyclean/reference/normalize_vsn.md)
+  now use `seed = 123` for all random operations, replacing the backend
+  default of `362436069`. Pass `seed` directly to reproduce a chosen
+  seed. (#35, \#36)
+- [`auto_coda()`](https://glycoverse.github.io/glyclean/reference/auto_coda.md)
+  now always uses site-wise CLR for glycoproteomics, and
+  [`transform_alr()`](https://glycoverse.github.io/glyclean/reference/transform_alr.md)
+  rejects glycoproteomics input. (#34, \#37)
+- [`impute_zero()`](https://glycoverse.github.io/glyclean/reference/impute_zero.md)
+  now requires raw abundances. Supply an experiment on the `raw` scale
+  for zero imputation. (#41)
+- [`normalize_vsn()`](https://glycoverse.github.io/glyclean/reference/normalize_vsn.md)
+  now marks its output with `scale = "logx"`. Use the returned scale
+  metadata for downstream processing. (#41)
+- [`transform_alr()`](https://glycoverse.github.io/glyclean/reference/transform_alr.md),
+  [`transform_clr()`](https://glycoverse.github.io/glyclean/reference/transform_clr.md),
+  and
+  [`auto_coda()`](https://glycoverse.github.io/glyclean/reference/auto_coda.md)
+  now return log2-ratio coordinates instead of exponentiated ratios and
+  set `scale = "logx"` in experiment metadata. (#39, \#41)
+- [`transform_alr()`](https://glycoverse.github.io/glyclean/reference/transform_alr.md),
+  [`transform_clr()`](https://glycoverse.github.io/glyclean/reference/transform_clr.md),
+  and
+  [`auto_coda()`](https://glycoverse.github.io/glyclean/reference/auto_coda.md)
+  now reject zero abundances and require finite, strictly positive
+  input. (#39)
+- [`zero_to_na()`](https://glycoverse.github.io/glyclean/reference/zero_to_na.md)
+  converts `-Inf` to `NA` on ordinary log scales while preserving finite
+  log-scale zeros. (#41)
+
+### New features
+
+- [`adjust_protein()`](https://glycoverse.github.io/glyclean/reference/adjust_protein.md)
+  gains `pro_scale` to describe protein matrix values independently of
+  the experiment scale, supporting `raw`, `log`, `log2`, and `log10`
+  inputs while preserving the experiment representation and recording
+  replayable parameters. Both inputs reject `logx` scale. (#40)
+- New
+  [`glyclean_pipeline()`](https://glycoverse.github.io/glyclean/reference/glyclean_pipeline.md),
+  [`apply_pipeline()`](https://glycoverse.github.io/glyclean/reference/glyclean_pipeline.md),
+  and
+  [`get_pipeline()`](https://glycoverse.github.io/glyclean/reference/glyclean_pipeline.md)
+  create, replay, and retrieve preprocessing pipelines stored in
+  experiment metadata while retaining a single assay. Automatic
+  preprocessing records the selected operations, seeds are stored as
+  step parameters, and sequence annotation inputs are frozen for replay.
+  Pipelines print numbered steps with compact parameter summaries. (#36)
+- New
+  [`transform_log()`](https://glycoverse.github.io/glyclean/reference/transform_log.md)
+  explicitly converts abundances to natural, base-2, or base-10
+  logarithms, updates scale metadata, and records a replayable pipeline
+  step. (#43)
+- New
+  [`zero_to_na()`](https://glycoverse.github.io/glyclean/reference/zero_to_na.md)
+  replaces exact zeros in the abundance assay on the raw scale and
+  negative infinity on ordinary log scales with missing values, and
+  records a replayable pipeline step. (#38)
+
+### Minor improvements and bug fixes
+
+- Preprocessing accepts older glyco SE objects without `scale` metadata
+  and records `"raw"` in returned objects, including filtering, skipped
+  operations, and empty pipelines, without changing the input.
+  Processing rejects explicitly invalid scales. (#53)
+- Grouped preprocessing now tracks samples by column position,
+  preserving values and order with missing or duplicated sample names;
+  unused group levels are ignored and missing grouping values are
+  rejected.
+- Filtering functions preserve the correct rows and annotations when a
+  plain `SummarizedExperiment` has absent or duplicate row names,
+  retaining the original abundance representation. (#44)
+- Protein adjustment and internal SE subsetting keep feature annotations
+  aligned by position when feature names are missing or duplicated.
+- [`add_site_seq()`](https://glycoverse.github.io/glyclean/reference/add_site_seq.md)
+  records replayable empty sequence snapshots and rejects missing or
+  whitespace-only sequences after normalization, including fetched
+  sequences. (#45)
+- [`aggregate()`](https://glycoverse.github.io/glyclean/reference/aggregate.md)
+  sums known-log input without exponentiating extreme abundances, while
+  custom aggregation functions receive raw values. All-missing sums
+  remain zero (`-Inf` on ordinary log scales). (#41)
+- [`auto_coda()`](https://glycoverse.github.io/glyclean/reference/auto_coda.md)
+  and
+  [`auto_impute()`](https://glycoverse.github.io/glyclean/reference/auto_impute.md)
+  now select preprocessing strategies for legacy experiment objects
+  without triggering deprecated dimension-accessor warnings.
+- [`auto_remove()`](https://glycoverse.github.io/glyclean/reference/auto_remove.md)
+  preserves the actual filtered rows when feature names are absent or
+  duplicated instead of selecting the original object again by name.
+  Rare-variable filtering ignores unused factor levels so recorded
+  preset steps can be replayed with the original group annotations.
+- [`detect_batch_effect()`](https://glycoverse.github.io/glyclean/reference/detect_batch_effect.md)
+  now uses the same `log2(raw + 1e-6)` working domain as batch
+  correction, correcting raw-domain ANOVA results; ordinary-scale
+  correction restores the input scale and `logx` correction retains
+  negative coordinates. (#41)
+- [`impute_sample_min()`](https://glycoverse.github.io/glyclean/reference/impute_sample_min.md)
+  and
+  [`impute_half_sample_min()`](https://glycoverse.github.io/glyclean/reference/impute_half_sample_min.md)
+  now preserve all-missing columns as missing and retain matrix
+  dimensions for singleton inputs. (#41)
+- [`normalize_median()`](https://glycoverse.github.io/glyclean/reference/normalize_median.md)
+  and
+  [`normalize_median_abs()`](https://glycoverse.github.io/glyclean/reference/normalize_median_abs.md)
+  documentation now describes rescaling to the geometric mean of sample
+  medians, matching the existing limma algorithms. (#41)
+- [`transform_alr()`](https://glycoverse.github.io/glyclean/reference/transform_alr.md),
+  [`transform_clr()`](https://glycoverse.github.io/glyclean/reference/transform_clr.md),
+  and
+  [`auto_coda()`](https://glycoverse.github.io/glyclean/reference/auto_coda.md)
+  now return log2-ratios and validate that abundances, `group_scales`,
+  and derived two-group ratios are finite and strictly positive. (#39)
+
 ## glyclean 0.16.0
 
 ### Breaking changes

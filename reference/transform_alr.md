@@ -2,9 +2,9 @@
 
 This function implements a glycoWork-compatible ALR preprocessing
 strategy. Internally, the data are transformed relative to an
-automatically selected reference glycan using glycoWork-style ALR logic,
-then back-transformed to the original ratio space before returning the
-result.
+automatically selected reference glycan using glycoWork-style ALR logic.
+The `log2`-ratio coordinates are returned directly, with
+`scale = "logx"` in metadata.
 
 ## Usage
 
@@ -38,28 +38,32 @@ transform_alr(x, by = NULL, gamma = 0.1, group_scales = NULL, seed = 123)
   Optional informed group scales. For binary comparisons, this can be a
   single positive ratio for the second group relative to the first, or
   two positive scales from which that ratio is derived. For multi-group
-  data, provide a positive vector with one scale per group.
+  data, provide a positive vector with one scale per group. All scales
+  and any derived two-group ratio must be finite and strictly positive.
 
 - seed:
 
-  Integer seed for random number generation. Default is `123`.
+  Non-negative integer seed for random number generation. Default is
+  `123`. The caller's random state is restored, including on errors.
 
 ## Value
 
 A container of the same class as `x`, with an ALR-transformed expression
 matrix. When ALR succeeds, the reference glycan is excluded from the
-result and the output therefore has one fewer row than the input. When
-ALR falls back to CLR, the returned object keeps the original
-dimensions. The returned values are back-transformed to the original
-ratio space, corresponding to `x / x_ref`.
+result and the output therefore has one fewer row. CLR fallback keeps
+the original dimensions. Fallback records CLR and starts from the
+supplied seed, so its random stream is independent of reference
+assessment. Glycoproteomics input is not supported. The returned values
+are `log2`-ratio coordinates with `scale = "logx"`, corresponding to
+`log2(x / x_ref)` when `gamma = 0` and no informed scales are supplied.
 
 ## Algorithmic details
 
 The stochastic branch follows `glycowork`: when `gamma > 0`, CLR noise
 is sampled per feature-sample entry rather than once per sample. Without
 informed scales, this corresponds to jittering around the
-sample-specific `log2` geometric mean of the non-zero components and
-then returning to ratio space.
+sample-specific `log2` geometric mean of the components. The result
+remains on the log-ratio scale, without exponentiation.
 
 The `group_scales` argument is interpreted in the same way as
 `glycowork`'s `custom_scale`. For exactly two groups, provide the
@@ -67,6 +71,40 @@ total-signal ratio of the second group relative to the first, either
 directly as a scalar or implicitly through two per-group scales. For
 multi-group data, provide one positive scale per group; these scales are
 used only in the stochastic branch.
+
+## Input requirements
+
+CoDA accepts `raw`, `log`, `log2`, and `log10` inputs, and rejects
+`logx`. On raw input, abundances must be finite and strictly positive.
+On ordinary log input, finite zero and negative coordinates are valid;
+`-Inf` represents zero abundance and is rejected. Missing values and
+other non-finite values are rejected on all input scales; no
+pseudo-count or automatic imputation is applied. If zero abundances
+represent missing observations, first call
+[`zero_to_na()`](https://glycoverse.github.io/glyclean/reference/zero_to_na.md),
+then use an appropriate imputation function to obtain positive values.
+Choose the imputation method for your data;
+[`impute_zero()`](https://glycoverse.github.io/glyclean/reference/impute_zero.md)
+is not suitable before CoDA. Entirely missing features or samples may
+need filtering rather than imputation.
+
+## Glycoproteomics
+
+For `GlycoproteomicSE` objects and legacy glycoproteomics experiments,
+each unique combination of `protein` and `protein_site` is treated as a
+separate composition. CLR centering is performed independently within
+each site. ALR is not supported for glycoproteomics; use
+[`transform_clr()`](https://glycoverse.github.io/glyclean/reference/transform_clr.md)
+or
+[`auto_coda()`](https://glycoverse.github.io/glyclean/reference/auto_coda.md),
+which always uses CLR. Both site identifiers must be present and
+non-missing. `by` continues to specify sample groups.
+
+The output preserves all rows, their original order, and their
+annotations.
+
+With `gamma = 0` and no informed scales, a site containing a single
+positive feature returns zero on the log-ratio scale.
 
 ## Motif quantification
 
@@ -90,3 +128,8 @@ than before. In another words, the recommended workflow is:
     experiment.
 
     dea_res <- glystats::gly_ttest(coda_motif_exp)
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/reference/data_scales.md)
+for working domains and supported input scales.

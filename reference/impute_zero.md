@@ -1,7 +1,7 @@
 # Zero Imputation
 
 Impute missing values in an expression matrix by replacing them with
-zeros.
+zeros. Only `glyexp` experiments with `scale = "raw"` are supported.
 
 ## Usage
 
@@ -23,3 +23,8 @@ impute_zero(x)
 ## Value
 
 A container of the same class as `x`, with missing values imputed.
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/reference/data_scales.md)
+for working domains and supported input scales.

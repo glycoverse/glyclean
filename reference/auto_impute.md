@@ -29,7 +29,8 @@ auto_impute(exp, group_col = "group", seed = 123)
 
 - seed:
 
-  Integer seed for random number generation. Default is `123`.
+  Non-negative integer seed for random number generation. Default is
+  `123`. The caller's random state is restored, including on errors.
 
 ## Value
 
@@ -62,6 +63,11 @@ and
 [`impute_half_sample_min()`](https://glycoverse.github.io/glyclean/reference/impute_half_sample_min.md)
 remain available for manual use, but they are not selected
 automatically.
+
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/reference/data_scales.md)
+for working domains and supported input scales.
 
 ## Examples
 

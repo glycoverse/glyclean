@@ -108,8 +108,8 @@ auto_clean(
 
 - seed:
 
-  Integer seed for random number generation used by stochastic
-  preprocessing steps. Default is `123`.
+  Non-negative integer seed for random number generation. Default is
+  `123`. The caller's random state is restored, including on errors.
 
 ## Value
 
@@ -122,6 +122,9 @@ A modified container with the same subclass as `exp`.
 [`auto_impute()`](https://glycoverse.github.io/glyclean/reference/auto_impute.md),
 [`aggregate()`](https://glycoverse.github.io/glyclean/reference/aggregate.md),
 [`auto_correct_batch_effect()`](https://glycoverse.github.io/glyclean/reference/auto_correct_batch_effect.md)
+
+[data_scales](https://glycoverse.github.io/glyclean/reference/data_scales.md)
+for working domains and supported input scales.
 
 ## Examples
 
@@ -168,5 +171,5 @@ auto_clean(exp)
 #> ℹ Glycan type: N
 #> ℹ Row data fields: protein <chr>, glycan_composition <comp>, glycan_structure <struct>, protein_site <int>, gene <chr>
 #> ℹ Column data fields: group <fct>
-#> ℹ Metadata fields: exp_type <chr>, glycan_type <chr>, quant_method <chr>
+#> ℹ Metadata fields: glycan_type <chr>, quant_method <chr>, scale <chr>, pipeline <glycln_p>
 ```

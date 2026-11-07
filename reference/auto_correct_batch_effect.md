@@ -64,6 +64,11 @@ auto_correct_batch_effect(
 The input container with batch effects corrected and its class
 preserved.
 
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/reference/data_scales.md)
+for working domains and supported input scales.
+
 ## Examples
 
 ``` r

@@ -9,7 +9,7 @@ from the sva package or removeBatchEffect from the limma package."><meta propert
 
     <a class="navbar-brand me-2" href="../index.html">glyclean</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.16.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.17.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -96,7 +96,9 @@ sva::ComBat) or "limma" (uses limma::removeBatchEffect). Default to "combat".</p
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This function performs batch effect correction using either the ComBat algorithm
 or the limma removeBatchEffect function. It requires batch information provided
-via the <code>batch</code> parameter. If no batch information is available, the function
+via the <code>batch</code> parameter. Both detection and correction use
+<code>log2(raw + 1e-6)</code> for ordinary scales, restoring the original scale after
+correction. <code>logx</code> is used directly and its negative coordinates are retained. If no batch information is available, the function
 will return the original data unchanged.</p>
 <p>If group information is provided via <code>group</code>,
 the function will check for confounding between batch and group variables.
@@ -106,6 +108,10 @@ to avoid over-correction.</p>
 <p>When both batch and group information are available and not highly confounded,
 the group information will be included in the model to preserve biological variation
 while correcting for batch effects.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><a href="data_scales.html">data_scales</a> for working domains and supported input scales.</p></div>
     </div>
 
     <div class="section level2">

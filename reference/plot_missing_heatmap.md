@@ -31,6 +31,11 @@ plot_missing_heatmap(exp, ...)
 
 A ggplot object of the missing value heatmap.
 
+## See also
+
+[data_scales](https://glycoverse.github.io/glyclean/reference/data_scales.md)
+for working domains and supported input scales.
+
 ## Examples
 
 ``` r
