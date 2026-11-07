@@ -502,3 +502,63 @@ test_that("failed batch backend returns a valid repaired legacy container", {
     expect_identical(serialize(x, NULL), before)
   }
 })
+
+test_that("degenerate legacy glyco inputs do not gain processing warnings", {
+  validate_degenerate <- function(x) {
+    withCallingHandlers(
+      methods::validObject(x),
+      warning = function(w) {
+        if (
+          identical(
+            conditionMessage(w),
+            "no non-missing arguments to min; returning Inf"
+          )
+        ) {
+          invokeRestart("muffleWarning")
+        }
+      }
+    )
+  }
+  for (proteomic in c(FALSE, TRUE)) {
+    for (case in c("all missing", "zero rows")) {
+      x <- legacy_scale_fixture(proteomic)
+      if (case == "all missing") {
+        SummarizedExperiment::assay(x)[,] <- NA_real_
+      } else {
+        x <- x[integer(), , drop = FALSE]
+      }
+      raw <- x
+      S4Vectors::metadata(raw)$scale <- "raw"
+      before <- serialize(x, NULL)
+      raw_before <- serialize(raw, NULL)
+      for (fun in list(
+        \(x) apply_pipeline(x, glyclean_pipeline()),
+        \(x) auto_correct_batch_effect(x, batch_col = NULL),
+        zero_to_na
+      )) {
+        expect_warning(result <- suppressMessages(fun(x)), NA)
+        expect_warning(expected <- suppressMessages(fun(raw)), NA)
+        expect_identical(result, expected)
+        expect_identical(class(result), class(x))
+        expect_identical(.get_expr_mat(result), .get_expr_mat(x))
+        expect_identical(.get_var_info(result), .get_var_info(x))
+        expect_identical(.get_sample_info(result), .get_sample_info(x))
+        expect_identical(.get_scale(result), "raw")
+        # glyexp validity currently warns when min() sees no observed values.
+        # Check that separately, without hiding warnings from processing above.
+        expect_warning(
+          valid <- validate_degenerate(result),
+          NA
+        )
+        expect_true(valid)
+        expect_warning(
+          raw_valid <- validate_degenerate(expected),
+          NA
+        )
+        expect_true(raw_valid)
+        expect_identical(serialize(x, NULL), before)
+        expect_identical(serialize(raw, NULL), raw_before)
+      }
+    }
+  }
+})

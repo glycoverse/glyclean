@@ -107,7 +107,6 @@ NULL
     if (!"scale" %in% names(metadata)) {
       metadata$scale <- scale
       S4Vectors::metadata(x) <- metadata
-      methods::validObject(x)
     }
   }
   x
