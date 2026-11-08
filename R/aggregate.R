@@ -266,8 +266,19 @@ glyclean_aggregate.GlycoproteomicSE <- function(
     )
   }
   group_id <- .get_aggregation_group_id(var_info, var_info_cols)
-  var_info_df <- .get_aggr_var_info(var_info, var_info_cols, group_id) |>
-    dplyr::mutate(variable = paste0("V", dplyr::row_number()), .before = 1)
+  aggregation_info <- var_info
+  if (inherits(exp, "glyexp_experiment")) {
+    aggregation_info$variable <- NULL
+  }
+  var_info_df <- .get_aggr_var_info(aggregation_info, var_info_cols, group_id)
+  variable_names <- paste0("V", seq_len(nrow(var_info_df)))
+  if (inherits(exp, "glyexp_experiment")) {
+    var_info_df <- tibble::add_column(
+      var_info_df,
+      variable = variable_names,
+      .before = 1
+    )
+  }
   step <- .new_pipeline_step(
     aggregate,
     list(
@@ -326,13 +337,7 @@ glyclean_aggregate.GlycoproteomicSE <- function(
     scale,
     if (stable_sum) "log2" else "raw"
   )
-  rownames(expr_mat) <- var_info_df$variable
-  sample_info_df <- .get_sample_info(exp)
-  expr_mat <- expr_mat[
-    var_info_df$variable,
-    sample_info_df$sample,
-    drop = FALSE
-  ]
+  rownames(expr_mat) <- variable_names
   new_exp <- .rebuild_container(
     exp,
     expr_mat = expr_mat,
@@ -394,7 +399,7 @@ glyclean_aggregate.default <- function(
 #'
 #' @noRd
 .get_aggr_var_info <- function(var_info, aggr_cols, group_id) {
-  descriptive_cols <- setdiff(colnames(var_info), c("variable", aggr_cols))
+  descriptive_cols <- setdiff(colnames(var_info), aggr_cols)
   group_col <- make.unique(c(colnames(var_info), ".aggregate_group"))[[
     ncol(var_info) + 1L
   ]]

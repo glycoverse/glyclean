@@ -134,7 +134,7 @@ test_that("transform_clr errors on missing values and negative entries", {
   SummarizedExperiment::assay(test_exp)[1, 1] <- NA
   expect_error(transform_clr(test_exp, gamma = 0), "missing")
 
-  test_exp <- simple_exp(3, 3)
+  test_exp <- plain_se(simple_exp(3, 3))
   SummarizedExperiment::assay(test_exp)[1, 1] <- -1
   expect_error(transform_clr(test_exp, gamma = 0), "negative|positive")
 })
@@ -306,7 +306,7 @@ test_that("transform_alr errors on NA values", {
 })
 
 test_that("transform_alr errors on negative values", {
-  test_exp <- simple_exp(3, 3)
+  test_exp <- plain_se(simple_exp(3, 3))
   SummarizedExperiment::assay(test_exp)[1, 1] <- -1
   expect_error(transform_alr(test_exp, gamma = 0), "negative|positive")
 })
@@ -326,13 +326,22 @@ test_that("ALR reference subtraction and uncertainty stay on the log2 scale", {
   colnames(mat) <- paste0("S", 1:4)
   groups <- factor(c("A", "A", "B", "B"))
   expected <- log2(sweep(mat[-1L, , drop = FALSE], 2L, mat[1L, ], "/"))
-  expect_equal(.apply_alr_reference(mat, 1L, by_values = groups, gamma = 0), expected)
+  expect_equal(
+    .apply_alr_reference(mat, 1L, by_values = groups, gamma = 0),
+    expected
+  )
 
   noise <- withr::with_seed(123, stats::rnorm(2L, mean = 0, sd = 0.2))
   expected[, 3:4] <- sweep(expected[, 3:4, drop = FALSE], 2L, noise, "+")
-  noisy <- withr::with_seed(123, .apply_alr_reference(
-    mat, 1L, by_values = groups, gamma = 0.2
-  ))
+  noisy <- withr::with_seed(
+    123,
+    .apply_alr_reference(
+      mat,
+      1L,
+      by_values = groups,
+      gamma = 0.2
+    )
+  )
   expect_equal(noisy, expected)
   expect_identical(rownames(noisy), c("V2", "V3"))
   expect_identical(colnames(noisy), colnames(mat))

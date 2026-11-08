@@ -158,7 +158,11 @@ plot_rank_abundance <- function(exp) {
   var_names <- .get_var_names(mat)
 
   protein_names <- if ("protein" %in% colnames(var_info)) {
-    protein <- var_info$protein[match(var_names, var_info$variable)]
+    protein <- if (inherits(exp, "glyexp_experiment")) {
+      var_info$protein[match(var_names, var_info$variable)]
+    } else {
+      var_info$protein
+    }
     missing_protein <- is.na(protein) | protein == ""
     protein[missing_protein] <- var_names[missing_protein]
     protein

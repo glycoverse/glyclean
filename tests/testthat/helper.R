@@ -256,3 +256,19 @@ simple_glycoproteomic_exp <- function(n_var, n_samp) {
   rownames(expr_mat) <- var_info$variable
   test_glycoproteomic_se(expr_mat, sample_info, var_info)
 }
+
+# Explicit adapters for fixtures exercising the legacy experiment contract.
+legacy_sample_info <- function(x) {
+  tibble::add_column(
+    tibble::as_tibble(SummarizedExperiment::colData(x)),
+    sample = colnames(x),
+    .before = 1
+  )
+}
+legacy_var_info <- function(x) {
+  tibble::add_column(
+    tibble::as_tibble(SummarizedExperiment::rowData(x)),
+    variable = rownames(x),
+    .before = 1
+  )
+}
