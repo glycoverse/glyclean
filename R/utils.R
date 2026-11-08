@@ -86,8 +86,9 @@
     mats_grouped <- purrr::map(positions_grouped, ~ mat[, .x, drop = FALSE])
     new_mats_grouped <- purrr::map(mats_grouped, matrix_func, ...)
     grouped_positions <- unlist(positions_grouped, use.names = FALSE)
-    result_mat <- do.call(cbind, new_mats_grouped)[
-      , order(grouped_positions), drop = FALSE
+    result_mat <- do.call(cbind, new_mats_grouped)[,
+      order(grouped_positions),
+      drop = FALSE
     ]
     dimnames(result_mat) <- dimnames(mat)
     return(result_mat)
@@ -160,40 +161,28 @@
 #'
 #' @param x A supported glyclean container.
 #'
-#' @return A tibble with a `sample` identifier column.
+#' @return Annotation columns; legacy containers also include their sample ID.
 #' @noRd
 .get_sample_info <- function(x) {
   .assert_glyclean_container(x)
   if (inherits(x, "glyexp_experiment")) {
     return(x$sample_info)
   }
-  sample_info <- tibble::as_tibble(
-    SummarizedExperiment::colData(x),
-    rownames = "sample"
-  )
-  # DataFrame-to-data.frame conversion makes duplicate row names unique.
-  # Keep the original SE sample identifiers when rebuilding the container.
-  if (!is.null(colnames(x))) {
-    sample_info$sample <- colnames(x)
-  }
-  sample_info
+  tibble::as_tibble(SummarizedExperiment::colData(x))
 }
 
 #' Extract variable information from a glyclean container
 #'
 #' @param x A supported glyclean container.
 #'
-#' @return A tibble with a `variable` identifier column.
+#' @return Annotation columns; legacy containers also include their variable ID.
 #' @noRd
 .get_var_info <- function(x) {
   .assert_glyclean_container(x)
   if (inherits(x, "glyexp_experiment")) {
     return(x$var_info)
   }
-  tibble::as_tibble(
-    SummarizedExperiment::rowData(x),
-    rownames = "variable"
-  )
+  tibble::as_tibble(SummarizedExperiment::rowData(x))
 }
 
 #' Extract the experiment type from a glyclean container
@@ -303,8 +292,8 @@
 #'
 #' @param x A supported glyclean container that supplies the output class.
 #' @param expr_mat The new abundance matrix.
-#' @param sample_info Sample information including a `sample` column.
-#' @param var_info Variable information including a `variable` column.
+#' @param sample_info Sample annotations; legacy inputs include a `sample` ID.
+#' @param var_info Variable annotations; legacy inputs include a `variable` ID.
 #' @param metadata Container metadata.
 #'
 #' @return A container with the same class as `x`.
@@ -328,10 +317,9 @@
 
   sample_info <- tibble::as_tibble(sample_info)
   var_info <- tibble::as_tibble(var_info)
-  sample_names <- sample_info$sample
-  variable_names <- var_info$variable
-  sample_info$sample <- NULL
-  var_info$variable <- NULL
+  # SE axis identity belongs to the assay, never to annotation columns.
+  sample_names <- colnames(expr_mat)
+  variable_names <- rownames(expr_mat)
 
   col_data <- S4Vectors::DataFrame(sample_info, row.names = sample_names)
   row_data <- S4Vectors::DataFrame(var_info, row.names = variable_names)
@@ -363,8 +351,13 @@
 .subset_container <- function(x, rows = NULL, cols = NULL) {
   .assert_glyclean_container(x)
   if (methods::is(x, "SummarizedExperiment")) {
-    if (is.null(rows)) rows <- seq_len(nrow(x))
-    if (is.null(cols)) cols <- seq_len(ncol(x))
+    if (is.null(rows)) {
+      rows <- seq_len(nrow(x))
+    }
+    if (is.null(cols)) {
+      cols <- seq_len(ncol(x))
+    }
+    x <- .ensure_scale_metadata(x)
     return(x[rows, cols, drop = FALSE])
   }
 
@@ -425,7 +418,12 @@
   # Validate `by` argument
   if (!is.null(by_values)) {
     # Check for special case
-    if (is.character(by) && length(by) == 1 && by == "sample") {
+    if (
+      inherits(exp, "glyexp_experiment") &&
+        is.character(by) &&
+        length(by) == 1 &&
+        by == "sample"
+    ) {
       cli::cli_abort("Can't stratify by {.val {by}}.")
     }
   }

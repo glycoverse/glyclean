@@ -30,8 +30,8 @@ test_that("normalize_median raises warnings for NaNs", {
   SummarizedExperiment::assay(test_exp)[] <- 0
   SummarizedExperiment::assay(test_exp)[1, ] <- 1
   expect_warning(
-    expect_warning(normalize_median(test_exp), "NaNs"),
-    "no non-missing arguments"
+    normalize_median(test_exp),
+    "NaNs"
   )
 })
 

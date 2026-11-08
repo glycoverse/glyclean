@@ -1,5 +1,8 @@
 # glyclean (development version)
 
+* SE preprocessing preserves ordinary `variable`, `sample`, `.variable`, and `.sample` annotations instead of treating them as axis identifiers. Aggregation and rank-abundance QC use the assay axes, and `by = "sample"` reads ordinary SE annotations.
+* Subsetting older glyco SE objects fills in the historical raw scale before current glyexp validation.
+
 # glyclean 0.17.0
 
 ## Breaking changes

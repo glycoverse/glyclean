@@ -55,8 +55,10 @@ test_that("CLR centers by both protein and site while preserving row order", {
   meta <- S4Vectors::metadata(result)
   expect_identical(meta$scale, "logx")
   expect_identical(meta$custom, "preserved")
-  expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
-                     names(meta)))
+  expect_false(any(
+    c("coda_transform", "coda_site_transforms", "coda_reference") %in%
+      names(meta)
+  ))
   expect_identical(apply_pipeline(x, get_pipeline(result)), result)
 
   SummarizedExperiment::assay(x)[c(2, 5), ] <- c(1e6, 1e9)
@@ -80,9 +82,10 @@ test_that("ALR explicitly rejects glycoproteomics without consuming RNG", {
   withr::local_options(lifecycle_verbosity = "quiet")
   legacy <- glyexp::experiment(
     SummarizedExperiment::assay(x),
-    sample_info = .get_sample_info(x),
-    var_info = .get_var_info(x),
-    exp_type = "glycoproteomics", glycan_type = "N"
+    sample_info = legacy_sample_info(x),
+    var_info = legacy_var_info(x),
+    exp_type = "glycoproteomics",
+    glycan_type = "N"
   )
   expect_error(transform_alr(legacy), "does not support glycoproteomics")
   expect_identical(.Random.seed, original_seed)
@@ -114,8 +117,10 @@ test_that("auto_coda uses CLR at every site regardless of the 50-feature boundar
   expect_identical(result, transform_clr(x, by = "group", gamma = 0))
   meta <- S4Vectors::metadata(result)
   expect_identical(meta$scale, "logx")
-  expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
-                     names(meta)))
+  expect_false(any(
+    c("coda_transform", "coda_site_transforms", "coda_reference") %in%
+      names(meta)
+  ))
   expect_identical(apply_pipeline(x, get_pipeline(result)), result)
 })
 
@@ -174,8 +179,8 @@ test_that("legacy glycoproteomics experiments use the same site-wise transform",
   )
   legacy <- glyexp::experiment(
     SummarizedExperiment::assay(x),
-    sample_info = .get_sample_info(x),
-    var_info = .get_var_info(x),
+    sample_info = legacy_sample_info(x),
+    var_info = legacy_var_info(x),
     exp_type = "glycoproteomics",
     glycan_type = "N"
   )
@@ -184,8 +189,10 @@ test_that("legacy glycoproteomics experiments use the same site-wise transform",
     expected <- suppressMessages(fn(x, by = "group", gamma = 0))
     expect_s3_class(result, "glyexp_experiment")
     expect_equal(result$expr_mat, SummarizedExperiment::assay(expected))
-    expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
-                       names(result$meta_data)))
+    expect_false(any(
+      c("coda_transform", "coda_site_transforms", "coda_reference") %in%
+        names(result$meta_data)
+    ))
     expect_identical(apply_pipeline(legacy, get_pipeline(result)), result)
   }
 })
@@ -196,15 +203,14 @@ test_that("site-wise CoDA rejects incomplete site identities", {
     missing <- x
     SummarizedExperiment::rowData(missing)[[column]][1] <- NA
     absent <- x
-    SummarizedExperiment::rowData(absent)[[column]] <- NULL
+    expect_error(
+      SummarizedExperiment::rowData(absent)[[column]] <- NULL,
+      "must contain"
+    )
     for (fn in list(transform_clr, auto_coda)) {
       expect_error(
         suppressMessages(fn(missing)),
         "identifiers cannot be missing"
-      )
-      expect_error(
-        suppressMessages(fn(absent)),
-        "requires.*protein.*protein_site"
       )
     }
   }
@@ -224,8 +230,10 @@ test_that("plain SummarizedExperiment retains whole-matrix CoDA", {
   expected <- matrix(c(-3, -1, 1, 3), nrow = 4, ncol = 4)
   expect_equal(unname(SummarizedExperiment::assay(result)), expected)
   expect_identical(as.character(class(result)), "SummarizedExperiment")
-  expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
-                     names(S4Vectors::metadata(result))))
+  expect_false(any(
+    c("coda_transform", "coda_site_transforms", "coda_reference") %in%
+      names(S4Vectors::metadata(result))
+  ))
   expect_identical(apply_pipeline(x, get_pipeline(result)), result)
 })
 
@@ -242,7 +250,10 @@ test_that("auto_coda is identical to explicit CLR across external RNG states", {
     invisible(runif(7))
     caller <- .Random.seed
     result <- suppressMessages(auto_coda(
-      x, by = "group", group_scales = 2, seed = 17
+      x,
+      by = "group",
+      group_scales = 2,
+      seed = 17
     ))
     expect_identical(result, expected)
     expect_identical(.Random.seed, caller)

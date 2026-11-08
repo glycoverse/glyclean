@@ -9,8 +9,8 @@ test_that("auto_coda chooses legacy methods without deprecated dimension calls",
       x <- simple_exp(n, 4)
       glyexp::experiment(
         .get_expr_mat(x),
-        sample_info = .get_sample_info(x),
-        var_info = .get_var_info(x),
+        sample_info = legacy_sample_info(x),
+        var_info = legacy_var_info(x),
         exp_type = "glycomics",
         glycan_type = "N"
       )

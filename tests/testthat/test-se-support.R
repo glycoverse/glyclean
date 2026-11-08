@@ -175,11 +175,15 @@ test_that("CoDA transformations preserve class without adding CoDA metadata", {
   alr <- suppressWarnings(transform_alr(x, gamma = 0))
 
   expect_s4_class(clr, "GlycomicSE")
-  expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
-                     names(S4Vectors::metadata(clr))))
+  expect_false(any(
+    c("coda_transform", "coda_site_transforms", "coda_reference") %in%
+      names(S4Vectors::metadata(clr))
+  ))
   expect_s4_class(alr, "GlycomicSE")
-  expect_false(any(c("coda_transform", "coda_site_transforms", "coda_reference") %in%
-                     names(S4Vectors::metadata(alr))))
+  expect_false(any(
+    c("coda_transform", "coda_site_transforms", "coda_reference") %in%
+      names(S4Vectors::metadata(alr))
+  ))
   expect_true(nrow(alr) %in% c(nrow(x) - 1, nrow(x)))
   expect_length(setdiff(rownames(x), rownames(alr)), nrow(x) - nrow(alr))
   expect_identical(rownames(alr), rownames(x)[rownames(x) %in% rownames(alr)])
@@ -187,9 +191,14 @@ test_that("CoDA transformations preserve class without adding CoDA metadata", {
   for (result in list(clr, alr)) {
     metadata <- S4Vectors::metadata(result)
     expect_identical(metadata$scale, "logx")
-    expect_identical(metadata[setdiff(names(metadata), c("pipeline", "scale"))],
-                     input_metadata[setdiff(names(input_metadata), c("pipeline", "scale"))])
-    expect_identical(suppressWarnings(apply_pipeline(x, get_pipeline(result))), result)
+    expect_identical(
+      metadata[setdiff(names(metadata), c("pipeline", "scale"))],
+      input_metadata[setdiff(names(input_metadata), c("pipeline", "scale"))]
+    )
+    expect_identical(
+      suppressWarnings(apply_pipeline(x, get_pipeline(result))),
+      result
+    )
   }
 })
 
@@ -315,4 +324,80 @@ test_that("legacy experiment inputs still return experiments", {
   expect_s3_class(normalize_median(x), "glyexp_experiment")
   expect_s3_class(suppressMessages(remove_rare(x)), "glyexp_experiment")
   expect_s3_class(transform_clr(x, gamma = 0), "glyexp_experiment")
+})
+
+test_that("SE preprocessing preserves ordinary identity-named annotations", {
+  for (x in list(
+    simple_glycomic_se(),
+    simple_glycoproteomic_se(),
+    plain_se(simple_glycomic_se())
+  )) {
+    for (nm in c("variable", "sample", ".variable", ".sample")) {
+      SummarizedExperiment::rowData(x)[[nm]] <- rep(
+        paste0(nm, " annotation"),
+        nrow(x)
+      )
+      SummarizedExperiment::colData(x)[[nm]] <- rep(
+        c("A", "B"),
+        length.out = ncol(x)
+      )
+    }
+    for (fun in list(
+      normalize_total_area,
+      normalize_median,
+      impute_zero,
+      transform_log
+    )) {
+      result <- fun(x)
+      expect_identical(
+        SummarizedExperiment::rowData(result),
+        SummarizedExperiment::rowData(x)
+      )
+      expect_identical(
+        SummarizedExperiment::colData(result),
+        SummarizedExperiment::colData(x)
+      )
+      expect_identical(dimnames(result), dimnames(x))
+      expect_identical(
+        dimnames(SummarizedExperiment::assay(result, withDimnames = FALSE)),
+        dimnames(x)
+      )
+    }
+    grouped <- normalize_quantile(x, by = "sample")
+    reference <- normalize_quantile(
+      x,
+      by = SummarizedExperiment::colData(x)$sample
+    )
+    expect_equal(
+      SummarizedExperiment::assay(grouped),
+      SummarizedExperiment::assay(reference)
+    )
+  }
+})
+
+test_that("SE aggregation uses assay identities and preserves sample annotations", {
+  x <- simple_glycomic_se()
+  SummarizedExperiment::rowData(x)$variable <- rep("not an axis ID", nrow(x))
+  SummarizedExperiment::colData(x)$sample <- rep("not an axis ID", ncol(x))
+  result <- aggregate(x, to_level = "g", standardize_variable = FALSE)
+  expect_identical(
+    SummarizedExperiment::colData(result),
+    SummarizedExperiment::colData(x)
+  )
+  expect_identical(
+    SummarizedExperiment::rowData(result)$variable,
+    rep("not an axis ID", nrow(result))
+  )
+  expect_identical(rownames(result), paste0("V", seq_len(nrow(result))))
+  expect_identical(colnames(result), colnames(x))
+})
+
+test_that("rank abundance reads SE protein annotations by position", {
+  x <- simple_glycoproteomic_se()
+  SummarizedExperiment::rowData(x)$variable <- rep("not an axis ID", nrow(x))
+  result <- plot_rank_abundance(x)
+  expect_setequal(
+    result$data$protein,
+    unique(SummarizedExperiment::rowData(x)$protein)
+  )
 })

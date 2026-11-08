@@ -531,7 +531,7 @@ test_that("single-column normalization and half-min preserve zero abundance sema
         scale_input(scale_test_matrix(), scale),
         by = "sample"
       ),
-      "Can't stratify"
+      "does not exist"
     )
   }
   for (fun in list(transform_clr, transform_alr, auto_coda)) {

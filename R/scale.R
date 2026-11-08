@@ -192,7 +192,12 @@ NULL
   mat <- .work_matrix(exp, work_scale, allow_logx)
   sample_info <- .get_sample_info(exp)
   by_values <- .resolve_column_param(by, sample_info, "by", ncol(mat))
-  if (is.character(by) && length(by) == 1L && by == "sample") {
+  if (
+    inherits(exp, "glyexp_experiment") &&
+      is.character(by) &&
+      length(by) == 1L &&
+      by == "sample"
+  ) {
     cli::cli_abort("Can't stratify by {.val {by}}.")
   }
   result <- .apply_by_groups(mat, matrix_func, by_values, ...)
@@ -292,7 +297,12 @@ NULL
     )
   }
   by_values <- .resolve_column_param(by, .get_sample_info(x), "by", ncol(mat))
-  if (is.character(by) && length(by) == 1L && by == "sample") {
+  if (
+    inherits(x, "glyexp_experiment") &&
+      is.character(by) &&
+      length(by) == 1L &&
+      by == "sample"
+  ) {
     cli::cli_abort("Can't stratify by {.val {by}}.")
   }
   result <- .apply_by_groups(

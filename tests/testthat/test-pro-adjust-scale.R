@@ -12,8 +12,8 @@ protein_scale_fixture <- function(
       list(lifecycle_verbosity = "quiet"),
       glyexp::experiment(
         gp,
-        sample_info = .get_sample_info(x),
-        var_info = .get_var_info(x),
+        sample_info = legacy_sample_info(x),
+        var_info = legacy_var_info(x),
         exp_type = "glycoproteomics",
         glycan_type = "N"
       )
@@ -210,7 +210,7 @@ test_that("zero and missing values keep historical behavior across scales", {
     }
   }
   d <- protein_scale_fixture(gp = c(0, 0, 0, NA), pro = c(0, 0, 0, 1))
-  expect_warning(result <- adjust_protein(d$exp, d$pro), "no non-missing")
+  result <- adjust_protein(d$exp, d$pro)
   expect_true(all(is.na(.get_expr_mat(result))))
 })
 

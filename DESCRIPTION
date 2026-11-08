@@ -44,7 +44,7 @@ Imports:
     checkmate,
     cli,
     dplyr,
-    glyexp (>= 0.19.0),
+    glyexp (>= 0.19.0.9000),
     lifecycle,
     limma,
     magrittr,
@@ -70,3 +70,5 @@ Imports:
 Depends: 
     R (>= 4.1)
 VignetteBuilder: knitr
+Remotes:
+    glycoverse/glyexp@cb24f10236c3cb3cc56b762e77de5e2b3e54cd47
