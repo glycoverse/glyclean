@@ -2,6 +2,13 @@
 
 ## glyclean (development version)
 
+## glyclean 0.17.1
+
+### Minor improvements and bug fixes
+
+- [`impute_svd()`](https://glycoverse.github.io/glyclean/dev/reference/impute_svd.md)
+  documentation uses LaTeX-compatible mathematical notation so the PDF
+  reference manual builds with pdflatex.
 - SE preprocessing preserves ordinary `variable`, `sample`, `.variable`,
   and `.sample` annotations instead of treating them as axis
   identifiers. Aggregation and rank-abundance QC use the assay axes, and

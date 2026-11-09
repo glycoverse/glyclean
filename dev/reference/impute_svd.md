@@ -4,8 +4,8 @@ A wrapper around the
 [`pcaMethods::pca()`](https://rdrr.io/pkg/pcaMethods/man/pca.html).
 Impute missing values using singular value decomposition (SVD)
 imputation. SVD is a matrix factorization technique that factors a
-matrix into three matrices: U, Σ, and V. SVD is used to find the best
-lower rank approximation of the original matrix.
+matrix into three matrices: U, \\\Sigma\\, and V. SVD is used to find
+the best lower rank approximation of the original matrix.
 
 ## Usage
 
