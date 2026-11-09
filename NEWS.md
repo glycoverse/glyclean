@@ -2,6 +2,7 @@
 
 ## Minor improvements and bug fixes
 
+* `impute_svd()` documentation uses LaTeX-compatible mathematical notation so the PDF reference manual builds with pdflatex.
 * SE preprocessing preserves ordinary `variable`, `sample`, `.variable`, and `.sample` annotations instead of treating them as axis identifiers. Aggregation and rank-abundance QC use the assay axes, and `by = "sample"` reads ordinary SE annotations. (#54)
 * Subsetting older glyco SE objects fills in the historical raw scale before current glyexp validation. (#54)
 

@@ -239,7 +239,7 @@ impute_ppca <- function(x, by = NULL, ..., seed = 123) {
 #' A wrapper around the [pcaMethods::pca()].
 #' Impute missing values using singular value decomposition (SVD) imputation.
 #' SVD is a matrix factorization technique that factors a matrix into three matrices:
-#' U, Σ, and V. SVD is used to find the best lower rank approximation of the original matrix.
+#' U, \eqn{\Sigma}, and V. SVD is used to find the best lower rank approximation of the original matrix.
 #'
 #' @param x A [glyexp::GlycomicSE()], [glyexp::GlycoproteomicSE()], or
 #'   [SummarizedExperiment::SummarizedExperiment()] object.
