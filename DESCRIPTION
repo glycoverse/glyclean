@@ -1,6 +1,6 @@
 Package: glyclean
 Title: Perform Preprocessing on Glycomics and Glycoproteomics Data
-Version: 0.17.0.9000
+Version: 0.17.1
 Authors@R: 
     person("Bin", "Fu", , "23110220018@m.fudan.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-8567-2997"))
@@ -21,7 +21,7 @@ License: MIT + file LICENSE
 Suggests:
     testthat (>= 3.2.0),
     vdiffr,
-    glyread (>= 0.6.2),
+    glyread (>= 0.12.5),
     glyrepr (>= 0.7.4),
     vsn,
     impute,
@@ -44,7 +44,7 @@ Imports:
     checkmate,
     cli,
     dplyr,
-    glyexp (>= 0.19.0.9000),
+    glyexp (>= 0.20.0),
     lifecycle,
     limma,
     magrittr,
@@ -70,5 +70,3 @@ Imports:
 Depends: 
     R (>= 4.1)
 VignetteBuilder: knitr
-Remotes:
-    glycoverse/glyexp@cb24f10236c3cb3cc56b762e77de5e2b3e54cd47
