@@ -346,6 +346,13 @@ glyclean_aggregate.GlycoproteomicSE <- function(
   if (standardize_variable) {
     new_exp <- suppressMessages(glyexp::standardize_variable(new_exp))
   }
+  dropped_cols <- setdiff(names(var_info), names(var_info_df))
+  if (length(dropped_cols) > 0L) {
+    cli::cli_div(theme = list(.field = list("vec-trunc" = Inf)))
+    cli::cli_inform(c(
+      "i" = "Aggregation dropped the following {.code rowData} column{?s}: {.field {dropped_cols}}."
+    ))
+  }
   record(new_exp, step)
 }
 
