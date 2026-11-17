@@ -18,7 +18,6 @@
 #' - [auto_normalize()]
 #' - [auto_impute()]
 #' - [aggregate()]
-#' - [auto_normalize()]
 #' - [auto_correct_batch_effect()]
 #'
 #' @param exp A [glyexp::GlycomicSE()] or [glyexp::GlycoproteomicSE()] object.
@@ -130,13 +129,6 @@ auto_clean <- function(
     exp, standardize_variable = params$standardize_variable, seed = params$seed
   )
   cli::cli_alert_success("Aggregation completed.")
-
-  cli::cli_h2("Normalizing data again")
-  exp <- auto_normalize(
-    exp,
-    group_col = params$group_col
-  )
-  cli::cli_alert_success("Normalization completed.")
 
   cli::cli_h2("Correcting batch effects")
   exp <- auto_correct_batch_effect(
