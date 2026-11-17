@@ -54,6 +54,8 @@ exp <- real_experiment
 
 # Use instead:
 aggregate(exp)
+#> ℹ Aggregation dropped the following `rowData` columns: peptide and
+#>   peptide_site.
 #> 
 #> ── GlycoproteomicSE ────────────────────────────────────────────────────────────
 #> ℹ Abundance assay: 12 samples, 4001 variables

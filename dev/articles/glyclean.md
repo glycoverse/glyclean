@@ -26,8 +26,6 @@ library(glyclean)
 #> 
 #>     aggregate
 library(glyexp)
-#> Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by
-#> 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'
 ```
 
 ## Example Data
@@ -128,17 +126,30 @@ clean_exp <- auto_clean(exp)
 #> 
 #> ── Aggregating data ──
 #> 
+#> ℹ Aggregation dropped the following `rowData` columns: peptide and
+#>   peptide_site.
 #> ✔ Aggregation completed.
+#> 
+#> 
 #> 
 #> ── Normalizing data again ──
 #> 
+#> 
+#> 
 #> ℹ Normalization method: `normalize_median()`
+#> 
 #> ℹ Reason: default for "glycoproteomics".
+#> 
 #> ✔ Normalization completed.
+#> 
+#> 
 #> 
 #> ── Correcting batch effects ──
 #> 
+#> 
+#> 
 #> ℹ Batch effects detected in "2.5%" of variables (<= "30.0%"). Skipping batch correction.
+#> 
 #> ✔ Batch correction completed.
 ```
 
@@ -223,6 +234,8 @@ clean_exp <- exp |>
 #> ℹ Reason: default for "glycoproteomics".
 #> ℹ Imputation method: `impute_min_prob()`
 #> ℹ Reason: default for "glycoproteomics" with n_samples < 30.
+#> ℹ Aggregation dropped the following `rowData` columns: peptide and
+#>   peptide_site.
 ```
 
 ## Input scales
@@ -386,6 +399,8 @@ to:
 ``` r
 
 aggregated_exp <- glyclean::aggregate(imputed_exp, to_level = "gf")
+#> ℹ Aggregation dropped the following `rowData` columns: peptide, peptide_site,
+#>   and glycan_structure.
 ```
 
 You can normalize again after aggregation to account for changes in the
@@ -545,6 +560,8 @@ compare the result:
 identical(apply_pipeline(exp, history), clean_exp)
 #> ℹ Removed 18 of 4262 (0.42%) variables.
 #> ℹ Removed 6 of 4244 (0.14%) variables.
+#> ℹ Aggregation dropped the following `rowData` columns: peptide and
+#>   peptide_site.
 #> [1] TRUE
 ```
 

@@ -153,6 +153,8 @@ auto_clean(exp)
 #> 
 #> ── Aggregating data ──
 #> 
+#> ℹ Aggregation dropped the following `rowData` columns: peptide and
+#>   peptide_site.
 #> ✔ Aggregation completed.
 #> 
 #> ── Normalizing data again ──
