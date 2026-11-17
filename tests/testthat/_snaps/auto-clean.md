@@ -24,6 +24,7 @@
       
       -- Aggregating data --
       
+      i Aggregation dropped the following `rowData` columns: peptide, charge, and modifications.
       v Aggregation completed.
       
       -- Normalizing data again --
@@ -63,6 +64,7 @@
       
       -- Aggregating data --
       
+      i Aggregation dropped the following `rowData` columns: peptide, charge, and modifications.
       v Aggregation completed.
       
       -- Normalizing data again --

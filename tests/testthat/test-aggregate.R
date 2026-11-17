@@ -98,8 +98,12 @@ test_that("aggregation preserves group order, missing-value sums, and metadata",
 test_that("glycomics aggregation supports composition and structure levels", {
   exp <- aggregation_glycomic_se()
 
-  compositions <- aggregate(exp, to_level = "g", standardize_variable = FALSE)
-  structures <- aggregate(exp, to_level = "gs", standardize_variable = FALSE)
+  expect_snapshot(
+    compositions <- aggregate(exp, to_level = "g", standardize_variable = FALSE)
+  )
+  expect_no_message(
+    structures <- aggregate(exp, to_level = "gs", standardize_variable = FALSE)
+  )
 
   expect_s4_class(compositions, "GlycomicSE")
   expect_equal(

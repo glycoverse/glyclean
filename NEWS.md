@@ -1,5 +1,7 @@
 # glyclean (development version)
 
+* `aggregate()` now reports which `rowData` columns it drops because their values vary within an aggregation group. (#55)
+
 # glyclean 0.17.1
 
 ## Minor improvements and bug fixes

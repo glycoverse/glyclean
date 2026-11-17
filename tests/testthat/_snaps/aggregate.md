@@ -1,3 +1,10 @@
+# glycomics aggregation supports composition and structure levels
+
+    Code
+      compositions <- aggregate(exp, to_level = "g", standardize_variable = FALSE)
+    Message
+      i Aggregation dropped the following `rowData` columns: source and glycan_structure.
+
 # aggregation levels must match the experiment type
 
     Code
