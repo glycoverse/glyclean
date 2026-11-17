@@ -132,18 +132,6 @@ clean_exp <- auto_clean(exp)
 #> 
 #> 
 #> 
-#> ── Normalizing data again ──
-#> 
-#> 
-#> 
-#> ℹ Normalization method: `normalize_median()`
-#> 
-#> ℹ Reason: default for "glycoproteomics".
-#> 
-#> ✔ Normalization completed.
-#> 
-#> 
-#> 
 #> ── Correcting batch effects ──
 #> 
 #> 
@@ -168,11 +156,10 @@ does. Here is a simplified version of the function:
 auto_clean <- function(exp, ...) {
   # ... are other arguments, see documentation for more details
   if (glyexp::is_glycoproteomic_se(exp)) {
-    exp <- auto_normalize(exp, ...)
     exp <- auto_remove(exp, ...)
+    exp <- auto_normalize(exp, ...)
     exp <- auto_impute(exp, ...)
     exp <- glyclean::aggregate(exp)
-    exp <- auto_normalize(exp, ...)
     exp <- auto_correct_batch_effect(exp, ...)
   } else if (glyexp::is_glycomic_se(exp)) {
     exp <- auto_remove(exp, ...)
@@ -187,9 +174,7 @@ auto_clean <- function(exp, ...) {
 }
 ```
 
-As you can see,
-[`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
-calls the following functions in sequence:
+The two pipelines use the following functions:
 
 - [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md):
   Automatically normalize the data

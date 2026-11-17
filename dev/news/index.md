@@ -2,6 +2,10 @@
 
 ## glyclean (development version)
 
+- For glycoproteomics data,
+  [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
+  now applies median normalization only before imputation and proceeds
+  directly from aggregation to batch correction. (#56)
 - [`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md)
   now reports which `rowData` columns it drops because their values vary
   within an aggregation group. (#55)

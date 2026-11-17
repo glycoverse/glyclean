@@ -173,18 +173,6 @@ preprocessing:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── <span style="font-weight: bold;">Normalizing data again</span> ──</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalization method: `normalize_median()`</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Reason: default for <span style="color: #0000BB;">"glycoproteomics"</span>.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Normalization completed.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Correcting batch effects</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -205,11 +193,10 @@ simplified version of the function:</p>
 <code class="sourceCode R"><span><span class="va">auto_clean</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">exp</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># ... are other arguments, see documentation for more details</span></span>
 <span>  <span class="kw">if</span> <span class="op">(</span><span class="fu">glyexp</span><span class="fu">::</span><span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/as_glycoproteomic_se.html" class="external-link">is_glycoproteomic_se</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_normalize.html">auto_normalize</a></span><span class="op">(</span><span class="va">exp</span>, <span class="va">...</span><span class="op">)</span></span>
 <span>    <span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_remove.html">auto_remove</a></span><span class="op">(</span><span class="va">exp</span>, <span class="va">...</span><span class="op">)</span></span>
+<span>    <span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_normalize.html">auto_normalize</a></span><span class="op">(</span><span class="va">exp</span>, <span class="va">...</span><span class="op">)</span></span>
 <span>    <span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_impute.html">auto_impute</a></span><span class="op">(</span><span class="va">exp</span>, <span class="va">...</span><span class="op">)</span></span>
 <span>    <span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu">glyclean</span><span class="fu">::</span><span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
-<span>    <span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_normalize.html">auto_normalize</a></span><span class="op">(</span><span class="va">exp</span>, <span class="va">...</span><span class="op">)</span></span>
 <span>    <span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_correct_batch_effect.html">auto_correct_batch_effect</a></span><span class="op">(</span><span class="va">exp</span>, <span class="va">...</span><span class="op">)</span></span>
 <span>  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="fu">glyexp</span><span class="fu">::</span><span class="fu"><a href="https://glycoverse.github.io/glyexp/reference/as_glycomic_se.html" class="external-link">is_glycomic_se</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/auto_remove.html">auto_remove</a></span><span class="op">(</span><span class="va">exp</span>, <span class="va">...</span><span class="op">)</span></span>
@@ -222,8 +209,7 @@ simplified version of the function:</p>
 <span>  <span class="op">}</span></span>
 <span>  <span class="va">exp</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>As you can see, <code><a href="../reference/auto_clean.html">auto_clean()</a></code> calls the following
-functions in sequence:</p>
+<p>The two pipelines use the following functions:</p>
 <ul>
 <li>
 <code><a href="../reference/auto_normalize.html">auto_normalize()</a></code>: Automatically normalize the data</li>

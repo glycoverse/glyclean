@@ -28,8 +28,6 @@ sequence:
 
 - [`aggregate()`](https://glycoverse.github.io/glyclean/dev/reference/aggregate.md)
 
-- [`auto_normalize()`](https://glycoverse.github.io/glyclean/dev/reference/auto_normalize.md)
-
 - [`auto_correct_batch_effect()`](https://glycoverse.github.io/glyclean/dev/reference/auto_correct_batch_effect.md)
 
 ## Usage
@@ -156,12 +154,6 @@ auto_clean(exp)
 #> ℹ Aggregation dropped the following `rowData` columns: peptide and
 #>   peptide_site.
 #> ✔ Aggregation completed.
-#> 
-#> ── Normalizing data again ──
-#> 
-#> ℹ Normalization method: `normalize_median()`
-#> ℹ Reason: default for "glycoproteomics".
-#> ✔ Normalization completed.
 #> 
 #> ── Correcting batch effects ──
 #> 
