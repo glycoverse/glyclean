@@ -27,12 +27,6 @@
       i Aggregation dropped the following `rowData` columns: peptide, charge, and modifications.
       v Aggregation completed.
       
-      -- Normalizing data again --
-      
-      i Normalization method: `normalize_median()`
-      i Reason: default for "glycoproteomics".
-      v Normalization completed.
-      
       -- Correcting batch effects --
       
       i Batch column batch not found in sample_info. Skipping batch correction.
@@ -66,12 +60,6 @@
       
       i Aggregation dropped the following `rowData` columns: peptide, charge, and modifications.
       v Aggregation completed.
-      
-      -- Normalizing data again --
-      
-      i Normalization method: `normalize_median()`
-      i Reason: default for "glycoproteomics".
-      v Normalization completed.
       
       -- Correcting batch effects --
       

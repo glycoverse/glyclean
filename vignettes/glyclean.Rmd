@@ -77,11 +77,10 @@ Here is a simplified version of the function:
 auto_clean <- function(exp, ...) {
   # ... are other arguments, see documentation for more details
   if (glyexp::is_glycoproteomic_se(exp)) {
-    exp <- auto_normalize(exp, ...)
     exp <- auto_remove(exp, ...)
+    exp <- auto_normalize(exp, ...)
     exp <- auto_impute(exp, ...)
     exp <- glyclean::aggregate(exp)
-    exp <- auto_normalize(exp, ...)
     exp <- auto_correct_batch_effect(exp, ...)
   } else if (glyexp::is_glycomic_se(exp)) {
     exp <- auto_remove(exp, ...)
@@ -96,7 +95,7 @@ auto_clean <- function(exp, ...) {
 }
 ```
 
-As you can see, `auto_clean()` calls the following functions in sequence:
+The two pipelines use the following functions:
 
 - `auto_normalize()`: Automatically normalize the data
 - `auto_remove()`: Automatically remove variables with too many missing values

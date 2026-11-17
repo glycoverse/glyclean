@@ -75,7 +75,6 @@ For glycoproteomics data, this function calls these functions in sequence:
 \item \code{\link[=auto_normalize]{auto_normalize()}}
 \item \code{\link[=auto_impute]{auto_impute()}}
 \item \code{\link[=aggregate]{aggregate()}}
-\item \code{\link[=auto_normalize]{auto_normalize()}}
 \item \code{\link[=auto_correct_batch_effect]{auto_correct_batch_effect()}}
 }
 }
