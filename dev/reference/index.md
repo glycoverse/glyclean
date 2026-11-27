@@ -63,6 +63,8 @@
   : Replace Zeros with Missing Values
 - [`impute_bpca()`](https://glycoverse.github.io/glyclean/dev/reference/impute_bpca.md)
   : BPCA Imputation
+- [`impute_dreamai()`](https://glycoverse.github.io/glyclean/dev/reference/impute_dreamai.md)
+  : DreamAI Ensemble Imputation
 - [`impute_fw_knn()`](https://glycoverse.github.io/glyclean/dev/reference/impute_fw_knn.md)
   : Feature-wise KNN Imputation
 - [`impute_half_sample_min()`](https://glycoverse.github.io/glyclean/dev/reference/impute_half_sample_min.md)

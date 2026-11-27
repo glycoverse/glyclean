@@ -2,6 +2,10 @@
 
 ## glyclean (development version)
 
+- New
+  [`impute_dreamai()`](https://glycoverse.github.io/glyclean/dev/reference/impute_dreamai.md)
+  fills missing abundances using all or a subset of the six methods in a
+  separately installed DreamAI package. (#57)
 - For glycoproteomics data,
   [`auto_clean()`](https://glycoverse.github.io/glyclean/dev/reference/auto_clean.md)
   now applies median normalization only before imputation and proceeds

@@ -348,11 +348,27 @@ choosing an imputation method.
 | [`impute_half_sample_min()`](https://glycoverse.github.io/glyclean/dev/reference/impute_half_sample_min.md) | Half of sample minimum | Conservative approach |
 | [`impute_min_prob()`](https://glycoverse.github.io/glyclean/dev/reference/impute_min_prob.md) | Probabilistic minimum | Medium datasets |
 | [`impute_miss_forest()`](https://glycoverse.github.io/glyclean/dev/reference/impute_miss_forest.md) | Random Forest ML | Large datasets |
+| [`impute_dreamai()`](https://glycoverse.github.io/glyclean/dev/reference/impute_dreamai.md) | Mean of selected DreamAI methods | Combining estimates from several models |
 | [`impute_bpca()`](https://glycoverse.github.io/glyclean/dev/reference/impute_bpca.md) | Bayesian PCA | High correlation structure |
 | [`impute_ppca()`](https://glycoverse.github.io/glyclean/dev/reference/impute_ppca.md) | Probabilistic PCA | Linear relationships |
 | [`impute_sw_knn()`](https://glycoverse.github.io/glyclean/dev/reference/impute_sw_knn.md) | K-nearest neighbors (Sample-wise) | Local similarity patterns |
 | [`impute_fw_knn()`](https://glycoverse.github.io/glyclean/dev/reference/impute_fw_knn.md) | K-nearest neighbors (Feature-wise) | Local similarity patterns |
 | [`impute_svd()`](https://glycoverse.github.io/glyclean/dev/reference/impute_svd.md) | Singular value decomposition | High correlation structure |
+
+Ma W, Kim S, Chowdhury S, et al. described the six-method ensemble in
+[*DreamAI: algorithm for the imputation of proteomics data* (bioRxiv,
+2021)](https://doi.org/10.1101/2020.07.21.214205). To use
+[`impute_dreamai()`](https://glycoverse.github.io/glyclean/dev/reference/impute_dreamai.md),
+install DreamAI from the [original WangLab-MSSM/DreamAI
+repository](https://github.com/WangLab-MSSM/DreamAI). DreamAI also
+requires `devtools` and Bioconductor’s `impute` at run time.
+
+``` r
+
+install.packages(c("devtools", "BiocManager"))
+BiocManager::install("impute")
+devtools::install_github("WangLab-MSSM/DreamAI/Code")
+```
 
 For demonstration, let’s use the simple zero imputation:
 
