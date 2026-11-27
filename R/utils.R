@@ -401,6 +401,11 @@
 #' @keywords internal
 #' @noRd
 .update_expr_mat <- function(exp, matrix_func, by = NULL, ...) {
+  mat <- .apply_to_expr_mat(exp, matrix_func, by, ...)
+  .rebuild_container(exp, expr_mat = mat)
+}
+
+.apply_to_expr_mat <- function(exp, matrix_func, by = NULL, ...) {
   .assert_glyclean_container(exp)
 
   expr_mat <- .get_expr_mat(exp)
@@ -429,6 +434,5 @@
   }
 
   # Apply function with optional grouping
-  new_expr_mat <- .apply_by_groups(expr_mat, matrix_func, by_values, ...)
-  .rebuild_container(exp, expr_mat = new_expr_mat)
+  .apply_by_groups(expr_mat, matrix_func, by_values, ...)
 }
