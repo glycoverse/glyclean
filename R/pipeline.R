@@ -148,7 +148,7 @@ apply_pipeline <- function(exp, pipeline) {
     "normalize_vsn", "normalize_median_quotient", "zero_to_na", "impute_zero",
     "impute_sample_min", "impute_half_sample_min", "impute_sw_knn",
     "impute_fw_knn", "impute_bpca", "impute_ppca", "impute_svd",
-    "impute_min_prob", "impute_miss_forest", "remove_rare", "remove_low_var",
+    "impute_min_prob", "impute_miss_forest", "impute_dreamai", "remove_rare", "remove_low_var",
     "remove_low_cv", "remove_constant", "remove_low_expr", "aggregate",
     "adjust_protein", "add_site_seq", "correct_batch_effect",
     "transform_clr", "transform_alr", "transform_log", "auto_normalize", "auto_impute",

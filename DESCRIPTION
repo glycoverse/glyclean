@@ -19,6 +19,7 @@ Description:
     objects to ensure data consistency and interoperability.
 License: MIT + file LICENSE
 Suggests:
+    callr,
     testthat (>= 3.2.0),
     vdiffr,
     glyread (>= 0.12.5),

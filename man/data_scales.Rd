@@ -29,9 +29,10 @@ aggregation (including custom \code{f}); low-expression, variance and CV filters
 total-intensity and CV plots. Custom aggregation callbacks receive raw
 values after missing values are removed. A sum over an all-missing group is
 zero, represented as \code{-Inf} on ordinary log scales.
-\item Log2 abundance: loess and robust-regression normalization; KNN, BPCA, PPCA,
-SVD and MinProb imputation; rank abundance, intensity boxplots, RLE, PCA and
-replicate scatter plots. RLE subtracts the row median in this working domain.
+\item Log2 abundance is the working scale for loess and robust-regression
+normalization and for KNN, BPCA, PPCA, SVD, MinProb and DreamAI
+imputation. Rank abundance, intensity boxplots, RLE, PCA and replicate
+scatter plots also use this domain. RLE subtracts the row median.
 }
 
 Batch detection and correction both use \code{log2(raw + 1e-6)}.
@@ -52,11 +53,12 @@ recovered from the scale alone. Supported algorithms use these coordinates
 directly, including legitimate negative values and zeros. No logarithm,
 exponentiation, pseudocount, or automatic CLR recentering is applied.
 
-\code{logx} supports quantile, loess and robust-regression normalization; KNN,
-BPCA, PPCA, SVD, MissForest and sample-minimum imputation; missingness and
-constant-variable filters; batch detection/correction; missingness,
-intensity, RLE, PCA and replicate plots; and annotation. Suitability of each
-model for particular CoDA or VSN coordinates still depends on the data.
+\code{logx} supports quantile, loess and robust-regression normalization and
+KNN, BPCA, PPCA, SVD, MissForest, DreamAI and sample-minimum imputation.
+It also supports missingness and constant-variable filters, batch detection
+and correction, missingness, intensity, RLE, PCA and replicate plots, and
+annotation. Suitability of each model for particular CoDA or VSN coordinates
+still depends on the data.
 
 Operations requiring recoverable abundances reject \code{logx}: total-area,
 median, absolute-median and median-quotient normalization; half-minimum and

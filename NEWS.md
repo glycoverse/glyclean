@@ -1,5 +1,6 @@
 # glyclean (development version)
 
+* New `impute_dreamai()` fills missing abundances using all or a subset of the six methods in a separately installed DreamAI package. (#57)
 * For glycoproteomics data, `auto_clean()` now applies median normalization only before imputation and proceeds directly from aggregation to batch correction. (#56)
 * `aggregate()` now reports which `rowData` columns it drops because their values vary within an aggregation group. (#55)
 

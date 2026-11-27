@@ -277,7 +277,8 @@ test_that("imputation functions reject inputs outside supported containers", {
     impute_ppca,
     impute_svd,
     impute_min_prob,
-    impute_miss_forest
+    impute_miss_forest,
+    impute_dreamai
   )
 
   purrr::walk(funcs, function(fn) {
